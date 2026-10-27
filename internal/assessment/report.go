@@ -67,8 +67,25 @@ func SARIFReport(r Result) ([]byte, error) {
 		for _, f := range q.Findings {
 			rules[f.RuleID]=map[string]any{"id":f.RuleID,"name":q.Title,"shortDescription":map[string]any{"text":q.Title}}
 			level:="error"; if q.Severity=="warning" { level="warning" }; if q.Severity=="info" { level="note" }
+			properties := map[string]any{
+				"adr_id": q.ADR,
+				"adr_version": q.ADRVersion,
+				"requirement_id": q.RequirementID,
+				"requirement_status": q.Status,
+				"severity": q.Severity,
+			}
+			if f.Analyzer != "" {
+				properties["analyzer"] = f.Analyzer
+			}
+			if f.AnalyzerVersion != "" {
+				properties["analyzer_version"] = f.AnalyzerVersion
+			}
+			if f.Fingerprint != "" {
+				properties["fingerprint"] = f.Fingerprint
+			}
 			results=append(results,map[string]any{
 				"ruleId":f.RuleID,"level":level,"message":map[string]any{"text":f.Message},
+				"properties": properties,
 				"locations":[]any{map[string]any{"physicalLocation":map[string]any{
 					"artifactLocation":map[string]any{"uri":f.Path},
 					"region":sarifRegion(f),
@@ -90,9 +107,113 @@ func SARIFReport(r Result) ([]byte, error) {
 		"runs":[]any{map[string]any{
 			"tool":map[string]any{"driver":map[string]any{"name":"adrctl","informationUri":"https://github.com/tyler-beach/pf_2","rules":ruleList}},
 			"results":results,
+			"properties":map[string]any{"adrctl": sarifAssessmentMetadata(r)},
 		}},
 	}
 	return json.MarshalIndent(doc,"","  ")
+}
+
+
+ // sarifAssessmentMetadata preserves assessment state even when the finding
+ // list is empty. SARIF results are findings, not a complete compliance verdict.
+ // Only identifiers, statuses, evidence summaries and digests are emitted.
+func sarifAssessmentMetadata(r Result) map[string]any {
+	statusCounts := make(map[string]int, len(r.Counts)+len(r.Requirements))
+	for status, count := range r.Counts {
+		statusCounts[status] = count
+	}
+	if len(statusCounts) == 0 && len(r.Requirements) > 0 {
+		for _, requirement := range r.Requirements {
+			statusCounts[requirement.Status]++
+		}
+	}
+
+	requirements := make([]map[string]any, 0, len(r.Requirements))
+	for _, requirement := range r.Requirements {
+		evidence := append([]string(nil), requirement.Evidence...)
+		requirements = append(requirements, map[string]any{
+			"adr_id": requirement.ADR,
+			"adr_version": requirement.ADRVersion,
+			"requirement_id": requirement.RequirementID,
+			"title": requirement.Title,
+			"status": requirement.Status,
+			"severity": requirement.Severity,
+			"reason": requirement.Reason,
+			"evidence": evidence,
+		})
+	}
+	sort.Slice(requirements, func(i, j int) bool {
+		leftADR, rightADR := fmt.Sprint(requirements[i]["adr_id"]), fmt.Sprint(requirements[j]["adr_id"])
+		if leftADR != rightADR {
+			return leftADR < rightADR
+		}
+		return fmt.Sprint(requirements[i]["requirement_id"]) < fmt.Sprint(requirements[j]["requirement_id"])
+	})
+
+	unassessed := append([]string(nil), r.UnassessedSourceFiles...)
+	sort.Strings(unassessed)
+
+	analyzerRuns := make([]map[string]any, 0, len(r.AnalyzerResults))
+	for _, scan := range r.AnalyzerResults {
+		analyzers := make([]map[string]any, 0, len(scan.Analyzers))
+		for _, analyzerInfo := range scan.Analyzers {
+			analyzers = append(analyzers, map[string]any{
+				"name": analyzerInfo.Name,
+				"version": analyzerInfo.Version,
+			})
+		}
+		sort.Slice(analyzers, func(i, j int) bool {
+			leftName, rightName := fmt.Sprint(analyzers[i]["name"]), fmt.Sprint(analyzers[j]["name"])
+			if leftName != rightName {
+				return leftName < rightName
+			}
+			return fmt.Sprint(analyzers[i]["version"]) < fmt.Sprint(analyzers[j]["version"])
+		})
+
+		scannedPaths := append([]string(nil), scan.ScannedPaths...)
+		sort.Strings(scannedPaths)
+		errors := append([]string(nil), scan.Errors...)
+		sort.Strings(errors)
+		analyzerRuns = append(analyzerRuns, map[string]any{
+			"status": scan.Status,
+			"analyzers": analyzers,
+			"finding_count": len(scan.Findings),
+			"input_sha256": scan.InputSHA256,
+			"configuration_sha256": scan.ConfigurationSHA256,
+			"binary_sha256": scan.BinarySHA256,
+			"rule_set_sha256": scan.RuleSetSHA256,
+			"raw_output_sha256": scan.RawOutputSHA256,
+			"scanned_paths": scannedPaths,
+			"errors": errors,
+		})
+	}
+	sort.Slice(analyzerRuns, func(i, j int) bool {
+		left, right := analyzerRuns[i], analyzerRuns[j]
+		if left["status"] != right["status"] {
+			return fmt.Sprint(left["status"]) < fmt.Sprint(right["status"])
+		}
+		if left["input_sha256"] != right["input_sha256"] {
+			return fmt.Sprint(left["input_sha256"]) < fmt.Sprint(right["input_sha256"])
+		}
+		return fmt.Sprint(left["raw_output_sha256"]) < fmt.Sprint(right["raw_output_sha256"])
+	})
+
+	return map[string]any{
+		"schema_version": r.SchemaVersion,
+		"engine_version": r.EngineVersion,
+		"verdict": r.Verdict,
+		"coverage_status": r.CoverageStatus,
+		"evidence_mode": r.EvidenceMode,
+		"requirement_count": r.RequirementCount,
+		"applicable_requirement_count": r.ApplicableRequirementCount,
+		"status_counts": statusCounts,
+		"source_file_count": r.SourceFileCount,
+		"source_snapshot_sha256": r.SourceSnapshotSHA256,
+		"runtime_llm_calls": r.LLMCalls,
+		"unassessed_source_files": unassessed,
+		"requirement_statuses": requirements,
+		"analyzer_runs": analyzerRuns,
+	}
 }
 
 func sarifRegion(f Finding) map[string]any {
