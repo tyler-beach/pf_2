@@ -78,10 +78,12 @@ jobs:
             .status == "COMPLETE"
             and (.findings | length) >= 8
             and ([.findings[].rule_id] | unique | sort) == [
-              "pathfinder.csharp-process-start",
-              "pathfinder.go-shell-command",
-              "pathfinder.java-runtime-exec",
-              "pathfinder.no-dynamic-eval"
+              "rules.pathfinder.csharp-process-start",
+              "rules.pathfinder.go-shell-command",
+              "rules.pathfinder.java-runtime-exec",
+              "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.python-dynamic-eval",
+              "rules.pathfinder.ruby-dynamic-eval"
             ]
           ' "$RUNNER_TEMP/opengrep-vulnerable.json"
 

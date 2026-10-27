@@ -1,6 +1,6 @@
 rules:
   - id: pathfinder.no-dynamic-eval
-    languages: [python, javascript, typescript, php, ruby]
+    languages: [javascript, typescript, php]
     message: Avoid dynamic evaluation of data that may be attacker-controlled.
     severity: ERROR
     metadata:
@@ -38,3 +38,23 @@ rules:
       confidence: MEDIUM
       cwe: "CWE-78"
     pattern: exec.Command("sh", "-c", ...)
+
+  - id: pathfinder.python-dynamic-eval
+    languages: [python]
+    message: Avoid dynamic evaluation of data that may be attacker-controlled.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern-regex: '\\beval\\s*\\('
+
+  - id: pathfinder.ruby-dynamic-eval
+    languages: [ruby]
+    message: Avoid dynamic evaluation of data that may be attacker-controlled.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern-regex: '\\beval\\s*\\('

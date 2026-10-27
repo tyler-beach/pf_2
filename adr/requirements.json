@@ -95,7 +95,7 @@
             "type": "analyzer-rule",
             "analyzer": "opengrep",
             "rule_ids": [
-              "pathfinder.go-shell-command"
+              "rules.pathfinder.go-shell-command"
             ],
             "source_path_prefixes": [
               "cmd/",
