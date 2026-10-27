@@ -158,3 +158,19 @@ func sectionByHeading(t *testing.T, doc Document, heading string) Section {
 	t.Fatalf("section %q not found in %+v", heading, doc.Sections)
 	return Section{}
 }
+
+
+func FuzzParseADRMarkdown(f *testing.F) {
+	f.Add([]byte("# ADR-001: Explicit timeouts\n\n## Status\n\nAccepted\n\n## Decision\n\nSet a timeout.\n"))
+	f.Add([]byte("# Legacy decision\n\nSome prose with [a link](https://example.com).\n"))
+	f.Add([]byte("# ADR-002: Fence safety\n\n```md\n# not a heading\n```\n"))
+	f.Add([]byte{})
+	f.Fuzz(func(t *testing.T, data []byte) {
+		if len(data) > 1<<20 { t.Skip() }
+		doc, err := Parse("fuzz.md", data)
+		if err != nil { return }
+		if doc.SourcePath != "fuzz.md" { t.Fatalf("unexpected source path %q", doc.SourcePath) }
+		if len(doc.SourceSHA256) != 64 { t.Fatalf("source SHA-256 missing: %q", doc.SourceSHA256) }
+		if doc.ID == "" { t.Fatal("successfully parsed document has no stable ID") }
+	})
+}

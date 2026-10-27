@@ -20,9 +20,16 @@ jobs:
 
       - name: Test and validate catalog
         run: |
-          go test ./...
+          go test -race -coverprofile=coverage.out ./...
+          go tool cover -func=coverage.out | tail -n 1
           go vet ./...
           go run ./cmd/adrctl validate --requirements adr/requirements.json
+
+      - name: Fuzz parsers with bounded smoke campaigns
+        run: |
+          go test ./internal/adringest -run=^$ -fuzz=FuzzParseADRMarkdown -fuzztime=5s
+          go test ./internal/analyzer -run=^$ -fuzz=FuzzParseSARIF -fuzztime=5s
+          go test ./internal/assessment -run=^$ -fuzz=FuzzParseIssueMarkdown -fuzztime=5s
 
       - name: Install pinned OpenGrep CLI and verify SHA-256
         run: |
@@ -63,6 +70,10 @@ jobs:
             --json-out "$RUNNER_TEMP/opengrep-clean.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-clean.sarif"
 
+          echo "Observed OpenGrep findings by rule and path:"
+          jq -r '.findings[] | [.rule_id, .path, (.start_line|tostring)] | @tsv' "$RUNNER_TEMP/opengrep-vulnerable.json"
+          echo "Observed OpenGrep languages and counts:"
+          jq -r '[.findings[] | (.path | split(".")[-1])] | group_by(.) | map({language:.[0], count:length})' "$RUNNER_TEMP/opengrep-vulnerable.json"
           jq -e '
             .status == "COMPLETE"
             and (.findings | length) >= 8

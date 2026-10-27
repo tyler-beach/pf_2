@@ -122,3 +122,26 @@ func quote(s string) string {
 	b, _ := json.Marshal(s)
 	return string(b)
 }
+
+
+func FuzzParseSARIF(f *testing.F) {
+	f.Add([]byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"scanner"}},"results":[]}]}`))
+	f.Add([]byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"scanner"}},"results":[{"ruleId":"R","message":{"text":"finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/main.go"},"region":{"startLine":2}}}]}]}`))
+	f.Add([]byte("{}"))
+	f.Add([]byte("{"))
+	root := f.TempDir()
+	f.Fuzz(func(t *testing.T, data []byte) {
+		if len(data) > 1<<20 { t.Skip() }
+		result, err := ParseSARIF(data, root)
+		if err != nil { return }
+		encoded, err := WriteJSON(result)
+		if err != nil { t.Fatalf("valid SARIF produced unencodable normalized evidence: %v", err) }
+		var decoded ScanResult
+		if err := json.Unmarshal(encoded, &decoded); err != nil { t.Fatalf("normalized evidence is invalid JSON: %v", err) }
+		for _, finding := range decoded.Findings {
+			if finding.Path == ".." || strings.HasPrefix(finding.Path, "../") || strings.HasPrefix(finding.Path, "/") {
+				t.Fatalf("parser emitted path escaping repository: %q", finding.Path)
+			}
+		}
+	})
+}
