@@ -211,21 +211,40 @@ func safeSubmissionPath(raw string, index int, extension string) string {
 	return result
 }
 
+const maxSourceFileBytes int64 = 4 << 20
+
 func LoadSourceFiles(root string) ([]SourceFile, error) {
 	var files []SourceFile
-	err := filepath.WalkDir(root, func(path string, d os.DirEntry, walkErr error) error {
+	rootAbs, err := filepath.Abs(root)
+	if err != nil { return nil, fmt.Errorf("resolve repository root: %w", err) }
+	rootReal, err := filepath.EvalSymlinks(rootAbs)
+	if err != nil { return nil, fmt.Errorf("resolve repository root symlinks: %w", err) }
+	rootInfo, err := os.Stat(rootReal)
+	if err != nil { return nil, fmt.Errorf("inspect repository root: %w", err) }
+	if !rootInfo.IsDir() { return nil, fmt.Errorf("repository root %q is not a directory", rootReal) }
+	root = rootReal
+	err = filepath.WalkDir(root, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
+		if d.Type()&os.ModeSymlink != 0 { return nil }
 		if d.IsDir() {
 			name := d.Name()
 			if path != root && (name == ".git" || name == "vendor" || name == "node_modules" || name == "testdata" || name == "analyzer-evidence" || name == ".opengrep-cache") { return filepath.SkipDir }
 			return nil
 		}
-		ext := filepath.Ext(path)
+		ext := strings.ToLower(filepath.Ext(path))
 		if ext != ".go" && ext != ".json" { return nil }
-		rel, err := filepath.Rel(root, path); if err != nil { return err }
+		rel, err := filepath.Rel(root, path)
+		if err != nil { return err }
 		relative := filepath.ToSlash(rel)
 		if relative == "assessment.json" || relative == "adr/ingested-adrs.json" { return nil }
-		data, err := os.ReadFile(path); if err != nil { return err }
+		info, err := d.Info()
+		if err != nil { return fmt.Errorf("inspect source evidence %s: %w", relative, err) }
+		if !info.Mode().IsRegular() { return nil }
+		if info.Size() > maxSourceFileBytes {
+			return fmt.Errorf("source evidence file %s exceeds the %d-byte limit", relative, maxSourceFileBytes)
+		}
+		data, err := os.ReadFile(path)
+		if err != nil { return fmt.Errorf("read source evidence %s: %w", relative, err) }
 		language := "go"
 		if ext == ".json" { language = "json" }
 		files = append(files, SourceFile{Path: relative, Language: language, Content: string(data)})
@@ -473,10 +492,20 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 }
 
 func pathMatches(path string, prefixes []string) bool {
-	path=strings.TrimPrefix(filepath.ToSlash(path),"./")
-	for _, p := range prefixes { p=strings.TrimPrefix(filepath.ToSlash(p),"./"); if p!="" && strings.HasPrefix(path,p) { return true } }
+	path = filepath.ToSlash(filepath.Clean(filepath.FromSlash(strings.TrimSpace(path))))
+	path = strings.TrimPrefix(path, "./")
+	if path == "" || path == "." || path == ".." || strings.HasPrefix(path, "../") { return false }
+	for _, prefix := range prefixes {
+		p := filepath.ToSlash(filepath.Clean(filepath.FromSlash(strings.TrimSpace(prefix))))
+		p = strings.TrimPrefix(p, "./")
+		if p == "" { continue }
+		if p == "." { return true }
+		p = strings.TrimSuffix(p, "/")
+		if path == p || strings.HasPrefix(path, p+"/") { return true }
+	}
 	return false
 }
+
 func importMatches(p, forbidden string) bool {
 	forbidden=strings.TrimSuffix(strings.TrimSpace(forbidden),"/")
 	return forbidden!="" && (p==forbidden || strings.HasPrefix(p,forbidden+"/"))

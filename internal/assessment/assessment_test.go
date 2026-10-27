@@ -333,3 +333,50 @@ func TestLoadSourceFilesExcludesGeneratedEvidenceAndCaches(t *testing.T) {
 		t.Fatalf("source loader included generated artifacts or skipped source files: %v", paths)
 	}
 }
+
+
+func TestPathMatchesRespectsPathSegmentBoundaries(t *testing.T) {
+	cases := []struct{ path, prefix string; want bool }{
+		{"cmd/runner.go", "cmd/", true},
+		{"cmd", "cmd/", true},
+		{"cmdx/runner.go", "cmd/", false},
+		{"internal/domainx/file.go", "internal/domain/", false},
+		{"internal/domain/file.go", "internal/domain/", true},
+		{"internal/domain/file.go", "internal/domain", true},
+		{"../outside.go", ".", false},
+		{"internal/domain/file.go", ".", true},
+	}
+	for _, tc := range cases {
+		if got := pathMatches(tc.path, []string{tc.prefix}); got != tc.want {
+			t.Errorf("pathMatches(%q, %q) = %v, want %v", tc.path, tc.prefix, got, tc.want)
+		}
+	}
+}
+
+func TestLoadSourceFilesSkipsSymlinkedFiles(t *testing.T) {
+	root := t.TempDir()
+	outside := filepath.Join(t.TempDir(), "secret.go")
+	if err := os.WriteFile(outside, []byte("package secret\n"), 0600); err != nil { t.Fatal(err) }
+	inside := filepath.Join(root, "inside.go")
+	if err := os.WriteFile(inside, []byte("package inside\n"), 0600); err != nil { t.Fatal(err) }
+	linkPath := filepath.Join(root, "linked.go")
+	if err := os.Symlink(outside, linkPath); err != nil { t.Skipf("symlink not available: %v", err) }
+	files, err := LoadSourceFiles(root)
+	if err != nil { t.Fatal(err) }
+	if len(files) != 1 || files[0].Path != "inside.go" { t.Fatalf("symlink should not be followed: %+v", files) }
+}
+
+func TestLoadSourceFilesRejectsOversizedEvidence(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "large.go")
+	if err := os.WriteFile(path, []byte(strings.Repeat("x", int(maxSourceFileBytes+1))), 0600); err != nil { t.Fatal(err) }
+	_, err := LoadSourceFiles(root)
+	if err == nil || !strings.Contains(err.Error(), "exceeds the") { t.Fatalf("expected evidence size limit error, got %v", err) }
+}
+
+func TestLoadSourceFilesRequiresDirectory(t *testing.T) {
+	file := filepath.Join(t.TempDir(), "not-dir")
+	if err := os.WriteFile(file, []byte("x"), 0600); err != nil { t.Fatal(err) }
+	_, err := LoadSourceFiles(file)
+	if err == nil || !strings.Contains(err.Error(), "not a directory") { t.Fatalf("expected root directory validation error, got %v", err) }
+}
