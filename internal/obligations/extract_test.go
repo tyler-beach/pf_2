@@ -170,6 +170,13 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 }
 
 
+func hasReviewHint(candidate Candidate, wanted string) bool {
+	for _, hint := range candidate.ReviewHints {
+		if hint == wanted { return true }
+	}
+	return false
+}
+
 func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 	tests := []struct { statement, want string }{
 		{"The service must not execute shell commands.", "must_not"},
