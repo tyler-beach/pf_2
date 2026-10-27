@@ -60,6 +60,10 @@ These issues exercise the actual Issue-triggered workflow and include its genera
 
 The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report. Issues #12–#15 exercise inclusive lower/upper boundaries, above-maximum values, and non-numeric values. Issues #16–#17 verify that JSON-only evidence reports PARTIAL coverage while mixed Go and JSON evidence reports COMPLETE coverage. Implementation work is tracked in [#11](https://github.com/tyler-beach/pf_2/issues/11).
 
+## Specification-to-enforcement milestone
+
+The staged contract for translating plain-English technical specifications into reviewed obligations, typed verifier bindings, and auditable evidence is documented in [Specification-to-enforcement milestone](docs/specification-to-enforcement.md). The representative [service runtime specification fixture](testdata/specifications/service-runtime.md) is a target-workflow fixture, not a claim that arbitrary prose is already automatically enforced.
+
 ## Architecture and limitations
 
 - [Current architecture overview](docs/architecture.md)
