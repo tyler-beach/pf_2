@@ -82,3 +82,12 @@ jobs:
             report.md
           if-no-files-found: error
           retention-days: 14
+
+      - name: Assert expected verdict for regression issues
+        if: always() && success()
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          go run ./cmd/adrctl assert-issue-verdict \
+            --title "$ISSUE_TITLE" \
+            --assessment assessment.json
