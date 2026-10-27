@@ -97,6 +97,15 @@ func ValidateCatalog(c Catalog) error {
 			case "go-import-boundary":
 				if len(r.Verifier.SourcePathPrefixes) == 0 { return fmt.Errorf("requirement %s: go-import-boundary requires source_path_prefixes", r.ID) }
 				if len(r.Verifier.ForbiddenImportPrefixes) == 0 { return fmt.Errorf("requirement %s: go-import-boundary requires forbidden_import_prefixes", r.ID) }
+			case "json-number-range":
+				p := filepath.Clean(filepath.FromSlash(strings.TrimSpace(r.Verifier.FilePath)))
+				if r.Verifier.FilePath == "" || filepath.IsAbs(p) || p == ".." || strings.HasPrefix(p, ".."+string(filepath.Separator)) { return fmt.Errorf("requirement %s: json-number-range requires a repository-relative file_path", r.ID) }
+				if len(r.Verifier.NumericJSONBounds) == 0 { return fmt.Errorf("requirement %s: json-number-range requires numeric_json_bounds", r.ID) }
+				for _, b := range r.Verifier.NumericJSONBounds {
+					if strings.TrimSpace(b.Key) == "" { return fmt.Errorf("requirement %s: numeric_json_bounds keys cannot be empty", r.ID) }
+					if b.Min == nil && b.Max == nil { return fmt.Errorf("requirement %s: numeric_json_bounds for %q needs min and/or max", r.ID, b.Key) }
+					if b.Min != nil && b.Max != nil && *b.Min > *b.Max { return fmt.Errorf("requirement %s: numeric_json_bounds for %q has min greater than max", r.ID, b.Key) }
+				}
 			case "json-required-keys":
 				p := filepath.Clean(filepath.FromSlash(strings.TrimSpace(r.Verifier.FilePath)))
 				if r.Verifier.FilePath == "" || filepath.IsAbs(p) || p == ".." || strings.HasPrefix(p, ".."+string(filepath.Separator)) {
@@ -170,6 +179,7 @@ func Assess(c Catalog, files []SourceFile) Result {
 			switch r.Verifier.Type {
 			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
 			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
+			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
 			default: rr.Status="ERROR"; rr.Reason="Unsupported verifier type: "+r.Verifier.Type
 			}
 			out.Counts[rr.Status]++
