@@ -132,3 +132,19 @@ func TestJSONNumberRangeRejectsInvalidBounds(t *testing.T) {
 	c.ADRs[0].Requirements[0].Verifier.NumericJSONBounds[0] = JSONNumberBound{Key:"timeout_seconds", Min:&min, Max:&max}
 	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "min greater than max") { t.Fatalf("expected invalid bound rejection, got %v", err) }
 }
+
+func TestCoverageIsPartialWhenAcceptedRequirementsHaveNoMatchingEvidence(t *testing.T) {
+	c := jsonRequirementCatalog()
+	c.ADRs = append(c.ADRs, fixtureCatalog().ADRs...)
+	files := []SourceFile{{Path:"config/service.json", Language:"json", Content:`{"timeout_seconds":30,"retry_limit":3}`}}
+	result := Assess(c, files)
+	if result.Verdict != "PASS" { t.Fatalf("expected scoped PASS among applicable requirements, got %s", result.Verdict) }
+	if result.CoverageStatus != "PARTIAL" { t.Fatalf("expected PARTIAL coverage, got %s", result.CoverageStatus) }
+	if result.ApplicableRequirementCount != 1 || result.RequirementCount != 3 { t.Fatalf("unexpected coverage counts: applicable=%d total=%d", result.ApplicableRequirementCount, result.RequirementCount) }
+}
+func TestCoverageIsCompleteWhenAllAcceptedRequirementsAreEvaluated(t *testing.T) {
+	c := fixtureCatalog()
+	files := []SourceFile{{Path:"internal/domain/customer.go", Language:"go", Content:"package domain\nimport \"strings\"\n"}}
+	result := Assess(c, files)
+	if result.CoverageStatus != "COMPLETE" || result.ApplicableRequirementCount != result.RequirementCount { t.Fatalf("expected complete coverage, got %+v", result) }
+}
