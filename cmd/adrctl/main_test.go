@@ -130,13 +130,19 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 
 func TestRunAssessRejectsNormalizedEvidenceWithoutRawSARIF(t *testing.T) {
 	root := t.TempDir()
+	catalog, err := assessment.LoadCatalog(filepath.Join("..", "..", "adr", "requirements.json"))
+	if err != nil { t.Fatal(err) }
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil { t.Fatal(err) }
 	catalogPath := filepath.Join(root, "requirements.json")
-	if err := os.WriteFile(catalogPath, []byte(`{"schema_version":"1","adrs":[]}`), 0600); err != nil { t.Fatal(err) }
-	evidencePath := filepath.Join(root, "evidence.json")
+	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil { t.Fatal(err) }
+	evidenceRoot := t.TempDir()
+	evidencePath := filepath.Join(evidenceRoot, "evidence.json")
 	if err := os.WriteFile(evidencePath, []byte(`{"schema_version":"1","sarif_version":"2.1.0","status":"COMPLETE"}`), 0600); err != nil { t.Fatal(err) }
-	err := runAssess([]string{"--root", root, "--requirements", catalogPath,
-		"--input", filepath.Join(root, "issue.md"), "--analyzer-evidence", evidencePath}, false)
-	if err == nil || !strings.Contains(err.Error(), "repository assessments") {
-		t.Fatalf("expected submission-mode evidence rejection, got %v", err)
+	err = runAssess([]string{"--root", root, "--requirements", catalogPath,
+		"--report", filepath.Join(root, "report.md"), "--json-out", filepath.Join(root, "assessment.json"),
+		"--analyzer-evidence", evidencePath}, true)
+	if err == nil || !strings.Contains(err.Error(), "--analyzer-sarif is required") {
+		t.Fatalf("expected missing raw SARIF rejection, got %v", err)
 	}
 }
