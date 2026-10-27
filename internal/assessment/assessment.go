@@ -65,6 +65,8 @@ type Result struct {
 	SchemaVersion string `json:"schema_version"`
 	EngineVersion string `json:"engine_version"`
 	Verdict string `json:"verdict"`
+	CoverageStatus string `json:"coverage_status"`
+	ApplicableRequirementCount int `json:"applicable_requirement_count"`
 	SourceFileCount int `json:"source_file_count"`
 	RequirementCount int `json:"requirement_count"`
 	Counts map[string]int `json:"counts"`
@@ -187,6 +189,8 @@ func Assess(c Catalog, files []SourceFile) Result {
 		}
 	}
 	out.RequirementCount = len(out.Requirements)
+	for _, rr := range out.Requirements { if rr.Status == "PASS" || rr.Status == "FAIL" { out.ApplicableRequirementCount++ } }
+	if out.RequirementCount == 0 || out.ApplicableRequirementCount == 0 { out.CoverageStatus = "NONE" } else if out.ApplicableRequirementCount != out.RequirementCount { out.CoverageStatus = "PARTIAL" } else { out.CoverageStatus = "COMPLETE" }
 	out.Verdict = rollup(out.Requirements)
 	return out
 }
