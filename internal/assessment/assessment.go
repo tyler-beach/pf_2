@@ -137,7 +137,7 @@ func ParseIssueMarkdown(markdown string) []SourceFile {
 	return files
 }
 
-func LoadGoFiles(root string) ([]SourceFile, error) {
+func LoadSourceFiles(root string) ([]SourceFile, error) {
 	var files []SourceFile
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
