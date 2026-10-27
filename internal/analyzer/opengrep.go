@@ -86,11 +86,33 @@ func scannerEnvironment() []string {
 const analyzerFixtureDirectory = "testdata/analyzer-fixtures"
 
 type OpenGrepScanner struct {
-	Binary     string
-	Version    string
-	ConfigPath string
-	Timeout    time.Duration
-	Runner     CommandRunner
+	Binary           string
+	BinarySHA256     string
+	Version          string
+	ConfigPath       string
+	RuleSetSHA256    string
+	SourceExtensions []string
+	ScanPaths        []string
+	MaxFileBytes     int64
+	Timeout          time.Duration
+	Runner           CommandRunner
+}
+
+// ResolveExecutable finds an executable through PATH when necessary and
+// resolves symlinks to the immutable file whose bytes will be hashed/executed.
+func ResolveExecutable(binary string) (string, error) {
+	binary = strings.TrimSpace(binary)
+	if binary == "" { return "", fmt.Errorf("analyzer executable path is required") }
+	resolved, err := exec.LookPath(binary)
+	if err != nil { return "", fmt.Errorf("resolve analyzer executable: %w", err) }
+	resolved, err = filepath.Abs(resolved)
+	if err != nil { return "", fmt.Errorf("resolve analyzer executable path: %w", err) }
+	resolved, err = filepath.EvalSymlinks(resolved)
+	if err != nil { return "", fmt.Errorf("resolve analyzer executable symlinks: %w", err) }
+	info, err := os.Stat(resolved)
+	if err != nil { return "", fmt.Errorf("inspect analyzer executable: %w", err) }
+	if !info.Mode().IsRegular() { return "", fmt.Errorf("analyzer executable is not a regular file") }
+	return resolved, nil
 }
 
 func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, error) {
@@ -119,14 +141,37 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	if err != nil { return out, fmt.Errorf("inspect repository root: %w", err) }
 	if !rootInfo.IsDir() { return out, fmt.Errorf("repository root %q is not a directory", rootAbs) }
 
+	binarySHA256 := ""
+	if strings.TrimSpace(s.BinarySHA256) != "" {
+		expected := strings.ToLower(strings.TrimSpace(s.BinarySHA256))
+		if !validPlanSHA256(expected) { return out, fmt.Errorf("expected OpenGrep binary SHA-256 is invalid") }
+		resolvedBinary, resolveErr := ResolveExecutable(binary)
+		if resolveErr != nil { return out, resolveErr }
+		actual, hashErr := HashFile(resolvedBinary)
+		if hashErr != nil { return out, fmt.Errorf("hash OpenGrep executable: %w", hashErr) }
+		if actual != expected {
+			return out, fmt.Errorf("OpenGrep binary SHA-256 mismatch: expected %s but found %s", expected, actual)
+		}
+		binary, binarySHA256 = resolvedBinary, actual
+		out.BinarySHA256 = actual
+	}
+
 	configAbs, configRel, err := resolveConfig(rootAbs, s.ConfigPath)
 	if err != nil { return out, err }
 	configHash, err := HashFile(configAbs)
 	if err != nil { return out, err }
+	ruleSetHash := strings.ToLower(strings.TrimSpace(s.RuleSetSHA256))
+	if ruleSetHash == "" { ruleSetHash = configHash }
+	if !validPlanSHA256(ruleSetHash) { return out, fmt.Errorf("OpenGrep rule-set SHA-256 is invalid") }
+	if s.MaxFileBytes > 0 {
+		if err := validateScanFileSizes(rootAbs, s.MaxFileBytes, s.SourceExtensions); err != nil { return out, err }
+	}
 	out.ConfigurationPath = configRel
+	out.ConfigurationSHA256 = configHash
+	out.BinarySHA256 = binarySHA256
+	out.RuleSetSHA256 = ruleSetHash
 	inputHash, err := hashInputTree(rootAbs)
 	if err != nil { return out, err }
-	out.ConfigurationSHA256 = configHash
 	out.InputSHA256 = inputHash
 
 	tempDir, err := os.MkdirTemp("", "pathfinder-opengrep-")
@@ -163,7 +208,14 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 
 	sarifPath := filepath.Join(tempDir, "results.sarif")
-	args := []string{"scan", "--sarif-output=" + sarifPath, "--exclude", analyzerFixtureDirectory, "-f", configRel, "."}
+	selectedPaths, err := normalizeScanPaths(rootAbs, s.ScanPaths, configRel)
+	if err != nil { return out, fmt.Errorf("validate requested scan paths: %w", err) }
+	args := []string{"scan", "--sarif-output=" + sarifPath, "--exclude", analyzerFixtureDirectory, "-f", configRel}
+	if len(selectedPaths) == 0 {
+		args = append(args, ".")
+	} else {
+		for _, selected := range selectedPaths { args = append(args, "./"+filepath.FromSlash(selected)) }
+	}
 	commandResult, err := runner.Run(runCtx, binary, args, rootAbs)
 	if err != nil {
 		out.Errors = append(out.Errors, err.Error())
@@ -204,9 +256,15 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 	normalized.ConfigurationPath = configRel
 	normalized.ConfigurationSHA256 = configHash
+	normalized.BinarySHA256 = binarySHA256
+	normalized.RuleSetSHA256 = ruleSetHash
 	normalized.InputSHA256 = inputHash
-	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
-	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
+	if len(selectedPaths) > 0 {
+		normalized.ScannedPaths = append([]string(nil), selectedPaths...)
+	} else {
+		normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
+		if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
+	}
 	if incompleteAnalysisDiagnostic(string(commandResult.Stderr)) {
 		normalized.Status = ScanStatusPartial
 		normalized.Errors = append(normalized.Errors, "OpenGrep reported incomplete analysis: "+truncate(string(commandResult.Stderr), 4096))
@@ -245,7 +303,7 @@ func resolveConfig(root, config string) (absolute, relative string, err error) {
 // internals and dependency/vendor trees are excluded; symlinks are not followed.
 func hashInputTree(root string) (string, error) {
 	h := sha256.New()
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
 	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true, "obligation-candidates.json": true}
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
@@ -292,16 +350,24 @@ func discoverScannedPaths(root string) ([]string, error) {
 	return discoverScannedPathsExcluding(root, "")
 }
 
+// DiscoverScannedPaths exposes the deterministic eligible-source inventory for
+// planning and verification callers outside the analyzer package.
+func DiscoverScannedPaths(root string) ([]string, error) {
+	return discoverScannedPaths(root)
+}
+
 func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) {
 	excludedPath = filepath.ToSlash(filepath.Clean(excludedPath))
 	extensions := map[string]bool{
-		".go": true, ".py": true, ".js": true, ".jsx": true, ".ts": true, ".tsx": true,
+		".go": true, ".py": true, ".js": true, ".jsx": true, ".mjs": true, ".cjs": true, ".ts": true, ".tsx": true,
 		".java": true, ".cs": true, ".php": true, ".rb": true, ".json": true, ".yaml": true,
-		".yml": true, ".tf": true, ".sh": true, ".kt": true, ".kts": true, ".scala": true,
-		".rs": true, ".c": true, ".h": true, ".cc": true, ".cpp": true, ".hpp": true,
-		".vue": true, ".html": true, ".xml": true, ".sql": true, ".ex": true, ".exs": true,
+		".yml": true, ".tf": true, ".hcl": true, ".sh": true, ".bash": true, ".zsh": true, ".fish": true,
+		".kt": true, ".kts": true, ".scala": true, ".rs": true, ".c": true, ".h": true, ".cc": true,
+		".cpp": true, ".hpp": true, ".dart": true, ".swift": true, ".lua": true, ".vb": true,
+		".vbs": true, ".ml": true, ".mli": true, ".vue": true, ".html": true, ".xml": true,
+		".sql": true, ".ex": true, ".exs": true,
 	}
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
 	var paths []string
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
@@ -362,4 +428,88 @@ func incompleteAnalysisDiagnostic(stderr string) bool {
 	// Do not fail on the broad summary alone. A concrete positive partial-file
 	// count, rule parse error, or SARIF invocation error is handled above.
 	return false
+}
+
+
+// validateScanFileSizes fails closed when supported source files exceed the
+// configured per-file bound; symlinks and generated analyzer artifacts are
+// excluded so scans do not traverse outside the repository or scan their own output.
+func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []string) error {
+	if maxBytes <= 0 { return nil }
+	allowed := make(map[string]bool, len(sourceExtensions))
+	for _, ext := range sourceExtensions { allowed[strings.ToLower(strings.TrimSpace(ext))] = true }
+	if len(allowed) == 0 { return nil }
+	skipDirs := map[string]bool{
+		".git": true, "vendor": true, "node_modules": true,
+		".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true,
+	}
+	return filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil { return walkErr }
+		if entry.Type()&os.ModeSymlink != 0 { return nil }
+		if entry.IsDir() {
+			if current != root {
+				rel, err := filepath.Rel(root, current)
+				if err != nil { return err }
+				rel = filepath.ToSlash(rel)
+				if skipDirs[entry.Name()] || rel == analyzerFixtureDirectory || strings.HasPrefix(rel, analyzerFixtureDirectory+"/") {
+					return filepath.SkipDir
+				}
+			}
+			return nil
+		}
+		if !allowed[strings.ToLower(filepath.Ext(entry.Name()))] { return nil }
+		info, err := entry.Info()
+		if err != nil { return fmt.Errorf("inspect source file size: %w", err) }
+		if !info.Mode().IsRegular() { return nil }
+		if info.Size() > maxBytes {
+			rel, relErr := filepath.Rel(root, current)
+			if relErr != nil { return relErr }
+			return fmt.Errorf("source file %s is %d bytes and exceeds the configured %d-byte per-file limit", filepath.ToSlash(rel), info.Size(), maxBytes)
+		}
+		return nil
+	})
+}
+
+// normalizeScanPaths validates the explicit file inventory used by a scoped
+// plan. Paths are repository-relative regular files; symlinks, traversal,
+// duplicate entries, and the analyzer configuration itself are rejected.
+func normalizeScanPaths(root string, requested []string, configRel string) ([]string, error) {
+	if len(requested) == 0 { return nil, nil }
+	eligiblePaths, err := discoverScannedPathsExcluding(root, configRel)
+	if err != nil { return nil, fmt.Errorf("build eligible source inventory: %w", err) }
+	eligible := make(map[string]bool, len(eligiblePaths))
+	for _, path := range eligiblePaths { eligible[path] = true }
+	seen := make(map[string]bool, len(requested))
+	out := make([]string, 0, len(requested))
+	for _, raw := range requested {
+		item := strings.TrimSpace(strings.ReplaceAll(raw, "\\", "/"))
+		clean := filepath.ToSlash(filepath.Clean(filepath.FromSlash(item)))
+		if item == "" || clean == "." || clean != item || filepath.IsAbs(filepath.FromSlash(clean)) ||
+			(len(clean) >= 2 && clean[1] == ':') || clean == ".." || strings.HasPrefix(clean, "../") {
+			return nil, fmt.Errorf("scan path %q must be normalized and repository-relative", raw)
+		}
+		absolute := filepath.Join(root, filepath.FromSlash(clean))
+		resolved, err := filepath.EvalSymlinks(absolute)
+		if err != nil { return nil, fmt.Errorf("resolve scan path %q: %w", clean, err) }
+		if filepath.Clean(resolved) != filepath.Clean(absolute) {
+			return nil, fmt.Errorf("scan path %q traverses a symlink", clean)
+		}
+		info, err := os.Lstat(absolute)
+		if err != nil { return nil, fmt.Errorf("inspect scan path %q: %w", clean, err) }
+		if info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular() {
+			return nil, fmt.Errorf("scan path %q must be a regular non-symlink file", clean)
+		}
+		rel, err := filepath.Rel(root, resolved)
+		if err != nil { return nil, fmt.Errorf("make scan path repository-relative: %w", err) }
+		if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+			return nil, fmt.Errorf("scan path %q escapes repository root", clean)
+		}
+		relative := filepath.ToSlash(rel)
+		if !eligible[relative] { return nil, fmt.Errorf("scan path %q is not in the eligible analyzer source inventory", relative) }
+		if seen[relative] { return nil, fmt.Errorf("duplicate scan path %q", relative) }
+		seen[relative] = true
+		out = append(out, relative)
+	}
+	sort.Strings(out)
+	return out, nil
 }

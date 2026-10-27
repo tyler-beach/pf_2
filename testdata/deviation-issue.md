@@ -15,3 +15,12 @@ func LoadCustomer() {
 	_ = http.MethodGet
 }
 ```
+
+### File: config/service.json
+
+```json
+{
+  "timeout_seconds": 30,
+  "retry_limit": 3
+}
+```

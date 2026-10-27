@@ -105,6 +105,8 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	if err != nil { t.Fatal(err) }
 	evidence.ConfigurationPath = "rules/security.yml"
 	evidence.ConfigurationSHA256 = configHash
+	evidence.BinarySHA256 = strings.Repeat("a", 64)
+	evidence.RuleSetSHA256 = configHash
 	evidence.InputSHA256 = inputHash
 	evidence.ScannedPaths = []string{"cmd/main.go"}
 	evidenceRoot := t.TempDir()
@@ -208,5 +210,43 @@ func TestRunAssertIssueVerdict(t *testing.T) {
 	}
 	if err := runAssertIssueVerdict([]string{"--assessment", reportPath}); err == nil || !strings.Contains(err.Error(), "--title is required") {
 		t.Fatalf("missing title should fail, got %v", err)
+	}
+}
+
+
+func TestResolveOpenGrepBinaryDigest(t *testing.T) {
+	binary := filepath.Join(t.TempDir(), "opengrep-test")
+	if err := os.WriteFile(binary, []byte("deterministic test executable"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	resolved, err := analyzer.ResolveExecutable(binary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err := analyzer.HashFile(resolved)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gotPath, gotDigest, err := resolveOpenGrepBinary(binary, "")
+	if err != nil {
+		t.Fatalf("omitted expected digest should calculate actual digest: %v", err)
+	}
+	if gotPath != resolved || gotDigest != want {
+		t.Fatalf("resolved identity mismatch: path=%q digest=%q; want path=%q digest=%q", gotPath, gotDigest, resolved, want)
+	}
+
+	gotPath, gotDigest, err = resolveOpenGrepBinary(binary, want)
+	if err != nil || gotPath != resolved || gotDigest != want {
+		t.Fatalf("matching expected digest was rejected: path=%q digest=%q err=%v", gotPath, gotDigest, err)
+	}
+	if _, _, err := resolveOpenGrepBinary(binary, strings.Repeat("0", 64)); err == nil || !strings.Contains(err.Error(), "mismatch") {
+		t.Fatalf("expected digest mismatch to fail closed, got %v", err)
+	}
+	if _, _, err := resolveOpenGrepBinary(binary, "not-a-digest"); err == nil || !strings.Contains(err.Error(), "SHA-256") {
+		t.Fatalf("invalid expected digest should be rejected, got %v", err)
+	}
+	if _, _, err := resolveOpenGrepBinary(filepath.Join(t.TempDir(), "missing-opengrep"), ""); err == nil {
+		t.Fatal("missing executable unexpectedly resolved")
 	}
 }

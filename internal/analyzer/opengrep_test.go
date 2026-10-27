@@ -179,6 +179,8 @@ func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
 	} {
 		if err := os.WriteFile(filepath.Join(root, name), []byte(value), 0600); err != nil { t.Fatal(err) }
 	}
+	if err := os.MkdirAll(filepath.Join(root, ".arch-go"), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, ".arch-go", "report.json"), []byte("generated Arch-Go report"), 0600); err != nil { t.Fatal(err) }
 	after, err := hashInputTree(root)
 	if err != nil { t.Fatal(err) }
 	if before != after { t.Fatalf("generated artifacts changed source input hash: %s != %s", before, after) }
@@ -186,7 +188,7 @@ func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
 
 func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) {
 	root := t.TempDir()
-	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules", "testdata/analyzer-fixtures/vulnerable"} {
+	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules", ".arch-go", "testdata/analyzer-fixtures/vulnerable"} {
 		if err := os.MkdirAll(filepath.Join(root, directory), 0700); err != nil { t.Fatal(err) }
 	}
 	for file, body := range map[string]string{
@@ -195,6 +197,7 @@ func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) 
 		".git/ignored.go": "package ignored",
 		"analyzer-evidence/ignored.ts": "const ignored = true",
 		"node_modules/ignored.js": "ignored",
+		".arch-go/report.json": `{"generated":true}`,
 		"testdata/analyzer-fixtures/vulnerable/RuntimeExec.java": "class RuntimeExec {}",
 		"testdata/analyzer-fixtures/vulnerable/eval.py": "eval(input())",
 		"README.md": "docs",
@@ -267,6 +270,97 @@ func TestIncompleteAnalysisDiagnosticIsSpecific(t *testing.T) {
 	for _, tc := range cases {
 		if got := incompleteAnalysisDiagnostic(tc.message); got != tc.want {
 			t.Errorf("incompleteAnalysisDiagnostic(%q) = %v, want %v", tc.message, got, tc.want)
+		}
+	}
+}
+
+
+func TestOpenGrepScannerRejectsBinaryDigestMismatchBeforeExecution(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	binary := filepath.Join(t.TempDir(), "fake-opengrep")
+	if err := os.WriteFile(binary, []byte("#!/bin/sh\nexit 0\n"), 0700); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	_, err := (OpenGrepScanner{
+		Binary: binary, BinarySHA256: strings.Repeat("f", 64),
+		Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner,
+	}).Scan(context.Background(), root)
+	if err == nil || !strings.Contains(err.Error(), "binary SHA-256 mismatch") {
+		t.Fatalf("expected binary integrity failure, got %v", err)
+	}
+	if len(runner.calls) != 0 { t.Fatalf("unverified binary was executed: %+v", runner.calls) }
+}
+
+func TestOpenGrepScannerEnforcesSourceFileSizeLimitBeforeExecution(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	path := filepath.Join(root, "src", "app.py")
+	if err := os.WriteFile(path, []byte(strings.Repeat("x", 100)), 0600); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	_, err := (OpenGrepScanner{
+		Version: "1.30.0", ConfigPath: "rules/security.yml",
+		MaxFileBytes: 32, SourceExtensions: []string{".py"}, Runner: runner,
+	}).Scan(context.Background(), root)
+	if err == nil || !strings.Contains(err.Error(), "exceeds the configured") {
+		t.Fatalf("expected source-size limit failure, got %v", err)
+	}
+	if len(runner.calls) != 0 { t.Fatalf("oversized source was scanned: %+v", runner.calls) }
+}
+
+func TestOpenGrepScannerHonorsExplicitSourceScope(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	if err := os.WriteFile(filepath.Join(root, "src", "other.py"), []byte("print('other')\n"), 0600); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	scanner := OpenGrepScanner{
+		Binary: "/opt/opengrep", Version: "1.30.0", ConfigPath: "rules/security.yml",
+		ScanPaths: []string{"src/app.py"}, Runner: runner,
+	}
+	got, err := scanner.Scan(context.Background(), root)
+	if err != nil { t.Fatalf("Scan returned error: %v", err) }
+	if len(got.ScannedPaths) != 1 || got.ScannedPaths[0] != "src/app.py" {
+		t.Fatalf("scanned inventory did not preserve the explicit scope: %v", got.ScannedPaths)
+	}
+	scanArgs := runner.calls[1].args
+	if !containsArg(scanArgs, "./src/app.py") { t.Fatalf("selected source path missing from args: %v", scanArgs) }
+	if containsArg(scanArgs, ".") { t.Fatalf("scoped scan must not scan repository root: %v", scanArgs) }
+	if containsArg(scanArgs, "./src/other.py") { t.Fatalf("out-of-scope file was passed to analyzer: %v", scanArgs) }
+}
+
+func containsArg(args []string, want string) bool {
+	for _, arg := range args { if arg == want { return true } }
+	return false
+}
+
+func TestOpenGrepScannerRejectsExcludedFixturePaths(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	fixture := filepath.Join(root, filepath.FromSlash(analyzerFixtureDirectory), "vulnerable", "secret.go")
+	if err := os.MkdirAll(filepath.Dir(fixture), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(fixture, []byte("package vulnerable\n"), 0600); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	scanner := OpenGrepScanner{
+		Version: "1.30.0", ConfigPath: "rules/security.yml",
+		ScanPaths: []string{analyzerFixtureDirectory + "/vulnerable/secret.go"}, Runner: runner,
+	}
+	if _, err := scanner.Scan(context.Background(), root); err == nil || !strings.Contains(err.Error(), "eligible analyzer source inventory") {
+		t.Fatalf("expected excluded fixture path to be rejected, got %v", err)
+	}
+	if len(runner.calls) != 1 {
+		t.Fatalf("scanner must reject excluded paths before starting a scan; calls=%+v", runner.calls)
+	}
+}
+
+func TestDiscoverScannedPathsIncludesAllEnabledRuleExtensions(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	extensions := []string{".bash", ".dart", ".swift", ".lua", ".vb", ".ml"}
+	for _, ext := range extensions {
+		name := filepath.Join(root, "src", "fixture"+ext)
+		if err := os.WriteFile(name, []byte("fixture\n"), 0600); err != nil { t.Fatal(err) }
+	}
+	paths, err := discoverScannedPaths(root)
+	if err != nil { t.Fatal(err) }
+	inventory := make(map[string]bool, len(paths))
+	for _, path := range paths { inventory[path] = true }
+	for _, ext := range extensions {
+		if !inventory["src/fixture"+ext] {
+			t.Errorf("source inventory omitted enabled language extension %s: %v", ext, paths)
 		}
 	}
 }

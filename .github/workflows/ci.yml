@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'integration/**'
   pull_request:
 
 permissions:
@@ -47,6 +49,42 @@ jobs:
             and ([.candidates[].source_line_start] | all(. > 0))
           ' "$RUNNER_TEMP/obligation-candidates.json"
 
+      - name: Verify source-bound obligation review registry
+        run: |
+          set -euo pipefail
+          go run ./cmd/adrctl review-init --output "$RUNNER_TEMP/obligation-reviews.json"
+          candidate_id="$(jq -er '.candidates[0].id' "$RUNNER_TEMP/obligation-candidates.json")"
+          jq -n --arg candidate_id "$candidate_id" '{
+            candidate_id: $candidate_id,
+            decision: "pending_review",
+            enforcement_mode: "review_required",
+            reviewer: "ci-regression",
+            reviewed_at: "2026-10-27T12:00:00Z",
+            review_reference: "https://github.com/tyler-beach/pf_2/issues/19",
+            rationale: "Candidate extraction is not approval; CI preserves review-required state."
+          }' > "$RUNNER_TEMP/review-proposal.json"
+          go run ./cmd/adrctl record-obligation-review \
+            --index "$RUNNER_TEMP/obligation-candidates.json" \
+            --requirements adr/requirements.json \
+            --registry "$RUNNER_TEMP/obligation-reviews.json" \
+            --proposal "$RUNNER_TEMP/review-proposal.json" \
+            --coverage-out "$RUNNER_TEMP/obligation-review-coverage.json"
+          go run ./cmd/adrctl validate-obligation-reviews \
+            --index "$RUNNER_TEMP/obligation-candidates.json" \
+            --requirements adr/requirements.json \
+            --registry "$RUNNER_TEMP/obligation-reviews.json" \
+            --json-out "$RUNNER_TEMP/obligation-review-coverage-validated.json" \
+            --strict
+          jq -e '
+            .candidate_count >= 3
+            and .pending_review_count == .candidate_count
+            and .approved_count == 0
+            and .blocking_binding_count == 0
+            and .stale_count == 0
+            and .orphaned_count == 0
+            and .unbound_count == .candidate_count
+          ' "$RUNNER_TEMP/obligation-review-coverage-validated.json"
+
       - name: Install pinned OpenGrep CLI and verify SHA-256
         run: |
           set -euo pipefail
@@ -74,6 +112,7 @@ jobs:
             --root "$fixture_root/vulnerable" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --json-out "$RUNNER_TEMP/opengrep-vulnerable.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-vulnerable.sarif"
@@ -82,6 +121,7 @@ jobs:
             --root "$fixture_root/clean" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --json-out "$RUNNER_TEMP/opengrep-clean.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-clean.sarif"
@@ -92,29 +132,112 @@ jobs:
           jq -r '[.findings[] | (.path | split(".")[-1])] | group_by(.) | map({language:.[0], count:length})' "$RUNNER_TEMP/opengrep-vulnerable.json"
           jq -e '
             .status == "COMPLETE"
-            and (.findings | length) >= 8
+            and (.findings | length) >= 18
             and ([.findings[].rule_id] | unique | sort) == [
+              "rules.pathfinder.bash-dynamic-eval",
+              "rules.pathfinder.c-shell-command",
+              "rules.pathfinder.cpp-shell-command",
               "rules.pathfinder.csharp-process-start",
+              "rules.pathfinder.dart-process-run",
+              "rules.pathfinder.elixir-dynamic-eval",
               "rules.pathfinder.go-shell-command",
               "rules.pathfinder.java-runtime-exec",
+              "rules.pathfinder.kotlin-runtime-exec",
+              "rules.pathfinder.lua-dynamic-eval",
               "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.ocaml-system-command",
               "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.ruby-dynamic-eval"
+              "rules.pathfinder.ruby-dynamic-eval",
+              "rules.pathfinder.rust-shell-command",
+              "rules.pathfinder.scala-runtime-exec",
+              "rules.pathfinder.swift-shell-command",
+              "rules.pathfinder.visualbasic-process-start"
             ]
           ' "$RUNNER_TEMP/opengrep-vulnerable.json"
 
           jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
 
-      - name: Scan repository with OpenGrep
+      - name: Verify deterministic analyzer plan and cache invalidation
         run: |
+          set -euo pipefail
+          plan_root="$RUNNER_TEMP/pathfinder-plan-fixture"
+          mkdir -p "$plan_root/src" "$plan_root/rules" "$plan_root/analyzer-evidence"
+          cp testdata/analyzer-fixtures/clean/javascript.js "$plan_root/src/app.js"
+          cp rules/pathfinder-security.yml "$plan_root/rules/pathfinder-security.yml"
+
+          go run ./cmd/adrctl plan-repo \
+            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --config rules/pathfinder-security.yml --scope src/ \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --json-out "$plan_root/analyzer-evidence/plan.json"
+          cp "$plan_root/analyzer-evidence/plan.json" "$RUNNER_TEMP/plan-first.json"
+          go run ./cmd/adrctl plan-repo \
+            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --config rules/pathfinder-security.yml --scope src/ \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --json-out "$plan_root/analyzer-evidence/plan.json"
+          cmp "$RUNNER_TEMP/plan-first.json" "$plan_root/analyzer-evidence/plan.json"
+          go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json"
+
+          old_cache_key="$(jq -er '.tasks[0].cache_key' "$RUNNER_TEMP/plan-first.json")"
+          cp "$RUNNER_TEMP/plan-first.json" "$RUNNER_TEMP/plan-stale.json"
+          printf '\n// cache invalidation fixture\n' >> "$plan_root/src/app.js"
+          go run ./cmd/adrctl plan-repo \
+            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --config rules/pathfinder-security.yml --scope src/ \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --json-out "$plan_root/analyzer-evidence/plan.json"
+          new_cache_key="$(jq -er '.tasks[0].cache_key' "$plan_root/analyzer-evidence/plan.json")"
+          test "$old_cache_key" != "$new_cache_key"
+          go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json"
+          if go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$RUNNER_TEMP/plan-stale.json"; then
+            echo "stale plan unexpectedly verified" >&2
+            exit 1
+          fi
+
+          cache_dir="$RUNNER_TEMP/pathfinder-plan-cache"
+          execution_json="$plan_root/analyzer-evidence/execution.json"
+          sarif_dir="$plan_root/analyzer-evidence/raw"
+          go run ./cmd/adrctl execute-plan \
+            --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json" \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" --cache-dir "$cache_dir" \
+            --json-out "$execution_json" --sarif-dir "$sarif_dir"
+          jq -e '.status == "COMPLETE" and (.tasks | length) == 1 and all(.tasks[]; .status == "COMPLETE" and .cache_hit == false and (.raw_sarif_path | length) > 0)' "$execution_json"
+          go run ./cmd/adrctl execute-plan \
+            --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json" \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" --cache-dir "$cache_dir" \
+            --json-out "$execution_json" --sarif-dir "$sarif_dir"
+          jq -e '.status == "COMPLETE" and (.tasks | length) == 1 and all(.tasks[]; .status == "COMPLETE" and .cache_hit == true and .attempts == 0 and (.raw_sarif_path | length) > 0)' "$execution_json"
+
+      - name: Scan repository with OpenGrep and verify cache idempotency
+        run: |
+          set -euo pipefail
           mkdir -p analyzer-evidence
           go run ./cmd/adrctl scan-opengrep \
             --root . \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
+            --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
+            --manifest-out analyzer-evidence/run-manifest.json \
             --json-out analyzer-evidence/opengrep.json \
             --sarif-out analyzer-evidence/opengrep.sarif
+          cp analyzer-evidence/run-manifest.json "$RUNNER_TEMP/first-run-manifest.json"
+          jq -e '.status == "COMPLETE" and (.tasks | length) == 1 and .tasks[0].cached == false and (.manifest_id | length) == 64 and (.tasks[0].cache_key | length) == 64' "$RUNNER_TEMP/first-run-manifest.json"
+
+          go run ./cmd/adrctl scan-opengrep \
+            --root . \
+            --config rules/pathfinder-security.yml \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --version 1.30.0 \
+            --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
+            --manifest-out analyzer-evidence/run-manifest.json \
+            --json-out analyzer-evidence/opengrep.json \
+            --sarif-out analyzer-evidence/opengrep.sarif
+          first_id="$(jq -r '.manifest_id' "$RUNNER_TEMP/first-run-manifest.json")"
+          jq -e --arg first_id "$first_id" '.status == "COMPLETE" and .manifest_id == $first_id and (.tasks | length) == 1 and .tasks[0].cached == true and .tasks[0].status == "COMPLETE"' analyzer-evidence/run-manifest.json
 
       - name: Assess repository source
         run: |
@@ -160,5 +283,69 @@ jobs:
             report.md
             analyzer-evidence/opengrep.json
             analyzer-evidence/opengrep.sarif
+            analyzer-evidence/run-manifest.json
           if-no-files-found: error
+          retention-days: 14
+
+  arch-go-benchmark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Go
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          go-version: '1.23.x'
+          cache: false
+
+      - name: Install pinned Arch-Go
+        run: |
+          go install github.com/arch-go/arch-go/v2@v2.1.0
+          "$(go env GOPATH)/bin/arch-go" --help
+
+      - name: Require compliant architecture fixture to pass
+        working-directory: testdata/arch-go-benchmark/clean
+        run: '"$(go env GOPATH)/bin/arch-go" --color no --json'
+
+      - name: Require forbidden dependency fixture to fail
+        working-directory: testdata/arch-go-benchmark/violation
+        shell: bash
+        run: |
+          set -euo pipefail
+          if "$(go env GOPATH)/bin/arch-go" --color no --json; then
+            echo "Arch-Go unexpectedly accepted domain -> infrastructure dependency"
+            exit 1
+          else
+            echo "Arch-Go correctly rejected the forbidden dependency"
+          fi
+
+      - name: Compare with Pathfinder deterministic verifier
+        run: |
+          set -euo pipefail
+          go run ./cmd/adrctl assess \
+            --input testdata/pass-issue.md \
+            --requirements adr/requirements.json \
+            --report "$RUNNER_TEMP/pathfinder-clean.md" \
+            --json-out "$RUNNER_TEMP/pathfinder-clean.json" \
+            --sarif-out "$RUNNER_TEMP/pathfinder-clean.sarif"
+          go run ./cmd/adrctl assess \
+            --input testdata/deviation-issue.md \
+            --requirements adr/requirements.json \
+            --report "$RUNNER_TEMP/pathfinder-violation.md" \
+            --json-out "$RUNNER_TEMP/pathfinder-violation.json" \
+            --sarif-out "$RUNNER_TEMP/pathfinder-violation.sarif"
+          jq -e '.verdict == "PASS"' "$RUNNER_TEMP/pathfinder-clean.json"
+          jq -e '.verdict == "FAIL"' "$RUNNER_TEMP/pathfinder-violation.json"
+      - name: Upload Arch-Go benchmark reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: arch-go-benchmark-reports
+          path: |
+            testdata/arch-go-benchmark/clean/.arch-go/report.json
+            testdata/arch-go-benchmark/violation/.arch-go/report.json
+          if-no-files-found: warn
           retention-days: 14

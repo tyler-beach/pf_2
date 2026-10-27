@@ -27,6 +27,8 @@ func verificationFixture(t *testing.T) (string, []byte, ScanResult) {
 	parsed.Findings[0].AnalyzerVersion = "1.30.0"
 	parsed.ConfigurationPath = "rules/security.yml"
 	parsed.ConfigurationSHA256 = configHash
+	parsed.BinarySHA256 = strings.Repeat("a", 64)
+	parsed.RuleSetSHA256 = strings.Repeat("b", 64)
 	parsed.InputSHA256 = inputHash
 	parsed.ScannedPaths, err = discoverScannedPaths(root)
 	if err != nil { t.Fatal(err) }
@@ -120,5 +122,39 @@ func TestVerifyScanEvidenceRejectsFindingOutsideVerifiedInventory(t *testing.T) 
 	got, err := VerifyScanEvidence(root, envelope, raw)
 	if err == nil || got.Status != ScanStatusError || !strings.Contains(err.Error(), "absent from the verified source inventory") {
 		t.Fatalf("expected finding/inventory mismatch rejection, got result=%+v err=%v", got, err)
+	}
+}
+
+
+func TestVerifyScanEvidenceRejectsMissingBinaryOrRuleSetDigest(t *testing.T) {
+	tests := []struct { name string; clear func(*ScanResult) }{
+		{"binary digest", func(e *ScanResult) { e.BinarySHA256 = "" }},
+		{"ruleset digest", func(e *ScanResult) { e.RuleSetSHA256 = "" }},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			root, raw, envelope := verificationFixture(t)
+			tc.clear(&envelope)
+			got, err := VerifyScanEvidence(root, envelope, raw)
+			if err == nil || got.Status != ScanStatusError {
+				t.Fatalf("missing %s must reject evidence: result=%+v err=%v", tc.name, got, err)
+			}
+		})
+	}
+}
+
+func TestVerifyScopedScanEvidenceRequiresExactPlannedInventory(t *testing.T) {
+	root, raw, envelope := verificationFixture(t)
+	envelope.ScannedPaths = []string{"src/main.py"}
+	got, err := VerifyScopedScanEvidence(root, envelope, raw, []string{"src/main.py"})
+	if err != nil { t.Fatalf("valid scoped evidence rejected: %v", err) }
+	if len(got.ScannedPaths) != 1 || got.ScannedPaths[0] != "src/main.py" {
+		t.Fatalf("verified scope mismatch: %v", got.ScannedPaths)
+	}
+
+	envelope.ScannedPaths = []string{"src/other.py"}
+	got, err = VerifyScopedScanEvidence(root, envelope, raw, []string{"src/main.py"})
+	if err == nil || got.Status != ScanStatusError || !strings.Contains(err.Error(), "planned scope") {
+		t.Fatalf("expected scope mismatch rejection, got result=%+v err=%v", got, err)
 	}
 }
