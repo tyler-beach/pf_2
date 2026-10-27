@@ -1,0 +1,113 @@
+{
+  "schema_version": "1",
+  "source_root": "testdata/adr-corpus",
+  "source_index_sha256": "94f93b593fa8a8bb4928aad5368929aaccb4697fe27d530295fbb59ad8fca753",
+  "document_count": 2,
+  "documents_with_candidates": 1,
+  "candidate_count": 4,
+  "confidence_summary": {
+    "high": 2,
+    "medium": 1,
+    "low": 1
+  },
+  "candidates": [
+    {
+      "id": "CAND-835f9186f6bd2013",
+      "adr_id": "ADR-901",
+      "adr_title": "ADR-901: Explicit service timeouts",
+      "adr_status": "accepted",
+      "section_heading": "Decision",
+      "statement": "Every outbound network call must define a finite timeout.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "source_path": "testdata/adr-corpus/ADR-901-timeouts.md",
+      "source_sha256": "d3d99d52481dd7a730c4fd860f31ae5d5c017a3280c78b114a7274ac1d7f1c0e",
+      "source_line_start": 13,
+      "source_line_end": 13,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_score": 0.85
+    },
+    {
+      "id": "CAND-b23319fb9dfb90f5",
+      "adr_id": "ADR-901",
+      "adr_title": "ADR-901: Explicit service timeouts",
+      "adr_status": "accepted",
+      "section_heading": "Decision",
+      "statement": "Service clients should apply bounded retries with jitter.",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "source_path": "testdata/adr-corpus/ADR-901-timeouts.md",
+      "source_sha256": "d3d99d52481dd7a730c4fd860f31ae5d5c017a3280c78b114a7274ac1d7f1c0e",
+      "source_line_start": 14,
+      "source_line_end": 14,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "medium",
+      "confidence_score": 0.7,
+      "escalation_reasons": [
+        "should_modality"
+      ]
+    },
+    {
+      "id": "CAND-d991a35e245c83e4",
+      "adr_id": "ADR-901",
+      "adr_title": "ADR-901: Explicit service timeouts",
+      "adr_status": "accepted",
+      "section_heading": "Decision",
+      "statement": "An exception may be approved only when a documented interoperability constraint prevents a timeout.",
+      "modality": "may",
+      "kind": "exception_candidate",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "source_path": "testdata/adr-corpus/ADR-901-timeouts.md",
+      "source_sha256": "d3d99d52481dd7a730c4fd860f31ae5d5c017a3280c78b114a7274ac1d7f1c0e",
+      "source_line_start": 15,
+      "source_line_end": 15,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "condition_or_exception",
+        "conditional_scope"
+      ],
+      "conditions": [
+        "conditional_applicability"
+      ],
+      "exceptions": [
+        "exception_or_waiver_language"
+      ],
+      "confidence": "low",
+      "confidence_score": 0.3,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "exception_language",
+        "conditional_scope"
+      ]
+    },
+    {
+      "id": "CAND-e95964c6f4885239",
+      "adr_id": "ADR-901",
+      "adr_title": "ADR-901: Explicit service timeouts",
+      "adr_status": "accepted",
+      "section_heading": "Consequences",
+      "statement": "Implementations must expose timeout values in configuration.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "source_path": "testdata/adr-corpus/ADR-901-timeouts.md",
+      "source_sha256": "d3d99d52481dd7a730c4fd860f31ae5d5c017a3280c78b114a7274ac1d7f1c0e",
+      "source_line_start": 19,
+      "source_line_end": 19,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_score": 0.85
+    }
+  ]
+}

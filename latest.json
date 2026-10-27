@@ -25,11 +25,11 @@
     "schema_version": "workshop-metrics-v1"
   },
   "run": {
-    "git_sha": "b4be96ba37596f36e5cb6d6da6e8caf2f00d97ff",
-    "html_url": "https://github.com/tyler-beach/pf_2/actions/runs/40599492571",
+    "git_sha": "fe42cdd3c449ddbbcb16d9716f9a4d3fffc44452",
+    "html_url": "https://github.com/tyler-beach/pf_2/actions/runs/40600686493",
     "provider_mode": "offline",
-    "run_id": "40599492571-1",
-    "timestamp": "2026-10-27T23:05:22Z",
+    "run_id": "40600686493-1",
+    "timestamp": "2026-10-27T23:15:03Z",
     "workflow": "CI"
   },
   "schema_version": "workshop-snapshot-v1",
