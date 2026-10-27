@@ -679,9 +679,14 @@ func runSpecificationCheck(args []string) error {
 	adrRoot := fs.String("adr-root", "adrs", "repository-relative directory containing ADR Markdown")
 	requirements := fs.String("requirements", "adr/requirements.json", "accepted requirements catalog JSON")
 	registry := fs.String("registry", "adr/obligation-reviews.json", "append-only obligation review registry JSON")
+	analyzerEvidence := fs.String("analyzer-evidence", "", "optional normalized analyzer scan evidence JSON")
+	analyzerSARIF := fs.String("analyzer-sarif", "", "raw SARIF paired with normalized analyzer evidence")
 	reportOnly := fs.Bool("report-only", false, "write assessment artifacts without enforcing blocking obligations")
 	if err := fs.Parse(args); err != nil { return err }
 	if fs.NArg() != 0 { return fmt.Errorf("specification-check accepts no positional arguments") }
+	if (*analyzerEvidence == "") != (*analyzerSARIF == "") {
+		return fmt.Errorf("--analyzer-evidence and --analyzer-sarif must be provided together")
+	}
 
 	rootAbs, err := filepath.Abs(*root)
 	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
@@ -740,7 +745,11 @@ func runSpecificationCheck(args []string) error {
 	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRootReal, "--json-out", candidatePath, "--report", candidateReportPath}); err != nil {
 		return fmt.Errorf("extract obligation candidates: %w", err)
 	}
-	if err := runAssess([]string{"--root", rootReal, "--requirements", catalogPath, "--report", repositoryReportPath, "--json-out", assessmentPath, "--sarif-out", sarifPath}, true); err != nil {
+	assessArgs := []string{"--root", rootReal, "--requirements", catalogPath, "--report", repositoryReportPath, "--json-out", assessmentPath, "--sarif-out", sarifPath}
+	if *analyzerEvidence != "" {
+		assessArgs = append(assessArgs, "--analyzer-evidence", resolveInput(*analyzerEvidence), "--analyzer-sarif", resolveInput(*analyzerSARIF))
+	}
+	if err := runAssess(assessArgs, true); err != nil {
 		return fmt.Errorf("assess repository: %w", err)
 	}
 	joinArgs := []string{
