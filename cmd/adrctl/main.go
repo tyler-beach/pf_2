@@ -52,6 +52,8 @@ func main() {
 		err = runRecordObligationReview(os.Args[2:])
 	case "validate-obligation-reviews":
 		err = runValidateObligationReviews(os.Args[2:])
+	case "assess-obligations":
+		err = runAssessObligations(os.Args[2:])
 	case "version":
 		fmt.Println("adrctl 0.1.0")
 	default:
@@ -65,7 +67,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -529,6 +531,56 @@ func runValidateObligationReviews(args []string) error {
 			return fmt.Errorf("strict obligation review validation failed: %w", err)
 		}
 	}
+	return nil
+}
+
+// runAssessObligations joins a repository assessment with reviewed candidate
+// obligations. It deliberately consumes repository-mode assessment evidence
+// rather than silently rerunning scanners with potentially different inputs.
+func runAssessObligations(args []string) error {
+	fs := flag.NewFlagSet("assess-obligations", flag.ContinueOnError)
+	indexPath := fs.String("index", "adr/obligation-candidates.json", "source-cited candidate index")
+	catalogPath := fs.String("requirements", "adr/requirements.json", "approved requirements catalog")
+	registryPath := fs.String("registry", "adr/obligation-reviews.json", "append-only review registry")
+	assessmentPath := fs.String("assessment", "assessment.json", "JSON result from assess-repo")
+	jsonPath := fs.String("json-out", "obligation-assessment.json", "per-obligation JSON report output")
+	markdownPath := fs.String("report", "obligation-assessment.md", "per-obligation Markdown report output")
+	if err := fs.Parse(args); err != nil { return err }
+	if fs.NArg() != 0 { return fmt.Errorf("assess-obligations accepts no positional arguments") }
+	inputs := []string{*indexPath, *catalogPath, *registryPath, *assessmentPath}
+	outputs := []string{*jsonPath, *markdownPath}
+	seen := map[string]string{}
+	for _, input := range inputs {
+		absolute, err := filepath.Abs(input)
+		if err != nil { return fmt.Errorf("resolve input path %q: %w", input, err) }
+		seen[filepath.Clean(absolute)] = "input"
+	}
+	for _, output := range outputs {
+		absolute, err := filepath.Abs(output)
+		if err != nil { return fmt.Errorf("resolve output path %q: %w", output, err) }
+		key := filepath.Clean(absolute)
+		if prior, exists := seen[key]; exists { return fmt.Errorf("output path %q collides with an existing %s path", output, prior) }
+		seen[key] = "output"
+	}
+	index, err := readObligationIndex(*indexPath)
+	if err != nil { return err }
+	catalog, err := assessment.LoadCatalog(*catalogPath)
+	if err != nil { return err }
+	registry, err := obligations.LoadRegistry(*registryPath)
+	if err != nil { return err }
+	data, err := os.ReadFile(*assessmentPath)
+	if err != nil { return fmt.Errorf("read repository assessment: %w", err) }
+	var evidence assessment.Result
+	if err := json.Unmarshal(data, &evidence); err != nil { return fmt.Errorf("decode repository assessment: %w", err) }
+	report, err := obligations.AssessCandidates(index, catalog, registry, evidence)
+	if err != nil { return fmt.Errorf("assess obligation candidates: %w", err) }
+	encoded, err := json.MarshalIndent(report, "", "  ")
+	if err != nil { return fmt.Errorf("encode obligation assessment: %w", err) }
+	if err := writeFile(*jsonPath, encoded); err != nil { return err }
+	if err := writeFile(*markdownPath, []byte(obligations.MarkdownAssessmentReport(report))); err != nil { return err }
+	fmt.Printf("Obligation assessment: %d candidate(s); PASS=%d FAIL=%d INDETERMINATE=%d NOT_APPLICABLE=%d; JSON=%s; report=%s\n",
+		report.CandidateCount, report.Counts["PASS"], report.Counts["FAIL"], report.Counts["INDETERMINATE"],
+		report.Counts["NOT_APPLICABLE"], *jsonPath, *markdownPath)
 	return nil
 }
 

@@ -90,6 +90,30 @@ Repository scanning and issue-snippet assessment are separate surfaces. Never ex
 - Add language-specific AST/type-aware checks where structural patterns are insufficient.
 - Gate: claims are made per verified rule family; no blanket claim of semantic support for every language.
 
+## Current CLI workflow
+
+The current implementation can join a repository assessment to reviewed candidate obligations without running a second, potentially different scan:
+
+1. Generate a source-bound candidate index with `extract-obligations`.
+2. Record reviewer decisions with `record-obligation-review` and validate the ledger with `validate-obligation-reviews`.
+3. Produce repository-mode evidence with `assess-repo`.
+4. Join the results using `assess-obligations`, which writes a per-candidate JSON report and Markdown table.
+
+Example:
+
+```sh
+go run ./cmd/adrctl assess-repo --root . --json-out assessment.json
+go run ./cmd/adrctl assess-obligations \
+  --index adr/obligation-candidates.json \
+  --requirements adr/requirements.json \
+  --registry adr/obligation-reviews.json \
+  --assessment assessment.json \
+  --json-out obligation-assessment.json \
+  --report obligation-assessment.md
+```
+
+The join requires repository-mode assessment evidence. A missing review, stale review snapshot, unbound/manual-review candidate, missing requirement result, or PASS/FAIL result without supporting evidence is reported as `INDETERMINATE`; it is never upgraded to PASS by the join. A `review_required` binding also remains indeterminate for enforcement purposes even if its associated requirement result is clean.
+
 ## Security and correctness invariants
 
 - Extraction is not approval.

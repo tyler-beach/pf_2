@@ -13,6 +13,63 @@ import (
 	"github.com/tyler-beach/pf_2/internal/obligations"
 )
 
+func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testing.T) {
+	root := t.TempDir()
+	adrRoot := filepath.Join(root, "adrs")
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
+	source := []byte("# ADR-001: Explicit timeout policy\n\n## Status\n\nAccepted\n\n## Decision\n\nThe service must set a finite timeout.\n")
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), source, 0o600); err != nil { t.Fatal(err) }
+	doc, err := adringest.Parse("ADR-001.md", source)
+	if err != nil { t.Fatal(err) }
+	candidates, err := obligations.ExtractDocument(doc, "adrs/ADR-001.md", source)
+	if err != nil { t.Fatal(err) }
+	index := obligations.Index{
+		SchemaVersion: "1", SourceRoot: "adrs", SourceIndexSHA256: strings.Repeat("a", 64),
+		DocumentCount: 1, DocumentsWithCandidates: 1, CandidateCount: len(candidates), Candidates: candidates,
+	}
+	indexPath := filepath.Join(root, "candidates.json")
+	indexBytes, err := json.Marshal(index)
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(indexPath, indexBytes, 0o600); err != nil { t.Fatal(err) }
+
+	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
+		ID: doc.ID, Title: doc.Title, Version: 1, Status: "accepted", Requirements: []assessment.Requirement{},
+	}}}
+	catalogPath := filepath.Join(root, "requirements.json")
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil { t.Fatal(err) }
+
+	registryPath := filepath.Join(root, "reviews.json")
+	if err := obligations.SaveRegistry(registryPath, obligations.NewRegistry()); err != nil { t.Fatal(err) }
+	assessmentPath := filepath.Join(root, "assessment.json")
+	evidenceBytes, err := json.Marshal(assessment.Result{
+		SchemaVersion: "1", EvidenceMode: string(assessment.EvidenceModeRepository),
+		Verdict: "PASS", Requirements: []assessment.RequirementResult{},
+	})
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(assessmentPath, evidenceBytes, 0o600); err != nil { t.Fatal(err) }
+
+	jsonPath := filepath.Join(root, "obligation-assessment.json")
+	markdownPath := filepath.Join(root, "obligation-assessment.md")
+	if err := runAssessObligations([]string{
+		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
+		"--assessment", assessmentPath, "--json-out", jsonPath, "--report", markdownPath,
+	}); err != nil { t.Fatal(err) }
+	data, err := os.ReadFile(jsonPath)
+	if err != nil { t.Fatal(err) }
+	var report obligations.AssessmentReport
+	if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
+	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Candidates[0].Status != "INDETERMINATE" {
+		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
+	}
+	markdown, err := os.ReadFile(markdownPath)
+	if err != nil { t.Fatal(err) }
+	if !strings.Contains(string(markdown), "INDETERMINATE") || !strings.Contains(string(markdown), candidates[0].ID) {
+		t.Fatalf("Markdown report is missing obligation status or identity: %s", markdown)
+	}
+}
+
 func TestRunIngestADRsWritesDeterministicIndex(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
