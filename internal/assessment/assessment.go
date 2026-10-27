@@ -370,7 +370,7 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 		for _, r := range a.Requirements {
 			rr := RequirementResult{ADR:a.ID, ADRVersion:a.Version, RequirementID:r.ID, Title:r.Title, Severity:r.Severity, Evidence:[]string{}, Findings:[]Finding{}}
 			switch r.Verifier.Type {
-			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
+			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files, options.EvidenceMode)
 			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
 			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
 			case "analyzer-rule":
@@ -395,11 +395,21 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	return out
 }
 
-func assessImportBoundary(rr *RequirementResult, v Verifier, files []SourceFile) {
+func assessImportBoundary(rr *RequirementResult, v Verifier, files []SourceFile, evidenceMode EvidenceMode) {
 	if len(files) == 0 { rr.Status="EVIDENCE_MISSING"; rr.Reason="No source files supplied or discovered; absence of evidence is not compliance."; return }
 	var scoped []SourceFile
 	for _, f := range files { if f.Language == "go" && pathMatches(f.Path, v.SourcePathPrefixes) { scoped=append(scoped,f) } }
-	if len(scoped) == 0 { rr.Status="NOT_APPLICABLE"; rr.Reason="No supplied Go files matched the declared source path scope."; return }
+	if len(scoped) == 0 {
+		if evidenceMode == EvidenceModeSubmission {
+			rr.Status = "EVIDENCE_MISSING"
+			rr.Reason = "No submitted Go file matched required source scope; issue snippets do not establish that the repository has no code in this scope."
+		} else {
+			rr.Status = "NOT_APPLICABLE"
+			rr.Reason = "The complete repository source inventory contains no Go files matching the declared source path scope."
+			rr.Evidence = append(rr.Evidence, "Applicability checked against a complete repository source inventory.")
+		}
+		return
+	}
 	for _, f := range scoped {
 		fset := token.NewFileSet()
 		parsed, err := parser.ParseFile(fset, f.Path, f.Content, parser.AllErrors)
@@ -646,15 +656,25 @@ func importMatches(p, forbidden string) bool {
 	return forbidden!="" && (p==forbidden || strings.HasPrefix(p,forbidden+"/"))
 }
 func rollup(rs []RequirementResult) string {
-	if len(rs)==0 { return "INDETERMINATE" }
-	passed:=0
-	for _, r := range rs { switch r.Status {
-		case "FAIL": return "FAIL"
-		case "ERROR", "INDETERMINATE", "EVIDENCE_MISSING", "UNSUPPORTED", "REVIEW_REQUIRED": return "INDETERMINATE"
-		case "PASS": passed++
+	if len(rs) == 0 { return "INDETERMINATE" }
+	passed := 0
+	indeterminate := false
+	for _, r := range rs {
+		switch r.Status {
+		case "FAIL":
+			// A confirmed violation remains a failure even when another check
+			// lacks evidence; report both at requirement level and roll up FAIL.
+			return "FAIL"
+		case "PASS":
+			passed++
 		case "NOT_APPLICABLE":
-		default: return "INDETERMINATE"
-	} }
-	if passed==0 { return "INDETERMINATE" }
+			// Non-applicable is neutral, but cannot establish compliance alone.
+		case "ERROR", "INDETERMINATE", "EVIDENCE_MISSING", "UNSUPPORTED", "REVIEW_REQUIRED":
+			indeterminate = true
+		default:
+			indeterminate = true
+		}
+	}
+	if indeterminate || passed == 0 { return "INDETERMINATE" }
 	return "PASS"
 }
