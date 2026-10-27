@@ -60,12 +60,16 @@ These issues exercise the actual Issue-triggered workflow and include its genera
 
 The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report. Issues #12–#15 exercise inclusive lower/upper boundaries, above-maximum values, and non-numeric values. Issues #16–#17 verify that JSON-only evidence reports PARTIAL coverage while mixed Go and JSON evidence reports COMPLETE coverage. Implementation work is tracked in [#11](https://github.com/tyler-beach/pf_2/issues/11).
 
+## Specification-to-enforcement milestone
+
+The staged contract for translating plain-English technical specifications into reviewed obligations, typed verifier bindings, and auditable evidence is documented in [Specification-to-enforcement milestone](docs/specification-to-enforcement.md). The representative [service runtime specification fixture](testdata/specifications/service-runtime.md) is a target-workflow fixture, not a claim that arbitrary prose is already automatically enforced.
+
 ## Architecture and limitations
 
 - [Current architecture overview](docs/architecture.md)
 - [Scalable architecture: ADR ingestion, normalized evidence, composite analyzers, and AWS deployment](docs/scalable-architecture.md)
 
-The catalog is an example and should be replaced/expanded with accepted ADRs. The current implementation supports `go-import-boundary`, `json-required-keys`, `json-number-range`, and the `analyzer-rule` verifier backed by normalized OpenGrep SARIF. OpenGrep rules and language coverage are pinned and fixture-tested for Go, Python, JavaScript, TypeScript, Java, C#, PHP, and Ruby. Issue-snippet assessments intentionally do not execute external analyzers; repository analyzer requirements are marked not applicable in that mode, with partial coverage visible. Each report includes `coverage_status` (`COMPLETE`, `PARTIAL`, or `NONE`) and the number of requirements with applicable evidence. A `PASS` verdict is scoped to evaluated requirements; it must not be treated as a complete assessment when coverage is `PARTIAL` or `NONE`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
+The catalog is an example and should be replaced/expanded with accepted ADRs. The current implementation supports `go-import-boundary`, `json-required-keys`, `json-number-range`, and the `analyzer-rule` verifier backed by normalized OpenGrep SARIF. The CI fixture corpus currently covers 20 language-specific rule families; this is rule-family fixture coverage, not blanket semantic support for every language. See [language support and coverage](docs/language-support.md) for the exact list and enforcement boundaries. Issue-snippet assessments intentionally do not execute external analyzers; repository analyzer requirements are marked not applicable in that mode, with partial coverage visible. Each report includes `coverage_status` (`COMPLETE`, `PARTIAL`, or `NONE`) and the number of requirements with applicable evidence. A `PASS` verdict is scoped to evaluated requirements; it must not be treated as a complete assessment when coverage is `PARTIAL` or `NONE`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
 
 The scalable design proposes composable analyzers such as Opengrep, Joern, and language-specific tools behind one versioned evidence contract. These are design candidates, not implemented integrations in the current MVP.
 

@@ -122,3 +122,63 @@ func TestBuildIndexRejectsSymlinkedSource(t *testing.T) {
 	_, err = BuildIndex([]adringest.Document{doc}, root, ".", []byte("{}"))
 	if err == nil || !strings.Contains(err.Error(), "uses a symlinked path") { t.Fatalf("expected symlink rejection, got %v", err) }
 }
+
+
+// TestSpecificationFixtureRemainsReviewOnly exercises ordinary technical prose,
+// including numeric bounds, compound conditions, and an exception clause.
+func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
+	fixturePath := filepath.Join("..", "..", "testdata", "specifications", "service-runtime.md")
+	source, err := os.ReadFile(fixturePath)
+	if err != nil { t.Fatal(err) }
+	doc, err := adringest.Parse("service-runtime.md", source)
+	if err != nil { t.Fatal(err) }
+	candidates, err := ExtractDocument(doc, "testdata/specifications/service-runtime.md", source)
+	if err != nil { t.Fatal(err) }
+
+	var timeout, retries, health, exception bool
+	for _, candidate := range candidates {
+		if candidate.ApprovalStatus != "pending_review" || candidate.EnforcementMode != "review_required" || candidate.Executable {
+			t.Errorf("specification extraction must not activate enforcement: %+v", candidate)
+		}
+		if candidate.SourceLineStart != candidate.SourceLineEnd || candidate.SourceLineStart < 1 {
+			t.Errorf("candidate must preserve an exact source line: %+v", candidate)
+		}
+		if strings.Contains(candidate.Statement, "this is not evidence") {
+			t.Errorf("fenced illustrative code was extracted as an obligation: %+v", candidate)
+		}
+		switch {
+		case strings.Contains(candidate.Statement, "timeout no greater than 30 seconds"):
+			timeout = candidate.Modality == "must" && candidate.PatternHint == "configuration.bounds_or_required_values"
+		case strings.Contains(candidate.Statement, "limited to three attempts"):
+			retries = candidate.Modality == "must" && candidate.PatternHint == "configuration.bounds_or_required_values"
+		case strings.Contains(candidate.Statement, "expose a health endpoint"):
+			health = candidate.Modality == "must"
+		case strings.Contains(candidate.Statement, "exception may be approved only when"):
+			exception = candidate.Modality == "may" && candidate.Kind == "exception_candidate"
+		}
+	}
+	if !timeout || !retries || !health || !exception {
+		t.Fatalf("expected timeout, retry, health, and exception candidates; got timeout=%v retries=%v health=%v exception=%v candidates=%+v", timeout, retries, health, exception, candidates)
+	}
+}
+
+
+func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
+	tests := []struct { statement, want string }{
+		{"The service must not execute shell commands.", "must_not"},
+		{"A timeout is not required for local in-memory operations.", "not_required"},
+		{"An exception may be approved only when a documented constraint requires it.", "may"},
+		{"Retries should be bounded and must use jitter.", "should"},
+		{"The service must set a finite timeout.", "must"},
+		{"The deployment may use a sidecar.", "may"},
+	}
+	for _, tc := range tests {
+		got, ok := detectModality(tc.statement)
+		if !ok || got != tc.want {
+			t.Errorf("detectModality(%q) = %q, %v; want %q, true", tc.statement, got, ok, tc.want)
+		}
+	}
+	if got, ok := detectModality("The mustache service runs normally."); ok || got != "" {
+		t.Errorf("non-normative word containing 'must' should not be classified, got %q, %v", got, ok)
+	}
+}
