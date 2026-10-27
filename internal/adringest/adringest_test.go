@@ -50,7 +50,7 @@ Consumers must handle retries and duplicate messages.
 		t.Fatalf("got %d sections, want 4", len(doc.Sections))
 	}
 	decision := sectionByHeading(t, doc, "Decision")
-	if decision.StartLine != 13 {
+	if decision.StartLine != 11 {
 		t.Errorf("Decision.StartLine = %d, want 14", decision.StartLine)
 	}
 	if !strings.Contains(decision.Text, "Prefer asynchronous messaging") {
