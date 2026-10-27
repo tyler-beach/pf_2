@@ -443,3 +443,12 @@ func TestAnalyzerRuleRejectsFindingsAbsentFromScanInventory(t *testing.T) {
 		t.Fatalf("finding missing from scan inventory must not be trusted: %+v", result)
 	}
 }
+
+
+func TestSafeSubmissionPathSanitizesFallbackExtension(t *testing.T) {
+	unsafeExtension := filepath.Ext("../../outside." + string(rune(96)))
+	got := safeSubmissionPath("../../outside."+string(rune(96)), 1, unsafeExtension)
+	if got != "issue-snippet-1.txt" {
+		t.Fatalf("unsafe extension escaped fallback path: %q", got)
+	}
+}

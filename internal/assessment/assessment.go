@@ -255,6 +255,17 @@ func sanitizeLanguageLabel(language string) string {
 // safeSubmissionPath prevents untrusted issue headings from escaping a logical
 // repository-relative path or injecting Markdown/report syntax through a finding path.
 func safeSubmissionPath(raw string, index int, extension string) string {
+	extension = strings.ToLower(strings.TrimSpace(extension))
+	validExtension := len(extension) >= 2 && len(extension) <= 12 && extension[0] == '.'
+	if validExtension {
+		for _, r := range extension[1:] {
+			if !((r >= 'a' && r <= 'z') || (r >= '0' && r <= '9')) {
+				validExtension = false
+				break
+			}
+		}
+	}
+	if !validExtension { extension = ".txt" }
 	raw = strings.TrimSpace(strings.ReplaceAll(raw, "\\", "/"))
 	clean := filepath.ToSlash(filepath.Clean(raw))
 	unsafe := raw == "" || raw == "." || filepath.IsAbs(filepath.FromSlash(clean)) ||
