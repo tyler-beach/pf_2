@@ -110,7 +110,7 @@ go run ./cmd/adrctl specification-check \
   --report-only
 ```
 
-For a real repository, set `--source-root` to its ADR or plain-English technical-specification Markdown directory. A source file needs a level-one Markdown title; if the title has no ADR ID, Pathfinder uses the filename as its stable document ID. The command regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default; use `--report-only` while bootstrapping or reviewing pending candidates. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. The orchestrator never creates or approves reviews automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
+For a real repository, set `--source-root` to its ADR or plain-English technical-specification Markdown directory. A source file needs a level-one Markdown title; if the title has no ADR ID, Pathfinder uses the filename as its stable document ID. Blocking bindings also require the source document to declare `Accepted` status and the matching catalog entry to be accepted. The command regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default; use `--report-only` while bootstrapping or reviewing pending candidates. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. The orchestrator never creates or approves reviews automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
 
 ## Validated analyzer language coverage
 
