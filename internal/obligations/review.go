@@ -67,15 +67,15 @@ type Registry struct {
 }
 
 type ReviewProposal struct {
-	CandidateID     string
-	Decision        string
-	RequirementID   string
-	PatternID       string
-	EnforcementMode string
-	Reviewer        string
-	ReviewedAt      string
-	ReviewReference string
-	Rationale       string
+	CandidateID     string `json:"candidate_id"`
+	Decision        string `json:"decision"`
+	RequirementID   string `json:"requirement_id,omitempty"`
+	PatternID       string `json:"pattern_id,omitempty"`
+	EnforcementMode string `json:"enforcement_mode"`
+	Reviewer        string `json:"reviewer"`
+	ReviewedAt      string `json:"reviewed_at"`
+	ReviewReference string `json:"review_reference"`
+	Rationale       string `json:"rationale"`
 }
 
 // BindingCoverage reports candidate-review state separately from code evidence
