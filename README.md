@@ -55,9 +55,11 @@ These issues exercise the actual Issue-triggered workflow and include its genera
 - [#13 — timeout above maximum FAIL](https://github.com/tyler-beach/pf_2/issues/13)
 - [#14 — numeric range inclusive lower-bound PASS](https://github.com/tyler-beach/pf_2/issues/14)
 - [#15 — numeric verifier rejects string values](https://github.com/tyler-beach/pf_2/issues/15)
+- [#16 — partial coverage is explicitly reported](https://github.com/tyler-beach/pf_2/issues/16)
+- [#17 — complete mixed-language coverage](https://github.com/tyler-beach/pf_2/issues/17)
 
-The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report. Issues #12–#15 exercise inclusive lower/upper boundaries, above-maximum values, and non-numeric values. Implementation work is tracked in [#11](https://github.com/tyler-beach/pf_2/issues/11).
+The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report. Issues #12–#15 exercise inclusive lower/upper boundaries, above-maximum values, and non-numeric values. Issues #16–#17 verify that JSON-only evidence reports PARTIAL coverage while mixed Go and JSON evidence reports COMPLETE coverage. Implementation work is tracked in [#11](https://github.com/tyler-beach/pf_2/issues/11).
 
 ## Architecture and limitations
 
-See [docs/architecture.md](docs/architecture.md). The catalog is an example and should be replaced/expanded with your accepted ADRs. The MVP supports `go-import-boundary`, `json-required-keys`, and `json-number-range`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
+See [docs/architecture.md](docs/architecture.md). The catalog is an example and should be replaced/expanded with your accepted ADRs. The MVP supports `go-import-boundary`, `json-required-keys`, and `json-number-range`. Each report includes `coverage_status` (`COMPLETE`, `PARTIAL`, or `NONE`) and the number of requirements with applicable evidence. A `PASS` verdict is scoped to evaluated requirements; it must not be treated as a complete assessment when coverage is `PARTIAL` or `NONE`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
