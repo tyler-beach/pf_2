@@ -467,6 +467,10 @@ func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []strin
 // duplicate entries, and the analyzer configuration itself are rejected.
 func normalizeScanPaths(root string, requested []string, configRel string) ([]string, error) {
 	if len(requested) == 0 { return nil, nil }
+	eligiblePaths, err := discoverScannedPathsExcluding(root, configRel)
+	if err != nil { return nil, fmt.Errorf("build eligible source inventory: %w", err) }
+	eligible := make(map[string]bool, len(eligiblePaths))
+	for _, path := range eligiblePaths { eligible[path] = true }
 	seen := make(map[string]bool, len(requested))
 	out := make([]string, 0, len(requested))
 	for _, raw := range requested {
@@ -493,7 +497,7 @@ func normalizeScanPaths(root string, requested []string, configRel string) ([]st
 			return nil, fmt.Errorf("scan path %q escapes repository root", clean)
 		}
 		relative := filepath.ToSlash(rel)
-		if relative == configRel { return nil, fmt.Errorf("scan path %q is the analyzer configuration, not source", clean) }
+		if !eligible[relative] { return nil, fmt.Errorf("scan path %q is not in the eligible analyzer source inventory", relative) }
 		if seen[relative] { return nil, fmt.Errorf("duplicate scan path %q", relative) }
 		seen[relative] = true
 		out = append(out, relative)
