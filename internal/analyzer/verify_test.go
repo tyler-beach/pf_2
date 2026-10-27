@@ -111,3 +111,14 @@ func TestVerifyScanEvidenceAcceptsRelativeRepositoryRoot(t *testing.T) {
 	if err != nil { t.Fatalf("relative root should resolve to an absolute repository path: %v", err) }
 	if got.Status != ScanStatusComplete { t.Fatalf("status = %q, want COMPLETE", got.Status) }
 }
+
+
+func TestVerifyScanEvidenceRejectsFindingOutsideVerifiedInventory(t *testing.T) {
+	root, _, envelope := verificationFixture(t)
+	raw := []byte("{\"version\":\"2.1.0\",\"runs\":[{\"tool\":{\"driver\":{\"name\":\"Opengrep OSS Version\",\"rules\":[{\"id\":\"RULE-1\"}]}},\"results\":[{\"ruleId\":\"RULE-1\",\"message\":{\"text\":\"finding\"},\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/not-present.py\"},\"region\":{\"startLine\":1}}}]}]}]}")
+	envelope.RawOutputSHA256 = sha256Hex(raw)
+	got, err := VerifyScanEvidence(root, envelope, raw)
+	if err == nil || got.Status != ScanStatusError || !strings.Contains(err.Error(), "absent from the verified source inventory") {
+		t.Fatalf("expected finding/inventory mismatch rejection, got result=%+v err=%v", got, err)
+	}
+}

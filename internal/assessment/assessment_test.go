@@ -191,7 +191,7 @@ func completeAnalyzerEvidence(findings []analyzer.Finding) analyzer.ScanResult {
 		Analyzers: []analyzer.AnalyzerInfo{{Name: "Opengrep OSS Version", Version: "1.30.0"}},
 		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
 		RawOutputSHA256: strings.Repeat("r", 64),
-		ScannedPaths: []string{"cmd/adrctl/main.go", "internal/analyzer/opengrep.go", "testdata/analyzer-fixtures/vulnerable/shell_command.go"},
+		ScannedPaths: []string{"cmd/adrctl/main.go", "internal/analyzer/opengrep.go", "internal/app/runner.go", "testdata/analyzer-fixtures/vulnerable/shell_command.go"},
 		Findings: findings,
 	}
 }
@@ -429,5 +429,17 @@ func TestNonGoSubmissionCannotPassOnlyBecauseNonGoCodeWasIgnored(t *testing.T) {
 	result := Assess(fixtureCatalog(), ParseIssueMarkdown(markdown))
 	if result.Verdict != "INDETERMINATE" || len(result.UnassessedSourceFiles) != 1 {
 		t.Fatalf("non-Go issue evidence must not be ignored or pass, got %+v", result)
+	}
+}
+
+
+func TestAnalyzerRuleRejectsFindingsAbsentFromScanInventory(t *testing.T) {
+	finding := analyzer.Finding{Analyzer:"opengrep", RuleID:"pathfinder.go-shell-command", Message:"phantom finding", Path:"internal/phantom.go", StartLine:10}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository,
+		AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "INDETERMINATE" || result.Requirements[0].Status != "EVIDENCE_MISSING" {
+		t.Fatalf("finding missing from scan inventory must not be trusted: %+v", result)
 	}
 }

@@ -93,6 +93,13 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	parsed.ConfigurationSHA256 = configHash
 	parsed.InputSHA256 = inputHash
 	parsed.ScannedPaths = paths
+	inventory := make(map[string]bool, len(paths))
+	for _, p := range paths { inventory[filepath.ToSlash(p)] = true }
+	for _, finding := range parsed.Findings {
+		if finding.Path != "" && !inventory[filepath.ToSlash(finding.Path)] {
+			return fail(fmt.Sprintf("SARIF finding path %q is absent from the verified source inventory", finding.Path))
+		}
+	}
 	parsed.RawSARIF = append([]byte(nil), rawSARIF...)
 	parsed.Errors = append([]string(nil), envelope.Errors...)
 	// Defensive check that the bytes used to construct the parsed result were

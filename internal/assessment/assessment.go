@@ -520,8 +520,11 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 		return
 	}
 	var scopedPaths []string
+	scannedPathSet := make(map[string]bool, len(scan.ScannedPaths))
 	for _, sourcePath := range scan.ScannedPaths {
-		if pathMatches(sourcePath, verifier.SourcePathPrefixes) { scopedPaths = append(scopedPaths, filepath.ToSlash(sourcePath)) }
+		normalizedPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(sourcePath)))
+		scannedPathSet[normalizedPath] = true
+		if pathMatches(sourcePath, verifier.SourcePathPrefixes) { scopedPaths = append(scopedPaths, normalizedPath) }
 	}
 	if len(scopedPaths) == 0 {
 		rr.Status = "EVIDENCE_MISSING"
@@ -553,6 +556,12 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 			return
 		}
 		if !pathMatches(finding.Path, verifier.SourcePathPrefixes) { continue }
+		findingPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(finding.Path)))
+		if !scannedPathSet[findingPath] {
+			rr.Status = "EVIDENCE_MISSING"
+			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q for path %q that is absent from the verified source inventory.", verifier.Analyzer, finding.RuleID, finding.Path)
+			return
+		}
 		rr.Findings = append(rr.Findings, Finding{
 			RuleID:finding.RuleID, Path:filepath.ToSlash(finding.Path), Line:finding.StartLine, Column:finding.StartColumn,
 			Message:finding.Message, Analyzer:finding.Analyzer, AnalyzerVersion:finding.AnalyzerVersion,

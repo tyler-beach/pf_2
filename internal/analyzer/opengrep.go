@@ -195,6 +195,14 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	normalized.InputSHA256 = inputHash
 	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
 	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
+	stderrLower := strings.ToLower(string(commandResult.Stderr))
+	for _, partialMarker := range []string{"partially scanned:", "only partially analyzed", "some files were skipped or only partially scanned", "rule parse error"} {
+		if strings.Contains(stderrLower, partialMarker) {
+			normalized.Status = ScanStatusPartial
+			normalized.Errors = append(normalized.Errors, "OpenGrep reported incomplete analysis: "+truncate(string(commandResult.Stderr), 4096))
+			return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
+		}
+	}
 	if normalized.Status != ScanStatusComplete {
 		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
 	}

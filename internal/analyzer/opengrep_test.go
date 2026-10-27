@@ -25,6 +25,7 @@ type fakeRunner struct {
 	versionOutput []byte
 	versionExitCode int
 	scanErr error
+	scanStderr []byte
 	waitForCancel bool
 }
 
@@ -46,7 +47,9 @@ func (f *fakeRunner) Run(ctx context.Context, binary string, args []string, dir 
 	}
 	if outputPath == "" { return CommandResult{ExitCode: -1}, fmt.Errorf("missing SARIF output argument") }
 	if err := os.WriteFile(outputPath, f.sarif, 0600); err != nil { return CommandResult{ExitCode: -1}, err }
-	return CommandResult{ExitCode: f.scanExitCode, Stderr: []byte("fixture scanner stderr")}, nil
+	stderr := f.scanStderr
+	if stderr == nil { stderr = []byte("fixture scanner stderr") }
+	return CommandResult{ExitCode: f.scanExitCode, Stderr: stderr}, nil
 }
 
 func prepareOpenGrepFixture(t *testing.T) string {
@@ -199,4 +202,22 @@ func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) 
 	if err != nil { t.Fatal(err) }
 	want := []string{"src/a.py", "src/z.go"}
 	if strings.Join(got, ",") != strings.Join(want, ",") { t.Fatalf("inventory = %v, want %v", got, want) }
+}
+
+
+func TestOpenGrepScannerRejectsPartialAnalysisEvenWhenSARIFExists(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	runner := &fakeRunner{
+		sarif: []byte(fixtureSARIF),
+		scanExitCode: 1,
+		scanStderr: []byte("Partially scanned: 1 files only partially analyzed due to parsing or internal OpenGrep errors"),
+	}
+	got, err := (OpenGrepScanner{Version:"1.30.0", ConfigPath:"rules/security.yml", Runner:runner}).Scan(context.Background(), root)
+	if err == nil || got.Status != ScanStatusPartial {
+		t.Fatalf("partial analysis must not be accepted as complete: result=%+v err=%v", got, err)
+	}
+	if len(got.RawSARIF) == 0 { t.Fatal("raw SARIF should be retained for diagnosis") }
+	if len(got.Errors) == 0 || !strings.Contains(got.Errors[0], "Partially scanned") {
+		t.Fatalf("partial scan warning was not preserved: %+v", got.Errors)
+	}
 }
