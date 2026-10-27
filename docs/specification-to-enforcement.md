@@ -44,6 +44,7 @@ The engine must not collapse this into a single generic “secure” result. If 
 - **Approved binding:** reviewer and decision reference, approval revision, target requirement/pattern IDs, enforcement mode, source identity, and a digest of the exact owning ADR metadata plus requirement/verifier definition. If that definition changes or an older approval has no digest, the binding becomes stale and requires re-review.
 - **Verification evidence:** repository snapshot, paths/locations, analyzer and rule versions, config/rule/input digests, scan status, and evidence completeness.
 - **Assessment result:** per-obligation status, evidence references, explanation, coverage status, and explicit unknown reasons.
+- **Manual-review verifier (`manual-review`):** an explicit, supported way to represent subjective or business-semantic requirements that need a human decision. It always yields `REVIEW_REQUIRED`, is excluded from automated PASS coverage, and keeps the overall verdict `INDETERMINATE` unless another requirement has a confirmed violation (which remains `FAIL`). Unknown verifier types are `UNSUPPORTED`, not `REVIEW_REQUIRED`.
 
 The review registry and accepted requirement catalog remain separate. Never mutate accepted requirements as a side effect of extraction.
 
