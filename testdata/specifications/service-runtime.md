@@ -1,4 +1,8 @@
-# Service runtime requirements
+# ADR-900: Service runtime requirements
+
+## Status
+
+Accepted
 
 ## Scope
 
@@ -9,7 +13,7 @@ These requirements apply to all outbound HTTP clients and all deployable service
 - All outbound HTTP clients must set a finite request timeout no greater than 30 seconds.
 - Automatic retries must be limited to three attempts.
 - Each service must expose a health endpoint.
-- Exceptions require an approved, documented interoperability constraint.
+- An exception may be approved only when an approved, documented interoperability constraint requires it.
 
 ## Context
 
