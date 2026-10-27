@@ -28,10 +28,10 @@ func TestAssessmentFindsMultipleDeviations(t *testing.T) {
 	if result.Counts["FAIL"]!=2 { t.Fatalf("expected two failed requirements, counts=%v",result.Counts) }
 	for _,r:=range result.Requirements { if len(r.Findings)!=1 { t.Errorf("%s expected one finding, got %+v",r.RequirementID,r.Findings) } }
 }
-func TestNoEvidenceIsIndeterminate(t *testing.T) {
+func TestNoEvidenceIsMissing(t *testing.T) {
 	result:=Assess(fixtureCatalog(),nil)
 	if result.Verdict!="INDETERMINATE" { t.Fatalf("expected INDETERMINATE, got %s",result.Verdict) }
-	for _,r:=range result.Requirements { if r.Status!="INDETERMINATE" { t.Errorf("%s expected INDETERMINATE, got %s",r.RequirementID,r.Status) } }
+	for _,r:=range result.Requirements { if r.Status!="EVIDENCE_MISSING" { t.Errorf("%s expected EVIDENCE_MISSING, got %s",r.RequirementID,r.Status) } }
 }
 func TestCatalogRejectsDuplicateRequirementIDs(t *testing.T) {
 	c:=fixtureCatalog(); c.ADRs[0].Requirements[1].ID=c.ADRs[0].Requirements[0].ID
