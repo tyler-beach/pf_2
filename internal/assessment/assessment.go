@@ -97,6 +97,7 @@ type Result struct {
 	LLMCalls int `json:"runtime_llm_calls"`
 	Requirements []RequirementResult `json:"requirements"`
 	AnalyzerResults []analyzer.ScanResult `json:"analyzer_results,omitempty"`
+	UnassessedSourceFiles []string `json:"unassessed_source_files,omitempty"`
 }
 
 func LoadCatalog(path string) (Catalog, error) {
@@ -164,29 +165,91 @@ func ValidateCatalog(c Catalog) error {
 
 func ParseIssueMarkdown(markdown string) []SourceFile {
 	lines := strings.Split(markdown, "\n")
-	fence := strings.Repeat("`", 3)
+	fence := strings.Repeat(string(rune(96)), 3)
 	var files []SourceFile
 	currentPath := ""
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
-		if strings.HasPrefix(line, "### File:") { currentPath = strings.TrimSpace(strings.TrimPrefix(line, "### File:")); continue }
+		if strings.HasPrefix(line, "### File:") {
+			currentPath = strings.TrimSpace(strings.TrimPrefix(line, "### File:"))
+			continue
+		}
 		if !strings.HasPrefix(line, fence) { continue }
 		info := strings.TrimSpace(strings.TrimPrefix(line, fence))
 		fields := strings.Fields(info)
-		language := ""
-		if len(fields) > 0 { language = strings.ToLower(fields[0]) }
+		declaredLanguage := ""
+		if len(fields) > 0 { declaredLanguage = strings.ToLower(strings.TrimSpace(fields[0])) }
 		var code []string
 		i++
-		for i < len(lines) && !strings.HasPrefix(strings.TrimSpace(lines[i]), fence) { code = append(code, lines[i]); i++ }
-		if language == "go" || strings.HasSuffix(strings.ToLower(currentPath), ".go") {
-			path := safeSubmissionPath(currentPath, len(files)+1, ".go")
-			files = append(files, SourceFile{Path: path, Language: "go", Content: strings.Join(code, "\n")})
-		} else if language == "json" || strings.HasSuffix(strings.ToLower(currentPath), ".json") {
-			path := safeSubmissionPath(currentPath, len(files)+1, ".json")
-			files = append(files, SourceFile{Path: path, Language: "json", Content: strings.Join(code, "\n")})
+		for i < len(lines) && !strings.HasPrefix(strings.TrimSpace(lines[i]), fence) {
+			code = append(code, lines[i])
+			i++
 		}
+		language, extension, recognized := normalizeSourceLanguage(declaredLanguage, currentPath)
+		if !recognized {
+			if declaredLanguage == "" { declaredLanguage = "unknown" }
+			language = "unsupported:" + sanitizeLanguageLabel(declaredLanguage)
+			extension = filepath.Ext(currentPath)
+			if extension == "" || strings.ContainsAny(extension, "/\\") { extension = ".txt" }
+		}
+		sourcePath := safeSubmissionPath(currentPath, len(files)+1, extension)
+		files = append(files, SourceFile{Path: sourcePath, Language: language, Content: strings.Join(code, "\n")})
 	}
 	return files
+}
+
+func normalizeSourceLanguage(declared, sourcePath string) (language, extension string, recognized bool) {
+	type languageSpec struct { language, extension string }
+	aliases := map[string]languageSpec{
+		"go": {"go", ".go"}, "golang": {"go", ".go"},
+		"json": {"json", ".json"},
+		"python": {"python", ".py"}, "py": {"python", ".py"}, "python3": {"python", ".py"},
+		"javascript": {"javascript", ".js"}, "js": {"javascript", ".js"}, "jsx": {"javascript", ".jsx"},
+		"mjs": {"javascript", ".mjs"}, "cjs": {"javascript", ".cjs"},
+		"typescript": {"typescript", ".ts"}, "ts": {"typescript", ".ts"}, "tsx": {"typescript", ".tsx"},
+		"java": {"java", ".java"},
+		"csharp": {"csharp", ".cs"}, "c#": {"csharp", ".cs"}, "cs": {"csharp", ".cs"}, "dotnet": {"csharp", ".cs"},
+		"php": {"php", ".php"},
+		"ruby": {"ruby", ".rb"}, "rb": {"ruby", ".rb"},
+		"rust": {"rust", ".rs"}, "rs": {"rust", ".rs"},
+		"bash": {"shell", ".sh"}, "sh": {"shell", ".sh"}, "shell": {"shell", ".sh"},
+		"yaml": {"yaml", ".yml"}, "yml": {"yaml", ".yml"},
+		"hcl": {"hcl", ".tf"}, "terraform": {"hcl", ".tf"}, "tf": {"hcl", ".tf"},
+		"kotlin": {"kotlin", ".kt"}, "kt": {"kotlin", ".kt"}, "scala": {"scala", ".scala"},
+		"c": {"c", ".c"}, "cpp": {"cpp", ".cpp"}, "c++": {"cpp", ".cpp"}, "cxx": {"cpp", ".cpp"},
+		"sql": {"sql", ".sql"}, "html": {"html", ".html"}, "xml": {"xml", ".xml"}, "vue": {"vue", ".vue"},
+	}
+	if declared != "" {
+		if item, ok := aliases[declared]; ok { return item.language, item.extension, true }
+	}
+	extensions := map[string]languageSpec{
+		".go": {"go", ".go"}, ".json": {"json", ".json"}, ".py": {"python", ".py"},
+		".js": {"javascript", ".js"}, ".jsx": {"javascript", ".jsx"}, ".mjs": {"javascript", ".mjs"},
+		".cjs": {"javascript", ".cjs"}, ".ts": {"typescript", ".ts"}, ".tsx": {"typescript", ".tsx"},
+		".java": {"java", ".java"}, ".cs": {"csharp", ".cs"}, ".php": {"php", ".php"},
+		".rb": {"ruby", ".rb"}, ".rs": {"rust", ".rs"}, ".sh": {"shell", ".sh"},
+		".yaml": {"yaml", ".yml"}, ".yml": {"yaml", ".yml"}, ".tf": {"hcl", ".tf"},
+		".hcl": {"hcl", ".tf"}, ".kt": {"kotlin", ".kt"}, ".kts": {"kotlin", ".kts"},
+		".scala": {"scala", ".scala"}, ".c": {"c", ".c"}, ".h": {"c", ".h"},
+		".cc": {"cpp", ".cc"}, ".cpp": {"cpp", ".cpp"}, ".hpp": {"cpp", ".hpp"},
+		".sql": {"sql", ".sql"}, ".html": {"html", ".html"}, ".xml": {"xml", ".xml"}, ".vue": {"vue", ".vue"},
+	}
+	if item, ok := extensions[strings.ToLower(filepath.Ext(sourcePath))]; ok {
+		return item.language, item.extension, true
+	}
+	return "", ".txt", false
+}
+
+func sanitizeLanguageLabel(language string) string {
+	language = strings.ToLower(strings.TrimSpace(language))
+	var b strings.Builder
+	for _, r := range language {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' || r == '_' {
+			b.WriteRune(r)
+		} else { b.WriteByte('_') }
+	}
+	if b.Len() == 0 { return "unknown" }
+	return b.String()
 }
 
 // safeSubmissionPath prevents untrusted issue headings from escaping a logical
@@ -263,7 +326,17 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	if options.EvidenceMode == "" {
 		options.EvidenceMode = EvidenceModeSubmission
 	}
-	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.2.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0, AnalyzerResults:options.AnalyzerResults}
+	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.3.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0, AnalyzerResults:options.AnalyzerResults}
+	if options.EvidenceMode == EvidenceModeSubmission {
+		for _, source := range files {
+			language := strings.ToLower(strings.TrimSpace(source.Language))
+			if language != "go" && language != "json" {
+				if language == "" { language = "unknown" }
+				out.UnassessedSourceFiles = append(out.UnassessedSourceFiles, fmt.Sprintf("%s (%s)", source.Path, language))
+			}
+		}
+		sort.Strings(out.UnassessedSourceFiles)
+	}
 	for _, a := range c.ADRs {
 		if a.Status != "accepted" { continue }
 		for _, r := range a.Requirements {
@@ -287,6 +360,10 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	for _, rr := range out.Requirements { if rr.Status == "PASS" || rr.Status == "FAIL" { out.ApplicableRequirementCount++ } }
 	if out.RequirementCount == 0 || out.ApplicableRequirementCount == 0 { out.CoverageStatus = "NONE" } else if out.ApplicableRequirementCount != out.RequirementCount { out.CoverageStatus = "PARTIAL" } else { out.CoverageStatus = "COMPLETE" }
 	out.Verdict = rollup(out.Requirements)
+	if len(out.UnassessedSourceFiles) > 0 {
+		if out.CoverageStatus != "NONE" { out.CoverageStatus = "PARTIAL" }
+		if out.Verdict != "FAIL" { out.Verdict = "INDETERMINATE" }
+	}
 	return out
 }
 

@@ -380,3 +380,54 @@ func TestLoadSourceFilesRequiresDirectory(t *testing.T) {
 	_, err := LoadSourceFiles(file)
 	if err == nil || !strings.Contains(err.Error(), "not a directory") { t.Fatalf("expected root directory validation error, got %v", err) }
 }
+
+
+func TestParseIssueMarkdownRecognizesMultipleLanguages(t *testing.T) {
+	fence := strings.Repeat(string(rune(96)), 3)
+	markdown := strings.Join([]string{
+		"### File: src/service.py", fence + "python", "value = eval(input())", fence,
+		"### File: src/client.ts", fence + "typescript", "const x: string = 'safe';", fence,
+		"### File: src/Runner.java", fence + "java", "class Runner {}", fence,
+		"### File: src/Program.cs", fence + "csharp", "class Program {}", fence,
+		"### File: src/worker.rb", fence + "ruby", "puts 'safe'", fence,
+		"### File: config/service.json", fence + "json", "{}", fence,
+	}, "\n")
+	files := ParseIssueMarkdown(markdown)
+	if len(files) != 6 { t.Fatalf("parsed %d files, want 6: %+v", len(files), files) }
+	want := map[string]string{
+		"src/service.py": "python", "src/client.ts": "typescript", "src/Runner.java": "java",
+		"src/Program.cs": "csharp", "src/worker.rb": "ruby", "config/service.json": "json",
+	}
+	for _, file := range files {
+		if got := want[file.Path]; got == "" || got != file.Language {
+			t.Errorf("unexpected parsed source %q language=%q want=%q", file.Path, file.Language, got)
+		}
+	}
+}
+
+func TestUnknownLanguageSubmissionIsExplicitlyIndeterminate(t *testing.T) {
+	fence := strings.Repeat(string(rune(96)), 3)
+	markdown := strings.Join([]string{
+		"### File: src/record.cobol", fence + "cobol", "DISPLAY 'HELLO'.", fence,
+		"### File: config/service.json", fence + "json", "{\"timeout_seconds\":30,\"retry_limit\":3}", fence,
+	}, "\n")
+	files := ParseIssueMarkdown(markdown)
+	if len(files) != 2 { t.Fatalf("unknown-language file was silently dropped: %+v", files) }
+	if files[0].Language != "unsupported:cobol" { t.Fatalf("unknown language not preserved: %+v", files) }
+	result := Assess(jsonRequirementCatalog(), files)
+	if result.Verdict != "INDETERMINATE" || result.CoverageStatus != "PARTIAL" {
+		t.Fatalf("unassessed snippets must prevent PASS, got verdict=%s coverage=%s", result.Verdict, result.CoverageStatus)
+	}
+	if len(result.UnassessedSourceFiles) != 1 || !strings.Contains(result.UnassessedSourceFiles[0], "src/record.cobol") {
+		t.Fatalf("unassessed evidence not identified: %+v", result.UnassessedSourceFiles)
+	}
+}
+
+func TestNonGoSubmissionCannotPassOnlyBecauseNonGoCodeWasIgnored(t *testing.T) {
+	fence := strings.Repeat(string(rune(96)), 3)
+	markdown := strings.Join([]string{"### File: src/service.py", fence + "python", "value = eval(input())", fence}, "\n")
+	result := Assess(fixtureCatalog(), ParseIssueMarkdown(markdown))
+	if result.Verdict != "INDETERMINATE" || len(result.UnassessedSourceFiles) != 1 {
+		t.Fatalf("non-Go issue evidence must not be ignored or pass, got %+v", result)
+	}
+}
