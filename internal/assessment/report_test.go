@@ -185,11 +185,11 @@ func TestSARIFReportPreservesCoverageAndUnsupportedStates(t *testing.T) {
 
 func TestSARIFReportForEmptyCatalogStillCarriesIndeterminateVerdict(t *testing.T) {
 	data, err := SARIFReport(Result{
-		SchemaVersion: "1",
-		Verdict: "INDETERMINATE",
+		SchemaVersion:  "1",
+		Verdict:        "INDETERMINATE",
 		CoverageStatus: "NONE",
-		EvidenceMode: string(EvidenceModeRepository),
-		EngineVersion: "0.3.0",
+		EvidenceMode:   string(EvidenceModeRepository),
+		EngineVersion:  "0.3.0",
 	})
 	if err != nil {
 		t.Fatal(err)
