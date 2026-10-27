@@ -1,0 +1,11 @@
+{
+  "mode": "offline",
+  "pass_rate": 1,
+  "results": {
+    "stats": {
+      "successes": 12,
+      "failures": 0
+    }
+  },
+  "note": "Promptfoo scores are not a compliance verdict"
+}
