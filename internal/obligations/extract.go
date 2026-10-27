@@ -18,7 +18,7 @@ const (
 	maxCandidateLineBytes = 16 << 10
 )
 
-var sentenceAbbreviations = []string{"e.g.", "i.e.", "vs.", "mr.", "mrs.", "ms.", "dr.", "prof.", "fig.", "approx."}
+var sentenceAbbreviations = []string{"e.g.", "i.e.", "vs.", "mr.", "mrs.", "ms.", "dr.", "prof.", "fig.", "approx.", "u.s.", "u.k.", "e.u.", "u.n."}
 
 // Candidate is a source-cited interpretation suggestion, never an approved policy.
 type Candidate struct {
