@@ -85,6 +85,21 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if !strings.Contains(string(markdown), "INDETERMINATE") || !strings.Contains(string(markdown), candidates[0].ID) || !strings.Contains(string(markdown), "compound_or_conjoined") {
 		t.Fatalf("Markdown report is missing obligation status or identity: %s", markdown)
 	}
+
+	// Change an input without changing its decoded meaning. The original
+	// assessment artifact must be treated as stale against the current tree.
+	if err := os.WriteFile(indexPath, append(indexBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := runAssessObligations([]string{
+		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
+		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
+	}); err != nil { t.Fatal(err) }
+	staleBytes, err := os.ReadFile(jsonPath)
+	if err != nil { t.Fatal(err) }
+	var stale obligations.AssessmentReport
+	if err := json.Unmarshal(staleBytes, &stale); err != nil { t.Fatal(err) }
+	if stale.EvidenceFresh || stale.RepositoryVerdict != "INDETERMINATE" || stale.Candidates[0].Status != "INDETERMINATE" {
+		t.Fatalf("assessment was not downgraded after its source snapshot changed: %+v", stale)
+	}
 }
 
 func TestRunIngestADRsWritesDeterministicIndex(t *testing.T) {
