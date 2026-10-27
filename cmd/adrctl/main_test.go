@@ -81,6 +81,8 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	root := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(root, "cmd"), 0700); err != nil { t.Fatal(err) }
 	if err := os.WriteFile(filepath.Join(root, "cmd", "main.go"), []byte("package main\n"), 0600); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(filepath.Join(root, "rules"), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, "rules", "security.yml"), []byte("rules: []\n"), 0600); err != nil { t.Fatal(err) }
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
 		ID: "ADR-003", Title: "Analyzer policy", Version: 1, Status: "accepted",
 		Requirements: []assessment.Requirement{{
@@ -92,20 +94,29 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	catalogBytes, err := json.Marshal(catalog)
 	if err != nil { t.Fatal(err) }
 	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil { t.Fatal(err) }
-	evidence := analyzer.ScanResult{
-		SchemaVersion: "1", SARIFVersion: "2.1.0", Status: analyzer.ScanStatusComplete,
-		Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
-		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
-		RawOutputSHA256: strings.Repeat("r", 64), ScannedPaths: []string{"cmd/main.go"},
-	}
-	evidencePath := filepath.Join(root, "opengrep.json")
+	raw := []byte("{\"version\":\"2.1.0\",\"runs\":[{\"tool\":{\"driver\":{\"name\":\"opengrep\",\"version\":\"1.30.0\"}},\"results\":[]}]}")
+	evidence, err := analyzer.ParseSARIF(raw, root)
+	if err != nil { t.Fatal(err) }
+	configHash, err := analyzer.HashFile(filepath.Join(root, "rules", "security.yml"))
+	if err != nil { t.Fatal(err) }
+	inputHash, err := analyzer.HashInputTree(root)
+	if err != nil { t.Fatal(err) }
+	evidence.ConfigurationPath = "rules/security.yml"
+	evidence.ConfigurationSHA256 = configHash
+	evidence.InputSHA256 = inputHash
+	evidence.ScannedPaths = []string{"cmd/main.go"}
+	evidenceRoot := t.TempDir()
+	evidencePath := filepath.Join(evidenceRoot, "opengrep.json")
 	evidenceBytes, err := json.Marshal(evidence)
 	if err != nil { t.Fatal(err) }
 	if err := os.WriteFile(evidencePath, evidenceBytes, 0600); err != nil { t.Fatal(err) }
+	sarifPath := filepath.Join(evidenceRoot, "opengrep.sarif")
+	if err := os.WriteFile(sarifPath, raw, 0600); err != nil { t.Fatal(err) }
 	resultPath := filepath.Join(root, "assessment.json")
 	if err := runAssess([]string{"--root", root, "--requirements", catalogPath,
 		"--report", filepath.Join(root, "report.md"), "--json-out", resultPath,
-		"--sarif-out", filepath.Join(root, "results.sarif"), "--analyzer-evidence", evidencePath}, true); err != nil {
+		"--sarif-out", filepath.Join(root, "results.sarif"), "--analyzer-evidence", evidencePath,
+		"--analyzer-sarif", sarifPath}, true); err != nil {
 		t.Fatalf("runAssess() error = %v", err)
 	}
 	data, err := os.ReadFile(resultPath)
