@@ -41,6 +41,19 @@ go run ./cmd/adrctl assess --input testdata/deviation-issue.md --requirements ad
 
 Expected results are `PASS` for the compliant fixture and `FAIL` with two requirement-level deviations for the deviation fixture. The assessment command exits successfully when a report is produced; the report verdict is distinct from workflow execution status.
 
+## Live GitHub Issue validation runs
+
+These issues exercise the actual Issue-triggered workflow and include its generated assessment report:
+
+- [#5 — JSON required-keys PASS](https://github.com/tyler-beach/pf_2/issues/5)
+- [#6 — JSON missing-key deviation](https://github.com/tyler-beach/pf_2/issues/6)
+- [#7 — malformed JSON returns INDETERMINATE](https://github.com/tyler-beach/pf_2/issues/7)
+- [#8 — post-hardening JSON verifier regression](https://github.com/tyler-beach/pf_2/issues/8)
+- [#9 — mixed Go + JSON PASS](https://github.com/tyler-beach/pf_2/issues/9)
+- [#10 — mixed Go + JSON deviations](https://github.com/tyler-beach/pf_2/issues/10)
+
+The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report.
+
 ## Architecture and limitations
 
 See [docs/architecture.md](docs/architecture.md). The catalog is an example and should be replaced/expanded with your accepted ADRs. The MVP supports `go-import-boundary` and `json-required-keys`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
