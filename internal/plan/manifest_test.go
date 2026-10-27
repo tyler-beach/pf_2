@@ -154,3 +154,33 @@ func TestVerifyManifestRejectsStaleSourceAndTampering(t *testing.T) {
 		t.Fatalf("source drift should reject plan, got %v", err)
 	}
 }
+
+func TestLanguageForPathCoversAllEnabledSecurityRules(t *testing.T) {
+	cases := map[string]string{
+		"src/app.go": "go",
+		"src/app.py": "python",
+		"src/app.js": "javascript",
+		"src/app.ts": "typescript",
+		"src/app.java": "java",
+		"src/app.cs": "csharp",
+		"src/app.php": "php",
+		"src/app.rb": "ruby",
+		"src/app.bash": "shell",
+		"src/app.c": "c",
+		"src/app.cpp": "cpp",
+		"src/app.rs": "rust",
+		"src/app.kt": "kotlin",
+		"src/app.scala": "scala",
+		"src/app.ex": "elixir",
+		"src/app.dart": "dart",
+		"src/app.swift": "swift",
+		"src/app.lua": "lua",
+		"src/app.vb": "visualbasic",
+		"src/app.ml": "ocaml",
+	}
+	for path, want := range cases {
+		if got := languageForPath(path); got != want {
+			t.Errorf("languageForPath(%q) = %q, want %q", path, got, want)
+		}
+	}
+}
