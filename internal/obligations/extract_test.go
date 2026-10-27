@@ -283,6 +283,52 @@ func TestBuildIndexRejectsOversizedSourceLineAfterSentenceSplitting(t *testing.T
 	}
 }
 
+func TestSplitSentencesPreservesAbbreviationsAndDecimals(t *testing.T) {
+	tests := []struct {
+		name string
+		line string
+		want []string
+	}{
+		{
+			name: "country abbreviation",
+			line: "Clients must follow U.S. policy. Every service must expose a health endpoint.",
+			want: []string{
+				"Clients must follow U.S. policy.",
+				"Every service must expose a health endpoint.",
+			},
+		},
+		{
+			name: "decimal value",
+			line: "Clients must set a timeout of 3.5 seconds. Every service must expose a health endpoint.",
+			want: []string{
+				"Clients must set a timeout of 3.5 seconds.",
+				"Every service must expose a health endpoint.",
+			},
+		},
+		{
+			name: "example abbreviation",
+			line: "Clients must use e.g. a shared HTTP client. Every service must expose a health endpoint.",
+			want: []string{
+				"Clients must use e.g. a shared HTTP client.",
+				"Every service must expose a health endpoint.",
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := splitSentences(tc.line)
+			if len(got) != len(tc.want) {
+				t.Fatalf("splitSentences() produced %d fragments, want %d: %#v", len(got), len(tc.want), got)
+			}
+			for i := range tc.want {
+				if got[i] != tc.want[i] {
+					t.Errorf("fragment %d = %q, want %q", i, got[i], tc.want[i])
+				}
+			}
+		})
+	}
+}
+
 func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 	tests := []struct { statement, want string }{
 		{"The service must not execute shell commands.", "must_not"},
