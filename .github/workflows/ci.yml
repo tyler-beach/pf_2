@@ -52,14 +52,16 @@ jobs:
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
             --version 1.30.0 \
-            --json-out "$RUNNER_TEMP/opengrep-vulnerable.json"
+            --json-out "$RUNNER_TEMP/opengrep-vulnerable.json" \
+            --sarif-out "$RUNNER_TEMP/opengrep-vulnerable.sarif"
 
           go run ./cmd/adrctl scan-opengrep \
             --root "$fixture_root/clean" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
             --version 1.30.0 \
-            --json-out "$RUNNER_TEMP/opengrep-clean.json"
+            --json-out "$RUNNER_TEMP/opengrep-clean.json" \
+            --sarif-out "$RUNNER_TEMP/opengrep-clean.sarif"
 
           jq -e '
             .status == "COMPLETE"
@@ -74,11 +76,23 @@ jobs:
 
           jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
 
+      - name: Scan repository with OpenGrep
+        run: |
+          mkdir -p analyzer-evidence
+          go run ./cmd/adrctl scan-opengrep \
+            --root . \
+            --config rules/pathfinder-security.yml \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --version 1.30.0 \
+            --json-out analyzer-evidence/opengrep.json \
+            --sarif-out analyzer-evidence/opengrep.sarif
+
       - name: Assess repository source
         run: |
           go run ./cmd/adrctl assess-repo \
             --root . \
             --requirements adr/requirements.json \
+            --analyzer-evidence analyzer-evidence/opengrep.json \
             --report report.md \
             --json-out assessment.json \
             --sarif-out results.sarif
@@ -114,5 +128,7 @@ jobs:
             assessment.json
             results.sarif
             report.md
+            analyzer-evidence/opengrep.json
+            analyzer-evidence/opengrep.sarif
           if-no-files-found: error
           retention-days: 14

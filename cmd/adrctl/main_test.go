@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/tyler-beach/pf_2/internal/adringest"
+	"github.com/tyler-beach/pf_2/internal/analyzer"
+	"github.com/tyler-beach/pf_2/internal/assessment"
 )
 
 func TestRunIngestADRsWritesDeterministicIndex(t *testing.T) {
@@ -72,4 +74,43 @@ func TestIngestionIndexDocumentsHaveProvenance(t *testing.T) {
 	if len(doc.SourceSHA256) != 64 || doc.Sections[0].StartLine != 3 {
 		t.Fatalf("unexpected provenance: %+v", doc)
 	}
+}
+
+
+func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, "cmd"), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, "cmd", "main.go"), []byte("package main\n"), 0600); err != nil { t.Fatal(err) }
+	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
+		ID: "ADR-003", Title: "Analyzer policy", Version: 1, Status: "accepted",
+		Requirements: []assessment.Requirement{{
+			ID: "REQ-003-01", Title: "No shell execution", Severity: "error",
+			Verifier: assessment.Verifier{Type: "analyzer-rule", Analyzer: "opengrep", RuleIDs: []string{"rule.no-shell"}, SourcePathPrefixes: []string{"cmd/"}},
+		}},
+	}}}
+	catalogPath := filepath.Join(root, "requirements.json")
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil { t.Fatal(err) }
+	evidence := analyzer.ScanResult{
+		SchemaVersion: "1", SARIFVersion: "2.1.0", Status: analyzer.ScanStatusComplete,
+		Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
+		RawOutputSHA256: strings.Repeat("r", 64), ScannedPaths: []string{"cmd/main.go"},
+	}
+	evidencePath := filepath.Join(root, "opengrep.json")
+	evidenceBytes, err := json.Marshal(evidence)
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(evidencePath, evidenceBytes, 0600); err != nil { t.Fatal(err) }
+	resultPath := filepath.Join(root, "assessment.json")
+	if err := runAssess([]string{"--root", root, "--requirements", catalogPath,
+		"--report", filepath.Join(root, "report.md"), "--json-out", resultPath,
+		"--sarif-out", filepath.Join(root, "results.sarif"), "--analyzer-evidence", evidencePath}, true); err != nil {
+		t.Fatalf("runAssess() error = %v", err)
+	}
+	data, err := os.ReadFile(resultPath)
+	if err != nil { t.Fatal(err) }
+	var got assessment.Result
+	if err := json.Unmarshal(data, &got); err != nil { t.Fatal(err) }
+	if got.Verdict != "PASS" || len(got.AnalyzerResults) != 1 { t.Fatalf("analyzer evidence was not included: %+v", got) }
 }

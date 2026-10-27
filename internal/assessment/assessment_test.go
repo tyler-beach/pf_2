@@ -3,6 +3,8 @@ package assessment
 import (
 	"strings"
 	"testing"
+
+	"github.com/tyler-beach/pf_2/internal/analyzer"
 )
 
 func fixtureCatalog() Catalog {
@@ -168,4 +170,103 @@ func TestCoverageIsCompleteWhenAllAcceptedRequirementsAreEvaluated(t *testing.T)
 	files := []SourceFile{{Path:"internal/domain/customer.go", Language:"go", Content:"package domain\nimport \"strings\"\n"}}
 	result := Assess(c, files)
 	if result.CoverageStatus != "COMPLETE" || result.ApplicableRequirementCount != result.RequirementCount { t.Fatalf("expected complete coverage, got %+v", result) }
+}
+
+
+func analyzerRuleCatalog() Catalog {
+	return Catalog{SchemaVersion: "1", ADRs: []ADR{{
+		ID: "ADR-003", Title: "Avoid dynamic shell execution", Version: 1, Status: "accepted",
+		Requirements: []Requirement{{
+			ID: "REQ-003-01", Title: "Do not invoke shell with dynamic command strings", Severity: "error",
+			Verifier: Verifier{Type: "analyzer-rule", Analyzer: "opengrep", RuleIDs: []string{"pathfinder.go-shell-command"}, SourcePathPrefixes: []string{"cmd/", "internal/"}},
+		}},
+	}}}
+}
+
+func completeAnalyzerEvidence(findings []analyzer.Finding) analyzer.ScanResult {
+	return analyzer.ScanResult{
+		SchemaVersion: "1", SARIFVersion: "2.1.0", Status: analyzer.ScanStatusComplete,
+		Analyzers: []analyzer.AnalyzerInfo{{Name: "Opengrep OSS Version", Version: "1.30.0"}},
+		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
+		RawOutputSHA256: strings.Repeat("r", 64),
+		ScannedPaths: []string{"cmd/adrctl/main.go", "internal/analyzer/opengrep.go", "testdata/analyzer-fixtures/vulnerable/shell_command.go"},
+		Findings: findings,
+	}
+}
+
+func TestAnalyzerRulePassesOnlyWithCompleteScopedEvidence(t *testing.T) {
+	result := AssessWithOptions(analyzerRuleCatalog(), []SourceFile{{Path: "cmd/adrctl/main.go", Language: "go"}}, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence(nil)},
+	})
+	if result.Verdict != "PASS" { t.Fatalf("expected PASS, got %+v", result) }
+	requirement := result.Requirements[0]
+	if requirement.Status != "PASS" || len(requirement.Evidence) == 0 { t.Fatalf("missing analyzer evidence: %+v", requirement) }
+	if !strings.Contains(requirement.Evidence[0], strings.Repeat("i", 64)) || !strings.Contains(requirement.Evidence[0], strings.Repeat("c", 64)) {
+		t.Fatalf("input/config provenance not surfaced: %+v", requirement.Evidence)
+	}
+	if result.AnalyzerResults[0].Status != analyzer.ScanStatusComplete { t.Fatal("normalized analyzer run not retained in result") }
+}
+
+func TestAnalyzerRuleFailsAndPreservesFindingProvenance(t *testing.T) {
+	finding := analyzer.Finding{Analyzer: "Opengrep OSS Version", AnalyzerVersion: "1.30.0", RuleID: "pathfinder.go-shell-command",
+		Message: "Avoid dynamically composed shell command", Path: "internal/app/runner.go",
+		StartLine: 17, StartColumn: 3, Level: "error", Fingerprint: "fingerprint-123",
+		Properties: map[string]any{"cwe": "CWE-78"}}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "FAIL" || result.Requirements[0].Status != "FAIL" { t.Fatalf("expected FAIL, got %+v", result) }
+	got := result.Requirements[0].Findings[0]
+	if got.Path != finding.Path || got.Line != 17 || got.Column != 3 || got.Fingerprint != "fingerprint-123" || got.AnalyzerVersion != "1.30.0" {
+		t.Fatalf("finding provenance was lost: %+v", got)
+	}
+}
+
+func TestAnalyzerRuleFiltersFindingsOutsideDeclaredScope(t *testing.T) {
+	finding := analyzer.Finding{Analyzer: "opengrep", RuleID: "pathfinder.go-shell-command", Message: "fixture violation", Path: "testdata/analyzer-fixtures/vulnerable/shell_command.go", StartLine: 4}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "PASS" || result.Requirements[0].Status != "PASS" { t.Fatalf("out-of-scope fixture should not fail the policy: %+v", result) }
+}
+
+func TestAnalyzerRuleMissingOrPartialEvidenceIsIndeterminate(t *testing.T) {
+	partial := completeAnalyzerEvidence(nil); partial.Status = analyzer.ScanStatusPartial; partial.Errors = []string{"timeout"}
+	missingHash := completeAnalyzerEvidence(nil); missingHash.RawOutputSHA256 = ""
+	emptyInventory := completeAnalyzerEvidence(nil); emptyInventory.ScannedPaths = nil
+	cases := map[string][]analyzer.ScanResult{"missing": nil, "partial": {partial}, "missing hashes": {missingHash}, "empty inventory": {emptyInventory}}
+	for name, evidence := range cases {
+		t.Run(name, func(t *testing.T) {
+			result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository, AnalyzerResults: evidence})
+			if result.Verdict != "INDETERMINATE" || result.Requirements[0].Status != "EVIDENCE_MISSING" {
+				t.Fatalf("incomplete evidence must not pass: %+v", result)
+			}
+		})
+	}
+}
+
+func TestAnalyzerRuleRequiresPathForMatchingFinding(t *testing.T) {
+	finding := analyzer.Finding{Analyzer: "opengrep", RuleID: "pathfinder.go-shell-command", Message: "unlocated finding"}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "INDETERMINATE" || result.Requirements[0].Status != "EVIDENCE_MISSING" {
+		t.Fatalf("matching finding without path must fail closed: %+v", result)
+	}
+}
+
+func TestAnalyzerRuleCatalogValidation(t *testing.T) {
+	c := analyzerRuleCatalog()
+	if err := ValidateCatalog(c); err != nil { t.Fatalf("valid analyzer rule rejected: %v", err) }
+	c.ADRs[0].Requirements[0].Verifier.RuleIDs = nil
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "rule_ids") { t.Fatalf("expected rule id validation error, got %v", err) }
+	c = analyzerRuleCatalog()
+	c.ADRs[0].Requirements[0].Verifier.SourcePathPrefixes = []string{"../outside"}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "repository-relative") { t.Fatalf("expected scope path validation error, got %v", err) }
+}
+
+func TestSubmissionModeDoesNotClaimRepositoryAnalyzerWasEvaluated(t *testing.T) {
+	result := Assess(analyzerRuleCatalog(), []SourceFile{{Path: "cmd/adrctl/main.go", Language: "go"}})
+	if result.Requirements[0].Status != "NOT_APPLICABLE" { t.Fatalf("submission mode should not pretend to run scanner: %+v", result.Requirements[0]) }
+	if result.Verdict != "INDETERMINATE" { t.Fatalf("without any passing/failed submitted-scope check, verdict should remain INDETERMINATE, got %s", result.Verdict) }
 }
