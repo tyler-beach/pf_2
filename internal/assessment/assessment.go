@@ -370,7 +370,7 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 		for _, r := range a.Requirements {
 			rr := RequirementResult{ADR:a.ID, ADRVersion:a.Version, RequirementID:r.ID, Title:r.Title, Severity:r.Severity, Evidence:[]string{}, Findings:[]Finding{}}
 			switch r.Verifier.Type {
-			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
+			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files, options.EvidenceMode)
 			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
 			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
 			case "analyzer-rule":
@@ -395,11 +395,21 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	return out
 }
 
-func assessImportBoundary(rr *RequirementResult, v Verifier, files []SourceFile) {
+func assessImportBoundary(rr *RequirementResult, v Verifier, files []SourceFile, evidenceMode EvidenceMode) {
 	if len(files) == 0 { rr.Status="EVIDENCE_MISSING"; rr.Reason="No source files supplied or discovered; absence of evidence is not compliance."; return }
 	var scoped []SourceFile
 	for _, f := range files { if f.Language == "go" && pathMatches(f.Path, v.SourcePathPrefixes) { scoped=append(scoped,f) } }
-	if len(scoped) == 0 { rr.Status="NOT_APPLICABLE"; rr.Reason="No supplied Go files matched the declared source path scope."; return }
+	if len(scoped) == 0 {
+		if evidenceMode == EvidenceModeSubmission {
+			rr.Status = "EVIDENCE_MISSING"
+			rr.Reason = "No submitted Go file matched required source scope; issue snippets do not establish that the repository has no code in this scope."
+		} else {
+			rr.Status = "NOT_APPLICABLE"
+			rr.Reason = "The complete repository source inventory contains no Go files matching the declared source path scope."
+			rr.Evidence = append(rr.Evidence, "Applicability checked against a complete repository source inventory.")
+		}
+		return
+	}
 	for _, f := range scoped {
 		fset := token.NewFileSet()
 		parsed, err := parser.ParseFile(fset, f.Path, f.Content, parser.AllErrors)
