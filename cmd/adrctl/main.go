@@ -43,7 +43,7 @@ func runAssess(args []string, repoMode bool) error {
 	if err:=fs.Parse(args); err!=nil { return err }
 	c,err:=assessment.LoadCatalog(*catalogPath); if err!=nil { return err }
 	var files []assessment.SourceFile
-	if repoMode { files,err=assessment.LoadGoFiles(*root) } else {
+	if repoMode { files,err=assessment.LoadSourceFiles(*root) } else {
 		if *input=="" { return fmt.Errorf("--input is required for issue assessment") }
 		var data []byte; data,err=os.ReadFile(*input); if err==nil { files=assessment.ParseIssueMarkdown(string(data)) }
 	}
