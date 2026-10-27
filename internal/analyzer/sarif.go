@@ -48,6 +48,8 @@ type ScanResult struct {
 	Analyzers       []AnalyzerInfo `json:"analyzers"`
 	ConfigurationPath string       `json:"configuration_path,omitempty"`
 	ConfigurationSHA256 string     `json:"configuration_sha256,omitempty"`
+	BinarySHA256 string             `json:"binary_sha256,omitempty"`
+	RuleSetSHA256 string            `json:"ruleset_sha256,omitempty"`
 	InputSHA256     string         `json:"input_sha256,omitempty"`
 	RawOutputSHA256 string         `json:"raw_output_sha256"`
 	ScannedPaths    []string       `json:"scanned_paths"`

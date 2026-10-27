@@ -31,6 +31,8 @@ const (
 type AnalyzerSpec struct {
 	Name                   string   `json:"name"`
 	Version                string   `json:"version"`
+	BinarySHA256           string   `json:"binary_sha256,omitempty"`
+	RuleSetSHA256          string   `json:"ruleset_sha256,omitempty"`
 	ConfigurationPath      string   `json:"configuration_path"`
 	ScopePrefixes          []string `json:"scope_prefixes,omitempty"`
 	TimeoutMillis          int64    `json:"timeout_millis,omitempty"`
@@ -52,6 +54,8 @@ type Task struct {
 	ID                     string   `json:"id"`
 	Analyzer               string   `json:"analyzer"`
 	Version                string   `json:"version"`
+	BinarySHA256           string   `json:"binary_sha256,omitempty"`
+	RuleSetSHA256          string   `json:"ruleset_sha256"`
 	ConfigurationPath      string   `json:"configuration_path"`
 	ConfigurationSHA256    string   `json:"configuration_sha256"`
 	InputSHA256             string   `json:"input_sha256"`
@@ -133,6 +137,23 @@ func BuildManifest(root string, specs []AnalyzerSpec, maxConcurrency int) (Manif
 		if err != nil { return out, fmt.Errorf("analyzer %q configuration: %w", spec.Name, err) }
 		configHash, err := analyzer.HashFile(configAbs)
 		if err != nil { return out, err }
+		binarySHA := strings.ToLower(strings.TrimSpace(spec.BinarySHA256))
+		if binarySHA != "" && !validDigest(binarySHA) {
+			return out, fmt.Errorf("analyzer %q binary_sha256 must be a lowercase SHA-256 hex digest", spec.Name)
+		}
+		if strings.EqualFold(spec.Name, "opengrep") && binarySHA == "" {
+			return out, fmt.Errorf("OpenGrep plans must pin binary_sha256 before they can be executed")
+		}
+		ruleSetSHA := strings.ToLower(strings.TrimSpace(spec.RuleSetSHA256))
+		if ruleSetSHA == "" { ruleSetSHA = configHash }
+		if !validDigest(ruleSetSHA) {
+			return out, fmt.Errorf("analyzer %q ruleset_sha256 must be a lowercase SHA-256 hex digest", spec.Name)
+		}
+		if strings.EqualFold(spec.Name, "opengrep") && ruleSetSHA != configHash {
+			return out, fmt.Errorf("OpenGrep ruleset_sha256 must match the SHA-256 of its single configuration/rules file")
+		}
+		spec.BinarySHA256 = binarySHA
+		spec.RuleSetSHA256 = ruleSetSHA
 		scopes, err := normalizeScopes(spec.ScopePrefixes)
 		if err != nil { return out, fmt.Errorf("analyzer %q scope: %w", spec.Name, err) }
 		spec.ConfigurationPath = configPath
@@ -191,6 +212,7 @@ func BuildManifest(root string, specs []AnalyzerSpec, maxConcurrency int) (Manif
 			ID: "task-" + idempotencyKey[:16], Analyzer: spec.Name, Version: spec.Version,
 			ConfigurationPath: item.config, ConfigurationSHA256: item.configSHA, InputSHA256: inputHash,
 			ScopePrefixes: append([]string(nil), spec.ScopePrefixes...), SourcePaths: scopedPaths,
+			BinarySHA256: spec.BinarySHA256, RuleSetSHA256: spec.RuleSetSHA256,
 			InputStatus: inputStatus, CacheKey: cacheKey, IdempotencyKey: idempotencyKey,
 			TimeoutMillis: spec.TimeoutMillis, MaxAttempts: maxAttempts, MaxOutputBytes: spec.MaxOutputBytes,
 			RetryBackoffMillis: spec.RetryBackoffMillis, MaxRetryBackoffMillis: spec.MaxRetryBackoffMillis,
@@ -210,8 +232,9 @@ func VerifyManifest(root string, supplied Manifest) error {
 	for _, task := range supplied.Tasks {
 		if task.MaxAttempts < 1 { return fmt.Errorf("task %q has invalid max_attempts", task.ID) }
 		specs = append(specs, AnalyzerSpec{
-			Name: task.Analyzer, Version: task.Version, ConfigurationPath: task.ConfigurationPath,
-			ScopePrefixes: task.ScopePrefixes, TimeoutMillis: task.TimeoutMillis, MaxRetries: task.MaxAttempts-1,
+			Name: task.Analyzer, Version: task.Version, BinarySHA256: task.BinarySHA256, RuleSetSHA256: task.RuleSetSHA256,
+			ConfigurationPath: task.ConfigurationPath, ScopePrefixes: task.ScopePrefixes,
+			TimeoutMillis: task.TimeoutMillis, MaxRetries: task.MaxAttempts-1,
 			MaxOutputBytes: task.MaxOutputBytes, RetryBackoffMillis: task.RetryBackoffMillis,
 			MaxRetryBackoffMillis: task.MaxRetryBackoffMillis, RetryableFailureKinds: task.RetryableFailureKinds,
 		})
@@ -342,12 +365,14 @@ func makeCacheKey(spec AnalyzerSpec, configSHA, inputSHA string, paths []string)
 		SchemaVersion string   `json:"schema_version"`
 		Name          string   `json:"name"`
 		Version       string   `json:"version"`
+		BinarySHA256  string   `json:"binary_sha256,omitempty"`
+		RuleSetSHA256 string   `json:"ruleset_sha256"`
 		ConfigPath    string   `json:"configuration_path"`
 		ConfigSHA256  string   `json:"configuration_sha256"`
 		InputSHA256   string   `json:"input_sha256"`
 		Scopes        []string `json:"scope_prefixes"`
 		SourcePaths   []string `json:"source_paths"`
-	}{SchemaVersion, spec.Name, spec.Version, spec.ConfigurationPath, configSHA, inputSHA, spec.ScopePrefixes, paths}
+	}{SchemaVersion, spec.Name, spec.Version, spec.BinarySHA256, spec.RuleSetSHA256, spec.ConfigurationPath, configSHA, inputSHA, spec.ScopePrefixes, paths}
 	data, err := json.Marshal(material)
 	if err != nil { return "", fmt.Errorf("encode cache-key material: %w", err) }
 	return digest(data), nil

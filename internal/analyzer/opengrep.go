@@ -86,9 +86,11 @@ func scannerEnvironment() []string {
 const analyzerFixtureDirectory = "testdata/analyzer-fixtures"
 
 type OpenGrepScanner struct {
-	Binary     string
-	Version    string
-	ConfigPath string
+	Binary        string
+	BinarySHA256  string
+	RuleSetSHA256 string
+	Version       string
+	ConfigPath    string
 	Timeout    time.Duration
 	Runner     CommandRunner
 }
@@ -110,6 +112,24 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 	binary := strings.TrimSpace(s.Binary)
 	if binary == "" { binary = "opengrep" }
+	// Real subprocess scans pin the executable by digest. Injected runners may
+	// omit a digest in unit tests; production execution supplies an expected hash.
+	if s.Runner == nil || s.BinarySHA256 != "" {
+		resolved, err := exec.LookPath(binary)
+		if err != nil { return out, fmt.Errorf("resolve OpenGrep executable: %w", err) }
+		info, err := os.Lstat(resolved)
+		if err != nil { return out, fmt.Errorf("inspect OpenGrep executable: %w", err) }
+		if info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular() {
+			return out, fmt.Errorf("OpenGrep executable must be a regular non-symlink file")
+		}
+		binaryHash, err := HashFile(resolved)
+		if err != nil { return out, fmt.Errorf("hash OpenGrep executable: %w", err) }
+		if s.BinarySHA256 != "" && !strings.EqualFold(binaryHash, s.BinarySHA256) {
+			return out, fmt.Errorf("OpenGrep binary SHA-256 does not match the planned executable")
+		}
+		out.BinarySHA256 = binaryHash
+		binary = resolved
+	}
 	if root == "" { root = "." }
 	rootAbs, err := filepath.Abs(root)
 	if err != nil { return out, fmt.Errorf("resolve repository root: %w", err) }
@@ -127,6 +147,10 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	inputHash, err := hashInputTree(rootAbs)
 	if err != nil { return out, err }
 	out.ConfigurationSHA256 = configHash
+	if s.RuleSetSHA256 != "" && !strings.EqualFold(s.RuleSetSHA256, configHash) {
+		return out, fmt.Errorf("OpenGrep ruleset SHA-256 does not match its configuration file")
+	}
+	out.RuleSetSHA256 = configHash
 	out.InputSHA256 = inputHash
 
 	tempDir, err := os.MkdirTemp("", "pathfinder-opengrep-")
@@ -204,6 +228,8 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 	normalized.ConfigurationPath = configRel
 	normalized.ConfigurationSHA256 = configHash
+	normalized.BinarySHA256 = out.BinarySHA256
+	normalized.RuleSetSHA256 = out.RuleSetSHA256
 	normalized.InputSHA256 = inputHash
 	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
 	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
