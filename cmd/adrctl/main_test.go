@@ -94,6 +94,80 @@ func TestRunSpecificationCheckRejectsSymlinkedAnalyzerOutputCollision(t *testing
 	}
 }
 
+func TestRunSpecificationCheckRejectsOutputSymlinkEscapingRepository(t *testing.T) {
+	root := t.TempDir()
+	adrRoot := filepath.Join(root, "adrs")
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	adrSource := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	sourcePath := filepath.Join(root, "internal", "domain", "customer.go")
+	if err := os.MkdirAll(filepath.Dir(sourcePath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	catalogPath := filepath.Join(root, "adr", "requirements.json")
+	if err := os.MkdirAll(filepath.Dir(catalogPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
+		ID: "ADR-001", Title: "Preserve domain boundaries", Version: 1, Status: "accepted",
+		Requirements: []assessment.Requirement{{
+			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
+			Description: "Domain source files must not import internal infrastructure packages.",
+			Severity: "error",
+			Verifier: assessment.Verifier{
+				Type: "go-import-boundary",
+				SourcePathPrefixes: []string{"internal/domain/"},
+				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+			},
+		}},
+	}}}
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	registryPath := filepath.Join(root, "adr", "obligation-reviews.json")
+	if err := runInitReviewRegistry([]string{"--output", registryPath}); err != nil {
+		t.Fatal(err)
+	}
+
+	outsideDir := t.TempDir()
+	outsideFile := filepath.Join(outsideDir, "do-not-overwrite.md")
+	const sentinel = "outside-repository sentinel; must not be changed"
+	if err := os.WriteFile(outsideFile, []byte(sentinel), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outsideFile, filepath.Join(root, "report.md")); err != nil {
+		t.Fatal(err)
+	}
+
+	err = runSpecificationCheck([]string{
+		"--root", root, "--adr-root", "adrs",
+		"--requirements", catalogPath, "--registry", registryPath,
+		"--report-only",
+	})
+	if err == nil || !strings.Contains(err.Error(), "outside repository root") {
+		t.Fatalf("specification-check should reject symlinked outputs outside the repository, got %v", err)
+	}
+	data, readErr := os.ReadFile(outsideFile)
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	if string(data) != sentinel {
+		t.Fatalf("specification-check modified a file outside the repository: %q", data)
+	}
+}
+
 func TestRunSpecificationCheckRequiresAnalyzerEvidencePair(t *testing.T) {
 	if err := runSpecificationCheck([]string{"--analyzer-evidence", "scan.json"}); err == nil || !strings.Contains(err.Error(), "must be provided together") {
 		t.Fatalf("specification-check should require normalized evidence and raw SARIF together, got %v", err)
