@@ -39,6 +39,7 @@ The referenced [adr/ad-guidance-tool](https://github.com/adr/ad-guidance-tool) r
 
 ## Current state
 
+- Arch-Go: a PR-triggered, fixture-only benchmark is now implemented in `.github/workflows/arch-go-benchmark.yml`. It requires a clean dependency-boundary fixture to pass, a forbidden domain-to-infrastructure dependency to fail, and Pathfinder's existing clean/deviation issue fixtures to retain their expected verdicts. This is a benchmark, not yet a production repository gate; adoption depends on its CI result and a follow-up review of output parity.
 - OpenGrep: pinned repository scanner and normalized evidence adapter are implemented; CI exercises vulnerable and clean multilingual fixtures.
 - reviewdog: configured in the main CI workflow for same-repository pull requests; live annotation quality still requires an explicit PR-path regression.
 - Arch-Go: not integrated; benchmark decision pending.
