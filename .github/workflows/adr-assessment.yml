@@ -49,28 +49,13 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           jq -n --arg body "$(cat report.md)" '{body: $body}' > comment.json
-          comments_url="https://api.github.com/repos/$GH_REPOSITORY/issues/$ISSUE_NUMBER/comments"
-          existing_id="$(curl --fail-with-body --silent --show-error \
+          curl --fail-with-body --silent --show-error \
+            -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" "$comments_url" \
-            | jq -r '[.[] | select(.user.login == "github-actions[bot]")][-1].id // empty')"
-          if [ -n "$existing_id" ]; then
-            curl --fail-with-body --silent --show-error \
-              -X PATCH \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/$GH_REPOSITORY/issues/comments/$existing_id" \
-              --data @comment.json
-          else
-            curl --fail-with-body --silent --show-error \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "X-GitHub-Api-Version: 2022-11-28" "$comments_url" \
-              --data @comment.json
-          fi
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$GH_REPOSITORY/issues/$ISSUE_NUMBER/comments" \
+            --data @comment.json
 
       - name: Upload machine-readable evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
