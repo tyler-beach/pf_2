@@ -567,7 +567,7 @@ func cacheEntryMatchesPlan(entry CacheEntry, plan Plan, task AnalyzerTask) bool 
 	if entry.Result.ConfigurationPath != task.Spec.ConfigurationPath || entry.Result.ConfigurationSHA256 != task.Spec.ConfigurationSHA256 { return false }
 	if entry.Result.SARIFVersion != SARIFVersion { return false }
 	for _, info := range entry.Result.Analyzers {
-		if strings.EqualFold(info.Name, task.Spec.Name) && info.Version == task.Spec.Version { return true }
+		if analyzerIdentityMatches(info.Name, task.Spec.Name) && info.Version == task.Spec.Version { return true }
 	}
 	return false
 }
@@ -587,9 +587,19 @@ func validatePlanResult(plan Plan, task AnalyzerTask, result ScanResult) error {
 	if len(result.Analyzers) == 0 { return fmt.Errorf("analyzer identity is missing") }
 	found := false
 	for _, info := range result.Analyzers {
-		if strings.EqualFold(info.Name, task.Spec.Name) && info.Version == task.Spec.Version { found = true; break }
+		if analyzerIdentityMatches(info.Name, task.Spec.Name) && info.Version == task.Spec.Version { found = true; break }
 	}
 	if !found { return fmt.Errorf("analyzer identity/version does not match planned specification") }
 	if result.Status != ScanStatusComplete { return fmt.Errorf("scan status is %q", result.Status) }
 	return nil
+}
+
+
+// analyzerIdentityMatches accepts an analyzer's stable short name or a
+// documented SARIF driver display name such as "Opengrep OSS Version".
+func analyzerIdentityMatches(actual, expected string) bool {
+	actual = strings.ToLower(strings.TrimSpace(actual))
+	expected = strings.ToLower(strings.TrimSpace(expected))
+	if actual == "" || expected == "" { return false }
+	return actual == expected || strings.Contains(actual, expected)
 }

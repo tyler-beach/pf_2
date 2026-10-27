@@ -141,16 +141,33 @@ jobs:
 
           jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
 
-      - name: Scan repository with OpenGrep
+      - name: Scan repository with OpenGrep and verify cache idempotency
         run: |
+          set -euo pipefail
           mkdir -p analyzer-evidence
           go run ./cmd/adrctl scan-opengrep \
             --root . \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
             --version 1.30.0 \
+            --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
+            --manifest-out analyzer-evidence/run-manifest.json \
             --json-out analyzer-evidence/opengrep.json \
             --sarif-out analyzer-evidence/opengrep.sarif
+          cp analyzer-evidence/run-manifest.json "$RUNNER_TEMP/first-run-manifest.json"
+          jq -e '.status == "COMPLETE" and (.tasks | length) == 1 and .tasks[0].cached == false and (.manifest_id | length) == 64 and (.tasks[0].cache_key | length) == 64' "$RUNNER_TEMP/first-run-manifest.json"
+
+          go run ./cmd/adrctl scan-opengrep \
+            --root . \
+            --config rules/pathfinder-security.yml \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --version 1.30.0 \
+            --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
+            --manifest-out analyzer-evidence/run-manifest.json \
+            --json-out analyzer-evidence/opengrep.json \
+            --sarif-out analyzer-evidence/opengrep.sarif
+          first_id="$(jq -r '.manifest_id' "$RUNNER_TEMP/first-run-manifest.json")"
+          jq -e --arg first_id "$first_id" '.status == "COMPLETE" and .manifest_id == $first_id and (.tasks | length) == 1 and .tasks[0].cached == true and .tasks[0].status == "COMPLETE"' analyzer-evidence/run-manifest.json
 
       - name: Assess repository source
         run: |
@@ -196,5 +213,6 @@ jobs:
             report.md
             analyzer-evidence/opengrep.json
             analyzer-evidence/opengrep.sarif
+            analyzer-evidence/run-manifest.json
           if-no-files-found: error
           retention-days: 14

@@ -248,6 +248,8 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 	normalized.ConfigurationPath = configRel
 	normalized.ConfigurationSHA256 = configHash
+	normalized.BinarySHA256 = binarySHA256
+	normalized.RuleSetSHA256 = ruleSetHash
 	normalized.InputSHA256 = inputHash
 	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
 	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }

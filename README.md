@@ -103,6 +103,8 @@ go run ./cmd/adrctl scan-opengrep \
   --config rules/pathfinder-security.yml \
   --binary /path/to/pinned/opengrep \
   --version 1.30.0 \
+  --cache-dir "$HOME/.cache/pathfinder/analyzer-cache" \
+  --manifest-out analyzer-evidence/run-manifest.json \
   --json-out analyzer-evidence/opengrep.json \
   --sarif-out analyzer-evidence/opengrep.sarif
 ```
@@ -188,3 +190,12 @@ go run ./cmd/adrctl validate-obligation-reviews \
 ~~~
 
 Pending, rejected, and superseded decisions cannot bind a requirement or claim enforcement. Blocking/advisory approval requires a current source snapshot, an accepted ADR, an existing requirement owned by the same ADR, and a compatible reviewed verifier pattern. Semantic/manual-review candidates cannot block CI. A changed candidate source is stale until re-reviewed; a removed candidate's history must be explicitly superseded. The registry never edits adr/requirements.json automatically. See [docs/obligation-review.md](docs/obligation-review.md) for the decision lifecycle and limitations.
+
+
+### Deterministic plan, manifest, and local cache
+
+Every repository OpenGrep scan is executed as a validated single-task plan. The plan digest and cache key include the source snapshot, exact executable SHA-256, version, configuration/rule-set SHA-256, repository-relative path scope, source extensions, timeout, and declared resource envelope. The manifest ID is a stable idempotency key for duplicate assessments of the same snapshot and plan; it excludes wall-clock timestamps and attempt counters.
+
+The scan CLI writes a manifest to `analyzer-evidence/run-manifest.json` by default. A private file cache stores normalized evidence and paired raw SARIF under SHA-256 filenames, uses atomic replacement and restricted permissions, rejects symlink/corrupt cache entries, and treats cache failures as warnings while still running the analyzer. Cache hits are accepted only when source/configuration/executable/rule-set identities and raw-output digest match the planned task. CI runs the same plan twice and asserts the second run uses the identical cached result.
+
+Timeouts and per-file bounds are enforced by the local OpenGrep adapter. `max-memory-mb` is an explicit worker resource profile in the plan identity; remote orchestrators must enforce it with their container/task runtime. The standalone local CLI does not claim to impose an OS-level memory limit. Runtime assessment continues to make zero LLM calls.

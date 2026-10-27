@@ -38,6 +38,8 @@ func planTestResult(spec AnalyzerSpec, snapshot string, status string) ScanResul
 	result.RuleSetSHA256 = spec.RuleSetSHA256
 	result.ConfigurationPath = spec.ConfigurationPath
 	result.ConfigurationSHA256 = spec.ConfigurationSHA256
+	result.BinarySHA256 = spec.BinarySHA256
+	result.RuleSetSHA256 = spec.RuleSetSHA256
 	result.InputSHA256 = snapshot
 	result.RawOutputSHA256 = sha256Hex(raw)
 	result.RawSARIF = append([]byte(nil), raw...)
@@ -376,5 +378,22 @@ func TestFileResultCacheRejectsSymlinkEntries(t *testing.T) {
 	if err := os.Symlink(outside, filepath.Join(dir, key+".json")); err != nil { t.Skipf("symlink unavailable: %v", err) }
 	if _, ok, err := cache.Get(context.Background(), key); err == nil || ok {
 		t.Fatalf("symlinked cache entry must be rejected: ok=%v err=%v", ok, err)
+	}
+}
+
+
+func TestRunPlanAcceptsSARIFDriverDisplayName(t *testing.T) {
+	snapshot := strings.Repeat("d", 64)
+	spec := planTestSpec("opengrep")
+	plan, err := BuildPlan(snapshot, []AnalyzerSpec{spec})
+	if err != nil { t.Fatal(err) }
+	manifest, err := RunPlan(context.Background(), plan, RunOptions{MaxConcurrency:1, MaxAttempts:1}, func(ctx context.Context, task AnalyzerTask) (ScanResult, error) {
+		result := planTestResult(task.Spec, snapshot, ScanStatusComplete)
+		result.Analyzers[0].Name = "Opengrep OSS Version"
+		return result, nil
+	})
+	if err != nil { t.Fatal(err) }
+	if manifest.Status != ManifestStatusComplete || manifest.Tasks[0].Status != ManifestTaskComplete {
+		t.Fatalf("legitimate SARIF driver name was rejected: %+v", manifest)
 	}
 }

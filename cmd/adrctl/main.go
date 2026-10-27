@@ -163,32 +163,107 @@ func runOpenGrepScan(args []string) error {
 	timeout := fs.Duration("timeout", 5*time.Minute, "scan timeout (for example 90s or 5m)")
 	jsonPath := fs.String("json-out", "analyzer-evidence/opengrep.json", "normalized analyzer evidence output")
 	sarifPath := fs.String("sarif-out", "analyzer-evidence/opengrep.sarif", "raw SARIF output for audit and troubleshooting")
-	if err := fs.Parse(args); err != nil {
-		return err
+	manifestPath := fs.String("manifest-out", "analyzer-evidence/run-manifest.json", "deterministic run manifest output")
+	cacheDir := fs.String("cache-dir", defaultAnalyzerCacheDirectory(), "optional persistent cache directory (empty disables caching)")
+	maxConcurrency := fs.Int("max-concurrency", 1, "maximum concurrent analyzer tasks")
+	maxAttempts := fs.Int("max-attempts", 2, "attempts per task, including the first")
+	maxMemoryMB := fs.Int("max-memory-mb", 1024, "worker resource-profile memory budget recorded in the plan")
+	maxFileBytes := fs.Int64("max-file-bytes", 4<<20, "maximum supported source file size")
+	if err := fs.Parse(args); err != nil { return err }
+	if fs.NArg() != 0 { return fmt.Errorf("scan-opengrep accepts no positional arguments") }
+	if *timeout <= 0 { return fmt.Errorf("--timeout must be positive") }
+	if *maxConcurrency < 1 || *maxConcurrency > 128 { return fmt.Errorf("--max-concurrency must be between 1 and 128") }
+	if *maxAttempts < 1 || *maxAttempts > 20 { return fmt.Errorf("--max-attempts must be between 1 and 20") }
+	if *maxMemoryMB < 1 { return fmt.Errorf("--max-memory-mb must be positive") }
+	if *maxFileBytes < 1 { return fmt.Errorf("--max-file-bytes must be positive") }
+
+	rootAbs, err := filepath.Abs(*root)
+	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
+	rootAbs, err = filepath.EvalSymlinks(rootAbs)
+	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
+	binaryPath, err := analyzer.ResolveExecutable(*binary)
+	if err != nil { return err }
+	binaryHash, err := analyzer.HashFile(binaryPath)
+	if err != nil { return fmt.Errorf("hash OpenGrep executable: %w", err) }
+	configAbs, configRel, err := resolveRepositoryConfig(rootAbs, *config)
+	if err != nil { return err }
+	configHash, err := analyzer.HashFile(configAbs)
+	if err != nil { return fmt.Errorf("hash OpenGrep configuration: %w", err) }
+	snapshotHash, err := analyzer.HashInputTree(rootAbs)
+	if err != nil { return fmt.Errorf("hash repository snapshot: %w", err) }
+	extensions := []string{".go", ".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".cs", ".php", ".rb"}
+	timeoutSeconds := int((*timeout) / time.Second)
+	if (*timeout)%time.Second != 0 { timeoutSeconds++ }
+	spec := analyzer.AnalyzerSpec{
+		Name: "opengrep", Version: *version, BinarySHA256: binaryHash,
+		ConfigurationPath: configRel, ConfigurationSHA256: configHash, RuleSetSHA256: configHash,
+		PathPrefixes: []string{"."}, SourceExtensions: extensions,
+		TimeoutSeconds: timeoutSeconds, MaxMemoryMB: *maxMemoryMB, MaxFileBytes: *maxFileBytes,
 	}
+	plan, err := analyzer.BuildPlan(snapshotHash, []analyzer.AnalyzerSpec{spec})
+	if err != nil { return fmt.Errorf("build deterministic analyzer plan: %w", err) }
 	scanner := analyzer.OpenGrepScanner{
-		Binary: *binary,
-		Version: *version,
-		ConfigPath: *config,
-		Timeout: *timeout,
+		Binary: binaryPath, BinarySHA256: binaryHash, Version: *version,
+		ConfigPath: configRel, RuleSetSHA256: configHash,
+		SourceExtensions: extensions, MaxFileBytes: *maxFileBytes, Timeout: *timeout,
 	}
-	result, scanErr := scanner.Scan(context.Background(), *root)
+	options := analyzer.RunOptions{MaxConcurrency:*maxConcurrency, MaxAttempts:*maxAttempts}
+	if strings.TrimSpace(*cacheDir) != "" { options.Cache = analyzer.FileResultCache{Dir:*cacheDir} }
+	manifest, err := analyzer.RunPlan(context.Background(), plan, options, func(ctx context.Context, task analyzer.AnalyzerTask) (analyzer.ScanResult, error) {
+		return scanner.Scan(ctx, rootAbs)
+	})
+	if err != nil { return fmt.Errorf("run deterministic analyzer plan: %w", err) }
+	manifestBytes, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil { return fmt.Errorf("encode run manifest: %w", err) }
+	if err := writeFile(*manifestPath, manifestBytes); err != nil { return err }
+	if len(manifest.Tasks) != 1 { return fmt.Errorf("OpenGrep scan plan returned %d tasks; expected exactly one", len(manifest.Tasks)) }
+	task := manifest.Tasks[0]
+	result := task.Result
+	result.RawSARIF = append([]byte(nil), task.RawSARIF...)
 	data, encodeErr := analyzer.WriteJSON(result)
-	if encodeErr != nil {
-		return encodeErr
-	}
-	if err := writeFile(*jsonPath, data); err != nil {
-		return err
-	}
+	if encodeErr != nil { return encodeErr }
+	if err := writeFile(*jsonPath, data); err != nil { return err }
 	if len(result.RawSARIF) > 0 {
 		if err := writeFile(*sarifPath, result.RawSARIF); err != nil { return err }
 	}
-	if scanErr != nil {
-		return fmt.Errorf("OpenGrep assessment failed; evidence written to %s: %w", *jsonPath, scanErr)
+	if manifest.Status != analyzer.ManifestStatusComplete || task.Status != analyzer.ManifestTaskComplete {
+		reason := task.Error
+		if reason == "" { reason = "one or more planned scan tasks did not complete" }
+		return fmt.Errorf("OpenGrep assessment %s; manifest: %s; normalized evidence: %s; raw SARIF: %s: %s",
+			manifest.Status, *manifestPath, *jsonPath, *sarifPath, reason)
 	}
-	fmt.Printf("OpenGrep %s: %d finding(s); evidence: %s; SARIF: %s; configuration SHA-256: %s; input SHA-256: %s\n",
-		*version, len(result.Findings), *jsonPath, *sarifPath, result.ConfigurationSHA256, result.InputSHA256)
+	fmt.Printf("OpenGrep %s: %d finding(s); cache hit: %t; manifest: %s; evidence: %s; SARIF: %s; configuration SHA-256: %s; rule-set SHA-256: %s; input SHA-256: %s\n",
+		*version, len(result.Findings), task.Cached, *manifestPath, *jsonPath, *sarifPath,
+		result.ConfigurationSHA256, result.RuleSetSHA256, result.InputSHA256)
 	return nil
+}
+
+func defaultAnalyzerCacheDirectory() string {
+	root, err := os.UserCacheDir()
+	if err != nil { return "" }
+	return filepath.Join(root, "pathfinder", "analyzer-cache")
+}
+
+func resolveRepositoryConfig(root, requested string) (string, string, error) {
+	requested = strings.TrimSpace(strings.ReplaceAll(requested, "\\", "/"))
+	clean := filepath.ToSlash(filepath.Clean(filepath.FromSlash(requested)))
+	if clean == "" || clean == "." || filepath.IsAbs(filepath.FromSlash(clean)) ||
+		(len(clean) >= 2 && clean[1] == ':') || clean == ".." || strings.HasPrefix(clean, "../") {
+		return "", "", fmt.Errorf("OpenGrep configuration path must be a repository-relative file")
+	}
+	candidate := filepath.Join(root, filepath.FromSlash(clean))
+	resolved, err := filepath.EvalSymlinks(candidate)
+	if err != nil { return "", "", fmt.Errorf("resolve OpenGrep configuration: %w", err) }
+	rel, err := filepath.Rel(root, resolved)
+	if err != nil { return "", "", fmt.Errorf("make configuration path repository-relative: %w", err) }
+	relSlash := filepath.ToSlash(rel)
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+		return "", "", fmt.Errorf("OpenGrep configuration path escapes repository root")
+	}
+	info, err := os.Stat(resolved)
+	if err != nil { return "", "", fmt.Errorf("inspect OpenGrep configuration: %w", err) }
+	if !info.Mode().IsRegular() { return "", "", fmt.Errorf("OpenGrep configuration must be a regular file") }
+	return resolved, relSlash, nil
 }
 
 func writeFile(path string, data []byte) error {
