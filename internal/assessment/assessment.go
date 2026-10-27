@@ -179,16 +179,36 @@ func ParseIssueMarkdown(markdown string) []SourceFile {
 		i++
 		for i < len(lines) && !strings.HasPrefix(strings.TrimSpace(lines[i]), fence) { code = append(code, lines[i]); i++ }
 		if language == "go" || strings.HasSuffix(strings.ToLower(currentPath), ".go") {
-			path := currentPath
-			if path == "" { path = fmt.Sprintf("issue-snippet-%d.go", len(files)+1) }
-			files = append(files, SourceFile{Path: filepath.ToSlash(path), Language: "go", Content: strings.Join(code, "\n")})
+			path := safeSubmissionPath(currentPath, len(files)+1, ".go")
+			files = append(files, SourceFile{Path: path, Language: "go", Content: strings.Join(code, "\n")})
 		} else if language == "json" || strings.HasSuffix(strings.ToLower(currentPath), ".json") {
-			path := currentPath
-			if path == "" { path = fmt.Sprintf("issue-snippet-%d.json", len(files)+1) }
-			files = append(files, SourceFile{Path: filepath.ToSlash(path), Language: "json", Content: strings.Join(code, "\n")})
+			path := safeSubmissionPath(currentPath, len(files)+1, ".json")
+			files = append(files, SourceFile{Path: path, Language: "json", Content: strings.Join(code, "\n")})
 		}
 	}
 	return files
+}
+
+// safeSubmissionPath prevents untrusted issue headings from escaping a logical
+// repository-relative path or injecting Markdown/report syntax through a finding path.
+func safeSubmissionPath(raw string, index int, extension string) string {
+	raw = strings.TrimSpace(strings.ReplaceAll(raw, "\\", "/"))
+	clean := filepath.ToSlash(filepath.Clean(raw))
+	unsafe := raw == "" || raw == "." || filepath.IsAbs(filepath.FromSlash(clean)) ||
+		clean == ".." || strings.HasPrefix(clean, "../") || (len(clean) >= 2 && clean[1] == ':')
+	if unsafe { return fmt.Sprintf("issue-snippet-%d%s", index, extension) }
+	var b strings.Builder
+	for _, r := range clean {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') || strings.ContainsRune("._/-", r) {
+			b.WriteRune(r)
+		} else { b.WriteByte('_') }
+	}
+	result := strings.TrimPrefix(b.String(), "./")
+	if result == "" || result == "." || strings.HasPrefix(result, "../") {
+		return fmt.Sprintf("issue-snippet-%d%s", index, extension)
+	}
+	return result
 }
 
 func LoadSourceFiles(root string) ([]SourceFile, error) {

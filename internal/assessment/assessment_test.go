@@ -1,6 +1,7 @@
 package assessment
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -269,4 +270,39 @@ func TestSubmissionModeDoesNotClaimRepositoryAnalyzerWasEvaluated(t *testing.T) 
 	result := Assess(analyzerRuleCatalog(), []SourceFile{{Path: "cmd/adrctl/main.go", Language: "go"}})
 	if result.Requirements[0].Status != "NOT_APPLICABLE" { t.Fatalf("submission mode should not pretend to run scanner: %+v", result.Requirements[0]) }
 	if result.Verdict != "INDETERMINATE" { t.Fatalf("without any passing/failed submitted-scope check, verdict should remain INDETERMINATE, got %s", result.Verdict) }
+}
+
+
+func TestIssueSnippetPathsAreSanitized(t *testing.T) {
+	cases := []struct{ input, want string }{
+		{"src/app.go", "src/app.go"},
+		{"src/app|unsafe.go", "src/app_unsafe.go"},
+		{"../../outside.go", "issue-snippet-1.go"},
+		{"C:\\outside.go", "issue-snippet-1.go"},
+		{"src/`bad`.go", "src/_bad_.go"},
+	}
+	for _, tc := range cases {
+		md := "### File: " + tc.input + "\n```go\npackage fixture\n```\n"
+		files := ParseIssueMarkdown(md)
+		if len(files) != 1 { t.Fatalf("input %q produced %d files", tc.input, len(files)) }
+		if files[0].Path != tc.want { t.Errorf("input %q path = %q, want %q", tc.input, files[0].Path, tc.want) }
+		if filepath.IsAbs(files[0].Path) || strings.HasPrefix(files[0].Path, "../") || strings.ContainsAny(files[0].Path, "\r\n|`") {
+			t.Errorf("unsafe path retained for %q: %q", tc.input, files[0].Path)
+		}
+	}
+}
+
+func FuzzParseIssueMarkdown(f *testing.F) {
+	f.Add("### File: internal/domain/example.go\n```go\npackage domain\n```\n")
+	f.Add("### File: ../../outside.json\n```json\n{}\n```\n")
+	f.Add("### File: src/app|bad.go\n```go\npackage src\n```\n")
+	f.Add("arbitrary ``` fenced text")
+	f.Fuzz(func(t *testing.T, markdown string) {
+		if len(markdown) > 1<<20 { t.Skip() }
+		for _, file := range ParseIssueMarkdown(markdown) {
+			if filepath.IsAbs(file.Path) || strings.HasPrefix(file.Path, "../") || strings.ContainsAny(file.Path, "\r\n|`") {
+				t.Fatalf("unsafe issue source path: %q", file.Path)
+			}
+		}
+	})
 }

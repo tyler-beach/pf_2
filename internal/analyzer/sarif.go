@@ -256,8 +256,12 @@ func normalizeArtifactPath(uri, rootAbs string) (string, error) {
 	if u.Scheme != "" && u.Scheme != "file" {
 		return "", fmt.Errorf("non-file artifact URI is not repository evidence: %q", uri)
 	}
+	if u.Scheme == "file" && u.Host != "" {
+		return "", fmt.Errorf("file artifact URI must not specify a remote host: %q", uri)
+	}
+	// url.Parse already decodes u.Path. Do not unescape it again: a literal
+	// filename containing the characters "%2e" must not be reinterpreted as "..".
 	raw := u.Path
-	if decoded, err := url.PathUnescape(raw); err == nil { raw = decoded } else { return "", fmt.Errorf("invalid URL escaping in artifact URI %q", uri) }
 	raw = filepath.FromSlash(raw)
 	if filepath.IsAbs(raw) {
 		abs, err := filepath.Abs(raw)
