@@ -141,6 +141,20 @@ jobs:
             exit 1
           fi
 
+          cache_dir="$RUNNER_TEMP/pathfinder-plan-cache"
+          execution_json="$plan_root/analyzer-evidence/execution.json"
+          sarif_dir="$plan_root/analyzer-evidence/raw"
+          go run ./cmd/adrctl execute-plan \
+            --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json" \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" --cache-dir "$cache_dir" \
+            --json-out "$execution_json" --sarif-dir "$sarif_dir"
+          jq -e '.status == "COMPLETE" and (.tasks | length) == 1 and all(.tasks[]; .status == "COMPLETE" and .cache_hit == false and (.raw_sarif_path | length) > 0)' "$execution_json"
+          go run ./cmd/adrctl execute-plan \
+            --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json" \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" --cache-dir "$cache_dir" \
+            --json-out "$execution_json" --sarif-dir "$sarif_dir"
+          jq -e '.status == "COMPLETE" and (.tasks | length) == 1 and all(.tasks[]; .status == "COMPLETE" and .cache_hit == true and .attempts == 0 and (.raw_sarif_path | length) > 0)' "$execution_json"
+
       - name: Scan repository with OpenGrep
         run: |
           mkdir -p analyzer-evidence
