@@ -325,3 +325,21 @@ func containsArg(args []string, want string) bool {
 	for _, arg := range args { if arg == want { return true } }
 	return false
 }
+
+func TestOpenGrepScannerRejectsExcludedFixturePaths(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	fixture := filepath.Join(root, filepath.FromSlash(analyzerFixtureDirectory), "vulnerable", "secret.go")
+	if err := os.MkdirAll(filepath.Dir(fixture), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(fixture, []byte("package vulnerable\n"), 0600); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	scanner := OpenGrepScanner{
+		Version: "1.30.0", ConfigPath: "rules/security.yml",
+		ScanPaths: []string{analyzerFixtureDirectory + "/vulnerable/secret.go"}, Runner: runner,
+	}
+	if _, err := scanner.Scan(context.Background(), root); err == nil || !strings.Contains(err.Error(), "eligible analyzer source inventory") {
+		t.Fatalf("expected excluded fixture path to be rejected, got %v", err)
+	}
+	if len(runner.calls) != 1 {
+		t.Fatalf("scanner must reject excluded paths before starting a scan; calls=%+v", runner.calls)
+	}
+}
