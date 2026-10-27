@@ -146,6 +146,9 @@ jobs:
             echo "issue_extract=issue_body" > "$inputs/extract-source.txt"
           fi
 
+          go run ./cmd/adrctl low-confidence-checklist \
+            --index "$inputs/candidates.json" \
+            --md-out "$inputs/low-confidence-checklist.md"
           go run ./cmd/adrctl workshop-emit \
             --out-dir "$inputs/snapshot" \
             --run-id "${{ github.run_id }}-${{ github.run_attempt }}-issue-${{ github.event.issue.number }}" \
@@ -164,47 +167,58 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           WORKSHOP_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name || 'pf_2' }}/
         run: |
-          # Maintain a single bot-owned assessment comment (marker + github-actions[bot]).
-          marker="<!-- pathfinder-bot-assessment -->"
-          confidence_block="$(jq -r --arg url "$WORKSHOP_URL" '
-            "## Obligation confidence\n\n" +
-            "- High: \(.confidence_summary.high // 0)\n" +
-            "- Medium: \(.confidence_summary.medium // 0)\n" +
-            "- Low (escalate): \(.confidence_summary.low // 0)\n" +
-            "- Low-confidence candidates may be escalated via **LLM Assist** (proposals only; never auto-approved).\n" +
-            "- Workshop: [\($url)](\($url))\n"
-          ' "$RUNNER_TEMP/workshop-inputs/candidates.json")"
-          body="$(printf '%s\n\n%s\n\n%s\n' "$marker" "$(cat report.md)" "$confidence_block")"
-          jq -n --arg body "$body" '{body: $body}' > comment.json
+          set -euo pipefail
+          inputs="$RUNNER_TEMP/workshop-inputs"
           comments_url="https://api.github.com/repos/$GH_REPOSITORY/issues/$ISSUE_NUMBER/comments"
-          existing_id="$(curl --fail-with-body --silent --show-error \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" "$comments_url" \
-            | jq -r --arg marker "$marker" '[.[] | select(.user.login == "github-actions[bot]" and (.body | contains($marker)))] | .[-1].id // empty')"
-          if [ -z "$existing_id" ]; then
+          upsert_comment() {
+            local marker="$1"
+            local body_file="$2"
+            local body
+            body="$(printf '%s\n\n%s\n' "$marker" "$(cat "$body_file")")"
+            jq -n --arg body "$body" '{body: $body}' > comment.json
+            local existing_id
             existing_id="$(curl --fail-with-body --silent --show-error \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer $GH_TOKEN" \
               -H "X-GitHub-Api-Version: 2022-11-28" "$comments_url" \
-              | jq -r '[.[] | select(.user.login == "github-actions[bot]")][-1].id // empty')"
-          fi
-          if [ -n "$existing_id" ]; then
-            curl --fail-with-body --silent --show-error \
-              -X PATCH \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/$GH_REPOSITORY/issues/comments/$existing_id" \
-              --data @comment.json
-          else
-            curl --fail-with-body --silent --show-error \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "X-GitHub-Api-Version: 2022-11-28" "$comments_url" \
-              --data @comment.json
-          fi
+              | jq -r --arg marker "$marker" '[.[] | select(.user.login == "github-actions[bot]" and (.body | contains($marker)))] | .[-1].id // empty')"
+            if [ -n "$existing_id" ]; then
+              curl --fail-with-body --silent --show-error \
+                -X PATCH \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/$GH_REPOSITORY/issues/comments/$existing_id" \
+                --data @comment.json
+            else
+              curl --fail-with-body --silent --show-error \
+                -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "X-GitHub-Api-Version: 2022-11-28" "$comments_url" \
+                --data @comment.json
+            fi
+          }
+
+          marker="<!-- pathfinder-bot-assessment -->"
+          {
+            cat report.md
+            echo
+            jq -r --arg url "$WORKSHOP_URL" '
+              "## Obligation confidence\n\n" +
+              "- High: \(.confidence_summary.high // 0)\n" +
+              "- Medium: \(.confidence_summary.medium // 0)\n" +
+              "- Low (escalate): \(.confidence_summary.low // 0)\n" +
+              "- Runtime LLM calls on assess: must stay **0** (deterministic gate).\n" +
+              "- Escalate low-confidence via **LLM Assist** (proposals only; never auto-approved).\n" +
+              "- Accept proposals only via `adrctl accept-assist-proposal` after human review.\n" +
+              "- Workshop: [\($url)](\($url))\n"
+            ' "$inputs/candidates.json"
+          } > "$inputs/assessment-comment.md"
+          upsert_comment "$marker" "$inputs/assessment-comment.md"
+
+          checklist_marker="<!-- pathfinder-bot-low-confidence-checklist -->"
+          upsert_comment "$checklist_marker" "$inputs/low-confidence-checklist.md"
 
       - name: Upload machine-readable evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

@@ -1,41 +1,158 @@
 [
   {
     "vars": {
-      "candidate_id": "CAND-CORPUS-2002",
-      "adr_id": "ADR-2002",
-      "source_path": "testdata/corpus/adrs/ADR-2002.md",
-      "source_line_start": 7,
-      "source_line_end": 7,
-      "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "confidence": "low",
-      "escalation_reasons": "manual_review_pattern_hint,subjective_or_ambiguous_language",
-      "statement": "Services should prefer asynchronous messaging where appropriate."
-    }
-  },
-  {
-    "vars": {
-      "candidate_id": "CAND-CORPUS-2004",
-      "adr_id": "ADR-2004",
-      "source_path": "testdata/corpus/adrs/ADR-2004.md",
-      "source_line_start": 7,
-      "source_line_end": 7,
-      "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-      "confidence": "low",
-      "escalation_reasons": "manual_review_pattern_hint",
-      "statement": "Teams may adopt a documented interoperability constraint when integrating external systems."
-    }
-  },
-  {
-    "vars": {
-      "candidate_id": "CAND-CORPUS-SUBJECTIVE",
-      "adr_id": "ADR-2002",
-      "source_path": "testdata/corpus/adrs/ADR-2002.md",
+      "candidate_id": "CAND-da0c8f15434273b1",
+      "adr_id": "ADR-2003",
+      "source_path": "testdata/corpus/adrs/ADR-2003.md",
       "source_line_start": 9,
       "source_line_end": 9,
-      "source_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "source_sha256": "4c72ab6cffe9c446a4e68d0d91277456b9fcfe8df226500154ea63f33ffb8fc8",
       "confidence": "low",
-      "escalation_reasons": "subjective_or_ambiguous_language,manual_review_pattern_hint",
-      "statement": "Prefer clear ownership boundaries when systems grow."
+      "escalation_reasons": "manual_review_pattern_hint,exception_language,conditional_scope",
+      "statement": "Services must not evaluate untrusted input with a dynamic interpreter for workload 1 unless an exception is explicitly documented."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-ba6cbcfda736ff84",
+      "adr_id": "ADR-2004",
+      "source_path": "testdata/corpus/adrs/ADR-2004.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "11e13bd5e5f16c84b518e5bb52bfead6a6b39e7bd54ec7ac680e5245ac8f343c",
+      "confidence": "low",
+      "escalation_reasons": "should_modality,manual_review_pattern_hint,ambiguity_flags,subjective_or_underspecified,conditional_scope",
+      "statement": "Services should prefer asynchronous messaging for service family 1 where appropriate."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-8616302940dc3d1d",
+      "adr_id": "ADR-2005",
+      "source_path": "testdata/corpus/adrs/ADR-2005.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "66086a350fb08b2f208615a645c087aa0f09eab15ca0c02a0a1e8d21e5c19b00",
+      "confidence": "low",
+      "escalation_reasons": "permissive_or_negative_requirement_modality,manual_review_pattern_hint,conditional_scope",
+      "statement": "Teams may adopt a documented interoperability constraint for integration slot 1 when integrating external systems."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-f300ad3416e30154",
+      "adr_id": "ADR-2008",
+      "source_path": "testdata/corpus/adrs/ADR-2008.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "1fa0e4b907c3e0d0f87aa05fdfca4403d2981f41457ea3cd12d9621ab402e3cd",
+      "confidence": "low",
+      "escalation_reasons": "manual_review_pattern_hint,exception_language,conditional_scope",
+      "statement": "Services must not evaluate untrusted input with a dynamic interpreter for workload 2 unless an exception is explicitly documented."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-d4ab86ecf6b95a5d",
+      "adr_id": "ADR-2009",
+      "source_path": "testdata/corpus/adrs/ADR-2009.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "8a12e792515fc26494a1f8493d5a78a96a202f8dcff1e43ad86d922c251f62f8",
+      "confidence": "low",
+      "escalation_reasons": "should_modality,manual_review_pattern_hint,ambiguity_flags,subjective_or_underspecified,conditional_scope",
+      "statement": "Services should prefer asynchronous messaging for service family 2 where appropriate."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-b2a0a2aa4fa00a9f",
+      "adr_id": "ADR-2010",
+      "source_path": "testdata/corpus/adrs/ADR-2010.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "daa61f95b7eb09bb0235a96840c2dfc09191d0dba785da7f91c1c2647b8af6c0",
+      "confidence": "low",
+      "escalation_reasons": "permissive_or_negative_requirement_modality,manual_review_pattern_hint,conditional_scope",
+      "statement": "Teams may adopt a documented interoperability constraint for integration slot 2 when integrating external systems."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-48d36e7641231b7c",
+      "adr_id": "ADR-2013",
+      "source_path": "testdata/corpus/adrs/ADR-2013.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "a98e299600bc37e9627a7aafacc096171589d2829f680a1f8f86ff8217a0d046",
+      "confidence": "low",
+      "escalation_reasons": "manual_review_pattern_hint,exception_language,conditional_scope",
+      "statement": "Services must not evaluate untrusted input with a dynamic interpreter for workload 3 unless an exception is explicitly documented."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-fa022ea5b9d7594c",
+      "adr_id": "ADR-2014",
+      "source_path": "testdata/corpus/adrs/ADR-2014.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "ab1d2dcb73d1b25c15dc18dba068732f7541c0d9f37430da6b5587a8f8e13563",
+      "confidence": "low",
+      "escalation_reasons": "should_modality,manual_review_pattern_hint,ambiguity_flags,subjective_or_underspecified,conditional_scope",
+      "statement": "Services should prefer asynchronous messaging for service family 3 where appropriate."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-eb5d2b3d53357b98",
+      "adr_id": "ADR-2015",
+      "source_path": "testdata/corpus/adrs/ADR-2015.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "3eb98929535715e1c25ebe727ea32da8155f0d81433803304e6dcf70080d77b7",
+      "confidence": "low",
+      "escalation_reasons": "permissive_or_negative_requirement_modality,manual_review_pattern_hint,conditional_scope",
+      "statement": "Teams may adopt a documented interoperability constraint for integration slot 3 when integrating external systems."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-a55e8de7f964afd6",
+      "adr_id": "ADR-2018",
+      "source_path": "testdata/corpus/adrs/ADR-2018.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "a5be161ed60b9c97098c3d8cd4b96eaa52a3827868bf990d55dd6fb4b54b8b79",
+      "confidence": "low",
+      "escalation_reasons": "manual_review_pattern_hint,exception_language,conditional_scope",
+      "statement": "Services must not evaluate untrusted input with a dynamic interpreter for workload 4 unless an exception is explicitly documented."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-2e3880818b75933e",
+      "adr_id": "ADR-2019",
+      "source_path": "testdata/corpus/adrs/ADR-2019.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "a5ea08dbd0dfe87784b2ca6b13603b95ed925701988697d496f1fbaf5cc16237",
+      "confidence": "low",
+      "escalation_reasons": "should_modality,manual_review_pattern_hint,ambiguity_flags,subjective_or_underspecified,conditional_scope",
+      "statement": "Services should prefer asynchronous messaging for service family 4 where appropriate."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-a607ff47d65a8071",
+      "adr_id": "ADR-2020",
+      "source_path": "testdata/corpus/adrs/ADR-2020.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "7604422fbb906dc19b3c07c251c0a93142c5fd979f12ba6a589e980b52a78a00",
+      "confidence": "low",
+      "escalation_reasons": "permissive_or_negative_requirement_modality,manual_review_pattern_hint,conditional_scope",
+      "statement": "Teams may adopt a documented interoperability constraint for integration slot 4 when integrating external systems."
     }
   }
 ]

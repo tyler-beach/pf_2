@@ -7,17 +7,18 @@ Emitted by `adrctl workshop-emit` into `metrics.json` and appended to `workshop-
 
 | KPI ID | Question | Formula | Unit | Dimensions | Freshness |
 |---|---|---|---|---|---|
-| `kpi.confidence.share` | How are candidates distributed by confidence? | high/medium/low counts and shares of `candidate_total` | count / ratio | workflow, ref, band | every extract |
+| `kpi.confidence.share` | How are candidates distributed by confidence? | Emitted as `kpi.confidence.share.{high,medium,low}` = band_count / `candidate_total` (plus raw counts) | count / ratio | workflow, ref, band | every extract |
 | `kpi.escalation.rate` | How often do we escalate to assist? | `confidence_low / candidate_total` | ratio 0–1 | workflow, ref | every extract |
 | `kpi.harness.precision` | Are labeled extractions candidates precise? | harness matched / (matched + FP), overall and by band | ratio | corpus, band | corpus-eval / reuse-pilot |
-| `kpi.harness.recall` | Do we recover labeled statements? | matched markers / expected markers | ratio | corpus, band | corpus-eval / reuse-pilot |
+| `kpi.harness.recall` | Do we recover labeled statements? | matched markers / expected markers; also `kpi.harness.recall.{high,medium,low}` from harness `recall_by_confidence` | ratio | corpus, band | corpus-eval / reuse-pilot |
 | `kpi.review.backlog` | How many candidates await human review? | `pending_review_count` | count | workflow | validate-obligation-reviews |
 | `kpi.review.pending_by_band` | Where is backlog concentrated? | pending_high / medium / low | count | band | validate-obligation-reviews |
-| `kpi.review.accept_rate` | Do humans accept assist proposals? | accepted proposals / proposals reviewed (when labeled) | ratio | provider_mode | review registry vs proposals |
+| `kpi.review.accept_rate` | Do humans accept assist proposals? | approved / (approved + rejected) among proposal parents with a non-pending latest review (`adrctl accept-assist-proposal`) | ratio | provider_mode | review registry vs proposals |
 | `kpi.assess.verdict` | Did the deterministic assess pass? | assessment `verdict` | enum | workflow, ref | assess / assess-repo |
 | `kpi.assess.coverage` | Binding coverage health | covered / unbound / stale counts | count | workflow | assessment + review |
 | `kpi.invariant.llm_calls` | Did assess stay zero-LLM? | `runtime_llm_calls` (must be 0 on assess paths) | count | workflow | assess |
 | `kpi.assist.proposal_count` | Assist volume | proposal_count | count | provider_mode, max_confidence | assist-obligations |
+| `kpi.assist.prompt_tokens` / `completion_tokens` / `cost_usd` | LLM usage & estimated spend | tokens from provider usage; USD estimate for live (`gpt-4o-mini` list rates); offline = 0 | count / USD | provider, model | assist-obligations |
 | `kpi.promptfoo.pass_rate` | Did assist eval assertions pass? | successes / (successes+failures); **not a compliance verdict** | ratio | offline\|live | Promptfoo |
 | `kpi.evidence.gap_rate` | Share needing manual / non-executable patterns | `manual_review` candidates / total | ratio | workflow | extract |
 | `kpi.corpus.size` | Labeled corpus scale | labeled ADR count | count | corpus | labels.json |

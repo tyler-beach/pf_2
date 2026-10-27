@@ -1,0 +1,92 @@
+{
+  "steps": [
+    {
+      "id": "start",
+      "title": "Start with an ADR",
+      "narrative": "An architect publishes an ADR describing a hard requirement. Pathfinder will turn prose into reviewable obligation candidates without calling an LLM on the assess path.",
+      "technical": "ADR Markdown must include an H1 title. ingest-adrs builds a content-addressed index; extract later cites source_path + line ranges + SHA-256.",
+      "artifact_key": "adr",
+      "callouts": ["Assess never uses LLM_API_KEY"]
+    },
+    {
+      "id": "extract",
+      "title": "Extract + score confidence",
+      "narrative": "Deterministic extractors find obligation-like statements and assign high/medium/low confidence. Only the low band is eligible for batch LLM assist.",
+      "technical": "Confidence combines modality strength, pattern_hint match, and citation quality. Escalation reasons are recorded on the candidate for review UX.",
+      "artifact_key": "candidate",
+      "callouts": ["kpi.escalation.rate = low / total"]
+    },
+    {
+      "id": "assist",
+      "title": "Batch LLM assist",
+      "narrative": "When confidence is low, assist drafts a normalized statement and suggested pattern. Offline mode uses fixtures so CI stays green without secrets.",
+      "technical": "assist-obligations verifies the source quote against file bytes/SHA. Proposals set executable=false and approval_status=pending_review. Live mode accumulates prompt/completion tokens and estimated_cost_usd.",
+      "artifact_key": "proposal",
+      "callouts": ["Cost is $0 offline", "Proposals never auto-approve"]
+    },
+    {
+      "id": "review",
+      "title": "Human accept / reject",
+      "narrative": "A reviewer accepts or rejects the proposal into the append-only review registry. Accept rate becomes a workshop KPI.",
+      "technical": "accept-assist-proposal → ProposalToReview → RecordReview. Citation drift between proposal and candidate fails closed.",
+      "artifact_key": "review",
+      "callouts": ["kpi.review.accept_rate"]
+    },
+    {
+      "id": "assess",
+      "title": "Deterministic assess gate",
+      "narrative": "PR/issue assessment evaluates requirements with analyzer evidence and binding coverage — still zero runtime LLM calls.",
+      "technical": "workshop-emit --enforce-assess-llm fails if runtime_llm_calls != 0 on assess workflows.",
+      "artifact_key": "assessment",
+      "callouts": ["runtime_llm_calls must be 0"]
+    },
+    {
+      "id": "command-center",
+      "title": "Publish to command center",
+      "narrative": "Artifacts land on the workshop-data branch and the Pages SPA renders drilldowns, ADR dig-ins, cost, and this Sample journey.",
+      "technical": "workshop-publish builds the Vite app and deploys with actions/deploy-pages. Fixtures ship for local preview when live data is thin.",
+      "artifact_key": "latest",
+      "callouts": ["Internal tool — full visibility by design"]
+    }
+  ],
+  "artifacts": {
+    "adr": {
+      "id": "ADR-2001",
+      "title": "TLS termination at edge",
+      "excerpt": "All public HTTP traffic must terminate TLS at the edge proxy with certificates managed by the platform."
+    },
+    "candidate": {
+      "id": "CAND-DEMO-1",
+      "adr_id": "ADR-2001",
+      "confidence": "low",
+      "pattern_hint": "manual_review",
+      "statement": "All public HTTP traffic must terminate TLS at the edge proxy",
+      "escalation_reasons": ["weak_pattern_match", "broad_scope"]
+    },
+    "proposal": {
+      "proposal_id": "PROP-DEMO-1",
+      "parent_candidate_id": "CAND-DEMO-1",
+      "normalized_statement": "Public HTTP must terminate TLS at the edge proxy",
+      "suggested_pattern_id": "manual_review",
+      "executable": false,
+      "approval_status": "pending_review",
+      "estimated_cost_usd": 0,
+      "provider": "offline-fixture"
+    },
+    "review": {
+      "candidate_id": "CAND-DEMO-1",
+      "decision": "approved",
+      "reviewer": "architect@example",
+      "enforcement_mode": "review_required"
+    },
+    "assessment": {
+      "verdict": "PASS",
+      "runtime_llm_calls": 0,
+      "coverage_status": "COMPLETE"
+    },
+    "latest": {
+      "schema_version": "workshop-snapshot-v1",
+      "summary": "workflow=fixture; verdict=PASS; candidates=4; proposals=1"
+    }
+  }
+}

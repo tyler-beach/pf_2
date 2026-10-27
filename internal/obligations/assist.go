@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -57,7 +58,18 @@ type ProposalIndex struct {
 	CandidateCount    int        `json:"candidate_count"`
 	ProposalCount     int        `json:"proposal_count"`
 	RuntimeLLMCalls   int        `json:"runtime_llm_calls"`
+	PromptTokens      int        `json:"prompt_tokens"`
+	CompletionTokens  int        `json:"completion_tokens"`
+	EstimatedCostUSD  float64    `json:"estimated_cost_usd"`
+	CostCurrency      string     `json:"cost_currency,omitempty"`
+	CostPricingNote   string     `json:"cost_pricing_note,omitempty"`
 	Proposals         []Proposal `json:"proposals"`
+}
+
+// TokenUsage is optional provider token accounting for cost rollups.
+type TokenUsage struct {
+	PromptTokens     int
+	CompletionTokens int
 }
 
 // AssistProvider generates raw proposal JSON for one candidate. Live providers
@@ -105,6 +117,8 @@ type OpenAICompatProvider struct {
 	ModelID    string
 	HTTPClient *http.Client
 	MaxTokens  int
+	// LastUsage is populated after each successful Complete call.
+	LastUsage TokenUsage
 }
 
 func (p OpenAICompatProvider) Name() string  { return "openai-compatible" }
@@ -166,12 +180,20 @@ func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]by
 				Content string `json:"content"`
 			} `json:"message"`
 		} `json:"choices"`
+		Usage struct {
+			PromptTokens     int `json:"prompt_tokens"`
+			CompletionTokens int `json:"completion_tokens"`
+		} `json:"usage"`
 	}
 	if err := json.Unmarshal(raw, &parsed); err != nil {
 		return nil, fmt.Errorf("decode provider response: %w", err)
 	}
 	if len(parsed.Choices) == 0 || strings.TrimSpace(parsed.Choices[0].Message.Content) == "" {
 		return nil, fmt.Errorf("provider returned no assistant content")
+	}
+	p.LastUsage = TokenUsage{
+		PromptTokens:     parsed.Usage.PromptTokens,
+		CompletionTokens: parsed.Usage.CompletionTokens,
 	}
 	content := strings.TrimSpace(parsed.Choices[0].Message.Content)
 	content = strings.TrimPrefix(content, "```json")
@@ -184,6 +206,7 @@ func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]by
 type AssistOptions struct {
 	MaxConfidence string
 	MaxCandidates int
+	SourceRoot    string // directory containing candidate SourcePath files; required for citation checks
 	Provider      AssistProvider
 	Now           func() time.Time
 }
@@ -215,6 +238,8 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 		selected = selected[:opts.MaxCandidates]
 	}
 	out.CandidateCount = len(selected)
+	out.CostCurrency = "USD"
+	out.CostPricingNote = "offline=0; live uses gpt-4o-mini list rates ($0.15/1M input, $0.60/1M output) when usage is reported"
 	for _, candidate := range selected {
 		if candidate.Executable {
 			return out, fmt.Errorf("refusing to assist executable candidate %s", candidate.ID)
@@ -226,13 +251,17 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 			return out, fmt.Errorf("assist candidate %s: %w", candidate.ID, err)
 		}
 		out.RuntimeLLMCalls++
+		if live, ok := opts.Provider.(*OpenAICompatProvider); ok {
+			out.PromptTokens += live.LastUsage.PromptTokens
+			out.CompletionTokens += live.LastUsage.CompletionTokens
+		}
 		rawSum := sha256.Sum256(raw)
 		parsed, err := parseAssistPayload(raw)
 		if err != nil {
 			return out, fmt.Errorf("assist candidate %s: %w", candidate.ID, err)
 		}
 		quote := candidate.Statement
-		if err := verifyAssistCitation(candidate, quote); err != nil {
+		if err := verifyAssistCitation(opts.SourceRoot, candidate, quote); err != nil {
 			return out, fmt.Errorf("assist candidate %s: %w", candidate.ID, err)
 		}
 		proposal := Proposal{
@@ -264,6 +293,10 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 		out.Proposals = append(out.Proposals, proposal)
 	}
 	out.ProposalCount = len(out.Proposals)
+	if out.Provider == "openai-compatible" {
+		// Approximate list pricing for gpt-4o-mini-class models; workshop surfaces the estimate.
+		out.EstimatedCostUSD = (float64(out.PromptTokens)*0.15 + float64(out.CompletionTokens)*0.60) / 1_000_000
+	}
 	return out, nil
 }
 
@@ -302,7 +335,7 @@ func parseAssistPayload(raw []byte) (assistPayload, error) {
 	return payload, nil
 }
 
-func verifyAssistCitation(candidate Candidate, quote string) error {
+func verifyAssistCitation(sourceRoot string, candidate Candidate, quote string) error {
 	if strings.TrimSpace(quote) == "" {
 		return fmt.Errorf("empty source quote")
 	}
@@ -314,6 +347,40 @@ func verifyAssistCitation(candidate Candidate, quote string) error {
 	}
 	if !validSHA256(candidate.SourceSHA256) {
 		return fmt.Errorf("invalid source SHA-256")
+	}
+	root := strings.TrimSpace(sourceRoot)
+	if root == "" {
+		return fmt.Errorf("source root is required to verify citations against source bytes")
+	}
+	cleanPath := filepath.Clean(candidate.SourcePath)
+	if cleanPath == "." || cleanPath == "" || filepath.IsAbs(cleanPath) || strings.HasPrefix(cleanPath, "..") {
+		return fmt.Errorf("unsafe source path %q", candidate.SourcePath)
+	}
+	fullPath := filepath.Join(root, cleanPath)
+	data, err := os.ReadFile(fullPath)
+	if err != nil {
+		return fmt.Errorf("read source file: %w", err)
+	}
+	sum := sha256.Sum256(data)
+	got := hex.EncodeToString(sum[:])
+	if !strings.EqualFold(got, candidate.SourceSHA256) {
+		return fmt.Errorf("source SHA-256 mismatch for %s", candidate.SourcePath)
+	}
+	lines := strings.Split(string(data), "\n")
+	if candidate.SourceLineEnd > len(lines) {
+		return fmt.Errorf("source line range %d-%d exceeds file length %d", candidate.SourceLineStart, candidate.SourceLineEnd, len(lines))
+	}
+	var excerpt strings.Builder
+	for i := candidate.SourceLineStart - 1; i < candidate.SourceLineEnd; i++ {
+		if i > candidate.SourceLineStart-1 {
+			excerpt.WriteByte('\n')
+		}
+		excerpt.WriteString(lines[i])
+	}
+	extracted := strings.TrimSpace(excerpt.String())
+	want := strings.TrimSpace(quote)
+	if extracted != want && !strings.Contains(extracted, want) {
+		return fmt.Errorf("source quote not found in cited line range")
 	}
 	return nil
 }

@@ -27,20 +27,30 @@ func TestBuildIndexCreatesReviewOnlyCandidatesWithExactSourceLines(t *testing.T)
 		"~~~", "",
 	}, "\n")
 	path := filepath.Join(root, "ADR-901-timeouts.md")
-	if err := os.WriteFile(path, []byte(source), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
 	doc, err := adringest.Parse("ADR-901-timeouts.md", []byte(source))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	rawIndex := []byte("{\"schema_version\":\"1\",\"source_root\":\"adrs\"}")
 	got, err := BuildIndex([]adringest.Document{doc}, root, "adrs", rawIndex)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if got.SchemaVersion != "1" || got.DocumentCount != 1 || got.DocumentsWithCandidates != 1 || got.CandidateCount != 4 {
 		t.Fatalf("unexpected candidate index summary: %+v", got)
 	}
-	if len(got.SourceIndexSHA256) != 64 { t.Fatalf("missing index provenance: %+v", got) }
+	if len(got.SourceIndexSHA256) != 64 {
+		t.Fatalf("missing index provenance: %+v", got)
+	}
 	markers := map[string]bool{"Every outbound": false, "Service clients": false, "An exception": false, "Implementations": false}
 	lines := strings.Split(source, "\n")
 	for _, candidate := range got.Candidates {
-		if candidate.ID == "" || !strings.HasPrefix(candidate.ID, "CAND-") { t.Errorf("missing stable candidate ID: %+v", candidate) }
+		if candidate.ID == "" || !strings.HasPrefix(candidate.ID, "CAND-") {
+			t.Errorf("missing stable candidate ID: %+v", candidate)
+		}
 		if candidate.SourceSHA256 != doc.SourceSHA256 || candidate.SourcePath != filepath.ToSlash(filepath.Join("adrs", doc.SourcePath)) {
 			t.Errorf("source provenance lost: %+v", candidate)
 		}
@@ -50,44 +60,82 @@ func TestBuildIndexCreatesReviewOnlyCandidatesWithExactSourceLines(t *testing.T)
 		if candidate.ApprovalStatus != "pending_review" || candidate.EnforcementMode != "review_required" || candidate.Executable {
 			t.Errorf("candidate was accidentally made enforceable: %+v", candidate)
 		}
-		if strings.Contains(candidate.Statement, "must not be extracted") { t.Errorf("code fence emitted a candidate: %+v", candidate) }
+		if strings.Contains(candidate.Statement, "must not be extracted") {
+			t.Errorf("code fence emitted a candidate: %+v", candidate)
+		}
 		if !strings.Contains(lines[candidate.SourceLineStart-1], candidate.Statement) {
 			t.Errorf("source line %d does not contain the candidate text %q", candidate.SourceLineStart, candidate.Statement)
 		}
-		for marker := range markers { if strings.Contains(candidate.Statement, marker) { markers[marker] = true } }
+		for marker := range markers {
+			if strings.Contains(candidate.Statement, marker) {
+				markers[marker] = true
+			}
+		}
 	}
-	for marker, found := range markers { if !found { t.Errorf("candidate not found for %q", marker) } }
+	for marker, found := range markers {
+		if !found {
+			t.Errorf("candidate not found for %q", marker)
+		}
+	}
 	var exceptionFound bool
-	for _, c := range got.Candidates { if c.Kind == "exception_candidate" && c.Modality == "may" { exceptionFound = true } }
-	if !exceptionFound { t.Fatal("exception clause was not marked for review") }
+	for _, c := range got.Candidates {
+		if c.Kind == "exception_candidate" && c.Modality == "may" {
+			exceptionFound = true
+		}
+	}
+	if !exceptionFound {
+		t.Fatal("exception clause was not marked for review")
+	}
 }
 
 func TestBuildIndexIsDeterministic(t *testing.T) {
 	root := t.TempDir()
 	source := "# ADR-001: Timeout\n\n## Decision\n\nThe service must set a timeout.\n"
 	path := filepath.Join(root, "ADR-001.md")
-	if err := os.WriteFile(path, []byte(source), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
 	doc, err := adringest.Parse("ADR-001.md", []byte(source))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	raw := []byte("{\"schema_version\":\"1\"}")
 	first, err := BuildIndex([]adringest.Document{doc}, root, ".", raw)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	second, err := BuildIndex([]adringest.Document{doc}, root, ".", raw)
-	if err != nil { t.Fatal(err) }
-	a, err := json.Marshal(first); if err != nil { t.Fatal(err) }
-	b, err := json.Marshal(second); if err != nil { t.Fatal(err) }
-	if string(a) != string(b) { t.Fatalf("candidate generation is not deterministic:\n%s\n%s", a, b) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err := json.Marshal(first)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := json.Marshal(second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(a) != string(b) {
+		t.Fatalf("candidate generation is not deterministic:\n%s\n%s", a, b)
+	}
 }
 
 func TestBuildIndexRejectsSourceDriftAndUnsafePaths(t *testing.T) {
 	root := t.TempDir()
 	source := "# ADR-001: Timeout\n\n## Decision\n\nThe service must set a timeout.\n"
 	path := filepath.Join(root, "ADR-001.md")
-	if err := os.WriteFile(path, []byte(source), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
 	doc, err := adringest.Parse("ADR-001.md", []byte(source))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	raw := []byte("{\"schema_version\":\"1\"}")
-	if err := os.WriteFile(path, []byte(source+"Source drift.\n"), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(path, []byte(source+"Source drift.\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
 	if _, err := BuildIndex([]adringest.Document{doc}, root, ".", raw); err == nil || !strings.Contains(err.Error(), "no longer matches") {
 		t.Fatalf("stale source index should fail closed, got %v", err)
 	}
@@ -101,11 +149,17 @@ func TestBuildIndexAcceptsNoNormativeStatements(t *testing.T) {
 	root := t.TempDir()
 	source := "# ADR-902: Background\n\n## Context\n\nTeams are growing and the current system is difficult to maintain.\n"
 	path := filepath.Join(root, "ADR-902.md")
-	if err := os.WriteFile(path, []byte(source), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
 	doc, err := adringest.Parse("ADR-902.md", []byte(source))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	got, err := BuildIndex([]adringest.Document{doc}, root, ".", []byte("{}"))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if got.DocumentCount != 1 || got.CandidateCount != 0 || len(got.Candidates) != 0 {
 		t.Fatalf("non-normative rationale should produce no candidates: %+v", got)
 	}
@@ -115,25 +169,38 @@ func TestBuildIndexRejectsSymlinkedSource(t *testing.T) {
 	root := t.TempDir()
 	source := "# ADR-001: Timeout\n\n## Decision\n\nService must set a timeout.\n"
 	outside := filepath.Join(t.TempDir(), "outside.md")
-	if err := os.WriteFile(outside, []byte(source), 0600); err != nil { t.Fatal(err) }
-	if err := os.Symlink(outside, filepath.Join(root, "ADR-001.md")); err != nil { t.Skipf("symlink unavailable: %v", err) }
+	if err := os.WriteFile(outside, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outside, filepath.Join(root, "ADR-001.md")); err != nil {
+		t.Skipf("symlink unavailable: %v", err)
+	}
 	doc, err := adringest.Parse("ADR-001.md", []byte(source))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	_, err = BuildIndex([]adringest.Document{doc}, root, ".", []byte("{}"))
-	if err == nil || !strings.Contains(err.Error(), "uses a symlinked path") { t.Fatalf("expected symlink rejection, got %v", err) }
+	if err == nil || !strings.Contains(err.Error(), "uses a symlinked path") {
+		t.Fatalf("expected symlink rejection, got %v", err)
+	}
 }
-
 
 // TestSpecificationFixtureRemainsReviewOnly exercises ordinary technical prose,
 // including numeric bounds, compound conditions, and an exception clause.
 func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 	fixturePath := filepath.Join("..", "..", "testdata", "specifications", "service-runtime.md")
 	source, err := os.ReadFile(fixturePath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	doc, err := adringest.Parse("service-runtime.md", source)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	candidates, err := ExtractDocument(doc, "testdata/specifications/service-runtime.md", source)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	var timeout, retries, health, exception bool
 	for _, candidate := range candidates {
@@ -170,14 +237,19 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 	}
 }
 
-
 func TestContextualNormativeTextRequiresExtraReview(t *testing.T) {
 	source := []byte("# ADR-901: Timeout policy\n\n## Status\n\nAccepted\n\n## Context\n\nLegacy clients must use the old timeout setting.\n\n## Decision\n\nThe service must use a finite request timeout.\n")
 	doc, err := adringest.Parse("ADR-901.md", source)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	candidates, err := ExtractDocument(doc, "adrs/ADR-901.md", source)
-	if err != nil { t.Fatal(err) }
-	if len(candidates) != 2 { t.Fatalf("expected two normative candidates, got %+v", candidates) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(candidates) != 2 {
+		t.Fatalf("expected two normative candidates, got %+v", candidates)
+	}
 	for _, candidate := range candidates {
 		if candidate.SectionHeading == "Context" && !hasReviewHint(candidate, "non_decision_section") {
 			t.Errorf("contextual normative text must be flagged for review: %+v", candidate)
@@ -190,7 +262,9 @@ func TestContextualNormativeTextRequiresExtraReview(t *testing.T) {
 
 func hasReviewHint(candidate Candidate, wanted string) bool {
 	for _, hint := range candidate.ReviewHints {
-		if hint == wanted { return true }
+		if hint == wanted {
+			return true
+		}
 	}
 	return false
 }
@@ -403,7 +477,7 @@ func TestBuildIndexExtractsPreambleAlongsideHeadedSections(t *testing.T) {
 }
 
 func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
-	tests := []struct { statement, want string }{
+	tests := []struct{ statement, want string }{
 		{"The service must not execute shell commands.", "must_not"},
 		{"A timeout is not required for local in-memory operations.", "not_required"},
 		{"An exception may be approved only when a documented constraint requires it.", "may"},

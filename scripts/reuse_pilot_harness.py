@@ -26,6 +26,11 @@ def score(labels: dict, candidates: list[dict]) -> dict:
     modalities: Counter[str] = Counter()
     confidence_counts: Counter[str] = Counter()
     by_band_precision = defaultdict(lambda: {"matched": 0, "fp": 0})
+    expected_by_band: dict[str, set[str]] = defaultdict(set)
+    matched_by_band: dict[str, set[str]] = defaultdict(set)
+    for item in labels.get("expected_candidates", []):
+        band = (item.get("confidence_band") or "low").lower()
+        expected_by_band[band].add(item["statement_contains"])
     escalate_expected = 0
     escalate_observed = 0
     escalate_expected_markers = {
@@ -58,6 +63,8 @@ def score(labels: dict, candidates: list[dict]) -> dict:
         matched_markers.add(hit_marker)
         matched_candidates += 1
         by_band_precision[band]["matched"] += 1
+        label_band = (hit_meta.get("confidence_band") or "low").lower()
+        matched_by_band[label_band].add(hit_marker)
         if hit_marker in escalate_expected_markers:
             escalate_expected += 1
             if band != "low" and hit_meta.get("confidence_band") == "low":
@@ -79,6 +86,15 @@ def score(labels: dict, candidates: list[dict]) -> dict:
             "precision": round(stats["matched"] / max(total, 1), 4),
         }
 
+    recall_by_confidence = {}
+    for band, markers in expected_by_band.items():
+        hit = len(matched_by_band.get(band, set()) & markers)
+        recall_by_confidence[band] = {
+            "expected": len(markers),
+            "matched": hit,
+            "recall": round(hit / max(len(markers), 1), 4),
+        }
+
     expected_escalate_labels = len(escalate_expected_markers)
     return {
         "expected_candidates": expected_count,
@@ -93,6 +109,7 @@ def score(labels: dict, candidates: list[dict]) -> dict:
         "modality_counts": dict(modalities),
         "confidence_counts": dict(confidence_counts),
         "precision_by_confidence": band_metrics,
+        "recall_by_confidence": recall_by_confidence,
         "escalation_rate": round(escalate_observed / max(len(candidates), 1), 4),
         "escalation_expected_labels": expected_escalate_labels,
         "escalation_observed_low": escalate_observed,

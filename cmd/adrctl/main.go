@@ -41,6 +41,12 @@ func main() {
 		err = runExtractObligations(os.Args[2:])
 	case "assist-obligations":
 		err = runAssistObligations(os.Args[2:])
+	case "proposal-to-review":
+		err = runProposalToReview(os.Args[2:])
+	case "accept-assist-proposal":
+		err = runAcceptAssistProposal(os.Args[2:])
+	case "low-confidence-checklist":
+		err = runLowConfidenceChecklist(os.Args[2:])
 	case "scan-opengrep":
 		err = runOpenGrepScan(os.Args[2:])
 	case "plan-repo":
@@ -76,7 +82,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|assist-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|workshop-emit|specification-check|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|assist-obligations|proposal-to-review|accept-assist-proposal|low-confidence-checklist|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|workshop-emit|specification-check|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -567,6 +573,7 @@ func runExtractObligations(args []string) error {
 func runAssistObligations(args []string) error {
 	fs := flag.NewFlagSet("assist-obligations", flag.ContinueOnError)
 	indexPath := fs.String("index", "adr/obligation-candidates.json", "review-only candidate obligation JSON")
+	root := fs.String("root", "", "ADR source root for citation byte checks (defaults to candidate path common parent or cwd)")
 	output := fs.String("json-out", "adr/llm-obligation-proposals.json", "proposal artifact JSON (never mutates catalog/registry)")
 	mdOut := fs.String("md-out", "", "optional Markdown proposal report")
 	maxConfidence := fs.String("max-confidence", "low", "escalate candidates at or below this confidence band")
@@ -589,6 +596,14 @@ func runAssistObligations(args []string) error {
 	var index obligations.Index
 	if err := json.Unmarshal(indexBytes, &index); err != nil {
 		return fmt.Errorf("decode candidate index: %w", err)
+	}
+	sourceRoot := strings.TrimSpace(*root)
+	if sourceRoot == "" {
+		sourceRoot = "."
+	}
+	sourceRootAbs, err := filepath.Abs(sourceRoot)
+	if err != nil {
+		return fmt.Errorf("resolve source root: %w", err)
 	}
 	var provider obligations.AssistProvider
 	switch strings.ToLower(strings.TrimSpace(*providerName)) {
@@ -614,6 +629,7 @@ func runAssistObligations(args []string) error {
 	out, err := obligations.AssistObligations(context.Background(), index, obligations.AssistOptions{
 		MaxConfidence: *maxConfidence,
 		MaxCandidates: *maxCandidates,
+		SourceRoot:    sourceRootAbs,
 		Provider:      provider,
 	})
 	if err != nil {
@@ -651,6 +667,7 @@ func runWorkshopEmit(args []string) error {
 	coverage := fs.String("coverage", "", "obligation review coverage JSON")
 	assessmentPath := fs.String("assessment", "", "assessment JSON")
 	proposals := fs.String("proposals", "", "LLM assist proposals JSON")
+	registryPath := fs.String("registry", "", "obligation review registry JSON (for accept_rate)")
 	harness := fs.String("harness", "", "reuse/corpus harness metrics JSON")
 	promptfooPath := fs.String("promptfoo", "", "Promptfoo results JSON")
 	corpusLabels := fs.String("corpus-labels", "", "corpus labels.json")
@@ -674,6 +691,7 @@ func runWorkshopEmit(args []string) error {
 		CoveragePath:     *coverage,
 		AssessmentPath:   *assessmentPath,
 		ProposalsPath:    *proposals,
+		RegistryPath:     *registryPath,
 		HarnessPath:      *harness,
 		PromptfooPath:    *promptfooPath,
 		CorpusLabelsPath: *corpusLabels,
@@ -683,6 +701,169 @@ func runWorkshopEmit(args []string) error {
 		return err
 	}
 	fmt.Printf("Workshop snapshot %s written to %s (%s)\n", latest.Run.RunID, *outDir, latest.Summary)
+	return nil
+}
+
+func runProposalToReview(args []string) error {
+	fs := flag.NewFlagSet("proposal-to-review", flag.ContinueOnError)
+	proposalsPath := fs.String("proposals", "adr/llm-obligation-proposals.json", "assist proposal index JSON")
+	proposalID := fs.String("proposal-id", "", "proposal id to convert")
+	decision := fs.String("decision", "approved", "approved|rejected")
+	reviewer := fs.String("reviewer", "", "reviewer identity")
+	reference := fs.String("review-reference", "", "review reference URL or note")
+	rationale := fs.String("rationale", "", "optional rationale override")
+	enforcement := fs.String("enforcement-mode", obligations.EnforcementReviewRequired, "enforcement mode")
+	jsonOut := fs.String("json-out", "", "write ReviewProposal JSON (required)")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("proposal-to-review accepts no positional arguments")
+	}
+	if strings.TrimSpace(*proposalID) == "" || strings.TrimSpace(*jsonOut) == "" {
+		return fmt.Errorf("--proposal-id and --json-out are required")
+	}
+	if strings.TrimSpace(*reviewer) == "" || strings.TrimSpace(*reference) == "" {
+		return fmt.Errorf("--reviewer and --review-reference are required")
+	}
+	index, err := obligations.LoadProposalIndex(*proposalsPath)
+	if err != nil {
+		return err
+	}
+	var found obligations.Proposal
+	ok := false
+	for _, p := range index.Proposals {
+		if p.ProposalID == *proposalID {
+			found = p
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("proposal %s not found", *proposalID)
+	}
+	review, err := obligations.ProposalToReview(found, *decision, *reviewer, *reference, *rationale, *enforcement, time.Now())
+	if err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(review, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := writeFile(*jsonOut, append(data, '\n')); err != nil {
+		return err
+	}
+	fmt.Printf("Wrote review proposal for %s (%s) to %s\n", found.ProposalID, review.Decision, *jsonOut)
+	return nil
+}
+
+func runAcceptAssistProposal(args []string) error {
+	fs := flag.NewFlagSet("accept-assist-proposal", flag.ContinueOnError)
+	proposalsPath := fs.String("proposals", "adr/llm-obligation-proposals.json", "assist proposal index JSON")
+	proposalID := fs.String("proposal-id", "", "single proposal id")
+	allPending := fs.Bool("all-pending", false, "accept/reject all pending proposals (up to --max)")
+	maxN := fs.Int("max", 25, "max proposals when using --all-pending")
+	decision := fs.String("decision", "approved", "approved|rejected")
+	indexPath := fs.String("index", "adr/obligation-candidates.json", "candidate index JSON")
+	catalogPath := fs.String("requirements", "adr/requirements.json", "requirements catalog JSON")
+	registryPath := fs.String("registry", "adr/obligation-reviews.json", "append-only review registry")
+	reviewer := fs.String("reviewer", "", "reviewer identity")
+	reference := fs.String("review-reference", "", "review reference URL or note")
+	rationale := fs.String("rationale", "", "optional rationale override")
+	enforcement := fs.String("enforcement-mode", obligations.EnforcementReviewRequired, "enforcement mode")
+	coverageOut := fs.String("coverage-out", "", "optional binding coverage JSON")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("accept-assist-proposal accepts no positional arguments")
+	}
+	if strings.TrimSpace(*reviewer) == "" || strings.TrimSpace(*reference) == "" {
+		return fmt.Errorf("--reviewer and --review-reference are required")
+	}
+	if !*allPending && strings.TrimSpace(*proposalID) == "" {
+		return fmt.Errorf("--proposal-id is required unless --all-pending is set")
+	}
+	candIndex, err := readObligationIndex(*indexPath)
+	if err != nil {
+		return err
+	}
+	catalog, err := assessment.LoadCatalog(*catalogPath)
+	if err != nil {
+		return err
+	}
+	registry, err := obligations.LoadRegistry(*registryPath)
+	if err != nil {
+		return err
+	}
+	proposals, err := obligations.LoadProposalIndex(*proposalsPath)
+	if err != nil {
+		return err
+	}
+	ids := []string{}
+	if *allPending {
+		for _, p := range proposals.Proposals {
+			if p.ApprovalStatus == obligations.DecisionPending && !p.Executable {
+				ids = append(ids, p.ProposalID)
+			}
+			if len(ids) >= *maxN {
+				break
+			}
+		}
+	} else {
+		ids = []string{*proposalID}
+	}
+	if len(ids) == 0 {
+		return fmt.Errorf("no proposals selected")
+	}
+	var coverage obligations.BindingCoverage
+	for _, id := range ids {
+		next, cov, _, err := obligations.AcceptAssistProposal(candIndex, catalog, registry, proposals, id, *decision, *reviewer, *reference, *rationale, *enforcement, time.Now())
+		if err != nil {
+			return fmt.Errorf("accept %s: %w", id, err)
+		}
+		registry = next
+		coverage = cov
+		fmt.Printf("Recorded %s for assist proposal %s\n", *decision, id)
+	}
+	if err := obligations.SaveRegistry(*registryPath, registry); err != nil {
+		return err
+	}
+	if strings.TrimSpace(*coverageOut) != "" {
+		data, err := json.MarshalIndent(coverage, "", "  ")
+		if err != nil {
+			return err
+		}
+		if err := writeFile(*coverageOut, data); err != nil {
+			return err
+		}
+	}
+	fmt.Printf("Updated registry %s (%d proposal(s)). Blocking bindings: %d.\n", *registryPath, len(ids), coverage.BlockingBindingCount)
+	return nil
+}
+
+func runLowConfidenceChecklist(args []string) error {
+	fs := flag.NewFlagSet("low-confidence-checklist", flag.ContinueOnError)
+	indexPath := fs.String("index", "adr/obligation-candidates.json", "candidate index JSON")
+	mdOut := fs.String("md-out", "", "Markdown checklist output (required)")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("low-confidence-checklist accepts no positional arguments")
+	}
+	if strings.TrimSpace(*mdOut) == "" {
+		return fmt.Errorf("--md-out is required")
+	}
+	index, err := readObligationIndex(*indexPath)
+	if err != nil {
+		return err
+	}
+	body := obligations.LowConfidenceChecklistMarkdown(index)
+	if err := writeFile(*mdOut, []byte(body)); err != nil {
+		return err
+	}
+	fmt.Printf("Wrote low-confidence checklist to %s\n", *mdOut)
 	return nil
 }
 

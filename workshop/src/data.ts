@@ -1,35 +1,75 @@
-export type Manifest = {
-  latest_run_id: string;
-  updated_at: string;
-  data_sha: string;
+export type MetricsRow = {
+  run: {
+    run_id: string;
+    workflow: string;
+    git_sha?: string;
+    timestamp?: string;
+    html_url?: string;
+    provider_mode?: string;
+  };
+  metrics: Record<string, unknown>;
 };
 
 export type Latest = {
   schema_version: string;
-  run: {
-    run_id: string;
-    workflow: string;
-    git_sha: string;
-    timestamp: string;
-    html_url?: string;
-    provider_mode?: string;
-  };
+  run: MetricsRow['run'];
   metrics: Record<string, unknown>;
   slo: Record<string, unknown>;
   links?: Record<string, string>;
   summary: string;
 };
 
-export type MetricsRow = {
-  run: Latest['run'];
-  metrics: Record<string, unknown>;
+export type Manifest = {
+  updated_at?: string;
+  latest_run_id?: string;
+  snapshots?: Array<{ run_id: string; path: string }>;
 };
 
-const bust = () => `?t=${Date.now()}`;
+export type PipelineStep = {
+  id: string;
+  order: number;
+  title: string;
+  subtitle: string;
+  command?: string;
+  invariant?: string;
+  inputs: string[];
+  outputs: string[];
+  deep: {
+    what: string;
+    how: string[];
+    failure_modes: string[];
+    metrics: string[];
+    sample_artifact?: unknown;
+  };
+};
 
-async function getJSON<T>(path: string): Promise<T | null> {
+export type SampleStep = {
+  id: string;
+  title: string;
+  technical: string;
+  narrative: string;
+  artifact_key?: string;
+  callouts?: string[];
+};
+
+export type ADRSummary = {
+  id: string;
+  title: string;
+  status: string;
+  path: string;
+  confidence_mix?: { high: number; medium: number; low: number };
+  candidate_ids?: string[];
+  body?: string;
+};
+
+function dataURL(path: string): string {
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base}data/${path}`.replace(/\/{2,}/g, '/').replace(':/', '://');
+}
+
+async function fetchJSON<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${path}${bust()}`);
+    const res = await fetch(dataURL(path));
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
@@ -37,63 +77,64 @@ async function getJSON<T>(path: string): Promise<T | null> {
   }
 }
 
-export async function loadManifest(): Promise<Manifest | null> {
-  return getJSON<Manifest>('data/manifest.json');
-}
-
-export async function loadLatest(): Promise<Latest | null> {
-  return getJSON<Latest>('data/latest.json');
-}
-
-export async function loadRuns(): Promise<MetricsRow[]> {
+async function fetchText(path: string): Promise<string | null> {
   try {
-    const res = await fetch(`data/metrics/runs.jsonl${bust()}`);
-    if (!res.ok) return [];
-    const text = await res.text();
-    return text
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean)
-      .map((l) => JSON.parse(l) as MetricsRow);
+    const res = await fetch(dataURL(path));
+    if (!res.ok) return null;
+    return await res.text();
   } catch {
-    return [];
+    return null;
   }
-}
-
-export async function loadLinkJSON<T>(name: string): Promise<T | null> {
-  const latest = await loadLatest();
-  const rel = latest?.links?.[name] || `${name}.json`;
-  const candidates: string[] = [];
-  if (latest?.run?.run_id) {
-    candidates.push(`data/snapshots/${latest.run.run_id}/${rel}`);
-    candidates.push(`data/snapshots/${latest.run.run_id}/${name}.json`);
-  }
-  candidates.push(`data/${rel}`);
-  candidates.push(`data/${name}.json`);
-  for (const path of candidates) {
-    const value = await getJSON<T>(path);
-    if (value) return value;
-  }
-  return null;
 }
 
 export function repoBase(): { owner: string; repo: string } {
-  // Best-effort from Pages URL path; override via data/repo.json if present.
-  const host = window.location.hostname;
-  if (host.endsWith('github.io')) {
-    const owner = host.replace('.github.io', '');
-    const parts = window.location.pathname.split('/').filter(Boolean);
-    return { owner, repo: parts[0] || 'pf_2' };
+  const parts = location.pathname.split('/').filter(Boolean);
+  if (location.hostname.endsWith('github.io') && parts[0]) {
+    return { owner: location.hostname.replace('.github.io', ''), repo: parts[0] };
   }
   return { owner: 'tyler-beach', repo: 'pf_2' };
 }
 
-export function issueURL(title: string, body: string): string {
+export function workflowDispatchURL(file: string): string {
   const { owner, repo } = repoBase();
-  return `https://github.com/${owner}/${repo}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  return `https://github.com/${owner}/${repo}/actions/workflows/${file}`;
 }
 
-export function workflowDispatchURL(workflowFile: string): string {
+export function issueURL(title: string, body: string): string {
   const { owner, repo } = repoBase();
-  return `https://github.com/${owner}/${repo}/actions/workflows/${workflowFile}`;
+  const q = new URLSearchParams({ title, body });
+  return `https://github.com/${owner}/${repo}/issues/new?${q.toString()}`;
+}
+
+export const loadLatest = () => fetchJSON<Latest>('latest.json');
+export const loadManifest = () => fetchJSON<Manifest>('manifest.json');
+export const loadMetrics = () => fetchJSON<Record<string, unknown>>('metrics.json');
+export const loadPipeline = () => fetchJSON<{ steps: PipelineStep[] }>('pipeline.json');
+export const loadSampleJourney = () => fetchJSON<{ steps: SampleStep[]; artifacts: Record<string, unknown> }>('sample-journey.json');
+export const loadADRIndex = () => fetchJSON<{ adrs: ADRSummary[] }>('adrs/index.json');
+export const loadCosts = () => fetchJSON<Record<string, unknown>>('costs.json');
+
+export async function loadRuns(): Promise<MetricsRow[]> {
+  const text = await fetchText('metrics/runs.jsonl');
+  if (!text) return [];
+  return text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => JSON.parse(l) as MetricsRow);
+}
+
+export async function loadLinkJSON<T>(key: string): Promise<T | null> {
+  const latest = await loadLatest();
+  const rel = latest?.links?.[key];
+  if (!rel) return fetchJSON<T>(`${key}.json`);
+  return fetchJSON<T>(rel);
+}
+
+export async function loadADR(id: string): Promise<ADRSummary | null> {
+  const index = await loadADRIndex();
+  const meta = index?.adrs.find((a) => a.id === id);
+  if (!meta) return null;
+  const body = await fetchText(meta.path);
+  return { ...meta, body: body || meta.body || '' };
 }

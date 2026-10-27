@@ -42,6 +42,9 @@ func TestEmitAggregatesKPIsAndFailsClosedOnAssessLLM(t *testing.T) {
 	if latest.Metrics.EscalationRate != 0.25 {
 		t.Fatalf("escalation rate: %v", latest.Metrics.EscalationRate)
 	}
+	if latest.Metrics.ConfidenceShareHigh == nil || *latest.Metrics.ConfidenceShareHigh != 0.5 {
+		t.Fatalf("confidence share high: %v", latest.Metrics.ConfidenceShareHigh)
+	}
 	if latest.SLO["assess_runtime_llm_calls_zero"] != true {
 		t.Fatalf("SLO missing: %+v", latest.SLO)
 	}

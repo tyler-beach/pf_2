@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/tyler-beach/pf_2/internal/obligations"
 )
 
 const SnapshotSchemaVersion = "workshop-snapshot-v1"
@@ -26,14 +28,20 @@ type RunIdentity struct {
 type Metrics struct {
 	SchemaVersion string `json:"schema_version"`
 
-	CandidateTotal   int     `json:"candidate_total"`
-	ConfidenceHigh   int     `json:"confidence_high"`
-	ConfidenceMedium int     `json:"confidence_medium"`
-	ConfidenceLow    int     `json:"confidence_low"`
-	EscalationRate   float64 `json:"kpi.escalation.rate"`
+	CandidateTotal        int      `json:"candidate_total"`
+	ConfidenceHigh        int      `json:"confidence_high"`
+	ConfidenceMedium      int      `json:"confidence_medium"`
+	ConfidenceLow         int      `json:"confidence_low"`
+	ConfidenceShareHigh   *float64 `json:"kpi.confidence.share.high,omitempty"`
+	ConfidenceShareMedium *float64 `json:"kpi.confidence.share.medium,omitempty"`
+	ConfidenceShareLow    *float64 `json:"kpi.confidence.share.low,omitempty"`
+	EscalationRate        float64  `json:"kpi.escalation.rate"`
 
-	HarnessPrecision *float64 `json:"kpi.harness.precision,omitempty"`
-	HarnessRecall    *float64 `json:"kpi.harness.recall,omitempty"`
+	HarnessPrecision    *float64 `json:"kpi.harness.precision,omitempty"`
+	HarnessRecall       *float64 `json:"kpi.harness.recall,omitempty"`
+	HarnessRecallHigh   *float64 `json:"kpi.harness.recall.high,omitempty"`
+	HarnessRecallMedium *float64 `json:"kpi.harness.recall.medium,omitempty"`
+	HarnessRecallLow    *float64 `json:"kpi.harness.recall.low,omitempty"`
 
 	ReviewBacklog    *int     `json:"kpi.review.backlog,omitempty"`
 	PendingHigh      *int     `json:"kpi.review.pending_high,omitempty"`
@@ -47,9 +55,14 @@ type Metrics struct {
 	AssessStale     *int   `json:"kpi.assess.stale,omitempty"`
 	RuntimeLLMCalls *int   `json:"kpi.invariant.llm_calls,omitempty"`
 
-	AssistProposalCount *int     `json:"kpi.assist.proposal_count,omitempty"`
-	PromptfooPassRate   *float64 `json:"kpi.promptfoo.pass_rate,omitempty"`
-	PromptfooMode       string   `json:"promptfoo_mode,omitempty"`
+	AssistProposalCount    *int     `json:"kpi.assist.proposal_count,omitempty"`
+	AssistPromptTokens     *int     `json:"kpi.assist.prompt_tokens,omitempty"`
+	AssistCompletionTokens *int     `json:"kpi.assist.completion_tokens,omitempty"`
+	AssistCostUSD          *float64 `json:"kpi.assist.cost_usd,omitempty"`
+	AssistProvider         string   `json:"kpi.assist.provider,omitempty"`
+	AssistModel            string   `json:"kpi.assist.model,omitempty"`
+	PromptfooPassRate      *float64 `json:"kpi.promptfoo.pass_rate,omitempty"`
+	PromptfooMode          string   `json:"promptfoo_mode,omitempty"`
 
 	EvidenceGapRate *float64 `json:"kpi.evidence.gap_rate,omitempty"`
 	CorpusSize      *int     `json:"kpi.corpus.size,omitempty"`
@@ -73,6 +86,7 @@ type EmitOptions struct {
 	CoveragePath     string
 	AssessmentPath   string
 	ProposalsPath    string
+	RegistryPath     string
 	HarnessPath      string
 	PromptfooPath    string
 	CorpusLabelsPath string
@@ -119,6 +133,12 @@ func Emit(opts EmitOptions) (Latest, error) {
 		metrics.ConfidenceLow = payload.ConfidenceSummary.Low
 		if payload.CandidateCount > 0 {
 			metrics.EscalationRate = float64(payload.ConfidenceSummary.Low) / float64(payload.CandidateCount)
+			h := float64(payload.ConfidenceSummary.High) / float64(payload.CandidateCount)
+			m := float64(payload.ConfidenceSummary.Medium) / float64(payload.CandidateCount)
+			l := float64(payload.ConfidenceSummary.Low) / float64(payload.CandidateCount)
+			metrics.ConfidenceShareHigh = &h
+			metrics.ConfidenceShareMedium = &m
+			metrics.ConfidenceShareLow = &l
 		}
 		manual := 0
 		for _, c := range payload.Candidates {
@@ -186,22 +206,57 @@ func Emit(opts EmitOptions) (Latest, error) {
 
 	if opts.ProposalsPath != "" {
 		var payload struct {
-			ProposalCount int `json:"proposal_count"`
+			ProposalCount    int     `json:"proposal_count"`
+			PromptTokens     int     `json:"prompt_tokens"`
+			CompletionTokens int     `json:"completion_tokens"`
+			EstimatedCostUSD float64 `json:"estimated_cost_usd"`
+			Provider         string  `json:"provider"`
+			Model            string  `json:"model"`
 		}
 		if err := readJSON(opts.ProposalsPath, &payload); err != nil {
 			return Latest{}, fmt.Errorf("proposals: %w", err)
 		}
 		metrics.AssistProposalCount = intPtr(payload.ProposalCount)
+		metrics.AssistPromptTokens = intPtr(payload.PromptTokens)
+		metrics.AssistCompletionTokens = intPtr(payload.CompletionTokens)
+		cost := payload.EstimatedCostUSD
+		metrics.AssistCostUSD = &cost
+		metrics.AssistProvider = payload.Provider
+		metrics.AssistModel = payload.Model
 		if err := copyFile(opts.ProposalsPath, filepath.Join(opts.OutDir, "proposals.json")); err != nil {
 			return Latest{}, err
 		}
 		copied["proposals"] = "proposals.json"
 	}
 
+	if opts.RegistryPath != "" && opts.ProposalsPath != "" {
+		proposals, err := obligations.LoadProposalIndex(opts.ProposalsPath)
+		if err != nil {
+			return Latest{}, fmt.Errorf("proposals for accept_rate: %w", err)
+		}
+		registry, err := obligations.LoadRegistry(opts.RegistryPath)
+		if err != nil {
+			return Latest{}, fmt.Errorf("registry for accept_rate: %w", err)
+		}
+		if rate, ok := obligations.AssistAcceptRate(proposals, registry); ok {
+			metrics.AssistAcceptRate = &rate
+		}
+		if err := copyFile(opts.RegistryPath, filepath.Join(opts.OutDir, "registry.json")); err != nil {
+			return Latest{}, err
+		}
+		copied["registry"] = "registry.json"
+	} else if opts.RegistryPath != "" {
+		if err := copyFile(opts.RegistryPath, filepath.Join(opts.OutDir, "registry.json")); err != nil {
+			return Latest{}, err
+		}
+		copied["registry"] = "registry.json"
+	}
+
 	if opts.HarnessPath != "" {
 		var payload struct {
-			Precision float64 `json:"precision"`
-			Recall    float64 `json:"recall"`
+			Precision          float64                       `json:"precision"`
+			Recall             float64                       `json:"recall"`
+			RecallByConfidence map[string]map[string]float64 `json:"recall_by_confidence"`
 		}
 		if err := readJSON(opts.HarnessPath, &payload); err != nil {
 			return Latest{}, fmt.Errorf("harness: %w", err)
@@ -209,6 +264,18 @@ func Emit(opts EmitOptions) (Latest, error) {
 		p, r := payload.Precision, payload.Recall
 		metrics.HarnessPrecision = &p
 		metrics.HarnessRecall = &r
+		for band, ptr := range map[string]**float64{
+			"high":   &metrics.HarnessRecallHigh,
+			"medium": &metrics.HarnessRecallMedium,
+			"low":    &metrics.HarnessRecallLow,
+		} {
+			if row, ok := payload.RecallByConfidence[band]; ok {
+				if v, ok := row["recall"]; ok {
+					val := v
+					*ptr = &val
+				}
+			}
+		}
 		if err := copyFile(opts.HarnessPath, filepath.Join(opts.OutDir, "harness.json")); err != nil {
 			return Latest{}, err
 		}

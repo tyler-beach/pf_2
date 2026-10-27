@@ -959,6 +959,7 @@ func TestRunAssistObligationsOfflineWritesProposalsOnly(t *testing.T) {
 	mdPath := filepath.Join(root, "proposals.md")
 	if err := runAssistObligations([]string{
 		"--index", candidatePath,
+		"--root", root,
 		"--json-out", proposalPath,
 		"--md-out", mdPath,
 		"--provider", "offline",

@@ -80,7 +80,7 @@ jobs:
           cp adr/llm-obligation-proposals.json "$inputs/proposals.json"
           cp "$inputs/candidates.json" "$inputs/candidates.json"
 
-      - name: Promptfoo eval (offline always; live when credentials present)
+      - name: Promptfoo eval (offline always; live fail-closed when key present)
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'gpt-4o-mini' }}
@@ -93,28 +93,43 @@ jobs:
           npm run eval:offline
           mkdir -p "$WORKSHOP_INPUTS" output
           node ../scripts/summarize_promptfoo.mjs output/results.json "$WORKSHOP_INPUTS/promptfoo.json" offline
-          if [ "${PROVIDER_MODE:-offline}" = "openai-compatible" ] && [ -n "${LLM_API_KEY:-}" ]; then
-            npm run eval:live || true
-            if [ -f output/results-live.json ]; then
-              node ../scripts/summarize_promptfoo.mjs output/results-live.json "$WORKSHOP_INPUTS/promptfoo-live.json" live
-            fi
+          # Live gate: skip without credentials; fail closed when a key is configured for live.
+          if [ -z "${LLM_API_KEY:-}" ]; then
+            echo "LLM_API_KEY unset; skipping live Promptfoo (offline-only)."
+            exit 0
           fi
+          if [ "${PROVIDER_MODE:-offline}" != "openai-compatible" ]; then
+            echo "PROVIDER_MODE=${PROVIDER_MODE:-offline}; live Promptfoo skipped (key present but offline requested)."
+            exit 0
+          fi
+          npm run eval:live
+          if [ ! -f output/results-live.json ]; then
+            echo "live Promptfoo did not produce output/results-live.json" >&2
+            exit 1
+          fi
+          node ../scripts/summarize_promptfoo.mjs output/results-live.json "$WORKSHOP_INPUTS/promptfoo-live.json" live
+          jq -e '((.pass_rate // 0) | tonumber) >= 1' "$WORKSHOP_INPUTS/promptfoo-live.json"
 
       - name: Emit workshop snapshot inputs
         run: |
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
-          go run ./cmd/adrctl workshop-emit \
-            --out-dir "$inputs/snapshot" \
-            --run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
-            --workflow "LLM Assist" \
-            --git-sha "${{ github.sha }}" \
-            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --provider-mode "${PROVIDER_MODE:-offline}" \
-            --candidates "$inputs/candidates.json" \
-            --proposals "$inputs/proposals.json" \
-            --promptfoo "$inputs/promptfoo.json" \
+          emit_args=(
+            --out-dir "$inputs/snapshot"
+            --run-id "${{ github.run_id }}-${{ github.run_attempt }}"
+            --workflow "LLM Assist"
+            --git-sha "${{ github.sha }}"
+            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            --provider-mode "${PROVIDER_MODE:-offline}"
+            --candidates "$inputs/candidates.json"
+            --proposals "$inputs/proposals.json"
+            --promptfoo "$inputs/promptfoo.json"
             --corpus-labels testdata/corpus/labels.json
+          )
+          if [ -f adr/obligation-reviews.json ]; then
+            emit_args+=(--registry adr/obligation-reviews.json)
+          fi
+          go run ./cmd/adrctl workshop-emit "${emit_args[@]}"
 
       - name: Upload assist artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

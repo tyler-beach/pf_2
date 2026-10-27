@@ -1,6 +1,22 @@
 # Pathfinder Workshop (GitHub Pages)
 
-The workshop is the GitHub-era **operational console + KPI observability** surface for Pathfinder. It is rebuilt from workflow snapshots within minutes of each run. There is no live backend; GitHub Actions compute, the `workshop-data` branch stores history, and Pages serves a cached SPA shell with short-lived data.
+The workshop is the GitHub-era **command center** for Pathfinder: polished internal SaaS UI over GitOps snapshots. It includes KPI drilldowns, pipeline deep-dives, ADR dig-ins, LLM cost/usage, run compare, and an interactive **Sample** technical journey. There is no live backend; GitHub Actions compute, the `workshop-data` branch stores history, and Pages serves a cached SPA shell with short-lived data.
+
+## SPA routes
+
+| Route | Purpose |
+|---|---|
+| `#/` | Overview / SLO tiles / pipeline glance |
+| `#/metrics` | KPI command deck with focus tabs + trends |
+| `#/pipeline/:step` | Per-stage deep analysis (I/O, failures, sample artifacts) |
+| `#/sample/:step` | Interactive technical journey through Pathfinder |
+| `#/adrs/:id` | Dig into published ADR bodies + linked candidates |
+| `#/candidates` | Band filters, citations, low-confidence checklist issue |
+| `#/proposals` | Diff view + accept semantics |
+| `#/assess` | Deterministic assess + LLM invariant |
+| `#/costs` | Assist token/cost rollups (offline=$0) |
+| `#/runs` | History + A/B metric compare |
+| `#/evals` / `#/corpus` / `#/docs` | Promptfoo, harness, docs |
 
 ## Data flow
 
@@ -44,4 +60,4 @@ See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance ve
 
 ## Follow-on (not this iteration)
 
-Joern / CPG adapters when ≥N accepted ADRs require cross-file data-flow evidence OpenGrep cannot supply. AWS comes after the GitHub workshop proves product value.
+Joern / CPG adapters when **≥10** accepted ADRs require cross-file data-flow evidence OpenGrep cannot supply (`N=10`). AWS comes after the GitHub workshop proves product value.
