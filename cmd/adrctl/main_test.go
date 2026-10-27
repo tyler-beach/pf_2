@@ -47,6 +47,53 @@ func TestBlockingGateDoesNotPromoteAdvisoryOrReviewRequiredBindings(t *testing.T
 	}
 }
 
+func TestRunSpecificationCheckRejectsAnalyzerInputOutputCollisions(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		evidence string
+		sarif    string
+	}{
+		{name: "normalized evidence aliases assessment output", evidence: "assessment.json", sarif: "input.sarif"},
+		{name: "raw SARIF aliases SARIF output", evidence: "input.json", sarif: "results.sarif"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			if err := os.MkdirAll(filepath.Join(root, "adrs"), 0o700); err != nil {
+				t.Fatal(err)
+			}
+			err := runSpecificationCheck([]string{
+				"--root", root, "--adr-root", "adrs",
+				"--analyzer-evidence", tc.evidence, "--analyzer-sarif", tc.sarif,
+			})
+			if err == nil || !strings.Contains(err.Error(), "collides with generated output") {
+				t.Fatalf("expected analyzer input/output collision to fail before writing artifacts, got %v", err)
+			}
+		})
+	}
+}
+
+func TestRunSpecificationCheckRejectsSymlinkedAnalyzerOutputCollision(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, "adrs"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	assessmentPath := filepath.Join(root, "assessment.json")
+	if err := os.WriteFile(assessmentPath, []byte("{}"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	aliasPath := filepath.Join(root, "evidence-alias.json")
+	if err := os.Symlink(assessmentPath, aliasPath); err != nil {
+		t.Fatal(err)
+	}
+	err := runSpecificationCheck([]string{
+		"--root", root, "--adr-root", "adrs",
+		"--analyzer-evidence", "evidence-alias.json", "--analyzer-sarif", "input.sarif",
+	})
+	if err == nil || !strings.Contains(err.Error(), "collides with generated output") {
+		t.Fatalf("expected symlinked analyzer input/output collision to fail, got %v", err)
+	}
+}
+
 func TestRunSpecificationCheckRequiresAnalyzerEvidencePair(t *testing.T) {
 	if err := runSpecificationCheck([]string{"--analyzer-evidence", "scan.json"}); err == nil || !strings.Contains(err.Error(), "must be provided together") {
 		t.Fatalf("specification-check should require normalized evidence and raw SARIF together, got %v", err)
