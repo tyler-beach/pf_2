@@ -169,6 +169,7 @@ go run ./cmd/adrctl plan-repo \
   --analyzer opengrep \
   --version 1.30.0 \
   --config rules/pathfinder-security.yml \
+  --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
   --scope . \
   --timeout 5m \
   --max-retries 1 \

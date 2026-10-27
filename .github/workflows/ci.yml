@@ -117,11 +117,13 @@ jobs:
           go run ./cmd/adrctl plan-repo \
             --root "$plan_root" --analyzer opengrep --version 1.30.0 \
             --config rules/pathfinder-security.yml --scope src/ \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --json-out "$plan_root/analyzer-evidence/plan.json"
           cp "$plan_root/analyzer-evidence/plan.json" "$RUNNER_TEMP/plan-first.json"
           go run ./cmd/adrctl plan-repo \
             --root "$plan_root" --analyzer opengrep --version 1.30.0 \
             --config rules/pathfinder-security.yml --scope src/ \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --json-out "$plan_root/analyzer-evidence/plan.json"
           cmp "$RUNNER_TEMP/plan-first.json" "$plan_root/analyzer-evidence/plan.json"
           go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json"
@@ -132,6 +134,7 @@ jobs:
           go run ./cmd/adrctl plan-repo \
             --root "$plan_root" --analyzer opengrep --version 1.30.0 \
             --config rules/pathfinder-security.yml --scope src/ \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --json-out "$plan_root/analyzer-evidence/plan.json"
           new_cache_key="$(jq -er '.tasks[0].cache_key' "$plan_root/analyzer-evidence/plan.json")"
           test "$old_cache_key" != "$new_cache_key"
