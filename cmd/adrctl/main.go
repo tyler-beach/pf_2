@@ -56,6 +56,8 @@ func main() {
 		err = runValidateObligationReviews(os.Args[2:])
 	case "assess-obligations":
 		err = runAssessObligations(os.Args[2:])
+	case "specification-check":
+		err = runSpecificationCheck(os.Args[2:])
 	case "version":
 		fmt.Println("adrctl 0.1.0")
 	default:
@@ -69,7 +71,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|specification-check|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -668,6 +670,77 @@ func runAssessObligations(args []string) error {
 // runPlanRepo creates a deterministic, source-bound execution plan. Planning
 // does not launch analyzers; every execution must re-verify the manifest before
 // using its cache keys or dispatching tasks.
+// runSpecificationCheck orchestrates the deterministic source-to-evidence
+// lifecycle. It always regenerates ingestion/candidate artifacts, so source
+// drift cannot be hidden by a stale checked-in candidate index.
+func runSpecificationCheck(args []string) error {
+	fs := flag.NewFlagSet("specification-check", flag.ContinueOnError)
+	root := fs.String("root", ".", "repository root")
+	adrRoot := fs.String("adr-root", "adrs", "repository-relative directory containing ADR Markdown")
+	requirements := fs.String("requirements", "adr/requirements.json", "accepted requirements catalog JSON")
+	registry := fs.String("registry", "adr/obligation-reviews.json", "append-only obligation review registry JSON")
+	reportOnly := fs.Bool("report-only", false, "write assessment artifacts without enforcing blocking obligations")
+	if err := fs.Parse(args); err != nil { return err }
+	if fs.NArg() != 0 { return fmt.Errorf("specification-check accepts no positional arguments") }
+
+	rootAbs, err := filepath.Abs(*root)
+	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
+	rootReal, err := filepath.EvalSymlinks(rootAbs)
+	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
+	resolveInput := func(raw string) string {
+		if filepath.IsAbs(raw) { return filepath.Clean(raw) }
+		return filepath.Join(rootReal, raw)
+	}
+	adrRootAbs, err := filepath.Abs(resolveInput(*adrRoot))
+	if err != nil { return fmt.Errorf("resolve ADR source root: %w", err) }
+	adrRootReal, err := filepath.EvalSymlinks(adrRootAbs)
+	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	artifactDir := filepath.Join(rootReal, "adr")
+	relArtifacts, err := filepath.Rel(adrRootReal, artifactDir)
+	if err != nil { return fmt.Errorf("validate generated artifact directory: %w", err) }
+	if relArtifacts == "." || (relArtifacts != ".." && !strings.HasPrefix(relArtifacts, ".."+string(filepath.Separator))) {
+		return fmt.Errorf("ADR source root must not contain the generated artifact directory %q", artifactDir)
+	}
+
+	catalogPath, registryPath := resolveInput(*requirements), resolveInput(*registry)
+	ingestionPath := filepath.Join(artifactDir, "ingested-adrs.json")
+	candidatePath := filepath.Join(artifactDir, "obligation-candidates.json")
+	candidateReportPath := filepath.Join(artifactDir, "obligation-candidates.md")
+	assessmentPath := filepath.Join(rootReal, "assessment.json")
+	repositoryReportPath := filepath.Join(rootReal, "report.md")
+	sarifPath := filepath.Join(rootReal, "results.sarif")
+	obligationReportPath := filepath.Join(rootReal, "obligation-assessment.json")
+	obligationMarkdownPath := filepath.Join(rootReal, "obligation-assessment.md")
+	outputs := []string{ingestionPath, candidatePath, candidateReportPath, assessmentPath, repositoryReportPath, sarifPath, obligationReportPath, obligationMarkdownPath}
+	for _, input := range []string{catalogPath, registryPath} {
+		for _, output := range outputs {
+			if filepath.Clean(input) == filepath.Clean(output) {
+				return fmt.Errorf("input path %q collides with generated output %q", input, output)
+			}
+		}
+	}
+
+	if err := runIngestADRs([]string{"--root", adrRootReal, "--json-out", ingestionPath}); err != nil {
+		return fmt.Errorf("ingest ADR sources: %w", err)
+	}
+	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRootReal, "--json-out", candidatePath, "--report", candidateReportPath}); err != nil {
+		return fmt.Errorf("extract obligation candidates: %w", err)
+	}
+	if err := runAssess([]string{"--root", rootReal, "--requirements", catalogPath, "--report", repositoryReportPath, "--json-out", assessmentPath, "--sarif-out", sarifPath}, true); err != nil {
+		return fmt.Errorf("assess repository: %w", err)
+	}
+	joinArgs := []string{
+		"--root", rootReal, "--index", candidatePath, "--ingestion-index", ingestionPath,
+		"--requirements", catalogPath, "--registry", registryPath, "--assessment", assessmentPath,
+		"--json-out", obligationReportPath, "--report", obligationMarkdownPath,
+	}
+	if !*reportOnly { joinArgs = append(joinArgs, "--enforce-blocking") }
+	if err := runAssessObligations(joinArgs); err != nil {
+		return fmt.Errorf("specification check failed: %w", err)
+	}
+	return nil
+}
+
 func validateBlockingGate(report obligations.AssessmentReport) error {
 	if report.BindingCoverage.OrphanedCount > 0 {
 		return fmt.Errorf("%d orphaned review history record(s) must be explicitly superseded before enforcing blocking obligations", report.BindingCoverage.OrphanedCount)
