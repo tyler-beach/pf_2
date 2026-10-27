@@ -30,6 +30,30 @@ jobs:
           go vet ./...
           go run ./cmd/adrctl validate --requirements adr/requirements.json
 
+      - name: Verify malformed ADR rejection for regression issue
+        if: contains(github.event.issue.title, '[malformed-adr-smoke]')
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          set -euo pipefail
+          source_root="$RUNNER_TEMP/pathfinder-malformed-adr"
+          output="$RUNNER_TEMP/pathfinder-malformed-ingestion.json"
+          log="$RUNNER_TEMP/pathfinder-malformed-ingestion.log"
+          mkdir -p "$source_root"
+          printf '%s' "$ISSUE_BODY" > "$source_root/ADR-malformed.md"
+
+          if go run ./cmd/adrctl ingest-adrs --root "$source_root" --json-out "$output" >"$log" 2>&1; then
+            cat "$log"
+            echo "Malformed ADR was unexpectedly accepted." >&2
+            exit 1
+          fi
+          cat "$log"
+          grep -F "ADR document must contain a level-one title heading" "$log"
+          if [ -e "$output" ]; then
+            echo "Malformed ADR unexpectedly produced a partial ingestion index." >&2
+            exit 1
+          fi
+
       - name: Assess issue content without executing submitted code
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -77,6 +101,17 @@ jobs:
           python3 -m venv "$venv"
           "$venv/bin/python" -m pip install --disable-pip-version-check --no-input "jsonschema==4.23.0"
           "$venv/bin/python" scripts/validate_sarif.py --schema "$schema" results.sarif
+
+      - name: Assert JSON and SARIF verdict consistency and zero runtime LLM calls
+        run: |
+          set -euo pipefail
+          jq -e '.runtime_llm_calls == 0' assessment.json
+          jq -e --slurpfile assessment assessment.json '
+            .runs[0].properties.adrctl.runtime_llm_calls == 0
+            and .runs[0].properties.adrctl.verdict == $assessment[0].verdict
+            and .runs[0].properties.adrctl.coverage_status == $assessment[0].coverage_status
+            and .runs[0].properties.adrctl.requirement_count == $assessment[0].requirement_count
+          ' results.sarif
 
       - name: Publish assessment report to the issue
         env:
