@@ -348,7 +348,8 @@ func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *tes
 	indexPath := filepath.Join(root, "ingested.json")
 	if err := os.WriteFile(indexPath, indexBytes, 0600); err != nil { t.Fatal(err) }
 	outPath := filepath.Join(root, "candidates.json")
-	args := []string{"--index", indexPath, "--root", adrRoot, "--json-out", outPath}
+	reportPath := filepath.Join(root, "candidates.md")
+	args := []string{"--index", indexPath, "--root", adrRoot, "--json-out", outPath, "--report", reportPath}
 	if err := runExtractObligations(args); err != nil { t.Fatalf("runExtractObligations() error: %v", err) }
 	first, err := os.ReadFile(outPath)
 	if err != nil { t.Fatal(err) }
@@ -357,12 +358,22 @@ func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *tes
 	if got.DocumentCount != 1 || got.CandidateCount != 1 || got.Candidates[0].ApprovalStatus != "pending_review" || got.Candidates[0].Executable {
 		t.Fatalf("candidate output was not review-only: %+v", got)
 	}
+	reportBytes, err := os.ReadFile(reportPath)
+	if err != nil { t.Fatal(err) }
+	if !strings.Contains(string(reportBytes), got.Candidates[0].ID) || !strings.Contains(string(reportBytes), "pending_review") || !strings.Contains(string(reportBytes), "Every network client must set a finite timeout") {
+		t.Fatalf("candidate Markdown report is missing review details: %s", reportBytes)
+	}
 	secondPath := filepath.Join(root, "candidates-again.json")
+	secondReportPath := filepath.Join(root, "candidates-again.md")
 	args[5] = secondPath
+	args[7] = secondReportPath
 	if err := runExtractObligations(args); err != nil { t.Fatalf("second run: %v", err) }
 	second, err := os.ReadFile(secondPath)
 	if err != nil { t.Fatal(err) }
 	if string(first) != string(second) { t.Fatalf("candidate generation changed across identical inputs:\n%s\n%s", first, second) }
+	secondReport, err := os.ReadFile(secondReportPath)
+	if err != nil { t.Fatal(err) }
+	if string(reportBytes) != string(secondReport) { t.Fatalf("candidate review report changed across identical inputs:\n%s\n%s", reportBytes, secondReport) }
 }
 
 func TestRunExtractObligationsRefusesToOverwriteIndex(t *testing.T) {
