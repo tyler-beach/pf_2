@@ -1,32 +1,32 @@
 {
-  "SchemaVersion": "1",
-  "ADRs": [
+  "schema_version": "1",
+  "adrs": [
     {
-      "ID": "ADR-001",
-      "Title": "Preserve domain boundaries",
-      "Version": 1,
-      "Status": "accepted",
-      "Requirements": [
+      "id": "ADR-001",
+      "title": "Preserve domain boundaries",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
         {
-          "ID": "REQ-001-01",
-          "Title": "Domain code must not depend on infrastructure adapters",
-          "Description": "Domain source files must not import internal infrastructure packages.",
-          "Severity": "error",
-          "Verifier": {
-            "Type": "go-import-boundary",
-            "SourcePathPrefixes": ["internal/domain/"],
-            "ForbiddenImportPrefixes": ["internal/infrastructure/"]
+          "id": "REQ-001-01",
+          "title": "Domain code must not depend on infrastructure adapters",
+          "description": "Domain source files must not import internal infrastructure packages.",
+          "severity": "error",
+          "verifier": {
+            "type": "go-import-boundary",
+            "source_path_prefixes": ["internal/domain/"],
+            "forbidden_import_prefixes": ["internal/infrastructure/"]
           }
         },
         {
-          "ID": "REQ-001-02",
-          "Title": "Domain code must not depend on transport concerns",
-          "Description": "Domain source files must not import HTTP transport packages.",
-          "Severity": "error",
-          "Verifier": {
-            "Type": "go-import-boundary",
-            "SourcePathPrefixes": ["internal/domain/"],
-            "ForbiddenImportPrefixes": ["net/http", "github.com/gin-gonic/gin", "github.com/go-chi/chi"]
+          "id": "REQ-001-02",
+          "title": "Domain code must not depend on transport concerns",
+          "description": "Domain source files must not import HTTP transport packages.",
+          "severity": "error",
+          "verifier": {
+            "type": "go-import-boundary",
+            "source_path_prefixes": ["internal/domain/"],
+            "forbidden_import_prefixes": ["net/http", "github.com/gin-gonic/gin", "github.com/go-chi/chi"]
           }
         }
       ]
