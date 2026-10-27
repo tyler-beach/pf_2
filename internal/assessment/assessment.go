@@ -1,6 +1,8 @@
 package assessment
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"go/parser"
@@ -98,6 +100,7 @@ type Result struct {
 	LLMCalls int `json:"runtime_llm_calls"`
 	Requirements []RequirementResult `json:"requirements"`
 	AnalyzerResults []analyzer.ScanResult `json:"analyzer_results,omitempty"`
+	SourceSnapshotSHA256 string `json:"source_snapshot_sha256"`
 	UnassessedSourceFiles []string `json:"unassessed_source_files,omitempty"`
 }
 
@@ -327,7 +330,7 @@ func LoadSourceFiles(root string) ([]SourceFile, error) {
 		rel, err := filepath.Rel(root, path)
 		if err != nil { return err }
 		relative := filepath.ToSlash(rel)
-		if relative == "assessment.json" || relative == "adr/ingested-adrs.json" || relative == "adr/obligation-candidates.json" { return nil }
+		if relative == "assessment.json" || relative == "obligation-assessment.json" || relative == "adr/ingested-adrs.json" || relative == "adr/obligation-candidates.json" { return nil }
 		info, err := d.Info()
 		if err != nil { return fmt.Errorf("inspect source evidence %s: %w", relative, err) }
 		if !info.Mode().IsRegular() { return nil }
@@ -345,6 +348,21 @@ func LoadSourceFiles(root string) ([]SourceFile, error) {
 	return files, err
 }
 
+// HashSourceFiles produces a stable digest of the exact source-file inventory
+// used by deterministic assessment. Paths and content are separated by NUL bytes.
+func HashSourceFiles(files []SourceFile) string {
+	ordered := append([]SourceFile(nil), files...)
+	sort.Slice(ordered, func(i, j int) bool { return ordered[i].Path < ordered[j].Path })
+	h := sha256.New()
+	for _, source := range ordered {
+		_, _ = h.Write([]byte(source.Path))
+		_, _ = h.Write([]byte{0})
+		_, _ = h.Write([]byte(source.Content))
+		_, _ = h.Write([]byte{0})
+	}
+	return hex.EncodeToString(h.Sum(nil))
+}
+
 func Assess(c Catalog, files []SourceFile) Result {
 	return AssessWithOptions(c, files, AssessmentOptions{EvidenceMode: EvidenceModeSubmission})
 }
@@ -354,7 +372,7 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	if options.EvidenceMode == "" {
 		options.EvidenceMode = EvidenceModeSubmission
 	}
-	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.3.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0, AnalyzerResults:options.AnalyzerResults}
+	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.3.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0, AnalyzerResults:options.AnalyzerResults, SourceSnapshotSHA256:HashSourceFiles(files)}
 	if options.EvidenceMode == EvidenceModeSubmission {
 		for _, source := range files {
 			language := strings.ToLower(strings.TrimSpace(source.Language))
