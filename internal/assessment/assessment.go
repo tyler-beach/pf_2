@@ -34,6 +34,8 @@ type Verifier struct {
 	Type string `json:"type"`
 	SourcePathPrefixes []string `json:"source_path_prefixes"`
 	ForbiddenImportPrefixes []string `json:"forbidden_import_prefixes"`
+	FilePath string `json:"file_path,omitempty"`
+	RequiredJSONKeys []string `json:"required_json_keys,omitempty"`
 }
 type SourceFile struct {
 	Path string `json:"path"`
@@ -114,6 +116,10 @@ func ParseIssueMarkdown(markdown string) []SourceFile {
 			path := currentPath
 			if path == "" { path = fmt.Sprintf("issue-snippet-%d.go", len(files)+1) }
 			files = append(files, SourceFile{Path: filepath.ToSlash(path), Language: "go", Content: strings.Join(code, "\n")})
+		} else if language == "json" || strings.HasSuffix(strings.ToLower(currentPath), ".json") {
+			path := currentPath
+			if path == "" { path = fmt.Sprintf("issue-snippet-%d.json", len(files)+1) }
+			files = append(files, SourceFile{Path: filepath.ToSlash(path), Language: "json", Content: strings.Join(code, "\n")})
 		}
 	}
 	return files
@@ -128,10 +134,13 @@ func LoadGoFiles(root string) ([]SourceFile, error) {
 			if path != root && (name == ".git" || name == "vendor" || name == "node_modules" || name == "testdata") { return filepath.SkipDir }
 			return nil
 		}
-		if filepath.Ext(path) != ".go" { return nil }
+		ext := filepath.Ext(path)
+		if ext != ".go" && ext != ".json" { return nil }
 		data, err := os.ReadFile(path); if err != nil { return err }
 		rel, err := filepath.Rel(root, path); if err != nil { return err }
-		files = append(files, SourceFile{Path: filepath.ToSlash(rel), Language: "go", Content: string(data)})
+		language := "go"
+		if ext == ".json" { language = "json" }
+		files = append(files, SourceFile{Path: filepath.ToSlash(rel), Language: language, Content: string(data)})
 		return nil
 	})
 	sort.Slice(files, func(i, j int) bool { return files[i].Path < files[j].Path })
@@ -144,7 +153,11 @@ func Assess(c Catalog, files []SourceFile) Result {
 		if a.Status != "accepted" { continue }
 		for _, r := range a.Requirements {
 			rr := RequirementResult{ADR:a.ID, ADRVersion:a.Version, RequirementID:r.ID, Title:r.Title, Severity:r.Severity, Evidence:[]string{}, Findings:[]Finding{}}
-			if r.Verifier.Type == "go-import-boundary" { assessImportBoundary(&rr, r.Verifier, files) } else { rr.Status="ERROR"; rr.Reason="Unsupported verifier type: "+r.Verifier.Type }
+			switch r.Verifier.Type {
+			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
+			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
+			default: rr.Status="ERROR"; rr.Reason="Unsupported verifier type: "+r.Verifier.Type
+			}
 			out.Counts[rr.Status]++
 			out.Requirements = append(out.Requirements, rr)
 		}
@@ -178,6 +191,51 @@ func assessImportBoundary(rr *RequirementResult, v Verifier, files []SourceFile)
 	}
 	if len(rr.Findings)>0 { rr.Status="FAIL"; rr.Reason=fmt.Sprintf("Found %d forbidden import(s).",len(rr.Findings)) } else { rr.Status="PASS"; rr.Reason=fmt.Sprintf("All %d in-scope Go file(s) parsed and no forbidden imports were found.",len(scoped)) }
 }
+
+func assessJSONRequiredKeys(rr *RequirementResult, v Verifier, files []SourceFile) {
+	if strings.TrimSpace(v.FilePath) == "" || len(v.RequiredJSONKeys) == 0 {
+		rr.Status = "ERROR"
+		rr.Reason = "json-required-keys requires file_path and at least one required_json_keys entry."
+		return
+	}
+	var target *SourceFile
+	for i := range files {
+		if files[i].Language == "json" && filepath.ToSlash(files[i].Path) == filepath.ToSlash(v.FilePath) {
+			target = &files[i]
+			break
+		}
+	}
+	if target == nil {
+		rr.Status = "NOT_APPLICABLE"
+		rr.Reason = fmt.Sprintf("Required configuration file %s was not included in the supplied evidence.", v.FilePath)
+		return
+	}
+	var document map[string]any
+	if err := json.Unmarshal([]byte(target.Content), &document); err != nil {
+		rr.Status = "ERROR"
+		rr.Reason = fmt.Sprintf("Could not parse JSON file %s: %v", target.Path, err)
+		return
+	}
+	rr.Evidence = append(rr.Evidence, fmt.Sprintf("Parsed JSON document %s and inspected required top-level keys.", target.Path))
+	for _, key := range v.RequiredJSONKeys {
+		if _, ok := document[key]; !ok {
+			rr.Findings = append(rr.Findings, Finding{
+				RuleID: rr.RequirementID,
+				Path: target.Path,
+				Line: 1,
+				Message: fmt.Sprintf("Required JSON key %q is missing from %s.", key, target.Path),
+			})
+		}
+	}
+	if len(rr.Findings) > 0 {
+		rr.Status = "FAIL"
+		rr.Reason = fmt.Sprintf("Missing %d required JSON key(s).", len(rr.Findings))
+	} else {
+		rr.Status = "PASS"
+		rr.Reason = fmt.Sprintf("All %d required JSON key(s) are present in %s.", len(v.RequiredJSONKeys), target.Path)
+	}
+}
+
 func pathMatches(path string, prefixes []string) bool {
 	path=strings.TrimPrefix(filepath.ToSlash(path),"./")
 	for _, p := range prefixes { p=strings.TrimPrefix(filepath.ToSlash(p),"./"); if p!="" && strings.HasPrefix(path,p) { return true } }
