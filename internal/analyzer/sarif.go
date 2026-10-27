@@ -49,6 +49,8 @@ type ScanResult struct {
 	ConfigurationSHA256 string     `json:"configuration_sha256,omitempty"`
 	InputSHA256     string         `json:"input_sha256,omitempty"`
 	RawOutputSHA256 string         `json:"raw_output_sha256"`
+	ScannedPaths    []string       `json:"scanned_paths"`
+	RawSARIF        []byte         `json:"-"`
 	Findings        []Finding      `json:"findings"`
 	Errors          []string       `json:"errors,omitempty"`
 }
@@ -133,6 +135,8 @@ func ParseSARIF(data []byte, repoRoot string) (ScanResult, error) {
 		Errors: []string{},
 		Analyzers: []AnalyzerInfo{},
 		RawOutputSHA256: sha256Hex(data),
+		ScannedPaths: []string{},
+		RawSARIF: append([]byte(nil), data...),
 	}
 	var doc sarifDocument
 	if err := json.Unmarshal(data, &doc); err != nil {

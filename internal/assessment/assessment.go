@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/tyler-beach/pf_2/internal/analyzer"
 )
 
 type Catalog struct {
@@ -37,6 +39,8 @@ type Verifier struct {
 	FilePath string `json:"file_path,omitempty"`
 	RequiredJSONKeys []string `json:"required_json_keys,omitempty"`
 	NumericJSONBounds []JSONNumberBound `json:"numeric_json_bounds,omitempty"`
+	Analyzer string `json:"analyzer,omitempty"`
+	RuleIDs []string `json:"rule_ids,omitempty"`
 }
 type JSONNumberBound struct { Key string `json:"key"`; Min *float64 `json:"min,omitempty"`; Max *float64 `json:"max,omitempty"` }
 type SourceFile struct {
@@ -48,7 +52,13 @@ type Finding struct {
 	RuleID string `json:"rule_id"`
 	Path string `json:"path"`
 	Line int `json:"line"`
+	Column int `json:"column,omitempty"`
 	Message string `json:"message"`
+	Analyzer string `json:"analyzer,omitempty"`
+	AnalyzerVersion string `json:"analyzer_version,omitempty"`
+	Fingerprint string `json:"fingerprint,omitempty"`
+	Level string `json:"level,omitempty"`
+	Properties map[string]any `json:"properties,omitempty"`
 }
 type RequirementResult struct {
 	ADR string `json:"adr_id"`
@@ -71,6 +81,7 @@ const (
 // AssessmentOptions declares the completeness semantics of supplied evidence.
 type AssessmentOptions struct {
 	EvidenceMode EvidenceMode
+	AnalyzerResults []analyzer.ScanResult
 }
 
 type Result struct {
@@ -85,6 +96,7 @@ type Result struct {
 	Counts map[string]int `json:"counts"`
 	LLMCalls int `json:"runtime_llm_calls"`
 	Requirements []RequirementResult `json:"requirements"`
+	AnalyzerResults []analyzer.ScanResult `json:"analyzer_results,omitempty"`
 }
 
 func LoadCatalog(path string) (Catalog, error) {
@@ -120,6 +132,22 @@ func ValidateCatalog(c Catalog) error {
 					if strings.TrimSpace(b.Key) == "" { return fmt.Errorf("requirement %s: numeric_json_bounds keys cannot be empty", r.ID) }
 					if b.Min == nil && b.Max == nil { return fmt.Errorf("requirement %s: numeric_json_bounds for %q needs min and/or max", r.ID, b.Key) }
 					if b.Min != nil && b.Max != nil && *b.Min > *b.Max { return fmt.Errorf("requirement %s: numeric_json_bounds for %q has min greater than max", r.ID, b.Key) }
+				}
+			case "analyzer-rule":
+				if strings.TrimSpace(r.Verifier.Analyzer) == "" { return fmt.Errorf("requirement %s: analyzer-rule requires analyzer", r.ID) }
+				if len(r.Verifier.RuleIDs) == 0 { return fmt.Errorf("requirement %s: analyzer-rule requires rule_ids", r.ID) }
+				if len(r.Verifier.SourcePathPrefixes) == 0 { return fmt.Errorf("requirement %s: analyzer-rule requires source_path_prefixes", r.ID) }
+				seenRules := map[string]bool{}
+				for _, ruleID := range r.Verifier.RuleIDs {
+					if strings.TrimSpace(ruleID) == "" { return fmt.Errorf("requirement %s: analyzer rule IDs cannot be empty", r.ID) }
+					if seenRules[ruleID] { return fmt.Errorf("requirement %s: duplicate analyzer rule ID %q", r.ID, ruleID) }
+					seenRules[ruleID] = true
+				}
+				for _, prefix := range r.Verifier.SourcePathPrefixes {
+					p := filepath.Clean(filepath.FromSlash(strings.TrimSpace(prefix)))
+					if prefix == "" || filepath.IsAbs(p) || p == ".." || strings.HasPrefix(p, ".."+string(filepath.Separator)) {
+						return fmt.Errorf("requirement %s: analyzer source_path_prefixes must be repository-relative", r.ID)
+					}
 				}
 			case "json-required-keys":
 				p := filepath.Clean(filepath.FromSlash(strings.TrimSpace(r.Verifier.FilePath)))
@@ -194,7 +222,7 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	if options.EvidenceMode == "" {
 		options.EvidenceMode = EvidenceModeSubmission
 	}
-	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.1.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0}
+	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.2.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0, AnalyzerResults:options.AnalyzerResults}
 	for _, a := range c.ADRs {
 		if a.Status != "accepted" { continue }
 		for _, r := range a.Requirements {
@@ -203,6 +231,11 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
 			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
 			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
+			case "analyzer-rule":
+				if options.EvidenceMode == EvidenceModeSubmission && len(options.AnalyzerResults) == 0 {
+					rr.Status = "NOT_APPLICABLE"
+					rr.Reason = "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+				} else { assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults) }
 			default: rr.Status="ERROR"; rr.Reason="Unsupported verifier type: "+r.Verifier.Type
 			}
 			out.Counts[rr.Status]++
@@ -338,6 +371,85 @@ func assessJSONNumberRange(rr *RequirementResult, v Verifier, files []SourceFile
 	}
 }
 
+func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyzer.ScanResult) {
+	var matches []analyzer.ScanResult
+	want := strings.ToLower(strings.TrimSpace(verifier.Analyzer))
+	for _, scan := range scans {
+		for _, info := range scan.Analyzers {
+			name := strings.ToLower(strings.TrimSpace(info.Name))
+			if name == want || strings.Contains(name, want) { matches = append(matches, scan); break }
+		}
+	}
+	if len(matches) == 0 {
+		rr.Status = "EVIDENCE_MISSING"
+		rr.Reason = fmt.Sprintf("No normalized scan evidence was supplied for analyzer %q.", verifier.Analyzer)
+		return
+	}
+	if len(matches) != 1 {
+		rr.Status = "EVIDENCE_MISSING"
+		rr.Reason = fmt.Sprintf("Expected exactly one scan result for analyzer %q; found %d, so the evidence is ambiguous.", verifier.Analyzer, len(matches))
+		return
+	}
+	scan := matches[0]
+	if scan.Status != analyzer.ScanStatusComplete {
+		rr.Status = "EVIDENCE_MISSING"
+		rr.Reason = fmt.Sprintf("Analyzer %q did not produce complete evidence (status %s). %s", verifier.Analyzer, scan.Status, strings.Join(scan.Errors, "; "))
+		return
+	}
+	if scan.InputSHA256 == "" || scan.ConfigurationSHA256 == "" || scan.RawOutputSHA256 == "" {
+		rr.Status = "EVIDENCE_MISSING"
+		rr.Reason = fmt.Sprintf("Analyzer %q evidence is missing input, configuration, or raw-output SHA-256 provenance.", verifier.Analyzer)
+		return
+	}
+	var scopedPaths []string
+	for _, sourcePath := range scan.ScannedPaths {
+		if pathMatches(sourcePath, verifier.SourcePathPrefixes) { scopedPaths = append(scopedPaths, filepath.ToSlash(sourcePath)) }
+	}
+	if len(scopedPaths) == 0 {
+		rr.Status = "EVIDENCE_MISSING"
+		rr.Reason = fmt.Sprintf("The completed %q scan inventory contains no source files in required scope %s; absence of scoped evidence is not compliance.", verifier.Analyzer, strings.Join(verifier.SourcePathPrefixes, ", "))
+		return
+	}
+	version := ""
+	for _, info := range scan.Analyzers {
+		name := strings.ToLower(strings.TrimSpace(info.Name))
+		if name == want || strings.Contains(name, want) {
+			if info.Version != "" {
+				if version != "" && version != info.Version {
+					rr.Status = "EVIDENCE_MISSING"
+					rr.Reason = fmt.Sprintf("Analyzer %q evidence contains conflicting versions.", verifier.Analyzer)
+					return
+				}
+				version = info.Version
+			}
+		}
+	}
+	rr.Evidence = append(rr.Evidence, fmt.Sprintf("Analyzer %s version %s completed against input SHA-256 %s with configuration SHA-256 %s and raw-output SHA-256 %s; %d discovered source path(s) matched scope.", verifier.Analyzer, version, scan.InputSHA256, scan.ConfigurationSHA256, scan.RawOutputSHA256, len(scopedPaths)))
+	ruleIDs := make(map[string]bool, len(verifier.RuleIDs))
+	for _, id := range verifier.RuleIDs { ruleIDs[id] = true }
+	for _, finding := range scan.Findings {
+		if !ruleIDs[finding.RuleID] { continue }
+		if strings.TrimSpace(finding.Path) == "" {
+			rr.Status = "EVIDENCE_MISSING"
+			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q without a repository path; scope cannot be verified.", verifier.Analyzer, finding.RuleID)
+			return
+		}
+		if !pathMatches(finding.Path, verifier.SourcePathPrefixes) { continue }
+		rr.Findings = append(rr.Findings, Finding{
+			RuleID:finding.RuleID, Path:filepath.ToSlash(finding.Path), Line:finding.StartLine, Column:finding.StartColumn,
+			Message:finding.Message, Analyzer:finding.Analyzer, AnalyzerVersion:finding.AnalyzerVersion,
+			Fingerprint:finding.Fingerprint, Level:finding.Level, Properties:finding.Properties,
+		})
+	}
+	if len(rr.Findings) > 0 {
+		rr.Status = "FAIL"
+		rr.Reason = fmt.Sprintf("Analyzer %q found %d scoped violation(s) for rule(s) %s.", verifier.Analyzer, len(rr.Findings), strings.Join(verifier.RuleIDs, ", "))
+	} else {
+		rr.Status = "PASS"
+		rr.Reason = fmt.Sprintf("No finding matched rule(s) %s within %d source path(s) in scope.", strings.Join(verifier.RuleIDs, ", "), len(scopedPaths))
+	}
+}
+
 func pathMatches(path string, prefixes []string) bool {
 	path=strings.TrimPrefix(filepath.ToSlash(path),"./")
 	for _, p := range prefixes { p=strings.TrimPrefix(filepath.ToSlash(p),"./"); if p!="" && strings.HasPrefix(path,p) { return true } }
@@ -350,7 +462,13 @@ func importMatches(p, forbidden string) bool {
 func rollup(rs []RequirementResult) string {
 	if len(rs)==0 { return "INDETERMINATE" }
 	passed:=0
-	for _, r := range rs { switch r.Status { case "FAIL": return "FAIL"; case "ERROR","INDETERMINATE","EVIDENCE_MISSING": return "INDETERMINATE"; case "PASS": passed++ } }
+	for _, r := range rs { switch r.Status {
+		case "FAIL": return "FAIL"
+		case "ERROR", "INDETERMINATE", "EVIDENCE_MISSING", "UNSUPPORTED", "REVIEW_REQUIRED": return "INDETERMINATE"
+		case "PASS": passed++
+		case "NOT_APPLICABLE":
+		default: return "INDETERMINATE"
+	} }
 	if passed==0 { return "INDETERMINATE" }
 	return "PASS"
 }

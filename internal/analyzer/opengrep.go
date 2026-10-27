@@ -191,6 +191,8 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 	normalized.ConfigurationSHA256 = configHash
 	normalized.InputSHA256 = inputHash
+	normalized.ScannedPaths, err = discoverScannedPaths(rootAbs)
+	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
 	if normalized.Status != ScanStatusComplete {
 		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
 	}
@@ -224,7 +226,7 @@ func resolveConfig(root, config string) (absolute, relative string, err error) {
 // internals and dependency/vendor trees are excluded; symlinks are not followed.
 func hashInputTree(root string) (string, error) {
 	h := sha256.New()
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
 		if entry.IsDir() {
@@ -260,4 +262,36 @@ func truncate(value string, max int) string {
 	value = strings.TrimSpace(value)
 	if len(value) <= max { return value }
 	return value[:max] + "…"
+}
+
+
+// discoverScannedPaths records a deterministic inventory of source/config files
+// that can inform whether a policy's declared repository path scope is present.
+func discoverScannedPaths(root string) ([]string, error) {
+	extensions := map[string]bool{
+		".go": true, ".py": true, ".js": true, ".jsx": true, ".ts": true, ".tsx": true,
+		".java": true, ".cs": true, ".php": true, ".rb": true, ".json": true, ".yaml": true,
+		".yml": true, ".tf": true, ".sh": true, ".kt": true, ".kts": true, ".scala": true,
+		".rs": true, ".c": true, ".h": true, ".cc": true, ".cpp": true, ".hpp": true,
+		".vue": true, ".html": true, ".xml": true, ".sql": true, ".ex": true, ".exs": true,
+	}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
+	var paths []string
+	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil { return walkErr }
+		if entry.IsDir() {
+			if current != root && skipDir[entry.Name()] { return filepath.SkipDir }
+			return nil
+		}
+		if entry.Type()&os.ModeSymlink != 0 { return nil }
+		if !entry.Type().IsRegular() && entry.Type() != 0 { return nil }
+		if !extensions[strings.ToLower(filepath.Ext(entry.Name()))] { return nil }
+		rel, err := filepath.Rel(root, current)
+		if err != nil { return err }
+		paths = append(paths, filepath.ToSlash(rel))
+		return nil
+	})
+	if err != nil { return nil, err }
+	sort.Strings(paths)
+	return paths, nil
 }
