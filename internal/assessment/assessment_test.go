@@ -18,6 +18,22 @@ func fixtureCatalog() Catalog {
 		},
 	}}}
 }
+func TestHashSourceFilesIsOrderIndependentAndContentSensitive(t *testing.T) {
+	files := []SourceFile{
+		{Path: "internal/a.go", Language: "go", Content: "package a"},
+		{Path: "config/service.json", Language: "json", Content: `{"timeout_seconds":30}`},
+	}
+	first := HashSourceFiles(files)
+	reversed := HashSourceFiles([]SourceFile{files[1], files[0]})
+	if first != reversed || len(first) != 64 {
+		t.Fatalf("source snapshot digest is not deterministic: %s vs %s", first, reversed)
+	}
+	changed := []SourceFile{files[0], {Path: files[1].Path, Language: files[1].Language, Content: `{"timeout_seconds":31}`}}
+	if HashSourceFiles(changed) == first {
+		t.Fatal("source content change did not change the snapshot digest")
+	}
+}
+
 func TestAssessmentPassesCompliantSnippet(t *testing.T) {
 	md:="### File: internal/domain/customer.go\n```go\npackage domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n```\n"
 	result:=Assess(fixtureCatalog(),ParseIssueMarkdown(md))
