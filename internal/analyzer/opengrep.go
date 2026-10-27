@@ -350,6 +350,12 @@ func discoverScannedPaths(root string) ([]string, error) {
 	return discoverScannedPathsExcluding(root, "")
 }
 
+// DiscoverScannedPaths exposes the deterministic eligible-source inventory for
+// planning and verification callers outside the analyzer package.
+func DiscoverScannedPaths(root string) ([]string, error) {
+	return discoverScannedPaths(root)
+}
+
 func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) {
 	excludedPath = filepath.ToSlash(filepath.Clean(excludedPath))
 	extensions := map[string]bool{
