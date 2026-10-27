@@ -32,7 +32,7 @@ body:
     id: source_code
     attributes:
       label: Source code
-      description: Include the file path and a fenced code block for each Go source file you want assessed.
+      description: Include the file path and a fenced code block for each Go source or JSON configuration file you want assessed.
       value: |
         ### File: internal/domain/example.go
         ```go
