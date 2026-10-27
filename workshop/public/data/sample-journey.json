@@ -2,57 +2,76 @@
   "steps": [
     {
       "id": "start",
+      "short": "ADR",
       "title": "Start with an ADR",
-      "narrative": "An architect publishes an ADR describing a hard requirement. Pathfinder will turn prose into reviewable obligation candidates without calling an LLM on the assess path.",
-      "technical": "ADR Markdown must include an H1 title. ingest-adrs builds a content-addressed index; extract later cites source_path + line ranges + SHA-256.",
+      "narrative": "An architect publishes an ADR with a hard requirement. Pathfinder turns that prose into reviewable obligation candidates — without calling an LLM on the assess path.",
+      "technical": "ADR Markdown needs an H1 title. ingest-adrs builds a content-addressed index. Later stages cite source_path, line ranges, and SHA-256 of the file bytes.",
+      "commands": ["adrctl ingest-adrs --root adrs --json-out ingested.json"],
+      "checks": ["H1 title present", "Fail-closed on malformed ADR", "Assess path never reads LLM_API_KEY"],
       "artifact_key": "adr",
-      "callouts": ["Assess never uses LLM_API_KEY"]
+      "artifact_label": "Ingested ADR"
     },
     {
       "id": "extract",
-      "title": "Extract + score confidence",
-      "narrative": "Deterministic extractors find obligation-like statements and assign high/medium/low confidence. Only the low band is eligible for batch LLM assist.",
-      "technical": "Confidence combines modality strength, pattern_hint match, and citation quality. Escalation reasons are recorded on the candidate for review UX.",
+      "short": "Extract",
+      "title": "Extract and score confidence",
+      "narrative": "Deterministic extractors find obligation-like statements and band them high, medium, or low. Only the low band is eligible for batch LLM assist.",
+      "technical": "Confidence combines modality strength, pattern_hint match, and citation quality. Escalation reasons stay on the candidate for review UX.",
+      "commands": ["adrctl extract-obligations --index ingested.json --root adrs --json-out candidates.json"],
+      "checks": ["No LLM on extract", "Bands: high | medium | low", "kpi.escalation.rate = low / total"],
       "artifact_key": "candidate",
-      "callouts": ["kpi.escalation.rate = low / total"]
+      "artifact_label": "Low-confidence candidate"
     },
     {
       "id": "assist",
+      "short": "Assist",
       "title": "Batch LLM assist",
-      "narrative": "When confidence is low, assist drafts a normalized statement and suggested pattern. Offline mode uses fixtures so CI stays green without secrets.",
-      "technical": "assist-obligations verifies the source quote against file bytes/SHA. Proposals set executable=false and approval_status=pending_review. Live mode accumulates prompt/completion tokens and estimated_cost_usd.",
+      "narrative": "For low-confidence candidates, assist drafts a normalized statement and suggested pattern. Offline fixtures keep CI green without secrets.",
+      "technical": "assist-obligations verifies the quote against file bytes and SHA. Proposals are never executable and stay pending_review. Live mode records tokens and estimated USD.",
+      "commands": ["adrctl assist-obligations --index candidates.json --root adrs --json-out proposals.json"],
+      "checks": ["executable = false", "approval_status = pending_review", "Offline cost = $0"],
       "artifact_key": "proposal",
-      "callouts": ["Cost is $0 offline", "Proposals never auto-approve"]
+      "artifact_label": "Assist proposal"
     },
     {
       "id": "review",
-      "title": "Human accept / reject",
+      "short": "Review",
+      "title": "Human accept or reject",
       "narrative": "A reviewer accepts or rejects the proposal into the append-only review registry. Accept rate becomes a workshop KPI.",
-      "technical": "accept-assist-proposal → ProposalToReview → RecordReview. Citation drift between proposal and candidate fails closed.",
+      "technical": "accept-assist-proposal maps to RecordReview. Citation drift between proposal and candidate fails closed before the ledger updates.",
+      "commands": ["adrctl accept-assist-proposal --proposal-id PROP-DEMO-1 --decision approved ..."],
+      "checks": ["Human-authored ledger entry", "Citation SHA must still match", "kpi.review.accept_rate"],
       "artifact_key": "review",
-      "callouts": ["kpi.review.accept_rate"]
+      "artifact_label": "Review record"
     },
     {
       "id": "assess",
+      "short": "Assess",
       "title": "Deterministic assess gate",
-      "narrative": "PR/issue assessment evaluates requirements with analyzer evidence and binding coverage — still zero runtime LLM calls.",
-      "technical": "workshop-emit --enforce-assess-llm fails if runtime_llm_calls != 0 on assess workflows.",
+      "narrative": "PR and issue assessment evaluate requirements with analyzer evidence and binding coverage — still zero runtime LLM calls.",
+      "technical": "workshop-emit --enforce-assess-llm fails the snapshot if runtime_llm_calls is not 0 on assess workflows.",
+      "commands": ["adrctl assess-repo --root . --requirements adr/requirements.json"],
+      "checks": ["runtime_llm_calls == 0", "Blocking gate on pending/stale", "SARIF + report artifacts"],
       "artifact_key": "assessment",
-      "callouts": ["runtime_llm_calls must be 0"]
+      "artifact_label": "Assessment result"
     },
     {
       "id": "command-center",
-      "title": "Publish to command center",
-      "narrative": "Artifacts land on the workshop-data branch and the Pages SPA renders drilldowns, ADR dig-ins, cost, and this Sample journey.",
-      "technical": "workshop-publish builds the Vite app and deploys with actions/deploy-pages. Fixtures ship for local preview when live data is thin.",
+      "short": "Publish",
+      "title": "Publish to the command center",
+      "narrative": "Artifacts land on workshop-data and this Pages app renders drilldowns, ADR dig-ins, cost, and the Sample journey.",
+      "technical": "Workshop Publish builds the Vite app and deploys with actions/deploy-pages. Local fixtures keep the shell usable when live data is thin.",
+      "commands": ["adrctl workshop-emit --out-dir snapshot ..."],
+      "checks": ["latest.json + metrics.json", "runs.jsonl append", "Internal visibility by design"],
       "artifact_key": "latest",
-      "callouts": ["Internal tool — full visibility by design"]
+      "artifact_label": "Workshop snapshot"
     }
   ],
   "artifacts": {
     "adr": {
       "id": "ADR-2001",
       "title": "TLS termination at edge",
+      "status": "accepted",
       "excerpt": "All public HTTP traffic must terminate TLS at the edge proxy with certificates managed by the platform."
     },
     "candidate": {
@@ -61,7 +80,10 @@
       "confidence": "low",
       "pattern_hint": "manual_review",
       "statement": "All public HTTP traffic must terminate TLS at the edge proxy",
-      "escalation_reasons": ["weak_pattern_match", "broad_scope"]
+      "escalation_reasons": ["weak_pattern_match", "broad_scope"],
+      "source_path": "ADR-2001.md",
+      "source_line_start": 8,
+      "source_line_end": 8
     },
     "proposal": {
       "proposal_id": "PROP-DEMO-1",
@@ -77,7 +99,8 @@
       "candidate_id": "CAND-DEMO-1",
       "decision": "approved",
       "reviewer": "architect@example",
-      "enforcement_mode": "review_required"
+      "enforcement_mode": "review_required",
+      "review_reference": "https://github.com/example/pf_2/issues/42"
     },
     "assessment": {
       "verdict": "PASS",
@@ -86,6 +109,7 @@
     },
     "latest": {
       "schema_version": "workshop-snapshot-v1",
+      "run_id": "fixture-001",
       "summary": "workflow=fixture; verdict=PASS; candidates=4; proposals=1"
     }
   }

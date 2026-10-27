@@ -106,7 +106,7 @@ export async function renderHome(app: HTMLElement) {
       ${steps
         .map(
           (s, i) =>
-            `${i ? '<span class="step-sep">/</span>' : ''}<a class="step-link" href="#/pipeline/${escapeHTML(s.id)}">${escapeHTML(s.title)}</a>`,
+            `${i ? '<span class="step-sep">/</span>' : ''}<a class="step-link" href="#/pipeline/${escapeHTML(s.id)}" title="${escapeHTML(s.title)}">${escapeHTML(s.title)}</a>`,
         )
         .join('')}
     </div>
@@ -301,8 +301,8 @@ export async function renderADRs(app: HTMLElement, id?: string) {
           ${adrs
             .map(
               (a) => `<tr class="row-link" data-id="${escapeHTML(a.id)}">
-              <td><code>${escapeHTML(a.id)}</code></td>
-              <td>${escapeHTML(a.title)}</td>
+              <td><code class="id" title="${escapeHTML(a.id)}">${escapeHTML(a.id)}</code></td>
+              <td class="truncate" title="${escapeHTML(a.title)}">${escapeHTML(a.title)}</td>
               <td>${tag(a.status, a.status === 'accepted' ? 'ok' : '')}</td>
               <td>${a.confidence_mix ? `${a.confidence_mix.high}/${a.confidence_mix.medium}/${a.confidence_mix.low}` : '—'}</td>
               <td>${(a.candidate_ids || []).length}</td>
@@ -418,11 +418,11 @@ export async function renderCandidates(app: HTMLElement) {
           ${rows
             .map(
               (c) => `<tr data-band="${escapeHTML(c.confidence)}" data-q="${escapeHTML((c.id + ' ' + c.statement).toLowerCase())}">
-              <td><code>${escapeHTML(c.id)}</code></td>
-              <td><a href="#/adrs/${escapeHTML(c.adr_id)}">${escapeHTML(c.adr_id)}</a></td>
+              <td><code class="id" title="${escapeHTML(c.id)}">${escapeHTML(c.id)}</code></td>
+              <td><a class="id" href="#/adrs/${escapeHTML(c.adr_id)}" title="${escapeHTML(c.adr_id)}">${escapeHTML(c.adr_id)}</a></td>
               <td>${tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : '')}</td>
-              <td><code>${escapeHTML(c.pattern_hint)}</code></td>
-              <td class="faint">${escapeHTML(c.source_path || '')}:${fmt(c.source_line_start)}</td>
+              <td><code class="id" title="${escapeHTML(c.pattern_hint)}">${escapeHTML(c.pattern_hint)}</code></td>
+              <td class="faint truncate" title="${escapeHTML(`${c.source_path || ''}:${fmt(c.source_line_start)}`)}">${escapeHTML(c.source_path || '')}:${fmt(c.source_line_start)}</td>
               <td class="wrap">${escapeHTML(c.statement)}</td>
             </tr>`,
             )
@@ -605,44 +605,83 @@ export async function renderCosts(app: HTMLElement) {
   }
 }
 
+function fieldRows(obj: Record<string, unknown> | null): string {
+  if (!obj) return `<p class="muted">No artifact for this step.</p>`;
+  const wrapKeys = new Set(['excerpt', 'statement', 'normalized_statement', 'summary', 'rationale']);
+  return `<div class="fields">${Object.entries(obj)
+    .map(([k, v]) => {
+      const text = Array.isArray(v) ? v.join(', ') : v == null ? '—' : String(v);
+      const isId = /(_id|id)$/i.test(k) || k.endsWith('_path');
+      const wrap = wrapKeys.has(k);
+      return `<div class="row"><div class="k">${escapeHTML(k)}</div><div class="v ${wrap ? 'wrap' : ''}" title="${escapeHTML(text)}">${
+        isId && !wrap ? `<code>${escapeHTML(text)}</code>` : escapeHTML(text)
+      }</div></div>`;
+    })
+    .join('')}</div>`;
+}
+
 export async function renderSample(app: HTMLElement, stepId?: string) {
   setCrumb('Sample journey');
-  setPurpose('A guided technical walkthrough of one Pathfinder pass.');
+  setPurpose('Walk one Pathfinder pass end to end — each step shows the idea, the command, and a real artifact shape.');
   const journey = await loadSampleJourney();
   const steps = journey?.steps || [];
   const idx = Math.max(0, steps.findIndex((s) => s.id === stepId));
   const step = steps[idx] || steps[0];
-  const artifact = step?.artifact_key ? journey?.artifacts?.[step.artifact_key] : null;
-  setTopActions(`
-    ${idx > 0 ? `<a class="btn" href="#/sample/${steps[idx - 1].id}">Previous</a>` : ''}
-    ${idx < steps.length - 1 ? `<a class="btn primary" href="#/sample/${steps[idx + 1].id}">Next</a>` : `<a class="btn primary" href="#/pipeline">Open pipeline</a>`}
-  `);
+  const artifact = step?.artifact_key ? (journey?.artifacts?.[step.artifact_key] as Record<string, unknown> | undefined) : null;
+  setTopActions('');
   if (!step) {
     app.innerHTML = emptyState('Journey missing', 'sample-journey.json not published.');
     return;
   }
+  const pct = ((idx + 1) / steps.length) * 100;
+  const prev = idx > 0 ? steps[idx - 1] : null;
+  const next = idx < steps.length - 1 ? steps[idx + 1] : null;
   app.innerHTML = `
-    <div class="steps">
-      ${steps
-        .map(
-          (s, i) =>
-            `${i ? '<span class="step-sep">/</span>' : ''}<a class="step-link ${s.id === step.id ? 'active' : ''}" href="#/sample/${escapeHTML(s.id)}">${i + 1}. ${escapeHTML(s.title)}</a>`,
-        )
-        .join('')}
-    </div>
-    <div class="layout-2">
-      <section>
-        <p class="faint">Step ${idx + 1} of ${steps.length}</p>
-        <h1 style="margin-top:0.35rem">${escapeHTML(step.title)}</h1>
-        <p class="prose" style="margin-top:0.75rem">${escapeHTML(step.narrative)}</p>
-        <h2>Technical detail</h2>
-        <p class="prose">${escapeHTML(step.technical)}</p>
-        ${(step.callouts || []).map((c) => `<p style="margin-top:0.5rem">${tag(c, 'warn')}</p>`).join('')}
-      </section>
-      <aside>
-        <h2>Example artifact</h2>
-        <div class="artifact"><pre>${escapeHTML(JSON.stringify(artifact ?? {}, null, 2))}</pre></div>
-      </aside>
+    <div class="journey">
+      <nav class="journey-rail" aria-label="Journey steps">
+        ${steps
+          .map((s, i) => {
+            const state = s.id === step.id ? 'active' : i < idx ? 'done' : '';
+            const label = s.short || s.title;
+            return `<a class="${state}" href="#/sample/${escapeHTML(s.id)}" title="${escapeHTML(s.title)}">
+              <span class="n">${String(i + 1).padStart(2, '0')}</span>
+              <span class="t">${escapeHTML(label)}</span>
+            </a>`;
+          })
+          .join('')}
+      </nav>
+      <div class="journey-body">
+        <div class="journey-progress" aria-hidden="true"><span style="width:${pct}%"></span></div>
+        <section class="journey-copy">
+          <p class="faint">Step ${idx + 1} of ${steps.length}</p>
+          <h1>${escapeHTML(step.title)}</h1>
+          <p class="prose">${escapeHTML(step.narrative)}</p>
+          <h2>What happens technically</h2>
+          <p class="prose">${escapeHTML(step.technical)}</p>
+          ${(step.commands || [])
+            .map((c) => `<div class="cmd-line" title="${escapeHTML(c)}"><code>${escapeHTML(c)}</code></div>`)
+            .join('')}
+          ${
+            (step.checks || []).length
+              ? `<h2>Checks</h2><ul class="checklist">${(step.checks || [])
+                  .map((c) => `<li><span>${escapeHTML(c)}</span></li>`)
+                  .join('')}</ul>`
+              : ''
+          }
+        </section>
+        <section>
+          <h2>${escapeHTML(step.artifact_label || 'Example artifact')}</h2>
+          ${fieldRows(artifact || null)}
+        </section>
+        <div class="journey-nav">
+          ${prev ? `<a class="btn" href="#/sample/${escapeHTML(prev.id)}">← ${escapeHTML(prev.short || prev.title)}</a>` : `<span></span>`}
+          ${
+            next
+              ? `<a class="btn primary" href="#/sample/${escapeHTML(next.id)}">${escapeHTML(next.short || next.title)} →</a>`
+              : `<a class="btn primary" href="#/pipeline">Explore live pipeline →</a>`
+          }
+        </div>
+      </div>
     </div>
   `;
 }
@@ -669,9 +708,9 @@ export async function renderRuns(app: HTMLElement) {
         <tbody>${ordered
           .map(
             (r) => `<tr>
-          <td><code>${escapeHTML(r.run.run_id)}</code></td>
-          <td>${escapeHTML(r.run.workflow)}</td>
-          <td>${escapeHTML(r.run.timestamp || '')}</td>
+          <td><code class="id" title="${escapeHTML(r.run.run_id)}">${escapeHTML(r.run.run_id)}</code></td>
+          <td class="truncate">${escapeHTML(r.run.workflow)}</td>
+          <td class="truncate">${escapeHTML(r.run.timestamp || '')}</td>
           <td>${fmt(r.metrics.candidate_total)}</td>
           <td>${fmt(r.metrics.confidence_low)}</td>
           <td>${fmtUSD(r.metrics['kpi.assist.cost_usd'])}</td>

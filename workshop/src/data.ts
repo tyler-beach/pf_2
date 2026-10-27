@@ -45,10 +45,14 @@ export type PipelineStep = {
 
 export type SampleStep = {
   id: string;
+  short?: string;
   title: string;
   technical: string;
   narrative: string;
+  commands?: string[];
+  checks?: string[];
   artifact_key?: string;
+  artifact_label?: string;
   callouts?: string[];
 };
 
