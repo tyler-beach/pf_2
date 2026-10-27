@@ -306,14 +306,14 @@ jobs:
 
       - name: Require compliant architecture fixture to pass
         working-directory: testdata/arch-go-benchmark/clean
-        run: "$(go env GOPATH)/bin/arch-go" --color no
+        run: "$(go env GOPATH)/bin/arch-go" --color no --json
 
       - name: Require forbidden dependency fixture to fail
         working-directory: testdata/arch-go-benchmark/violation
         shell: bash
         run: |
           set -euo pipefail
-          if "$(go env GOPATH)/bin/arch-go" --color no; then
+          if "$(go env GOPATH)/bin/arch-go" --color no --json; then
             echo "Arch-Go unexpectedly accepted domain -> infrastructure dependency"
             exit 1
           else
@@ -337,3 +337,13 @@ jobs:
             --sarif-out "$RUNNER_TEMP/pathfinder-violation.sarif"
           jq -e '.verdict == "PASS"' "$RUNNER_TEMP/pathfinder-clean.json"
           jq -e '.verdict == "FAIL"' "$RUNNER_TEMP/pathfinder-violation.json"
+      - name: Upload Arch-Go benchmark reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: arch-go-benchmark-reports
+          path: |
+            testdata/arch-go-benchmark/clean/.arch-go/report.json
+            testdata/arch-go-benchmark/violation/.arch-go/report.json
+          if-no-files-found: warn
+          retention-days: 14
