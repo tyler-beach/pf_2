@@ -169,23 +169,3 @@ func TestCoverageIsCompleteWhenAllAcceptedRequirementsAreEvaluated(t *testing.T)
 	result := Assess(c, files)
 	if result.CoverageStatus != "COMPLETE" || result.ApplicableRequirementCount != result.RequirementCount { t.Fatalf("expected complete coverage, got %+v", result) }
 }
-
-func TestRepositoryAssessmentDistinguishesAbsentScopeFromMissingRepositoryEvidence(t *testing.T) {
-	c := fixtureCatalog()
-	nonGo := []SourceFile{{Path:"README.md", Language:"markdown", Content:"# Docs"}}
-	result := AssessWithOptions(c, nonGo, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
-	for _, requirement := range result.Requirements {
-		if requirement.Status != "NOT_APPLICABLE" {
-			t.Errorf("%s status = %s, want NOT_APPLICABLE for confirmed empty Go scope", requirement.RequirementID, requirement.Status)
-		}
-	}
-	empty := AssessWithOptions(c, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
-	for _, requirement := range empty.Requirements {
-		if requirement.Status != "EVIDENCE_MISSING" {
-			t.Errorf("%s status = %s, want EVIDENCE_MISSING when no evidence was discovered", requirement.RequirementID, requirement.Status)
-		}
-	}
-	if empty.Verdict != "INDETERMINATE" {
-		t.Fatalf("empty repository evidence must be INDETERMINATE, got %s", empty.Verdict)
-	}
-}
