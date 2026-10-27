@@ -199,3 +199,43 @@ Every repository OpenGrep scan is executed as a validated single-task plan. The 
 The scan CLI writes a manifest to `analyzer-evidence/run-manifest.json` by default. A private file cache stores normalized evidence and paired raw SARIF under SHA-256 filenames, uses atomic replacement and restricted permissions, rejects symlink/corrupt cache entries, and treats cache failures as warnings while still running the analyzer. Cache hits are accepted only when source/configuration/executable/rule-set identities and raw-output digest match the planned task. CI runs the same plan twice and asserts the second run uses the identical cached result.
 
 Timeouts and per-file bounds are enforced by the local OpenGrep adapter. `max-memory-mb` is an explicit worker resource profile in the plan identity; remote orchestrators must enforce it with their container/task runtime. The standalone local CLI does not claim to impose an OS-level memory limit. Runtime assessment continues to make zero LLM calls.
+
+## Deterministic analyzer plans
+
+Create a versioned plan manifest without executing an analyzer:
+
+```sh
+go run ./cmd/adrctl plan-repo \
+  --root . \
+  --analyzer opengrep \
+  --version 1.30.0 \
+  --config rules/pathfinder-security.yml \
+  --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+  --scope . \
+  --timeout 5m \
+  --max-retries 1 \
+  --max-concurrency 2 \
+  --json-out analyzer-evidence/plan.json
+```
+
+Verify that the manifest still matches the current source/configuration snapshot before using its task keys:
+
+```sh
+go run ./cmd/adrctl verify-plan --root . --manifest analyzer-evidence/plan.json
+```
+
+The schema records the global input-tree digest, sorted per-file inventory and hashes, analyzer/config identity, task scope, cache key, idempotency key, attempt/timeout/output limits, and a global concurrency cap. Cache keys change when source content, configuration, analyzer version, or scoped inventory changes. Planning and verification are deterministic; neither command runs the scanner. An empty declared scope is recorded explicitly as `EMPTY`, never silently treated as proof of compliance. The manifest is an execution contract; it is not itself a scan result.
+
+Execute the verified plan locally with bounded concurrency/retries, source-bound evidence validation, raw SARIF retention, and a private file cache. Keep the cache outside the repository so it cannot change the input snapshot during the run:
+
+```sh
+go run ./cmd/adrctl execute-plan \
+  --root . \
+  --manifest analyzer-evidence/plan.json \
+  --cache-dir "$HOME/.cache/pathfinder/analyzers" \
+  --json-out analyzer-evidence/execution.json \
+  --sarif-dir analyzer-evidence/raw
+```
+
+The execution adapter currently supports OpenGrep. Other analyzer names are rejected as unsupported until their adapters are implemented; a planned analyzer is not assumed to have run merely because the plan was created. Only complete results whose source/configuration digests and scanned-file inventory match the plan can be cached and reused. See [docs/analyzer-plan-manifest.md](docs/analyzer-plan-manifest.md) for the execution contract and failure semantics.
+
