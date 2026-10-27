@@ -176,6 +176,8 @@ func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
 		"report.md": "generated report",
 		"coverage.out": "coverage output",
 		"ingested-adrs.json": "generated ADR index",
+		"obligation-assessment.json": "generated obligation assessment",
+		"obligation-assessment.md": "generated obligation report",
 	} {
 		if err := os.WriteFile(filepath.Join(root, name), []byte(value), 0600); err != nil { t.Fatal(err) }
 	}
