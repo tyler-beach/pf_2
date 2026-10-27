@@ -1,0 +1,44 @@
+package assessment
+
+import (
+	"strings"
+	"testing"
+)
+
+func fixtureCatalog() Catalog {
+	return Catalog{SchemaVersion:"1",ADRs:[]ADR{{
+		ID:"ADR-001",Title:"Boundaries",Version:1,Status:"accepted",
+		Requirements:[]Requirement{
+			{ID:"REQ-001-01",Title:"No infrastructure imports",Severity:"error",Verifier:Verifier{Type:"go-import-boundary",SourcePathPrefixes:[]string{"internal/domain/"},ForbiddenImportPrefixes:[]string{"internal/infrastructure/"}}},
+			{ID:"REQ-001-02",Title:"No HTTP imports",Severity:"error",Verifier:Verifier{Type:"go-import-boundary",SourcePathPrefixes:[]string{"internal/domain/"},ForbiddenImportPrefixes:[]string{"net/http"}}},
+		},
+	}}}
+}
+func TestAssessmentPassesCompliantSnippet(t *testing.T) {
+	md:="### File: internal/domain/customer.go\n```go\npackage domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n```\n"
+	result:=Assess(fixtureCatalog(),ParseIssueMarkdown(md))
+	if result.Verdict!="PASS" { t.Fatalf("expected PASS, got %s: %+v",result.Verdict,result.Requirements) }
+	if result.LLMCalls!=0 { t.Fatalf("expected zero LLM calls, got %d",result.LLMCalls) }
+	for _,r:=range result.Requirements { if r.Status!="PASS" { t.Errorf("%s expected PASS, got %s",r.RequirementID,r.Status) } }
+}
+func TestAssessmentFindsMultipleDeviations(t *testing.T) {
+	md:="### File: internal/domain/customer.go\n```go\npackage domain\nimport (\n \"internal/infrastructure/db\"\n \"net/http\"\n)\nfunc Load() {}\n```\n"
+	result:=Assess(fixtureCatalog(),ParseIssueMarkdown(md))
+	if result.Verdict!="FAIL" { t.Fatalf("expected FAIL, got %s",result.Verdict) }
+	if result.Counts["FAIL"]!=2 { t.Fatalf("expected two failed requirements, counts=%v",result.Counts) }
+	for _,r:=range result.Requirements { if len(r.Findings)!=1 { t.Errorf("%s expected one finding, got %+v",r.RequirementID,r.Findings) } }
+}
+func TestNoEvidenceIsIndeterminate(t *testing.T) {
+	result:=Assess(fixtureCatalog(),nil)
+	if result.Verdict!="INDETERMINATE" { t.Fatalf("expected INDETERMINATE, got %s",result.Verdict) }
+	for _,r:=range result.Requirements { if r.Status!="INDETERMINATE" { t.Errorf("%s expected INDETERMINATE, got %s",r.RequirementID,r.Status) } }
+}
+func TestCatalogRejectsDuplicateRequirementIDs(t *testing.T) {
+	c:=fixtureCatalog(); c.ADRs[0].Requirements[1].ID=c.ADRs[0].Requirements[0].ID
+	if err:=ValidateCatalog(c); err==nil || !strings.Contains(err.Error(),"duplicate requirement ID") { t.Fatalf("expected duplicate ID error, got %v",err) }
+}
+func TestImportPrefixBoundary(t *testing.T) {
+	if !importMatches("internal/infrastructure","internal/infrastructure/") { t.Fatal("expected package root match") }
+	if !importMatches("internal/infrastructure/db","internal/infrastructure/") { t.Fatal("expected child package match") }
+	if importMatches("internal/infrastructurex/db","internal/infrastructure/") { t.Fatal("must not match sibling prefix") }
+}
