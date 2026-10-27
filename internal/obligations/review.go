@@ -41,6 +41,7 @@ type CandidateSnapshot struct {
 	SourceSHA256    string `json:"source_sha256"`
 	SourceLineStart int    `json:"source_line_start"`
 	SourceLineEnd   int    `json:"source_line_end"`
+	ReviewHints     []string `json:"review_hints,omitempty"`
 }
 
 // ReviewRecord is an append-only, revisioned human decision for a candidate.
@@ -109,6 +110,7 @@ func SnapshotCandidate(c Candidate) CandidateSnapshot {
 		SectionHeading: c.SectionHeading, Statement: c.Statement, Modality: c.Modality,
 		Kind: c.Kind, PatternHint: c.PatternHint, SourcePath: c.SourcePath,
 		SourceSHA256: c.SourceSHA256, SourceLineStart: c.SourceLineStart, SourceLineEnd: c.SourceLineEnd,
+		ReviewHints: append([]string(nil), c.ReviewHints...),
 	}
 }
 
@@ -448,6 +450,12 @@ func validateCandidateSnapshot(candidate CandidateSnapshot) error {
 	if !validPattern(candidate.PatternHint) {
 		return fmt.Errorf("unsupported candidate pattern_hint %q", candidate.PatternHint)
 	}
+	allowedHints := map[string]bool{"condition_or_exception": true, "compound_or_conjoined": true, "conditional_scope": true, "subjective_or_underspecified": true}
+	seenHints := make(map[string]bool, len(candidate.ReviewHints))
+	for _, hint := range candidate.ReviewHints {
+		if !allowedHints[hint] || seenHints[hint] { return fmt.Errorf("unsupported or duplicate review hint %q", hint) }
+		seenHints[hint] = true
+	}
 	return nil
 }
 
@@ -467,7 +475,8 @@ func snapshotsMatchCurrent(snapshot CandidateSnapshot, candidate Candidate) bool
 		snapshot.SourcePath == current.SourcePath &&
 		snapshot.SourceSHA256 == current.SourceSHA256 &&
 		snapshot.SourceLineStart == current.SourceLineStart &&
-		snapshot.SourceLineEnd == current.SourceLineEnd
+		snapshot.SourceLineEnd == current.SourceLineEnd &&
+		strings.Join(snapshot.ReviewHints, "\x00") == strings.Join(current.ReviewHints, "\x00")
 }
 
 func validPattern(pattern string) bool {
