@@ -36,7 +36,9 @@ jobs:
 
       - name: Install pinned reviewdog CLI
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        run: go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
+        run: |
+          go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Annotate pull request with SARIF findings
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
