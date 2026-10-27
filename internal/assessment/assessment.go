@@ -260,6 +260,59 @@ func assessJSONRequiredKeys(rr *RequirementResult, v Verifier, files []SourceFil
 	}
 }
 
+
+func assessJSONNumberRange(rr *RequirementResult, v Verifier, files []SourceFile) {
+	if strings.TrimSpace(v.FilePath) == "" || len(v.NumericJSONBounds) == 0 {
+		rr.Status = "ERROR"
+		rr.Reason = "json-number-range requires file_path and at least one numeric_json_bounds entry."
+		return
+	}
+	var target *SourceFile
+	for i := range files {
+		if files[i].Language == "json" && filepath.ToSlash(files[i].Path) == filepath.ToSlash(v.FilePath) {
+			target = &files[i]
+			break
+		}
+	}
+	if target == nil {
+		rr.Status = "NOT_APPLICABLE"
+		rr.Reason = fmt.Sprintf("Required configuration file %s was not included in the supplied evidence.", v.FilePath)
+		return
+	}
+	var document map[string]any
+	if err := json.Unmarshal([]byte(target.Content), &document); err != nil {
+		rr.Status = "ERROR"
+		rr.Reason = fmt.Sprintf("Could not parse JSON file %s: %v", target.Path, err)
+		return
+	}
+	rr.Evidence = append(rr.Evidence, fmt.Sprintf("Parsed JSON document %s and checked numeric bounds.", target.Path))
+	for _, bound := range v.NumericJSONBounds {
+		value, exists := document[bound.Key]
+		if !exists {
+			rr.Findings = append(rr.Findings, Finding{RuleID: rr.RequirementID, Path: target.Path, Line: 1, Message: fmt.Sprintf("Required numeric JSON key %q is missing from %s.", bound.Key, target.Path)})
+			continue
+		}
+		number, ok := value.(float64)
+		if !ok {
+			rr.Findings = append(rr.Findings, Finding{RuleID: rr.RequirementID, Path: target.Path, Line: 1, Message: fmt.Sprintf("JSON key %q must be a number; found %T.", bound.Key, value)})
+			continue
+		}
+		if bound.Min != nil && number < *bound.Min {
+			rr.Findings = append(rr.Findings, Finding{RuleID: rr.RequirementID, Path: target.Path, Line: 1, Message: fmt.Sprintf("JSON key %q is %v, below minimum %v.", bound.Key, number, *bound.Min)})
+		}
+		if bound.Max != nil && number > *bound.Max {
+			rr.Findings = append(rr.Findings, Finding{RuleID: rr.RequirementID, Path: target.Path, Line: 1, Message: fmt.Sprintf("JSON key %q is %v, above maximum %v.", bound.Key, number, *bound.Max)})
+		}
+	}
+	if len(rr.Findings) > 0 {
+		rr.Status = "FAIL"
+		rr.Reason = fmt.Sprintf("Found %d numeric JSON constraint violation(s).", len(rr.Findings))
+	} else {
+		rr.Status = "PASS"
+		rr.Reason = fmt.Sprintf("All %d numeric JSON constraint(s) passed in %s.", len(v.NumericJSONBounds), target.Path)
+	}
+}
+
 func pathMatches(path string, prefixes []string) bool {
 	path=strings.TrimPrefix(filepath.ToSlash(path),"./")
 	for _, p := range prefixes { p=strings.TrimPrefix(filepath.ToSlash(p),"./"); if p!="" && strings.HasPrefix(path,p) { return true } }
