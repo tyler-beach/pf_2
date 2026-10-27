@@ -301,3 +301,27 @@ func TestOpenGrepScannerEnforcesSourceFileSizeLimitBeforeExecution(t *testing.T)
 	}
 	if len(runner.calls) != 0 { t.Fatalf("oversized source was scanned: %+v", runner.calls) }
 }
+
+func TestOpenGrepScannerHonorsExplicitSourceScope(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	if err := os.WriteFile(filepath.Join(root, "src", "other.py"), []byte("print('other')\n"), 0600); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	scanner := OpenGrepScanner{
+		Binary: "/opt/opengrep", Version: "1.30.0", ConfigPath: "rules/security.yml",
+		ScanPaths: []string{"src/app.py"}, Runner: runner,
+	}
+	got, err := scanner.Scan(context.Background(), root)
+	if err != nil { t.Fatalf("Scan returned error: %v", err) }
+	if len(got.ScannedPaths) != 1 || got.ScannedPaths[0] != "src/app.py" {
+		t.Fatalf("scanned inventory did not preserve the explicit scope: %v", got.ScannedPaths)
+	}
+	scanArgs := runner.calls[1].args
+	if !containsArg(scanArgs, "./src/app.py") { t.Fatalf("selected source path missing from args: %v", scanArgs) }
+	if containsArg(scanArgs, ".") { t.Fatalf("scoped scan must not scan repository root: %v", scanArgs) }
+	if containsArg(scanArgs, "./src/other.py") { t.Fatalf("out-of-scope file was passed to analyzer: %v", scanArgs) }
+}
+
+func containsArg(args []string, want string) bool {
+	for _, arg := range args { if arg == want { return true } }
+	return false
+}
