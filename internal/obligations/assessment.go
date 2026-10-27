@@ -35,6 +35,9 @@ type AssessmentReport struct {
 	SchemaVersion       string                `json:"schema_version"`
 	EvidenceMode        string                `json:"evidence_mode"`
 	RepositoryVerdict   string                `json:"repository_verdict"`
+	CandidateIndexArtifactSHA256 string `json:"candidate_index_artifact_sha256,omitempty"`
+	ReviewRegistryArtifactSHA256 string `json:"review_registry_artifact_sha256,omitempty"`
+	AssessmentArtifactSHA256 string `json:"assessment_artifact_sha256,omitempty"`
 	CandidateCount      int                   `json:"candidate_count"`
 	Counts              map[string]int        `json:"counts"`
 	BindingCoverage     BindingCoverage       `json:"binding_coverage"`
@@ -170,6 +173,9 @@ func MarkdownAssessmentReport(report AssessmentReport) string {
 	fmt.Fprintf(&b, "# Specification obligation assessment\n\n")
 	fmt.Fprintf(&b, "- Repository assessment verdict: **%s**\n", report.RepositoryVerdict)
 	fmt.Fprintf(&b, "- Candidates: **%d**\n", report.CandidateCount)
+	if report.CandidateIndexArtifactSHA256 != "" { fmt.Fprintf(&b, "- Candidate index SHA-256: `%s`\n", report.CandidateIndexArtifactSHA256) }
+	if report.ReviewRegistryArtifactSHA256 != "" { fmt.Fprintf(&b, "- Review registry SHA-256: `%s`\n", report.ReviewRegistryArtifactSHA256) }
+	if report.AssessmentArtifactSHA256 != "" { fmt.Fprintf(&b, "- Assessment artifact SHA-256: `%s`\n", report.AssessmentArtifactSHA256) }
 	fmt.Fprintf(&b, "- PASS: %d; FAIL: %d; INDETERMINATE: %d; NOT_APPLICABLE: %d\n\n",
 		report.Counts["PASS"], report.Counts["FAIL"], report.Counts["INDETERMINATE"], report.Counts["NOT_APPLICABLE"])
 	if len(report.Warnings) > 0 {
