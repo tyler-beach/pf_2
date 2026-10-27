@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/tyler-beach/pf_2/internal/analyzer"
 	"github.com/tyler-beach/pf_2/internal/assessment"
 )
 
@@ -106,6 +107,14 @@ func TestAssessCandidatesFailsClosedOnStaleSnapshotsAndRuntimeLLM(t *testing.T) 
 	if report.EvidenceFresh || report.RepositoryVerdict != "INDETERMINATE" ||
 		report.Candidates[0].Status != "INDETERMINATE" || report.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale source evidence was not downgraded: %+v", report)
+	}
+
+	evidence = repositoryEvidence("PASS")
+	evidence.AnalyzerResults = []analyzer.ScanResult{{InputSHA256: strings.Repeat("c", 64)}}
+	report, err = AssessCandidates(index, catalog, registry, evidence, evidence.SourceSnapshotSHA256, strings.Repeat("b", 64))
+	if err != nil { t.Fatal(err) }
+	if report.EvidenceFresh || report.Candidates[0].Status != "INDETERMINATE" || report.Candidates[0].EvidenceStatus != "STALE" {
+		t.Fatalf("stale analyzer snapshot was not downgraded: %+v", report)
 	}
 
 	evidence = repositoryEvidence("PASS")
