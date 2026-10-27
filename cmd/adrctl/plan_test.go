@@ -29,7 +29,7 @@ func TestPlanRepoCLIIsDeterministicAndVerifyDetectsDrift(t *testing.T) {
 	root := planFixtureRoot(t)
 	output := filepath.Join(root, "analyzer-evidence", "plan.json")
 	args := []string{"--root", root, "--analyzer", "opengrep", "--version", "1.30.0",
-		"--config", "rules/security.yml", "--scope", "src/", "--json-out", output}
+		"--config", "rules/security.yml", "--scope", "src/", "--binary-sha256", strings.Repeat("b",64), "--json-out", output}
 	if err := runPlanRepo(args); err != nil { t.Fatal(err) }
 	first, err := os.ReadFile(output)
 	if err != nil { t.Fatal(err) }
@@ -48,7 +48,7 @@ func TestPlanRepoCLIIsDeterministicAndVerifyDetectsDrift(t *testing.T) {
 func TestExecutePlanCLIUsesCacheAndWritesRawSARIF(t *testing.T) {
 	root:=planFixtureRoot(t)
 	manifestPath:=filepath.Join(root,"analyzer-evidence","plan.json")
-	if err:=runPlanRepo([]string{"--root",root,"--analyzer","opengrep","--version","1.30.0","--config","rules/security.yml","--scope","src/","--json-out",manifestPath});err!=nil{t.Fatal(err)}
+	if err:=runPlanRepo([]string{"--root",root,"--analyzer","opengrep","--version","1.30.0","--config","rules/security.yml","--scope","src/","--binary-sha256",strings.Repeat("b",64),"--json-out",manifestPath});err!=nil{t.Fatal(err)}
 	cacheDir:=filepath.Join(t.TempDir(),"cache")
 	runPath:=filepath.Join(root,"analyzer-evidence","execution.json")
 	sarifDir:=filepath.Join(root,"analyzer-evidence","raw")
@@ -60,6 +60,8 @@ func TestExecutePlanCLIUsesCacheAndWritesRawSARIF(t *testing.T) {
 		if err!=nil{return evidence,err}
 		evidence.ConfigurationPath=task.ConfigurationPath
 		evidence.ConfigurationSHA256,err=analyzer.HashFile(filepath.Join(root,filepath.FromSlash(task.ConfigurationPath)));if err!=nil{return evidence,err}
+		evidence.RuleSetSHA256=evidence.ConfigurationSHA256
+		evidence.BinarySHA256=task.BinarySHA256
 		evidence.InputSHA256,err=analyzer.HashInputTree(root);if err!=nil{return evidence,err}
 		paths,err:=analyzer.DiscoverScannedPaths(root);if err!=nil{return evidence,err}
 		for _,p:=range paths{if p!=task.ConfigurationPath{evidence.ScannedPaths=append(evidence.ScannedPaths,p)}}

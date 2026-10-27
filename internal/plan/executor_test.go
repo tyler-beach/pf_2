@@ -27,7 +27,7 @@ func executionFixture(t *testing.T, count int) (string, Manifest) {
 		if err := os.MkdirAll(filepath.Dir(source),0700); err != nil { t.Fatal(err) }
 		if err := os.WriteFile(source,[]byte("print('safe')\n"),0600); err != nil { t.Fatal(err) }
 		if err := os.WriteFile(config,[]byte("rules: []\n"),0600); err != nil { t.Fatal(err) }
-		specs=append(specs,AnalyzerSpec{Name:"opengrep",Version:"1.30.0",ConfigurationPath:filepath.ToSlash(filepath.Join("rules",area+".yml")),ScopePrefixes:[]string{filepath.ToSlash(filepath.Join("src",area))},TimeoutMillis:1000,MaxRetries:1,MaxOutputBytes:1024*1024,RetryBackoffMillis:1,MaxRetryBackoffMillis:4,RetryableFailureKinds:[]string{FailureTimeout,FailureTemporaryProcessStart}})
+		specs=append(specs,AnalyzerSpec{Name:"opengrep",Version:"1.30.0",BinarySHA256:strings.Repeat("b",64),ConfigurationPath:filepath.ToSlash(filepath.Join("rules",area+".yml")),ScopePrefixes:[]string{filepath.ToSlash(filepath.Join("src",area))},TimeoutMillis:1000,MaxRetries:1,MaxOutputBytes:1024*1024,RetryBackoffMillis:1,MaxRetryBackoffMillis:4,RetryableFailureKinds:[]string{FailureTimeout,FailureTemporaryProcessStart}})
 	}
 	manifest,err:=BuildManifest(root,specs,2)
 	if err!=nil { t.Fatal(err) }
@@ -41,6 +41,8 @@ func validTaskEvidence(root string, task Task) (analyzer.ScanResult,error) {
 	result.ConfigurationPath=task.ConfigurationPath
 	result.ConfigurationSHA256,err=analyzer.HashFile(filepath.Join(root,filepath.FromSlash(task.ConfigurationPath)))
 	if err!=nil { return result,err }
+	result.RuleSetSHA256=result.ConfigurationSHA256
+	result.BinarySHA256=task.BinarySHA256
 	result.InputSHA256,err=analyzer.HashInputTree(root)
 	if err!=nil { return result,err }
 	paths,err:=analyzer.DiscoverScannedPaths(root)

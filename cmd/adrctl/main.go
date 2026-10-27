@@ -312,6 +312,8 @@ func runPlanRepo(args []string) error {
 	analyzerName := fs.String("analyzer", "opengrep", "analyzer adapter name")
 	version := fs.String("version", "1.30.0", "exact analyzer version")
 	config := fs.String("config", "rules/pathfinder-security.yml", "repository-relative analyzer configuration")
+	binarySHA256 := fs.String("binary-sha256", "", "pinned executable SHA-256; required for OpenGrep execution")
+	ruleSetSHA256 := fs.String("ruleset-sha256", "", "optional rule-set SHA-256 (defaults to configuration SHA-256)")
 	scope := fs.String("scope", ".", "comma-separated repository-relative scope prefixes")
 	timeout := fs.Duration("timeout", 5*time.Minute, "per-attempt timeout (for example 90s or 5m)")
 	maxRetries := fs.Int("max-retries", 1, "maximum retries after a retryable failure (0-5)")
@@ -331,8 +333,8 @@ func runPlanRepo(args []string) error {
 		if item != "" { scopePrefixes = append(scopePrefixes, item) }
 	}
 	spec := plan.AnalyzerSpec{
-		Name: *analyzerName, Version: *version, ConfigurationPath: *config,
-		ScopePrefixes: scopePrefixes, TimeoutMillis: timeout.Milliseconds(), MaxRetries: *maxRetries,
+		Name: *analyzerName, Version: *version, BinarySHA256: *binarySHA256, RuleSetSHA256: *ruleSetSHA256,
+		ConfigurationPath: *config, ScopePrefixes: scopePrefixes, TimeoutMillis: timeout.Milliseconds(), MaxRetries: *maxRetries,
 		MaxOutputBytes: *maxOutputBytes, RetryBackoffMillis: backoff.Milliseconds(),
 		MaxRetryBackoffMillis: maxBackoff.Milliseconds(),
 		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},

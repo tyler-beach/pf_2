@@ -29,7 +29,7 @@ func writeFixture(t *testing.T) string {
 
 func fixtureSpec() AnalyzerSpec {
 	return AnalyzerSpec{
-		Name: "opengrep", Version: "1.30.0", ConfigurationPath: "rules/security.yml",
+		Name: "opengrep", Version: "1.30.0", BinarySHA256: strings.Repeat("b",64), ConfigurationPath: "rules/security.yml",
 		ScopePrefixes: []string{"src/"}, TimeoutMillis: 30_000, MaxRetries: 1,
 		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
 	}
@@ -80,6 +80,12 @@ func TestCacheKeyInvalidatesSourceConfigVersionAndScope(t *testing.T) {
 	versionChanged, err := BuildManifest(root, []AnalyzerSpec{changedSpec}, 2)
 	if err != nil { t.Fatal(err) }
 	if base.Tasks[0].CacheKey == versionChanged.Tasks[0].CacheKey { t.Fatal("analyzer version change did not invalidate cache key") }
+	changedSpec = fixtureSpec()
+	changedSpec.BinarySHA256 = strings.Repeat("a",64)
+	binaryChanged, err := BuildManifest(root, []AnalyzerSpec{changedSpec}, 2)
+	if err != nil { t.Fatal(err) }
+	if base.Tasks[0].CacheKey == binaryChanged.Tasks[0].CacheKey { t.Fatal("binary digest change did not invalidate cache key") }
+
 
 	changedSpec = fixtureSpec()
 	changedSpec.ScopePrefixes = []string{"src/app.py"}
