@@ -303,7 +303,7 @@ func resolveConfig(root, config string) (absolute, relative string, err error) {
 // internals and dependency/vendor trees are excluded; symlinks are not followed.
 func hashInputTree(root string) (string, error) {
 	h := sha256.New()
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
 	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true, "obligation-candidates.json": true}
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
@@ -361,7 +361,7 @@ func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) 
 		".vbs": true, ".ml": true, ".mli": true, ".vue": true, ".html": true, ".xml": true,
 		".sql": true, ".ex": true, ".exs": true,
 	}
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
+	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
 	var paths []string
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
@@ -435,7 +435,7 @@ func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []strin
 	if len(allowed) == 0 { return nil }
 	skipDirs := map[string]bool{
 		".git": true, "vendor": true, "node_modules": true,
-		".opengrep-cache": true, "analyzer-evidence": true,
+		".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true,
 	}
 	return filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
