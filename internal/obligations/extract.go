@@ -104,6 +104,31 @@ func BuildIndex(documents []adringest.Document, sourceRootPath, sourceRootLabel 
 	return out, nil
 }
 
+// MarkdownCandidateReport renders a reviewer-facing queue. It never marks a
+// candidate approved or executable.
+func MarkdownCandidateReport(index Index) string {
+	var b strings.Builder
+	b.WriteString("# Obligation candidate review queue\n\n")
+	b.WriteString("> Review queue only: extracted candidates are not approvals and are not executable.\n\n")
+	fmt.Fprintf(&b, "- Source root: `%s`\n", mdCell(index.SourceRoot))
+	fmt.Fprintf(&b, "- Source ingestion index SHA-256: `%s`\n", index.SourceIndexSHA256)
+	fmt.Fprintf(&b, "- Documents: %d; documents with candidates: %d; candidates: %d\n\n",
+		index.DocumentCount, index.DocumentsWithCandidates, index.CandidateCount)
+	if len(index.Candidates) == 0 {
+		b.WriteString("No normative candidate statements were found. This is not evidence that the ADR corpus has no obligations.\n")
+		return b.String()
+	}
+	b.WriteString("| Candidate | Source | Section | Modality | Pattern hint | Review hints | Statement | State |\n|---|---|---|---|---|---|---|---|\n")
+	for _, candidate := range index.Candidates {
+		fmt.Fprintf(&b, "| %s | %s:%d-%d | %s | %s | %s | %s | %s | %s / %s |\n",
+			mdCell(candidate.ID), mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd,
+			mdCell(candidate.SectionHeading), mdCell(candidate.Modality), mdCell(candidate.PatternHint),
+			mdCell(strings.Join(candidate.ReviewHints, ", ")), mdCell(candidate.Statement),
+			mdCell(candidate.ApprovalStatus), mdCell(candidate.EnforcementMode))
+	}
+	return b.String()
+}
+
 // ExtractDocument accepts only source bytes matching indexed ID, title and SHA.
 // It ignores fenced examples and records an exact original source line for each
 // candidate; natural-language suggestions are deliberately not auto-enforced.
