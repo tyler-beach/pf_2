@@ -670,6 +670,37 @@ func runAssessObligations(args []string) error {
 // runPlanRepo creates a deterministic, source-bound execution plan. Planning
 // does not launch analyzers; every execution must re-verify the manifest before
 // using its cache keys or dispatching tasks.
+// canonicalPathForCollision resolves existing symlinks and canonicalizes paths whose
+// final file does not exist yet. This prevents analyzer inputs from aliasing outputs
+// through relative paths or an existing symlink.
+func canonicalPathForCollision(path string) string {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return filepath.Clean(path)
+	}
+	abs = filepath.Clean(abs)
+	current := abs
+	suffix := make([]string, 0, 4)
+	for {
+		resolved, resolveErr := filepath.EvalSymlinks(current)
+		if resolveErr == nil {
+			for i := len(suffix) - 1; i >= 0; i-- {
+				resolved = filepath.Join(resolved, suffix[i])
+			}
+			return filepath.Clean(resolved)
+		}
+		if !os.IsNotExist(resolveErr) {
+			return abs
+		}
+		parent := filepath.Dir(current)
+		if parent == current {
+			return abs
+		}
+		suffix = append(suffix, filepath.Base(current))
+		current = parent
+	}
+}
+
 // runSpecificationCheck orchestrates the deterministic source-to-evidence
 // lifecycle. It always regenerates ingestion/candidate artifacts, so source
 // drift cannot be hidden by a stale checked-in candidate index.
@@ -731,9 +762,14 @@ func runSpecificationCheck(args []string) error {
 	obligationReportPath := filepath.Join(rootReal, "obligation-assessment.json")
 	obligationMarkdownPath := filepath.Join(rootReal, "obligation-assessment.md")
 	outputs := []string{ingestionPath, candidatePath, candidateReportPath, assessmentPath, repositoryReportPath, sarifPath, obligationReportPath, obligationMarkdownPath}
-	for _, input := range []string{catalogPath, registryPath} {
+	inputs := []string{catalogPath, registryPath}
+	if *analyzerEvidence != "" {
+		inputs = append(inputs, resolveInput(*analyzerEvidence), resolveInput(*analyzerSARIF))
+	}
+	for _, input := range inputs {
+		canonicalInput := canonicalPathForCollision(input)
 		for _, output := range outputs {
-			if filepath.Clean(input) == filepath.Clean(output) {
+			if canonicalInput == canonicalPathForCollision(output) {
 				return fmt.Errorf("input path %q collides with generated output %q", input, output)
 			}
 		}
