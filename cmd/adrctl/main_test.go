@@ -104,6 +104,12 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	if stale.EvidenceFresh || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale assessment remained compliant after source changed: %+v", stale)
 	}
+
+	// An ADR edit must invalidate the extracted candidate index itself.
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), append([]byte(adrSource), '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := runAssessObligations(args); err == nil || !strings.Contains(err.Error(), "rebuild candidate index") {
+		t.Fatalf("stale candidate index should be rejected after an ADR edit, got %v", err)
+	}
 }
 
 func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testing.T) {
