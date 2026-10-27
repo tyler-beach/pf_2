@@ -329,6 +329,19 @@ func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) 
 }
 
 
+// DiscoverScannedPaths exposes the normalized source inventory used by the
+// scanner so planning and verification share a single scope model.
+func DiscoverScannedPaths(root string) ([]string, error) {
+	rootAbs, err := filepath.Abs(root)
+	if err != nil { return nil, fmt.Errorf("resolve repository root: %w", err) }
+	rootReal, err := filepath.EvalSymlinks(rootAbs)
+	if err != nil { return nil, fmt.Errorf("resolve repository root symlinks: %w", err) }
+	info, err := os.Stat(rootReal)
+	if err != nil { return nil, fmt.Errorf("inspect repository root: %w", err) }
+	if !info.IsDir() { return nil, fmt.Errorf("repository root %q is not a directory", rootReal) }
+	return discoverScannedPaths(rootReal)
+}
+
 // HashInputTree exposes the deterministic source/configuration tree digest for
 // evidence verification. Generated reports and analyzer-evidence outputs are
 // excluded so a scan can be verified after its reports are written.

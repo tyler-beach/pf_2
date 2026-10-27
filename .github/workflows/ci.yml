@@ -105,6 +105,42 @@ jobs:
 
           jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
 
+
+      - name: Verify deterministic analyzer plan and cache invalidation
+        run: |
+          set -euo pipefail
+          plan_root="$RUNNER_TEMP/pathfinder-plan-fixture"
+          mkdir -p "$plan_root/src" "$plan_root/rules" "$plan_root/analyzer-evidence"
+          cp testdata/analyzer-fixtures/clean/javascript.js "$plan_root/src/app.js"
+          cp rules/pathfinder-security.yml "$plan_root/rules/pathfinder-security.yml"
+
+          go run ./cmd/adrctl plan-repo \
+            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --config rules/pathfinder-security.yml --scope src/ \
+            --json-out "$plan_root/analyzer-evidence/plan.json"
+          cp "$plan_root/analyzer-evidence/plan.json" "$RUNNER_TEMP/plan-first.json"
+          go run ./cmd/adrctl plan-repo \
+            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --config rules/pathfinder-security.yml --scope src/ \
+            --json-out "$plan_root/analyzer-evidence/plan.json"
+          cmp "$RUNNER_TEMP/plan-first.json" "$plan_root/analyzer-evidence/plan.json"
+          go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json"
+
+          old_cache_key="$(jq -er '.tasks[0].cache_key' "$RUNNER_TEMP/plan-first.json")"
+          cp "$RUNNER_TEMP/plan-first.json" "$RUNNER_TEMP/plan-stale.json"
+          printf '\n// cache invalidation fixture\n' >> "$plan_root/src/app.js"
+          go run ./cmd/adrctl plan-repo \
+            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --config rules/pathfinder-security.yml --scope src/ \
+            --json-out "$plan_root/analyzer-evidence/plan.json"
+          new_cache_key="$(jq -er '.tasks[0].cache_key' "$plan_root/analyzer-evidence/plan.json")"
+          test "$old_cache_key" != "$new_cache_key"
+          go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json"
+          if go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$RUNNER_TEMP/plan-stale.json"; then
+            echo "stale plan unexpectedly verified" >&2
+            exit 1
+          fi
+
       - name: Scan repository with OpenGrep
         run: |
           mkdir -p analyzer-evidence

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	"github.com/tyler-beach/pf_2/internal/analyzer"
 	"github.com/tyler-beach/pf_2/internal/assessment"
 	"github.com/tyler-beach/pf_2/internal/obligations"
+	"github.com/tyler-beach/pf_2/internal/plan"
 )
 
 func main() {
@@ -35,6 +37,10 @@ func main() {
 		err = runExtractObligations(os.Args[2:])
 	case "scan-opengrep":
 		err = runOpenGrepScan(os.Args[2:])
+	case "plan-repo":
+		err = runPlanRepo(os.Args[2:])
+	case "verify-plan":
+		err = runVerifyPlan(os.Args[2:])
 	case "assert-issue-verdict":
 		err = runAssertIssueVerdict(os.Args[2:])
 	case "version":
@@ -50,7 +56,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|assert-issue-verdict|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|assert-issue-verdict|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -291,5 +297,79 @@ func runAssertIssueVerdict(args []string) error {
 		return nil
 	}
 	fmt.Printf("Issue regression matched: verdict=%s coverage=%s\n", result.Verdict, result.CoverageStatus)
+	return nil
+}
+
+
+// runPlanRepo creates a deterministic, source-bound execution plan. Planning
+// does not launch analyzers; every execution must re-verify the manifest before
+// using its cache keys or dispatching tasks.
+func runPlanRepo(args []string) error {
+	fs := flag.NewFlagSet("plan-repo", flag.ContinueOnError)
+	root := fs.String("root", ".", "repository root")
+	analyzerName := fs.String("analyzer", "opengrep", "analyzer adapter name")
+	version := fs.String("version", "1.30.0", "exact analyzer version")
+	config := fs.String("config", "rules/pathfinder-security.yml", "repository-relative analyzer configuration")
+	scope := fs.String("scope", ".", "comma-separated repository-relative scope prefixes")
+	timeout := fs.Duration("timeout", 5*time.Minute, "per-attempt timeout (for example 90s or 5m)")
+	maxRetries := fs.Int("max-retries", 1, "maximum retries after a retryable failure (0-5)")
+	maxConcurrency := fs.Int("max-concurrency", 2, "bounded parallel task limit (1-16)")
+	maxOutputBytes := fs.Int64("max-output-bytes", 64<<20, "maximum raw analyzer output bytes")
+	backoff := fs.Duration("retry-backoff", 500*time.Millisecond, "initial retry backoff")
+	maxBackoff := fs.Duration("max-retry-backoff", 10*time.Second, "maximum retry backoff")
+	output := fs.String("json-out", "analyzer-evidence/plan.json", "deterministic plan manifest output")
+	if err := fs.Parse(args); err != nil { return err }
+	if fs.NArg() != 0 { return fmt.Errorf("plan-repo accepts no positional arguments") }
+	if *timeout < time.Millisecond || *backoff < 0 || *maxBackoff < 0 {
+		return fmt.Errorf("timeouts and retry backoffs must not be negative, and timeout must be at least 1ms")
+	}
+	scopePrefixes := []string{}
+	for _, item := range strings.Split(*scope, ",") {
+		item = strings.TrimSpace(item)
+		if item != "" { scopePrefixes = append(scopePrefixes, item) }
+	}
+	spec := plan.AnalyzerSpec{
+		Name: *analyzerName, Version: *version, ConfigurationPath: *config,
+		ScopePrefixes: scopePrefixes, TimeoutMillis: timeout.Milliseconds(), MaxRetries: *maxRetries,
+		MaxOutputBytes: *maxOutputBytes, RetryBackoffMillis: backoff.Milliseconds(),
+		MaxRetryBackoffMillis: maxBackoff.Milliseconds(),
+		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
+	}
+	manifest, err := plan.BuildManifest(*root, []plan.AnalyzerSpec{spec}, *maxConcurrency)
+	if err != nil { return err }
+	data, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil { return fmt.Errorf("encode analyzer plan manifest: %w", err) }
+	data = append(data, '\n')
+	if err := writeFile(*output, data); err != nil { return err }
+	fmt.Printf("Plan %s; input %s; tasks %d; concurrency %d; output %s. No analyzer was executed.\n",
+		manifest.ManifestSHA256, manifest.InputSHA256, len(manifest.Tasks), manifest.MaxConcurrency, *output)
+	return nil
+}
+
+func readPlanManifest(path string) (plan.Manifest, error) {
+	var manifest plan.Manifest
+	data, err := os.ReadFile(path)
+	if err != nil { return manifest, fmt.Errorf("read plan manifest: %w", err) }
+	decoder := json.NewDecoder(strings.NewReader(string(data)))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&manifest); err != nil { return manifest, fmt.Errorf("decode plan manifest: %w", err) }
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err == nil { return manifest, fmt.Errorf("decode plan manifest: trailing JSON value") }
+		return manifest, fmt.Errorf("decode plan manifest: trailing content: %w", err)
+	}
+	return manifest, nil
+}
+
+func runVerifyPlan(args []string) error {
+	fs := flag.NewFlagSet("verify-plan", flag.ContinueOnError)
+	root := fs.String("root", ".", "repository root")
+	manifestPath := fs.String("manifest", "analyzer-evidence/plan.json", "plan manifest JSON")
+	if err := fs.Parse(args); err != nil { return err }
+	if fs.NArg() != 0 { return fmt.Errorf("verify-plan accepts no positional arguments") }
+	manifest, err := readPlanManifest(*manifestPath)
+	if err != nil { return err }
+	if err := plan.VerifyManifest(*root, manifest); err != nil { return err }
+	fmt.Printf("Plan verified: %s; input %s; tasks %d.\n", manifest.ManifestSHA256, manifest.InputSHA256, len(manifest.Tasks))
 	return nil
 }

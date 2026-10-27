@@ -157,3 +157,29 @@ The issue workflow can enforce a regression's expected overall verdict by includ
 - `[expected:INDETERMINATE]` when required evidence is missing or a submitted language is not assessed.
 
 The assessment comment and JSON/SARIF artifacts are published before the assertion runs, so a failed regression preserves evidence for diagnosis. Issues without a marker remain ordinary assessments and do not have their verdict asserted.
+
+
+## Deterministic analyzer plans
+
+Create a versioned plan manifest without executing an analyzer:
+
+```sh
+go run ./cmd/adrctl plan-repo \
+  --root . \
+  --analyzer opengrep \
+  --version 1.30.0 \
+  --config rules/pathfinder-security.yml \
+  --scope . \
+  --timeout 5m \
+  --max-retries 1 \
+  --max-concurrency 2 \
+  --json-out analyzer-evidence/plan.json
+```
+
+Verify that the manifest still matches the current source/configuration snapshot before using its task keys:
+
+```sh
+go run ./cmd/adrctl verify-plan --root . --manifest analyzer-evidence/plan.json
+```
+
+The schema records the global input-tree digest, sorted per-file inventory and hashes, analyzer/config identity, task scope, cache key, idempotency key, attempt/timeout/output limits, and a global concurrency cap. Cache keys change when source content, configuration, analyzer version, or scoped inventory changes. Planning and verification are deterministic; neither command runs the scanner. An empty declared scope is recorded explicitly as `EMPTY`, never silently treated as proof of compliance. The manifest is an execution contract; it is not itself a scan result.
