@@ -249,6 +249,25 @@ jobs:
           first_id="$(jq -r '.manifest_id' "$RUNNER_TEMP/first-run-manifest.json")"
           jq -e --arg first_id "$first_id" '.status == "COMPLETE" and .manifest_id == $first_id and (.tasks | length) == 1 and .tasks[0].cached == true and .tasks[0].status == "COMPLETE"' analyzer-evidence/run-manifest.json
 
+      - name: Verify one-command specification-check quickstart
+        run: |
+          set -euo pipefail
+          registry="$RUNNER_TEMP/pathfinder-quickstart-reviews.json"
+          go run ./cmd/adrctl review-init --output "$registry"
+          go run ./cmd/adrctl specification-check \
+            --root . \
+            --source-root testdata/specifications \
+            --requirements adr/requirements.json \
+            --registry "$registry" \
+            --report-only
+          jq -e '
+            .document_count == 3
+            and .candidate_count >= 9
+            and all(.candidates[]; .approval_status == "pending_review" and .executable == false)
+            and any(.candidates[]; .statement == "Each service must expose a health endpoint." and .section_heading == "Preamble" and .source_line_start == 3)
+            and ([.candidates[] | select(.source_path | contains("outbound-http-client.md"))] | length) >= 4
+          ' adr/obligation-candidates.json
+
       - name: Assess repository source
         run: |
           go run ./cmd/adrctl assess-repo \
