@@ -353,11 +353,13 @@ func discoverScannedPaths(root string) ([]string, error) {
 func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) {
 	excludedPath = filepath.ToSlash(filepath.Clean(excludedPath))
 	extensions := map[string]bool{
-		".go": true, ".py": true, ".js": true, ".jsx": true, ".ts": true, ".tsx": true,
+		".go": true, ".py": true, ".js": true, ".jsx": true, ".mjs": true, ".cjs": true, ".ts": true, ".tsx": true,
 		".java": true, ".cs": true, ".php": true, ".rb": true, ".json": true, ".yaml": true,
-		".yml": true, ".tf": true, ".sh": true, ".kt": true, ".kts": true, ".scala": true,
-		".rs": true, ".c": true, ".h": true, ".cc": true, ".cpp": true, ".hpp": true,
-		".vue": true, ".html": true, ".xml": true, ".sql": true, ".ex": true, ".exs": true,
+		".yml": true, ".tf": true, ".hcl": true, ".sh": true, ".bash": true, ".zsh": true, ".fish": true,
+		".kt": true, ".kts": true, ".scala": true, ".rs": true, ".c": true, ".h": true, ".cc": true,
+		".cpp": true, ".hpp": true, ".dart": true, ".swift": true, ".lua": true, ".vb": true,
+		".vbs": true, ".ml": true, ".mli": true, ".vue": true, ".html": true, ".xml": true,
+		".sql": true, ".ex": true, ".exs": true,
 	}
 	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
 	var paths []string
