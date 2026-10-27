@@ -41,6 +41,10 @@ type AssessmentReport struct {
 	SchemaVersion       string                `json:"schema_version"`
 	EvidenceMode        string                `json:"evidence_mode"`
 	RepositoryVerdict   string                `json:"repository_verdict"`
+	AssessmentSourceSnapshotSHA256 string `json:"assessment_source_snapshot_sha256,omitempty"`
+	CurrentSourceSnapshotSHA256 string `json:"current_source_snapshot_sha256,omitempty"`
+	CurrentRepositorySnapshotSHA256 string `json:"current_repository_snapshot_sha256,omitempty"`
+	EvidenceFresh bool `json:"evidence_fresh"`
 	CandidateIndexArtifactSHA256 string `json:"candidate_index_artifact_sha256,omitempty"`
 	ReviewRegistryArtifactSHA256 string `json:"review_registry_artifact_sha256,omitempty"`
 	AssessmentArtifactSHA256 string `json:"assessment_artifact_sha256,omitempty"`
@@ -54,7 +58,7 @@ type AssessmentReport struct {
 // AssessCandidates joins each current candidate to its latest human decision
 // and, only when an approved typed binding exists, to the matching requirement
 // result. Missing review or evidence is represented as INDETERMINATE.
-func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry, evidence assessment.Result) (AssessmentReport, error) {
+func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry, evidence assessment.Result, currentSourceSnapshotSHA256, currentRepositorySnapshotSHA256 string) (AssessmentReport, error) {
 	out := AssessmentReport{
 		SchemaVersion: "1",
 		EvidenceMode: evidence.EvidenceMode,
@@ -67,6 +71,24 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 	if evidence.EvidenceMode != string(assessment.EvidenceModeRepository) {
 		return out, fmt.Errorf("obligation assessment requires repository-mode evidence, got %q", evidence.EvidenceMode)
 	}
+	if evidence.LLMCalls != 0 {
+		return out, fmt.Errorf("obligation assessment rejects evidence with %d runtime LLM call(s); deterministic evidence is required", evidence.LLMCalls)
+	}
+	if !validSHA256(currentSourceSnapshotSHA256) || !validSHA256(currentRepositorySnapshotSHA256) {
+		return out, fmt.Errorf("current source and repository snapshot digests must be valid SHA-256 values")
+	}
+	out.AssessmentSourceSnapshotSHA256 = evidence.SourceSnapshotSHA256
+	out.CurrentSourceSnapshotSHA256 = currentSourceSnapshotSHA256
+	out.CurrentRepositorySnapshotSHA256 = currentRepositorySnapshotSHA256
+	sourceFresh := validSHA256(evidence.SourceSnapshotSHA256) && strings.EqualFold(evidence.SourceSnapshotSHA256, currentSourceSnapshotSHA256)
+	repositoryFresh := true
+	for _, scan := range evidence.AnalyzerResults {
+		if !validSHA256(scan.InputSHA256) || !strings.EqualFold(scan.InputSHA256, currentRepositorySnapshotSHA256) {
+			repositoryFresh = false
+			break
+		}
+	}
+	out.EvidenceFresh = sourceFresh && repositoryFresh
 	coverage, err := ValidateRegistry(index, catalog, registry)
 	if err != nil {
 		return out, fmt.Errorf("validate obligation review registry: %w", err)
@@ -172,6 +194,20 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 		out.Candidates = append(out.Candidates, item)
 		out.Counts[item.Status]++
 	}
+	if !out.EvidenceFresh {
+		out.RepositoryVerdict = "INDETERMINATE"
+		out.Warnings = append(out.Warnings, "assessment source or repository snapshot does not match current inputs; rerun assess-repo before relying on compliance results")
+		for i := range out.Candidates {
+			item := &out.Candidates[i]
+			if item.Decision == DecisionApproved && item.RequirementID != "" && item.PatternID != "manual_review" {
+				item.Status = "INDETERMINATE"
+				item.EvidenceStatus = "STALE"
+				item.Reason = "assessment evidence is stale for the current source/repository snapshot; rerun assess-repo"
+			}
+		}
+		out.Counts = map[string]int{"PASS": 0, "FAIL": 0, "INDETERMINATE": 0, "NOT_APPLICABLE": 0}
+		for _, item := range out.Candidates { out.Counts[item.Status]++ }
+	}
 	sort.Strings(out.Warnings)
 	return out, nil
 }
@@ -181,6 +217,10 @@ func MarkdownAssessmentReport(report AssessmentReport) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Specification obligation assessment\n\n")
 	fmt.Fprintf(&b, "- Repository assessment verdict: **%s**\n", report.RepositoryVerdict)
+	fmt.Fprintf(&b, "- Evidence freshness: **%t**\n", report.EvidenceFresh)
+	if report.AssessmentSourceSnapshotSHA256 != "" { fmt.Fprintf(&b, "- Assessment source snapshot SHA-256: `%s`\n", report.AssessmentSourceSnapshotSHA256) }
+	if report.CurrentSourceSnapshotSHA256 != "" { fmt.Fprintf(&b, "- Current source snapshot SHA-256: `%s`\n", report.CurrentSourceSnapshotSHA256) }
+	if report.CurrentRepositorySnapshotSHA256 != "" { fmt.Fprintf(&b, "- Current repository snapshot SHA-256: `%s`\n", report.CurrentRepositorySnapshotSHA256) }
 	fmt.Fprintf(&b, "- Candidates: **%d**\n", report.CandidateCount)
 	if report.CandidateIndexArtifactSHA256 != "" { fmt.Fprintf(&b, "- Candidate index SHA-256: `%s`\n", report.CandidateIndexArtifactSHA256) }
 	if report.ReviewRegistryArtifactSHA256 != "" { fmt.Fprintf(&b, "- Review registry SHA-256: `%s`\n", report.ReviewRegistryArtifactSHA256) }
