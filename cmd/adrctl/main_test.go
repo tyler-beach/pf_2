@@ -80,8 +80,8 @@ func TestIngestionIndexDocumentsHaveProvenance(t *testing.T) {
 func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	root := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(root, "cmd"), 0700); err != nil { t.Fatal(err) }
-	if err := os.WriteFile(filepath.Join(root, "cmd", "main.go"), []byte("package main\n"), 0600); err != nil { t.Fatal(err) }
 	if err := os.MkdirAll(filepath.Join(root, "rules"), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, "cmd", "main.go"), []byte("package main\n"), 0600); err != nil { t.Fatal(err) }
 	if err := os.WriteFile(filepath.Join(root, "rules", "security.yml"), []byte("rules: []\n"), 0600); err != nil { t.Fatal(err) }
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
 		ID: "ADR-003", Title: "Analyzer policy", Version: 1, Status: "accepted",
@@ -94,7 +94,8 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	catalogBytes, err := json.Marshal(catalog)
 	if err != nil { t.Fatal(err) }
 	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil { t.Fatal(err) }
-	raw := []byte("{\"version\":\"2.1.0\",\"runs\":[{\"tool\":{\"driver\":{\"name\":\"opengrep\",\"version\":\"1.30.0\"}},\"results\":[]}]}")
+
+	raw := []byte("{\\"version\\":\\"2.1.0\\",\\"runs\\":[{\\"tool\\":{\\"driver\\":{\\"name\\":\\"opengrep\\",\\"version\\":\\"1.30.0\\"}},\\"results\\":[]}]}")
 	evidence, err := analyzer.ParseSARIF(raw, root)
 	if err != nil { t.Fatal(err) }
 	configHash, err := analyzer.HashFile(filepath.Join(root, "rules", "security.yml"))
@@ -124,4 +125,18 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	var got assessment.Result
 	if err := json.Unmarshal(data, &got); err != nil { t.Fatal(err) }
 	if got.Verdict != "PASS" || len(got.AnalyzerResults) != 1 { t.Fatalf("analyzer evidence was not included: %+v", got) }
+	if len(got.AnalyzerResults[0].ScannedPaths) == 0 { t.Fatalf("verified scan inventory missing: %+v", got.AnalyzerResults[0]) }
+}
+
+func TestRunAssessRejectsNormalizedEvidenceWithoutRawSARIF(t *testing.T) {
+	root := t.TempDir()
+	catalogPath := filepath.Join(root, "requirements.json")
+	if err := os.WriteFile(catalogPath, []byte("{\\"schema_version\\":\\"1\\",\\"adrs\\":[]}"), 0600); err != nil { t.Fatal(err) }
+	evidencePath := filepath.Join(root, "evidence.json")
+	if err := os.WriteFile(evidencePath, []byte("{\\"schema_version\\":\\"1\\",\\"sarif_version\\":\\"2.1.0\\",\\"status\\":\\"COMPLETE\\"}"), 0600); err != nil { t.Fatal(err) }
+	err := runAssess([]string{"--root", root, "--requirements", catalogPath,
+		"--input", filepath.Join(root, "issue.md"), "--analyzer-evidence", evidencePath}, false)
+	if err == nil || !strings.Contains(err.Error(), "repository assessments") {
+		t.Fatalf("expected submission-mode evidence rejection, got %v", err)
+	}
 }
