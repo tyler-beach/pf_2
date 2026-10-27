@@ -115,6 +115,7 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	if err != nil { return out, err }
 	configHash, err := HashFile(configAbs)
 	if err != nil { return out, err }
+	out.ConfigurationPath = configRel
 	inputHash, err := hashInputTree(rootAbs)
 	if err != nil { return out, err }
 	out.ConfigurationSHA256 = configHash
@@ -189,6 +190,7 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 			normalized.Findings[i].AnalyzerVersion = s.Version
 		}
 	}
+	normalized.ConfigurationPath = configRel
 	normalized.ConfigurationSHA256 = configHash
 	normalized.InputSHA256 = inputHash
 	normalized.ScannedPaths, err = discoverScannedPaths(rootAbs)
@@ -296,4 +298,16 @@ func discoverScannedPaths(root string) ([]string, error) {
 	if err != nil { return nil, err }
 	sort.Strings(paths)
 	return paths, nil
+}
+
+
+// HashInputTree exposes the deterministic source/configuration tree digest for
+// evidence verification. Generated reports and analyzer-evidence outputs are
+// excluded so a scan can be verified after its reports are written.
+func HashInputTree(root string) (string, error) {
+	rootAbs, err := filepath.Abs(root)
+	if err != nil { return "", fmt.Errorf("resolve repository root: %w", err) }
+	rootAbs, err = filepath.EvalSymlinks(rootAbs)
+	if err != nil { return "", fmt.Errorf("resolve repository root symlinks: %w", err) }
+	return hashInputTree(rootAbs)
 }

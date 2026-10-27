@@ -46,6 +46,7 @@ type ScanResult struct {
 	SARIFVersion    string         `json:"sarif_version"`
 	Status          string         `json:"status"`
 	Analyzers       []AnalyzerInfo `json:"analyzers"`
+	ConfigurationPath string       `json:"configuration_path,omitempty"`
 	ConfigurationSHA256 string     `json:"configuration_sha256,omitempty"`
 	InputSHA256     string         `json:"input_sha256,omitempty"`
 	RawOutputSHA256 string         `json:"raw_output_sha256"`
