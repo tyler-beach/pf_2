@@ -208,7 +208,7 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	if incompleteAnalysisDiagnostic(string(commandResult.Stderr)) {
 		normalized.Status = ScanStatusPartial
 		normalized.Errors = append(normalized.Errors, "OpenGrep reported incomplete analysis: "+truncate(string(commandResult.Stderr), 4096))
-		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
+		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete: %s", truncate(string(commandResult.Stderr), 4096))
 	}
 	if normalized.Status != ScanStatusComplete {
 		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
