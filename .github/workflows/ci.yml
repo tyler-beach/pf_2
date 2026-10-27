@@ -308,7 +308,7 @@ jobs:
 
       - name: Require compliant architecture fixture to pass
         working-directory: testdata/arch-go-benchmark/clean
-        run: "$(go env GOPATH)/bin/arch-go" --color no --json
+        run: '"$(go env GOPATH)/bin/arch-go" --color no --json'
 
       - name: Require forbidden dependency fixture to fail
         working-directory: testdata/arch-go-benchmark/violation
