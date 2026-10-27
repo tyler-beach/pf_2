@@ -155,6 +155,16 @@ jobs:
             ]
           ' "$RUNNER_TEMP/opengrep-vulnerable.json"
 
+          # Distinct rule IDs are not enough for shared multi-language rules: require
+          # a positive finding in every advertised language-specific vulnerable fixture.
+          jq -e '
+            .status == "COMPLETE"
+            and ([.findings[].path | capture("\\.(?<extension>[^/.]+)$").extension] | unique | sort) == [
+              "bash", "c", "cpp", "cs", "dart", "ex", "go", "java", "js", "kt",
+              "lua", "ml", "php", "py", "rb", "rs", "scala", "swift", "ts", "vb"
+            ]
+          ' "$RUNNER_TEMP/opengrep-vulnerable.json"
+
           jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
 
       - name: Verify deterministic analyzer plan and cache invalidation
