@@ -179,6 +179,8 @@ func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
 	} {
 		if err := os.WriteFile(filepath.Join(root, name), []byte(value), 0600); err != nil { t.Fatal(err) }
 	}
+	if err := os.MkdirAll(filepath.Join(root, ".arch-go"), 0700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, ".arch-go", "report.json"), []byte("generated Arch-Go report"), 0600); err != nil { t.Fatal(err) }
 	after, err := hashInputTree(root)
 	if err != nil { t.Fatal(err) }
 	if before != after { t.Fatalf("generated artifacts changed source input hash: %s != %s", before, after) }
@@ -186,7 +188,7 @@ func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
 
 func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) {
 	root := t.TempDir()
-	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules", "testdata/analyzer-fixtures/vulnerable"} {
+	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules", ".arch-go", "testdata/analyzer-fixtures/vulnerable"} {
 		if err := os.MkdirAll(filepath.Join(root, directory), 0700); err != nil { t.Fatal(err) }
 	}
 	for file, body := range map[string]string{
@@ -195,6 +197,7 @@ func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) 
 		".git/ignored.go": "package ignored",
 		"analyzer-evidence/ignored.ts": "const ignored = true",
 		"node_modules/ignored.js": "ignored",
+		".arch-go/report.json": `{"generated":true}`,
 		"testdata/analyzer-fixtures/vulnerable/RuntimeExec.java": "class RuntimeExec {}",
 		"testdata/analyzer-fixtures/vulnerable/eval.py": "eval(input())",
 		"README.md": "docs",
