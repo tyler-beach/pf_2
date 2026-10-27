@@ -172,7 +172,7 @@ func BuildManifest(root string, specs []AnalyzerSpec, maxConcurrency int) (Manif
 	seen := map[string]bool{}
 	for _, item := range normalized {
 		spec := item.spec
-		identity := strings.Join([]string{spec.Name, spec.Version, item.config, strings.Join(spec.ScopePrefixes, ",")}, " ")
+		identity := strings.Join([]string{spec.Name, spec.Version, item.config, strings.Join(spec.ScopePrefixes, ",")}, string(rune(0)))
 		if seen[identity] { return Manifest{}, fmt.Errorf("duplicate analyzer task %s@%s for configuration %s and identical scope", spec.Name, spec.Version, item.config) }
 		seen[identity] = true
 		scopedPaths := make([]string, 0, len(inventory))
