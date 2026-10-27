@@ -450,7 +450,7 @@ func validateCandidateSnapshot(candidate CandidateSnapshot) error {
 	if !validPattern(candidate.PatternHint) {
 		return fmt.Errorf("unsupported candidate pattern_hint %q", candidate.PatternHint)
 	}
-	allowedHints := map[string]bool{"condition_or_exception": true, "compound_or_conjoined": true, "conditional_scope": true, "subjective_or_underspecified": true}
+	allowedHints := map[string]bool{"condition_or_exception": true, "compound_or_conjoined": true, "conditional_scope": true, "subjective_or_underspecified": true, "non_decision_section": true}
 	seenHints := make(map[string]bool, len(candidate.ReviewHints))
 	for _, hint := range candidate.ReviewHints {
 		if !allowedHints[hint] || seenHints[hint] { return fmt.Errorf("unsupported or duplicate review hint %q", hint) }

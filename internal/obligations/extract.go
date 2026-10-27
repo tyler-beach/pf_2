@@ -143,7 +143,7 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 				Kind: kind, PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
 				SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex+1, SourceLineEnd: lineIndex+1,
 				ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
-				ReviewHints: reviewHints(statement, kind),
+				ReviewHints: reviewHints(statement, kind, section.Heading),
 			}
 			candidate.ID = candidateID(candidate)
 			result = append(result, candidate)
@@ -238,9 +238,10 @@ func isWordRune(r rune) bool { return unicode.IsLetter(r) || unicode.IsDigit(r) 
 
 // reviewHints marks deterministic extraction risks for a human reviewer. Hints
 // never change the candidate's review-required state and never activate a verifier.
-func reviewHints(statement, kind string) []string {
+func reviewHints(statement, kind, sectionHeading string) []string {
 	lower := strings.ToLower(statement)
-	hints := make([]string, 0, 4)
+	hints := make([]string, 0, 5)
+	if isNonDecisionSection(sectionHeading) { hints = append(hints, "non_decision_section") }
 	if kind == "exception_candidate" || anyPhrase(statement, "unless", "except", "only when", "provided that", "waiver", "exception") {
 		hints = append(hints, "condition_or_exception")
 	}
@@ -255,6 +256,21 @@ func reviewHints(statement, kind string) []string {
 		hints = append(hints, "subjective_or_underspecified")
 	}
 	return hints
+}
+
+func isNonDecisionSection(heading string) bool {
+	value := strings.ToLower(strings.TrimSpace(heading))
+	value = strings.Trim(value, " .:-")
+	for _, prefix := range []string{
+		"context", "background", "motivation", "example", "examples",
+		"alternatives considered", "rejected alternatives", "non-goal", "non-goals",
+		"references", "appendix", "appendices",
+	} {
+		if value == prefix || strings.HasPrefix(value, prefix+":") || strings.HasPrefix(value, prefix+" ") {
+			return true
+		}
+	}
+	return false
 }
 
 func suggestPattern(statement string) string {
