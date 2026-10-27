@@ -106,6 +106,7 @@ go run ./cmd/adrctl assess-repo --root . --json-out assessment.json
 go run ./cmd/adrctl assess-obligations \
   --root . \
   --index adr/obligation-candidates.json \
+  --ingestion-index adr/ingested-adrs.json \
   --requirements adr/requirements.json \
   --registry adr/obligation-reviews.json \
   --assessment assessment.json \
@@ -113,7 +114,7 @@ go run ./cmd/adrctl assess-obligations \
   --report obligation-assessment.md
 ```
 
-The join requires repository-mode assessment evidence and compares the assessment source digest and any analyzer repository digest against the current `--root`. Stale snapshots, nonzero runtime LLM-call counts, missing reviews, stale review snapshots, unbound/manual-review candidates, missing requirement results, or PASS/FAIL results without supporting evidence cannot pass. Stale approved bindings are downgraded to `INDETERMINATE`; rerun `assess-repo` against the current tree. The report records exact SHA-256 digests for the candidate index, review registry, and assessment artifact. A `review_required` binding also remains indeterminate for enforcement purposes even if its associated requirement result is clean.
+The join first rebuilds the candidate index from the supplied ingestion index and current ADR Markdown under `--root`; a stale or altered candidate index is rejected. It then requires repository-mode assessment evidence and compares the assessment source digest and any analyzer repository digest against the current `--root`. Stale snapshots, nonzero runtime LLM-call counts, missing reviews, stale review snapshots, unbound/manual-review candidates, missing requirement results, or PASS/FAIL results without supporting evidence cannot pass. Stale approved bindings are downgraded to `INDETERMINATE`; rerun `assess-repo` against the current tree. The report records exact SHA-256 digests for the candidate index, review registry, and assessment artifact. A `review_required` binding also remains indeterminate for enforcement purposes even if its associated requirement result is clean.
 
 ## Security and correctness invariants
 
