@@ -174,6 +174,7 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 			result = append(result, candidate)
 		}
 	}
+	markPotentialContradictions(result)
 	return result, nil
 }
 
@@ -281,6 +282,47 @@ func reviewHints(statement, kind, sectionHeading string) []string {
 		hints = append(hints, "subjective_or_underspecified")
 	}
 	return hints
+}
+
+// markPotentialContradictions detects a narrow, deterministic conflict pattern:
+ // two statements with the same normalized subject/action/object but opposing
+ // normative polarity. It is a review hint, not a semantic proof.
+func markPotentialContradictions(candidates []Candidate) {
+	for i := 0; i < len(candidates); i++ {
+		leftKey := contradictionKey(candidates[i].Statement)
+		if leftKey == "" { continue }
+		for j := i + 1; j < len(candidates); j++ {
+			if leftKey != contradictionKey(candidates[j].Statement) { continue }
+			if !opposingModality(candidates[i].Modality, candidates[j].Modality) { continue }
+			candidates[i].ReviewHints = appendReviewHint(candidates[i].ReviewHints, "potential_contradiction")
+			candidates[j].ReviewHints = appendReviewHint(candidates[j].ReviewHints, "potential_contradiction")
+		}
+	}
+}
+
+func contradictionKey(statement string) string {
+	value := strings.ToLower(statement)
+	for _, cue := range []string{
+		"not required", "not permitted", "must not", "mustn't", "shall not", "should not",
+		"may not", "does not", "do not", "cannot", "can't", "prohibited", "forbidden",
+		"never", "required", "requires", "has to", "have to", "must", "shall", "should",
+		"may", "permitted", "allowed",
+	} {
+		value = strings.ReplaceAll(value, cue, " ")
+	}
+	fields := strings.FieldsFunc(value, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) })
+	return strings.Join(fields, " ")
+}
+
+func opposingModality(left, right string) bool {
+	isNegative := func(value string) bool { return value == "must_not" || value == "not_required" }
+	isNormative := func(value string) bool { return value == "must" || value == "should" || value == "may" }
+	return (isNegative(left) && isNormative(right)) || (isNegative(right) && isNormative(left))
+}
+
+func appendReviewHint(hints []string, hint string) []string {
+	for _, existing := range hints { if existing == hint { return hints } }
+	return append(hints, hint)
 }
 
 func isNonDecisionSection(heading string) bool {
