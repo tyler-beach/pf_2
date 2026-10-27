@@ -27,6 +27,7 @@ type CandidateAssessment struct {
 	SourceLineEnd   int      `json:"source_line_end"`
 	Decision        string   `json:"review_decision"`
 	RequirementID   string   `json:"requirement_id,omitempty"`
+	RequirementSHA256 string `json:"requirement_sha256,omitempty"`
 	PatternID       string   `json:"pattern_id,omitempty"`
 	EnforcementMode string   `json:"enforcement_mode"`
 	Status          string   `json:"status"`
@@ -126,6 +127,7 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 		if found {
 			item.Decision = record.Decision
 			item.RequirementID = record.RequirementID
+			item.RequirementSHA256 = record.RequirementSHA256
 			item.PatternID = record.PatternID
 			item.EnforcementMode = record.EnforcementMode
 		}
@@ -250,11 +252,11 @@ func MarkdownAssessmentReport(report AssessmentReport) string {
 		for _, warning := range report.Warnings { fmt.Fprintf(&b, "- %s\n", warning) }
 		b.WriteString("\n")
 	}
-	b.WriteString("| Candidate | Modality | Review hints | Status | Review | Requirement | Source | Reason |\n|---|---|---|---|---|---|---|---|\n")
+	b.WriteString("| Candidate | Modality | Review hints | Status | Review | Requirement | Binding snapshot SHA-256 | Source | Reason |\n|---|---|---|---|---|---|---|---|---|\n")
 	for _, candidate := range report.Candidates {
-		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s | %s | %s:%d-%d | %s |\n",
+		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s | %s | `%s` | %s:%d-%d | %s |\n",
 			mdCell(candidate.CandidateID), mdCell(candidate.Modality), mdCell(strings.Join(candidate.ReviewHints, ", ")),
-			mdCell(candidate.Status), mdCell(candidate.Decision), mdCell(candidate.RequirementID),
+			mdCell(candidate.Status), mdCell(candidate.Decision), mdCell(candidate.RequirementID), mdCell(candidate.RequirementSHA256),
 			mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd, mdCell(candidate.Reason))
 	}
 	return b.String()
