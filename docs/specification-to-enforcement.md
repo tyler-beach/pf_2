@@ -92,17 +92,20 @@ Repository scanning and issue-snippet assessment are separate surfaces. Never ex
 
 ## One-command specification check
 
-For routine use, `specification-check` orchestrates the deterministic pipeline: ingest current ADR Markdown, regenerate the review-only candidate index and Markdown queue, assess the repository, join evidence to reviewed candidates, and write the audit reports.
+For a runnable first pass in this repository, initialize the review registry once (skip initialization if it already exists; the command will not overwrite review history), then run against the checked-in sample ADR corpus in report-only mode:
 
 ```sh
-go run ./cmd/adrctl specification-check \
-  --root . \
-  --adr-root adrs \
-  --requirements adr/requirements.json \
-  --registry adr/obligation-reviews.json
+go run ./cmd/adrctl review-init --output adr/obligation-reviews.json
+
+go run ./cmd/adrctl specification-check \\
+  --root . \\
+  --adr-root testdata/adr-corpus \\
+  --requirements adr/requirements.json \\
+  --registry adr/obligation-reviews.json \\
+  --report-only
 ```
 
-The command enforces blocking obligations by default. Use `--report-only` to generate the same artifacts without returning a gate failure while reviewing or bootstrapping coverage. The review registry must already exist; the command never initializes, approves, or edits reviews automatically. If the catalog uses `analyzer-rule` verifiers, pass both `--analyzer-evidence path/to/normalized-scan.json` and `--analyzer-sarif path/to/raw-scan.sarif`; the repository assessment verifies the pair against the current repository snapshot. The orchestrator does not run or install analyzers itself.
+For an application repository, replace `testdata/adr-corpus` with the directory containing that repository's ADR Markdown. The command enforces blocking obligations by default; `--report-only` writes artifacts without failing on pending candidates while a team bootstraps and reviews coverage. The review registry must already exist, and the command never initializes, approves, or edits reviews automatically. If the catalog uses `analyzer-rule` verifiers, pass both `--analyzer-evidence path/to/normalized-scan.json` and `--analyzer-sarif path/to/raw-scan.sarif`; the repository assessment verifies the pair against the current repository snapshot. The orchestrator does not run or install analyzers itself.
 
 Generated artifacts are written to `adr/ingested-adrs.json`, `adr/obligation-candidates.json`, `adr/obligation-candidates.md`, and the repository/obligation reports at the repository root. The candidate index is regenerated on each run so stale approvals cannot be hidden by reusing an old index.
 
