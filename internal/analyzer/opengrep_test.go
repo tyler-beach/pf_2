@@ -270,3 +270,34 @@ func TestIncompleteAnalysisDiagnosticIsSpecific(t *testing.T) {
 		}
 	}
 }
+
+
+func TestOpenGrepScannerRejectsBinaryDigestMismatchBeforeExecution(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	binary := filepath.Join(t.TempDir(), "fake-opengrep")
+	if err := os.WriteFile(binary, []byte("#!/bin/sh\nexit 0\n"), 0700); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	_, err := (OpenGrepScanner{
+		Binary: binary, BinarySHA256: strings.Repeat("f", 64),
+		Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner,
+	}).Scan(context.Background(), root)
+	if err == nil || !strings.Contains(err.Error(), "binary SHA-256 mismatch") {
+		t.Fatalf("expected binary integrity failure, got %v", err)
+	}
+	if len(runner.calls) != 0 { t.Fatalf("unverified binary was executed: %+v", runner.calls) }
+}
+
+func TestOpenGrepScannerEnforcesSourceFileSizeLimitBeforeExecution(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	path := filepath.Join(root, "src", "app.py")
+	if err := os.WriteFile(path, []byte(strings.Repeat("x", 100)), 0600); err != nil { t.Fatal(err) }
+	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
+	_, err := (OpenGrepScanner{
+		Version: "1.30.0", ConfigPath: "rules/security.yml",
+		MaxFileBytes: 32, SourceExtensions: []string{".py"}, Runner: runner,
+	}).Scan(context.Background(), root)
+	if err == nil || !strings.Contains(err.Error(), "exceeds the configured") {
+		t.Fatalf("expected source-size limit failure, got %v", err)
+	}
+	if len(runner.calls) != 0 { t.Fatalf("oversized source was scanned: %+v", runner.calls) }
+}

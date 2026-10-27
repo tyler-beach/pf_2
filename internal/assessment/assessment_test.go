@@ -190,6 +190,7 @@ func completeAnalyzerEvidence(findings []analyzer.Finding) analyzer.ScanResult {
 		SchemaVersion: "1", SARIFVersion: "2.1.0", Status: analyzer.ScanStatusComplete,
 		Analyzers: []analyzer.AnalyzerInfo{{Name: "Opengrep OSS Version", Version: "1.30.0"}},
 		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
+		BinarySHA256: strings.Repeat("a", 64), RuleSetSHA256: strings.Repeat("b", 64),
 		RawOutputSHA256: strings.Repeat("r", 64),
 		ScannedPaths: []string{"cmd/adrctl/main.go", "internal/analyzer/opengrep.go", "internal/app/runner.go", "testdata/analyzer-fixtures/vulnerable/shell_command.go"},
 		Findings: findings,
@@ -235,8 +236,14 @@ func TestAnalyzerRuleFiltersFindingsOutsideDeclaredScope(t *testing.T) {
 func TestAnalyzerRuleMissingOrPartialEvidenceIsIndeterminate(t *testing.T) {
 	partial := completeAnalyzerEvidence(nil); partial.Status = analyzer.ScanStatusPartial; partial.Errors = []string{"timeout"}
 	missingHash := completeAnalyzerEvidence(nil); missingHash.RawOutputSHA256 = ""
+	missingBinaryHash := completeAnalyzerEvidence(nil); missingBinaryHash.BinarySHA256 = ""
+	missingRuleHash := completeAnalyzerEvidence(nil); missingRuleHash.RuleSetSHA256 = ""
 	incompleteInventory := completeAnalyzerEvidence(nil); incompleteInventory.ScannedPaths = nil
-	cases := map[string][]analyzer.ScanResult{"missing": nil, "partial": {partial}, "missing hashes": {missingHash}, "empty inventory": {incompleteInventory}}
+	cases := map[string][]analyzer.ScanResult{
+		"missing": nil, "partial": {partial}, "missing hashes": {missingHash},
+		"missing binary digest": {missingBinaryHash}, "missing rule-set digest": {missingRuleHash},
+		"empty inventory": {incompleteInventory},
+	}
 	for name, evidence := range cases {
 		t.Run(name, func(t *testing.T) {
 			result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository, AnalyzerResults: evidence})

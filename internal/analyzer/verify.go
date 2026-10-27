@@ -34,6 +34,12 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	if envelope.Status != ScanStatusComplete && envelope.Status != ScanStatusPartial {
 		return fail(fmt.Sprintf("scan evidence status %q is not verifiable", envelope.Status))
 	}
+	if !validPlanSHA256(strings.ToLower(strings.TrimSpace(envelope.BinarySHA256))) {
+		return fail("scan evidence is missing a valid binary_sha256")
+	}
+	if !validPlanSHA256(strings.ToLower(strings.TrimSpace(envelope.RuleSetSHA256))) {
+		return fail("scan evidence is missing a valid rule_set_sha256")
+	}
 	if envelope.RawOutputSHA256 == "" || envelope.RawOutputSHA256 != sha256Hex(rawSARIF) {
 		return fail("raw SARIF SHA-256 does not match normalized evidence metadata")
 	}
@@ -91,6 +97,8 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	}
 	parsed.ConfigurationPath = envelope.ConfigurationPath
 	parsed.ConfigurationSHA256 = configHash
+	parsed.BinarySHA256 = strings.ToLower(strings.TrimSpace(envelope.BinarySHA256))
+	parsed.RuleSetSHA256 = strings.ToLower(strings.TrimSpace(envelope.RuleSetSHA256))
 	parsed.InputSHA256 = inputHash
 	parsed.ScannedPaths = paths
 	inventory := make(map[string]bool, len(paths))

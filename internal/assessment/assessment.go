@@ -552,9 +552,9 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 		rr.Reason = fmt.Sprintf("Analyzer %q did not produce complete evidence (status %s). %s", verifier.Analyzer, scan.Status, strings.Join(scan.Errors, "; "))
 		return
 	}
-	if scan.InputSHA256 == "" || scan.ConfigurationSHA256 == "" || scan.RawOutputSHA256 == "" {
+	if scan.InputSHA256 == "" || scan.ConfigurationSHA256 == "" || scan.BinarySHA256 == "" || scan.RuleSetSHA256 == "" || scan.RawOutputSHA256 == "" {
 		rr.Status = "EVIDENCE_MISSING"
-		rr.Reason = fmt.Sprintf("Analyzer %q evidence is missing input, configuration, or raw-output SHA-256 provenance.", verifier.Analyzer)
+		rr.Reason = fmt.Sprintf("Analyzer %q evidence is missing input, configuration, binary, rule-set, or raw-output SHA-256 provenance.", verifier.Analyzer)
 		return
 	}
 	if len(scan.ScannedPaths) == 0 {
