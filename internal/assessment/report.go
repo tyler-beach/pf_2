@@ -34,7 +34,7 @@ func MarkdownReport(r Result) string {
 
 func SARIFReport(r Result) ([]byte, error) {
 	rules:=map[string]map[string]any{}
-	var results []map[string]any
+	results := []map[string]any{}
 	for _, q := range r.Requirements {
 		for _, f := range q.Findings {
 			rules[f.RuleID]=map[string]any{"id":f.RuleID,"name":q.Title,"shortDescription":map[string]any{"text":q.Title}}
