@@ -61,8 +61,21 @@ type RequirementResult struct {
 	Findings []Finding `json:"findings"`
 	Reason string `json:"reason,omitempty"`
 }
+type EvidenceMode string
+
+const (
+	EvidenceModeSubmission EvidenceMode = "submission"
+	EvidenceModeRepository EvidenceMode = "repository"
+)
+
+// AssessmentOptions declares the completeness semantics of supplied evidence.
+type AssessmentOptions struct {
+	EvidenceMode EvidenceMode
+}
+
 type Result struct {
 	SchemaVersion string `json:"schema_version"`
+	EvidenceMode string `json:"evidence_mode"`
 	EngineVersion string `json:"engine_version"`
 	Verdict string `json:"verdict"`
 	CoverageStatus string `json:"coverage_status"`
@@ -173,7 +186,15 @@ func LoadSourceFiles(root string) ([]SourceFile, error) {
 }
 
 func Assess(c Catalog, files []SourceFile) Result {
-	out := Result{SchemaVersion:"1", EngineVersion:"0.1.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0}
+	return AssessWithOptions(c, files, AssessmentOptions{EvidenceMode: EvidenceModeSubmission})
+}
+
+// AssessWithOptions evaluates requirements without treating absent evidence as compliance.
+func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions) Result {
+	if options.EvidenceMode == "" {
+		options.EvidenceMode = EvidenceModeSubmission
+	}
+	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.1.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0}
 	for _, a := range c.ADRs {
 		if a.Status != "accepted" { continue }
 		for _, r := range a.Requirements {
@@ -196,7 +217,7 @@ func Assess(c Catalog, files []SourceFile) Result {
 }
 
 func assessImportBoundary(rr *RequirementResult, v Verifier, files []SourceFile) {
-	if len(files) == 0 { rr.Status="INDETERMINATE"; rr.Reason="No source files supplied or discovered; absence of evidence is not compliance."; return }
+	if len(files) == 0 { rr.Status="EVIDENCE_MISSING"; rr.Reason="No source files supplied or discovered; absence of evidence is not compliance."; return }
 	var scoped []SourceFile
 	for _, f := range files { if f.Language == "go" && pathMatches(f.Path, v.SourcePathPrefixes) { scoped=append(scoped,f) } }
 	if len(scoped) == 0 { rr.Status="NOT_APPLICABLE"; rr.Reason="No supplied Go files matched the declared source path scope."; return }
@@ -234,7 +255,7 @@ func assessJSONRequiredKeys(rr *RequirementResult, v Verifier, files []SourceFil
 		}
 	}
 	if target == nil {
-		rr.Status = "NOT_APPLICABLE"
+		rr.Status = "EVIDENCE_MISSING"
 		rr.Reason = fmt.Sprintf("Required configuration file %s was not included in the supplied evidence.", v.FilePath)
 		return
 	}
@@ -279,7 +300,7 @@ func assessJSONNumberRange(rr *RequirementResult, v Verifier, files []SourceFile
 		}
 	}
 	if target == nil {
-		rr.Status = "NOT_APPLICABLE"
+		rr.Status = "EVIDENCE_MISSING"
 		rr.Reason = fmt.Sprintf("Required configuration file %s was not included in the supplied evidence.", v.FilePath)
 		return
 	}
