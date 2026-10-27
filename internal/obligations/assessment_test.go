@@ -30,7 +30,7 @@ func TestAssessCandidatesKeepsUnreviewedCandidatesIndeterminate(t *testing.T) {
 	index, catalog, _ := reviewFixture()
 	report, err := assessCandidatesForTest(index, catalog, NewRegistry(), repositoryEvidence("PASS"))
 	if err != nil { t.Fatal(err) }
-	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Counts["PASS"] != 0 {
+	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Counts["PASS"] != 0 || report.ObligationVerdict != "INDETERMINATE" {
 		t.Fatalf("unreviewed candidate was treated as compliant: %+v", report)
 	}
 	item := report.Candidates[0]
@@ -50,7 +50,7 @@ func TestAssessCandidatesMapsApprovedBindingToEvidenceStatus(t *testing.T) {
 			report, err := assessCandidatesForTest(index, catalog, registry, repositoryEvidence(tc.evidence))
 			if err != nil { t.Fatal(err) }
 			item := report.Candidates[0]
-			if item.Status != tc.want || item.EvidenceStatus != tc.evidence {
+			if item.Status != tc.want || item.EvidenceStatus != tc.evidence || report.ObligationVerdict != tc.want {
 				t.Fatalf("evidence status %s mapped to %+v; want %s", tc.evidence, item, tc.want)
 			}
 			if tc.evidence == "PASS" && len(item.Evidence) != 1 {
@@ -84,6 +84,22 @@ func TestAssessCandidatesNeverPassesReviewRequiredOrMissingEvidence(t *testing.T
 	}
 }
 
+func TestAssessCandidatesReturnsNotApplicableWhenAllCandidatesAreRejected(t *testing.T) {
+	index, catalog, candidate := reviewFixture()
+	proposal := validReviewProposal(candidate)
+	proposal.Decision = DecisionRejected
+	proposal.RequirementID = ""
+	proposal.PatternID = ""
+	proposal.EnforcementMode = EnforcementReviewRequired
+	registry, _, err := RecordReview(index, catalog, NewRegistry(), proposal)
+	if err != nil { t.Fatal(err) }
+	report, err := assessCandidatesForTest(index, catalog, registry, repositoryEvidence("PASS"))
+	if err != nil { t.Fatal(err) }
+	if report.Candidates[0].Status != "NOT_APPLICABLE" || report.ObligationVerdict != "NOT_APPLICABLE" {
+		t.Fatalf("all-rejected candidate set should be NOT_APPLICABLE: %+v", report)
+	}
+}
+
 func TestAssessCandidatesDoesNotPassWhenEvidenceIsEmpty(t *testing.T) {
 	index, catalog, candidate := reviewFixture()
 	registry, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
@@ -104,7 +120,7 @@ func TestAssessCandidatesFailsClosedOnStaleSnapshotsAndRuntimeLLM(t *testing.T) 
 	evidence := repositoryEvidence("PASS")
 	report, err := AssessCandidates(index, catalog, registry, evidence, strings.Repeat("c", 64), strings.Repeat("b", 64))
 	if err != nil { t.Fatal(err) }
-	if report.EvidenceFresh || report.RepositoryVerdict != "INDETERMINATE" ||
+	if report.EvidenceFresh || report.RepositoryVerdict != "INDETERMINATE" || report.ObligationVerdict != "INDETERMINATE" ||
 		report.Candidates[0].Status != "INDETERMINATE" || report.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale source evidence was not downgraded: %+v", report)
 	}
