@@ -3,7 +3,7 @@ threshold:
   compliance: 100
   coverage: 100
 dependenciesRules:
-  - package: "**.internal.domain.**"
+  - package: "**.internal/domain.**"
     shouldNotDependsOn:
       internal:
-        - "**.internal.infrastructure.**"
+        - "**.internal/infrastructure.**"
