@@ -97,3 +97,38 @@ func TestCatalogRejectsJSONVerifierWithoutRequiredKeys(t *testing.T) {
 		t.Fatalf("expected missing key list validation error, got %v", err)
 	}
 }
+
+func numericRangeCatalog() Catalog {
+	min, max := 1.0, 120.0
+	return Catalog{SchemaVersion:"1", ADRs:[]ADR{{
+		ID:"ADR-003", Title:"Bound configuration values", Version:1, Status:"accepted",
+		Requirements:[]Requirement{{
+			ID:"REQ-003-01", Title:"Timeout must be bounded", Severity:"error",
+			Verifier:Verifier{Type:"json-number-range", FilePath:"config/service.json", NumericJSONBounds:[]JSONNumberBound{{Key:"timeout_seconds", Min:&min, Max:&max}}},
+		}},
+	}}}
+}
+func TestJSONNumberRangePassesInclusiveBounds(t *testing.T) {
+	md := "### File: config/service.json\n```json\n{ \"timeout_seconds\": 120 }\n```\n"
+	result := Assess(numericRangeCatalog(), ParseIssueMarkdown(md))
+	if result.Verdict != "PASS" || result.LLMCalls != 0 { t.Fatalf("expected zero-token PASS, got %+v", result) }
+}
+func TestJSONNumberRangeRejectsOutOfRangeValues(t *testing.T) {
+	for _, input := range []string{`{"timeout_seconds":0}`, `{"timeout_seconds":121}`} {
+		files := []SourceFile{{Path:"config/service.json", Language:"json", Content:input}}
+		result := Assess(numericRangeCatalog(), files)
+		if result.Verdict != "FAIL" || len(result.Requirements[0].Findings) != 1 { t.Errorf("expected one numeric range finding for %s, got %+v", input, result) }
+	}
+}
+func TestJSONNumberRangeRejectsMissingAndNonNumericValues(t *testing.T) {
+	for _, input := range []string{`{}`, `{"timeout_seconds":"30"}`} {
+		result := Assess(numericRangeCatalog(), []SourceFile{{Path:"config/service.json", Language:"json", Content:input}})
+		if result.Verdict != "FAIL" || len(result.Requirements[0].Findings) != 1 { t.Errorf("expected one type/presence finding for %s, got %+v", input, result) }
+	}
+}
+func TestJSONNumberRangeRejectsInvalidBounds(t *testing.T) {
+	c := numericRangeCatalog()
+	min, max := 121.0, 1.0
+	c.ADRs[0].Requirements[0].Verifier.NumericJSONBounds[0] = JSONNumberBound{Key:"timeout_seconds", Min:&min, Max:&max}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "min greater than max") { t.Fatalf("expected invalid bound rejection, got %v", err) }
+}
