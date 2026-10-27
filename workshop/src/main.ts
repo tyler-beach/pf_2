@@ -16,33 +16,33 @@ import {
   renderSample,
 } from './views';
 
-const navGroups: Array<{ label: string; items: Array<[string, string, string]> }> = [
+const navGroups: Array<{ label: string; items: Array<[string, string]> }> = [
   {
     label: 'Command',
     items: [
-      ['/', 'Overview', '◉'],
-      ['/metrics', 'Metrics', '▦'],
-      ['/pipeline', 'Pipeline', '⇢'],
-      ['/sample', 'Sample', '◎'],
+      ['/', 'Overview'],
+      ['/metrics', 'Metrics'],
+      ['/pipeline', 'Pipeline'],
+      ['/sample', 'Sample'],
     ],
   },
   {
     label: 'Evidence',
     items: [
-      ['/adrs', 'ADRs', '▣'],
-      ['/candidates', 'Candidates', '☰'],
-      ['/proposals', 'Proposals', '✎'],
-      ['/assess', 'Assess', '✓'],
+      ['/adrs', 'ADRs'],
+      ['/candidates', 'Candidates'],
+      ['/proposals', 'Proposals'],
+      ['/assess', 'Assess'],
     ],
   },
   {
     label: 'Ops',
     items: [
-      ['/costs', 'LLM cost', '$'],
-      ['/runs', 'Runs', '◷'],
-      ['/evals', 'Evals', '⌀'],
-      ['/corpus', 'Corpus', '◍'],
-      ['/docs', 'Docs', '?'],
+      ['/costs', 'LLM cost'],
+      ['/runs', 'Runs'],
+      ['/evals', 'Evals'],
+      ['/corpus', 'Corpus'],
+      ['/docs', 'Docs'],
     ],
   },
 ];
@@ -58,16 +58,15 @@ function routeParts(): { path: string; rest: string[] } {
 function nav() {
   const el = document.getElementById('nav')!;
   const { path } = routeParts();
-  const sampleActive = path === '/sample';
   el.innerHTML = navGroups
     .map((g) => {
       const items = g.items
-        .map(([p, label, ico]) => {
+        .map(([p, label]) => {
           const active =
             p === '/'
               ? path === '/'
-              : path === p || (p === '/sample' && sampleActive) || (p !== '/' && location.hash.startsWith(`#${p}`));
-          return `<a href="#${p}" class="${active ? 'active' : ''}"><span class="ico">${ico}</span>${label}</a>`;
+              : path === p || (p !== '/' && location.hash.startsWith(`#${p}`));
+          return `<a href="#${p}" class="${active ? 'active' : ''}">${label}</a>`;
         })
         .join('');
       return `<div class="group">${g.label}</div>${items}`;
@@ -110,7 +109,7 @@ async function render() {
       location.hash = '#/metrics';
       return;
     default:
-      app.innerHTML = `<h1>Not found</h1><p class="muted"><a href="#/">Back to overview</a></p>`;
+      app.innerHTML = `<div class="empty"><h1>Not found</h1><p class="muted" style="margin-top:0.5rem"><a href="#/">Back to overview</a></p></div>`;
   }
 }
 

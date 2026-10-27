@@ -20,22 +20,42 @@ export function fmtUSD(v: unknown): string {
   return `$${v.toFixed(4)}`;
 }
 
-export function tile(label: string, value: string, opts?: { cls?: string; sub?: string; href?: string }): string {
-  const cls = opts?.cls || '';
-  const sub = opts?.sub ? `<div class="sub">${escapeHTML(opts.sub)}</div>` : '';
-  const inner = `<div class="label">${escapeHTML(label)}</div><div class="value ${cls}">${value}</div>${sub}`;
-  if (opts?.href) {
-    return `<a class="tile clickable" href="${opts.href}">${inner}</a>`;
-  }
-  return `<div class="tile">${inner}</div>`;
+export type Metric = {
+  label: string;
+  value: string;
+  hint?: string;
+  cls?: string;
+  href?: string;
+};
+
+export function metricsRow(items: Metric[]): string {
+  return `<div class="metrics">${items
+    .map((m) => {
+      const body = `<div class="label">${escapeHTML(m.label)}</div><div class="value ${m.cls || ''}">${m.value}</div>${
+        m.hint ? `<div class="hint">${escapeHTML(m.hint)}</div>` : ''
+      }`;
+      return m.href
+        ? `<a class="metric" href="${m.href}">${body}</a>`
+        : `<div class="metric">${body}</div>`;
+    })
+    .join('')}</div>`;
 }
 
-export function pill(text: string, kind = ''): string {
-  return `<span class="pill ${kind}">${escapeHTML(text)}</span>`;
+export function statusItem(label: string, value: string, kind: 'ok' | 'warn' | 'bad' | '' = ''): string {
+  return `<span class="item"><span class="dot ${kind}"></span>${escapeHTML(label)} <strong class="${kind}">${escapeHTML(value)}</strong></span>`;
+}
+
+export function tag(text: string, kind = ''): string {
+  return `<span class="tag ${kind}">${escapeHTML(text)}</span>`;
 }
 
 export function setCrumb(text: string) {
   const el = document.getElementById('crumb');
+  if (el) el.textContent = text;
+}
+
+export function setPurpose(text: string) {
+  const el = document.getElementById('purpose');
   if (el) el.textContent = text;
 }
 
@@ -45,5 +65,14 @@ export function setTopActions(html: string) {
 }
 
 export function emptyState(title: string, body: string): string {
-  return `<div class="panel flat"><h2>${escapeHTML(title)}</h2><p class="muted">${escapeHTML(body)}</p></div>`;
+  return `<div class="empty"><h1>${escapeHTML(title)}</h1><p class="muted" style="margin-top:0.5rem">${escapeHTML(body)}</p></div>`;
+}
+
+/** @deprecated kept for gradual migration */
+export function tile(label: string, value: string, opts?: { cls?: string; sub?: string; href?: string }): string {
+  return metricsRow([{ label, value, cls: opts?.cls, hint: opts?.sub, href: opts?.href }]);
+}
+
+export function pill(text: string, kind = ''): string {
+  return tag(text, kind);
 }

@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pathfinder Command Center</title>
+    <title>Pathfinder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
@@ -14,28 +14,24 @@
       <aside class="sidebar" id="sidebar">
         <a class="brand" href="#/">
           <span class="brand-mark">PF</span>
-          <span class="brand-text">
-            <strong>Pathfinder</strong>
-            <small>Command Center</small>
-          </span>
+          <span class="brand-name">Pathfinder</span>
         </a>
         <nav id="nav" class="side-nav" aria-label="Primary"></nav>
         <div class="sidebar-foot">
-          <div class="pill muted" id="env-pill">internal · GitHub Pages</div>
-          <a class="ghost-link" href="#/sample">Start Sample journey →</a>
+          <a href="#/sample">Sample journey</a>
+          <span class="env">Internal · Pages</span>
         </div>
       </aside>
       <div class="main-wrap">
         <header class="topbar">
-          <button type="button" class="icon-btn" id="nav-toggle" aria-label="Toggle navigation">☰</button>
-          <div class="crumb" id="crumb">Command Center</div>
+          <button type="button" class="icon-btn" id="nav-toggle" aria-label="Menu">Menu</button>
+          <div class="page-meta">
+            <div class="crumb" id="crumb">Overview</div>
+            <p class="page-purpose" id="purpose"></p>
+          </div>
           <div class="top-actions" id="top-actions"></div>
         </header>
         <main id="app" class="app"></main>
-        <footer class="foot">
-          Internal ops surface over GitOps snapshots. Promptfoo / assist KPIs are not compliance verdicts.
-          Assess paths remain <code>runtime_llm_calls = 0</code>.
-        </footer>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
