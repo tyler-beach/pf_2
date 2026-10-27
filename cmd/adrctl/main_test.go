@@ -68,6 +68,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
 	}
+	if !report.EvidenceFresh { t.Fatalf("matching source snapshot was incorrectly marked stale: %+v", report) }
 	if len(report.Candidates[0].ReviewHints) != 1 || report.Candidates[0].ReviewHints[0] != "compound_or_conjoined" {
 		t.Fatalf("candidate interpretation hints were lost: %+v", report.Candidates[0])
 	}
