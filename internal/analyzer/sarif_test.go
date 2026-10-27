@@ -164,3 +164,83 @@ func TestParseSARIFRejectsRemoteFileURIHost(t *testing.T) {
 		t.Fatalf("expected remote file URI rejection, got %v", err)
 	}
 }
+
+func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings(t *testing.T) {
+	root := t.TempDir()
+	firstInput := []byte(`{"version":"2.1.0","runs":[
+		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Variant message"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/b.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-B"},"properties":{"cwe":"CWE-79"}}
+		]},
+		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}}
+		]}
+	]}`)
+	secondInput := []byte(`{"version":"2.1.0","runs":[
+		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}}
+		]},
+		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/b.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-B"},"properties":{"cwe":"CWE-79"}},
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Variant message"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
+			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}}
+		]}
+	]}`)
+
+	first, err := ParseSARIF(firstInput, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := ParseSARIF(secondInput, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(first.Findings) != 3 || len(second.Findings) != 3 {
+		t.Fatalf("expected 3 unique normalized findings, got %d and %d: first=%+v second=%+v",
+			len(first.Findings), len(second.Findings), first.Findings, second.Findings)
+	}
+
+	var sameAtA, variantAtA, findingAtB int
+	for _, finding := range first.Findings {
+		switch {
+		case finding.Path == "src/a.go" && finding.Message == "Same finding":
+			sameAtA++
+		case finding.Path == "src/a.go" && finding.Message == "Variant message":
+			variantAtA++
+		case finding.Path == "src/b.go" && finding.Message == "Same finding":
+			findingAtB++
+		}
+	}
+	if sameAtA != 1 || variantAtA != 1 || findingAtB != 1 {
+		t.Fatalf("deduplication removed or retained the wrong findings: %+v", first.Findings)
+	}
+
+	firstJSON, err := json.Marshal(first.Findings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondJSON, err := json.Marshal(second.Findings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(firstJSON) != string(secondJSON) {
+		t.Fatalf("finding serialization depends on duplicate/order arrangement:
+first:  %s
+second: %s", firstJSON, secondJSON)
+	}
+	firstEvidence, err := WriteJSON(first)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondEvidence, err := WriteJSON(first)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(firstEvidence) != string(secondEvidence) {
+		t.Fatal("normalized analyzer evidence serialization is not deterministic")
+	}
+}
+
