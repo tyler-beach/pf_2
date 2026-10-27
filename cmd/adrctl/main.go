@@ -50,7 +50,9 @@ func runAssess(args []string, repoMode bool) error {
 		var data []byte; data,err=os.ReadFile(*input); if err==nil { files=assessment.ParseIssueMarkdown(string(data)) }
 	}
 	if err!=nil { return err }
-	mode := assessment.EvidenceModeSubmission\n\tif repoMode { mode = assessment.EvidenceModeRepository }\n\tresult:=assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{EvidenceMode: mode})
+	mode := assessment.EvidenceModeSubmission
+	if repoMode { mode = assessment.EvidenceModeRepository }
+	result:=assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{EvidenceMode: mode})
 	if err:=writeFile(*reportPath,[]byte(assessment.MarkdownReport(result))); err!=nil { return err }
 	j,err:=json.MarshalIndent(result,"","  "); if err!=nil { return err }
 	if err:=writeFile(*jsonPath,j); err!=nil { return err }
