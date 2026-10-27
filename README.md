@@ -77,3 +77,16 @@ Pathfinder is being evolved incrementally: the existing Go assessment engine, de
 The current `adr/requirements.json` remains supported while this ingestion path matures. Runtime assessment continues to make zero LLM calls; any optional assisted interpretation belongs in a separate batch-time workflow and requires review before enforcement.
 
 See [docs/scaling-adr-design.md](docs/scaling-adr-design.md) for the migration plan and analyzer choices, and [docs/architecture.md](docs/architecture.md) for the current runtime architecture.
+
+
+## ADR Markdown ingestion (initial implementation)
+
+Pathfinder can build a deterministic source index for ADR Markdown using Goldmark:
+
+```sh
+go run ./cmd/adrctl ingest-adrs --root adrs --json-out adr/ingested-adrs.json
+```
+
+The input directory should contain ADR documents (MADR-style or legacy Markdown), each with a level-one title. The generated index records a stable ID (an `ADR-###` identifier from the title when present, otherwise the filename), status when present, section text, 1-based heading line ranges, normalized repository-relative source paths, and a SHA-256 of each original file. Documents are processed in lexical path order; duplicate IDs and malformed Markdown fail the command rather than producing a partial index.
+
+**Important:** this is source ingestion, not automatic approval or obligation generation. The generated index does not overwrite `adr/requirements.json`, and no natural-language statement becomes an enforceable compliance rule without an explicit reviewed requirement/verifier mapping. Runtime assessment remains deterministic and makes zero LLM calls.
