@@ -35,14 +35,24 @@ jobs:
           cat report.md
 
       - name: Install pinned reviewdog CLI
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
 
       - name: Annotate pull request with SARIF findings
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ github.token }}
         run: reviewdog -f=sarif -reporter=github-pr-review -level=warning < results.sarif
+
+      - name: Enforce deterministic assessment on pull requests
+        if: github.event_name == 'pull_request'
+        run: |
+          verdict="$(jq -r '.verdict' assessment.json)"
+          echo "ADR assessment verdict: $verdict"
+          if [ "$verdict" = "FAIL" ] || [ "$verdict" = "INDETERMINATE" ]; then
+            echo "ADR compliance is not confirmed; see report.md and SARIF evidence."
+            exit 1
+          fi
 
       - name: Upload assessment evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
