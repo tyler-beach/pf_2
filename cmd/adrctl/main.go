@@ -576,6 +576,7 @@ func runAssessObligations(args []string) error {
 	root := fs.String("root", ".", "current repository root for stale-evidence validation")
 	jsonPath := fs.String("json-out", "obligation-assessment.json", "per-obligation JSON report output")
 	markdownPath := fs.String("report", "obligation-assessment.md", "per-obligation Markdown report output")
+	enforceBlocking := fs.Bool("enforce-blocking", false, "return an error unless every approved blocking obligation passes with fresh evidence")
 	if err := fs.Parse(args); err != nil { return err }
 	if fs.NArg() != 0 { return fmt.Errorf("assess-obligations accepts no positional arguments") }
 	inputs := []string{*indexPath, *catalogPath, *registryPath, *assessmentPath}
@@ -653,9 +654,16 @@ func runAssessObligations(args []string) error {
 	if err != nil { return fmt.Errorf("encode obligation assessment: %w", err) }
 	if err := writeFile(*jsonPath, encoded); err != nil { return err }
 	if err := writeFile(*markdownPath, []byte(obligations.MarkdownAssessmentReport(report))); err != nil { return err }
-	fmt.Printf("Obligation assessment: %d candidate(s); PASS=%d FAIL=%d INDETERMINATE=%d NOT_APPLICABLE=%d; JSON=%s; report=%s\n",
-		report.CandidateCount, report.Counts["PASS"], report.Counts["FAIL"], report.Counts["INDETERMINATE"],
+	fmt.Printf("Obligation assessment: %d candidate(s); verdict=%s; PASS=%d FAIL=%d INDETERMINATE=%d NOT_APPLICABLE=%d; JSON=%s; report=%s\n",
+		report.CandidateCount, report.ObligationVerdict, report.Counts["PASS"], report.Counts["FAIL"], report.Counts["INDETERMINATE"],
 		report.Counts["NOT_APPLICABLE"], *jsonPath, *markdownPath)
+	if *enforceBlocking {
+		for _, candidate := range report.Candidates {
+			if candidate.Decision == obligations.DecisionApproved && candidate.EnforcementMode == obligations.EnforcementBlocking && candidate.Status != "PASS" {
+				return fmt.Errorf("blocking obligation %s did not pass (status=%s, evidence=%s); see %s", candidate.CandidateID, candidate.Status, candidate.EvidenceStatus, *markdownPath)
+			}
+		}
+	}
 	return nil
 }
 
