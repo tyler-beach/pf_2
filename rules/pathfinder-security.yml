@@ -47,7 +47,7 @@ rules:
       category: security
       confidence: MEDIUM
       cwe: "CWE-95"
-    pattern-regex: '\\beval\\s*\\('
+    pattern-regex: '\beval\s*\('
 
   - id: pathfinder.ruby-dynamic-eval
     languages: [ruby]
@@ -57,4 +57,4 @@ rules:
       category: security
       confidence: MEDIUM
       cwe: "CWE-95"
-    pattern-regex: '\\beval\\s*\\('
+    pattern-regex: '\beval\s*\('
