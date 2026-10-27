@@ -160,3 +160,43 @@ func TestResolveConfigRejectsSymlinkEscapingRepository(t *testing.T) {
 	_, _, err := resolveConfig(root, "rules/escape.yml")
 	if err == nil || !strings.Contains(err.Error(), "inside repository root") { t.Fatalf("expected symlink escape to be rejected, got %v", err) }
 }
+
+
+func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	before, err := hashInputTree(root)
+	if err != nil { t.Fatal(err) }
+	for name, value := range map[string]string{
+		"assessment.json": "generated assessment",
+		"results.sarif": "generated SARIF",
+		"report.md": "generated report",
+		"coverage.out": "coverage output",
+		"ingested-adrs.json": "generated ADR index",
+	} {
+		if err := os.WriteFile(filepath.Join(root, name), []byte(value), 0600); err != nil { t.Fatal(err) }
+	}
+	after, err := hashInputTree(root)
+	if err != nil { t.Fatal(err) }
+	if before != after { t.Fatalf("generated artifacts changed source input hash: %s != %s", before, after) }
+}
+
+func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) {
+	root := t.TempDir()
+	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules"} {
+		if err := os.MkdirAll(filepath.Join(root, directory), 0700); err != nil { t.Fatal(err) }
+	}
+	for file, body := range map[string]string{
+		"src/z.go": "package z",
+		"src/a.py": "print('a')",
+		".git/ignored.go": "package ignored",
+		"analyzer-evidence/ignored.ts": "const ignored = true",
+		"node_modules/ignored.js": "ignored",
+		"README.md": "docs",
+	} {
+		if err := os.WriteFile(filepath.Join(root, filepath.FromSlash(file)), []byte(body), 0600); err != nil { t.Fatal(err) }
+	}
+	got, err := discoverScannedPaths(root)
+	if err != nil { t.Fatal(err) }
+	want := []string{"src/a.py", "src/z.go"}
+	if strings.Join(got, ",") != strings.Join(want, ",") { t.Fatalf("inventory = %v, want %v", got, want) }
+}

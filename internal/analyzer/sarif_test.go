@@ -145,3 +145,22 @@ func FuzzParseSARIF(f *testing.F) {
 		}
 	})
 }
+
+
+func TestParseSARIFDoesNotDoubleDecodeLiteralPercentSequences(t *testing.T) {
+	root := t.TempDir()
+	data := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"scanner"}},"results":[{"ruleId":"R","message":{"text":"finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/literal%252e%252e.txt"}}}]}]}]}`)
+	got, err := ParseSARIF(data, root)
+	if err != nil { t.Fatal(err) }
+	if len(got.Findings) != 1 || got.Findings[0].Path != "src/literal%2e%2e.txt" {
+		t.Fatalf("literal percent sequence was incorrectly decoded: %+v", got.Findings)
+	}
+}
+
+func TestParseSARIFRejectsRemoteFileURIHost(t *testing.T) {
+	root := t.TempDir()
+	data := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"scanner"}},"results":[{"ruleId":"R","message":{"text":"finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"file://example.org/src/main.go"}}}]}]}]}`)
+	if _, err := ParseSARIF(data, root); err == nil || !strings.Contains(err.Error(), "remote host") {
+		t.Fatalf("expected remote file URI rejection, got %v", err)
+	}
+}

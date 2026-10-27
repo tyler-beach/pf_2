@@ -227,6 +227,7 @@ func resolveConfig(root, config string) (absolute, relative string, err error) {
 func hashInputTree(root string) (string, error) {
 	h := sha256.New()
 	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
+	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true}
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
 		if entry.IsDir() {
@@ -234,6 +235,7 @@ func hashInputTree(root string) (string, error) {
 			return nil
 		}
 		if entry.Type()&os.ModeSymlink != 0 { return nil }
+		if skipFile[entry.Name()] { return nil }
 		info, err := entry.Info()
 		if err != nil { return err }
 		if !info.Mode().IsRegular() { return nil }
