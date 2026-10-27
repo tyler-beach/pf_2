@@ -86,11 +86,32 @@ func scannerEnvironment() []string {
 const analyzerFixtureDirectory = "testdata/analyzer-fixtures"
 
 type OpenGrepScanner struct {
-	Binary     string
-	Version    string
-	ConfigPath string
-	Timeout    time.Duration
-	Runner     CommandRunner
+	Binary           string
+	BinarySHA256     string
+	Version          string
+	ConfigPath       string
+	RuleSetSHA256    string
+	SourceExtensions []string
+	MaxFileBytes     int64
+	Timeout          time.Duration
+	Runner           CommandRunner
+}
+
+// ResolveExecutable finds an executable through PATH when necessary and
+// resolves symlinks to the immutable file whose bytes will be hashed/executed.
+func ResolveExecutable(binary string) (string, error) {
+	binary = strings.TrimSpace(binary)
+	if binary == "" { return "", fmt.Errorf("analyzer executable path is required") }
+	resolved, err := exec.LookPath(binary)
+	if err != nil { return "", fmt.Errorf("resolve analyzer executable: %w", err) }
+	resolved, err = filepath.Abs(resolved)
+	if err != nil { return "", fmt.Errorf("resolve analyzer executable path: %w", err) }
+	resolved, err = filepath.EvalSymlinks(resolved)
+	if err != nil { return "", fmt.Errorf("resolve analyzer executable symlinks: %w", err) }
+	info, err := os.Stat(resolved)
+	if err != nil { return "", fmt.Errorf("inspect analyzer executable: %w", err) }
+	if !info.Mode().IsRegular() { return "", fmt.Errorf("analyzer executable is not a regular file") }
+	return resolved, nil
 }
 
 func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, error) {
@@ -119,14 +140,37 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	if err != nil { return out, fmt.Errorf("inspect repository root: %w", err) }
 	if !rootInfo.IsDir() { return out, fmt.Errorf("repository root %q is not a directory", rootAbs) }
 
+	binarySHA256 := ""
+	if strings.TrimSpace(s.BinarySHA256) != "" {
+		expected := strings.ToLower(strings.TrimSpace(s.BinarySHA256))
+		if !validPlanSHA256(expected) { return out, fmt.Errorf("expected OpenGrep binary SHA-256 is invalid") }
+		resolvedBinary, resolveErr := ResolveExecutable(binary)
+		if resolveErr != nil { return out, resolveErr }
+		actual, hashErr := HashFile(resolvedBinary)
+		if hashErr != nil { return out, fmt.Errorf("hash OpenGrep executable: %w", hashErr) }
+		if actual != expected {
+			return out, fmt.Errorf("OpenGrep binary SHA-256 mismatch: expected %s but found %s", expected, actual)
+		}
+		binary, binarySHA256 = resolvedBinary, actual
+		out.BinarySHA256 = actual
+	}
+
 	configAbs, configRel, err := resolveConfig(rootAbs, s.ConfigPath)
 	if err != nil { return out, err }
 	configHash, err := HashFile(configAbs)
 	if err != nil { return out, err }
+	ruleSetHash := strings.ToLower(strings.TrimSpace(s.RuleSetSHA256))
+	if ruleSetHash == "" { ruleSetHash = configHash }
+	if !validPlanSHA256(ruleSetHash) { return out, fmt.Errorf("OpenGrep rule-set SHA-256 is invalid") }
+	if s.MaxFileBytes > 0 {
+		if err := validateScanFileSizes(rootAbs, s.MaxFileBytes, s.SourceExtensions); err != nil { return out, err }
+	}
 	out.ConfigurationPath = configRel
+	out.ConfigurationSHA256 = configHash
+	out.BinarySHA256 = binarySHA256
+	out.RuleSetSHA256 = ruleSetHash
 	inputHash, err := hashInputTree(rootAbs)
 	if err != nil { return out, err }
-	out.ConfigurationSHA256 = configHash
 	out.InputSHA256 = inputHash
 
 	tempDir, err := os.MkdirTemp("", "pathfinder-opengrep-")
@@ -362,4 +406,44 @@ func incompleteAnalysisDiagnostic(stderr string) bool {
 	// Do not fail on the broad summary alone. A concrete positive partial-file
 	// count, rule parse error, or SARIF invocation error is handled above.
 	return false
+}
+
+
+// validateScanFileSizes fails closed when supported source files exceed the
+// configured per-file bound; symlinks and generated analyzer artifacts are
+// excluded so scans do not traverse outside the repository or scan their own output.
+func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []string) error {
+	if maxBytes <= 0 { return nil }
+	allowed := make(map[string]bool, len(sourceExtensions))
+	for _, ext := range sourceExtensions { allowed[strings.ToLower(strings.TrimSpace(ext))] = true }
+	if len(allowed) == 0 { return nil }
+	skipDirs := map[string]bool{
+		".git": true, "vendor": true, "node_modules": true,
+		".opengrep-cache": true, "analyzer-evidence": true,
+	}
+	return filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil { return walkErr }
+		if entry.Type()&os.ModeSymlink != 0 { return nil }
+		if entry.IsDir() {
+			if current != root {
+				rel, err := filepath.Rel(root, current)
+				if err != nil { return err }
+				rel = filepath.ToSlash(rel)
+				if skipDirs[entry.Name()] || rel == analyzerFixtureDirectory || strings.HasPrefix(rel, analyzerFixtureDirectory+"/") {
+					return filepath.SkipDir
+				}
+			}
+			return nil
+		}
+		if !allowed[strings.ToLower(filepath.Ext(entry.Name()))] { return nil }
+		info, err := entry.Info()
+		if err != nil { return fmt.Errorf("inspect source file size: %w", err) }
+		if !info.Mode().IsRegular() { return nil }
+		if info.Size() > maxBytes {
+			rel, relErr := filepath.Rel(root, current)
+			if relErr != nil { return relErr }
+			return fmt.Errorf("source file %s is %d bytes and exceeds the configured %d-byte per-file limit", filepath.ToSlash(rel), info.Size(), maxBytes)
+		}
+		return nil
+	})
 }

@@ -563,6 +563,7 @@ func cacheEntryMatchesPlan(entry CacheEntry, plan Plan, task AnalyzerTask) bool 
 	if entry.SchemaVersion != AnalyzerPlanSchemaVersion || entry.CacheKey != task.CacheKey || entry.Result.Status != ScanStatusComplete || len(entry.RawSARIF) == 0 { return false }
 	if entry.Result.RawOutputSHA256 == "" || entry.Result.RawOutputSHA256 != sha256Hex(entry.RawSARIF) { return false }
 	if entry.Result.InputSHA256 != plan.SnapshotSHA256 { return false }
+	if entry.Result.BinarySHA256 != task.Spec.BinarySHA256 || entry.Result.RuleSetSHA256 != task.Spec.RuleSetSHA256 { return false }
 	if entry.Result.ConfigurationPath != task.Spec.ConfigurationPath || entry.Result.ConfigurationSHA256 != task.Spec.ConfigurationSHA256 { return false }
 	if entry.Result.SARIFVersion != SARIFVersion { return false }
 	for _, info := range entry.Result.Analyzers {
@@ -578,6 +579,8 @@ func validatePlanResult(plan Plan, task AnalyzerTask, result ScanResult) error {
 		return fmt.Errorf("raw SARIF bytes do not match raw_output_sha256")
 	}
 	if result.InputSHA256 != plan.SnapshotSHA256 { return fmt.Errorf("input SHA-256 does not match plan snapshot") }
+	if result.BinarySHA256 != task.Spec.BinarySHA256 { return fmt.Errorf("binary SHA-256 does not match the planned analyzer executable") }
+	if result.RuleSetSHA256 != task.Spec.RuleSetSHA256 { return fmt.Errorf("rule-set SHA-256 does not match the planned rule set") }
 	if result.ConfigurationPath != task.Spec.ConfigurationPath || result.ConfigurationSHA256 != task.Spec.ConfigurationSHA256 {
 		return fmt.Errorf("configuration provenance does not match the planned analyzer specification")
 	}
