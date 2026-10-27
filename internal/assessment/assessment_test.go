@@ -81,3 +81,19 @@ func TestJSONRequiredKeysMissingFileIsNotApplicable(t *testing.T) {
 	result := Assess(jsonRequirementCatalog(), files)
 	if result.Requirements[0].Status!="NOT_APPLICABLE" { t.Fatalf("expected NOT_APPLICABLE, got %+v", result.Requirements[0]) }
 }
+
+func TestCatalogRejectsUnsafeJSONVerifierPath(t *testing.T) {
+	c := jsonRequirementCatalog()
+	c.ADRs[0].Requirements[0].Verifier.FilePath = "../outside.json"
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "repository-relative file_path") {
+		t.Fatalf("expected unsafe path validation error, got %v", err)
+	}
+}
+
+func TestCatalogRejectsJSONVerifierWithoutRequiredKeys(t *testing.T) {
+	c := jsonRequirementCatalog()
+	c.ADRs[0].Requirements[0].Verifier.RequiredJSONKeys = nil
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "required_json_keys") {
+		t.Fatalf("expected missing key list validation error, got %v", err)
+	}
+}
