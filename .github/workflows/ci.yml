@@ -31,6 +31,22 @@ jobs:
           go test ./internal/analyzer -run=^$ -fuzz=FuzzParseSARIF -fuzztime=5s
           go test ./internal/assessment -run=^$ -fuzz=FuzzParseIssueMarkdown -fuzztime=5s
 
+      - name: Verify source-cited obligation candidates are deterministic and review-only
+        run: |
+          set -euo pipefail
+          go run ./cmd/adrctl ingest-adrs --root testdata/adr-corpus --json-out "$RUNNER_TEMP/adr-ingested.json"
+          go run ./cmd/adrctl extract-obligations --index "$RUNNER_TEMP/adr-ingested.json" --root testdata/adr-corpus --json-out "$RUNNER_TEMP/obligation-candidates.json"
+          go run ./cmd/adrctl extract-obligations --index "$RUNNER_TEMP/adr-ingested.json" --root testdata/adr-corpus --json-out "$RUNNER_TEMP/obligation-candidates-second.json"
+          cmp "$RUNNER_TEMP/obligation-candidates.json" "$RUNNER_TEMP/obligation-candidates-second.json"
+          jq -e '
+            .schema_version == "1"
+            and .document_count == 2
+            and .candidate_count >= 3
+            and ([.candidates[] | select(.approval_status != "pending_review" or .enforcement_mode != "review_required" or .executable != false)] | length) == 0
+            and ([.candidates[].source_sha256] | all(length == 64))
+            and ([.candidates[].source_line_start] | all(. > 0))
+          ' "$RUNNER_TEMP/obligation-candidates.json"
+
       - name: Install pinned OpenGrep CLI and verify SHA-256
         run: |
           set -euo pipefail

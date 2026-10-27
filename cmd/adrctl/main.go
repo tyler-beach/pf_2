@@ -12,6 +12,7 @@ import (
 	"github.com/tyler-beach/pf_2/internal/adringest"
 	"github.com/tyler-beach/pf_2/internal/analyzer"
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/obligations"
 )
 
 func main() {
@@ -29,6 +30,8 @@ func main() {
 		err = runAssess(os.Args[2:], true)
 	case "ingest-adrs":
 		err = runIngestADRs(os.Args[2:])
+	case "extract-obligations":
+		err = runExtractObligations(os.Args[2:])
 	case "scan-opengrep":
 		err = runOpenGrepScan(os.Args[2:])
 	case "version":
@@ -44,7 +47,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|scan-opengrep|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -230,5 +233,36 @@ func runIngestADRs(args []string) error {
 		return err
 	}
 	fmt.Printf("Ingested %d ADR document(s) into %s. No obligations were auto-approved.\n", len(docs), *output)
+	return nil
+}
+
+func runExtractObligations(args []string) error {
+	fs := flag.NewFlagSet("extract-obligations", flag.ContinueOnError)
+	indexPath := fs.String("index", "adr/ingested-adrs.json", "deterministic ADR ingestion index JSON")
+	root := fs.String("root", "", "directory containing source ADR Markdown; defaults to source_root from index")
+	output := fs.String("json-out", "adr/obligation-candidates.json", "review-only candidate obligation JSON output")
+	if err := fs.Parse(args); err != nil { return err }
+	if fs.NArg() != 0 { return fmt.Errorf("extract-obligations accepts no positional arguments") }
+	indexBytes, err := os.ReadFile(*indexPath)
+	if err != nil { return fmt.Errorf("read ADR ingestion index: %w", err) }
+	var index ingestionIndex
+	if err := json.Unmarshal(indexBytes, &index); err != nil { return fmt.Errorf("decode ADR ingestion index: %w", err) }
+	if index.SchemaVersion != "1" { return fmt.Errorf("unsupported ADR ingestion index schema_version %q", index.SchemaVersion) }
+	if *root == "" { *root = index.SourceRoot }
+	if strings.TrimSpace(*root) == "" { return fmt.Errorf("source root is required via --root or source_root in the index") }
+	indexAbs, err := filepath.Abs(*indexPath)
+	if err != nil { return fmt.Errorf("resolve ingestion index path: %w", err) }
+	outputAbs, err := filepath.Abs(*output)
+	if err != nil { return fmt.Errorf("resolve candidate output path: %w", err) }
+	if filepath.Clean(indexAbs) == filepath.Clean(outputAbs) {
+		return fmt.Errorf("candidate output must not overwrite the ADR ingestion index")
+	}
+	candidates, err := obligations.BuildIndex(index.Documents, *root, index.SourceRoot, indexBytes)
+	if err != nil { return fmt.Errorf("build review-only obligation candidates: %w", err) }
+	data, err := json.MarshalIndent(candidates, "", "  ")
+	if err != nil { return fmt.Errorf("encode obligation candidate index: %w", err) }
+	if err := writeFile(*output, data); err != nil { return err }
+	fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s. No candidate was approved or made enforceable.\n",
+		candidates.CandidateCount, candidates.DocumentCount, *output)
 	return nil
 }
