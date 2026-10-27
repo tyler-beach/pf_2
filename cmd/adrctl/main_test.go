@@ -106,6 +106,9 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	if !failed.EvidenceFresh || failed.ObligationVerdict != "FAIL" || failed.Candidates[0].Status != "FAIL" || failed.Candidates[0].EvidenceStatus != "FAIL" {
 		t.Fatalf("fresh failing repository evidence was not reported as FAIL: %+v", failed)
 	}
+	if err := runAssessObligations(append(append([]string{}, args...), "--enforce-blocking")); err == nil || !strings.Contains(err.Error(), "blocking obligation") {
+		t.Fatalf("blocking gate should fail the command for a fresh violation, got %v", err)
+	}
 
 	// Mutating source again without rerunning assessment must not preserve FAIL.
 	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil { t.Fatal(err) }
@@ -113,6 +116,9 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	stale := readReport()
 	if stale.EvidenceFresh || stale.ObligationVerdict != "INDETERMINATE" || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale assessment remained compliant after source changed: %+v", stale)
+	}
+	if err := runAssessObligations(append(append([]string{}, args...), "--enforce-blocking")); err == nil || !strings.Contains(err.Error(), "blocking obligation") {
+		t.Fatalf("blocking gate should fail closed on stale evidence, got %v", err)
 	}
 
 	// An ADR edit must invalidate the extracted candidate index itself.
