@@ -90,6 +90,22 @@ Repository scanning and issue-snippet assessment are separate surfaces. Never ex
 - Add language-specific AST/type-aware checks where structural patterns are insufficient.
 - Gate: claims are made per verified rule family; no blanket claim of semantic support for every language.
 
+## One-command specification check
+
+For routine use, `specification-check` orchestrates the deterministic pipeline: ingest current ADR Markdown, regenerate the review-only candidate index and Markdown queue, assess the repository, join evidence to reviewed candidates, and write the audit reports.
+
+```sh
+go run ./cmd/adrctl specification-check \
+  --root . \
+  --adr-root adrs \
+  --requirements adr/requirements.json \
+  --registry adr/obligation-reviews.json
+```
+
+The command enforces blocking obligations by default. Use `--report-only` to generate the same artifacts without returning a gate failure while reviewing or bootstrapping coverage. The review registry must already exist; the command never initializes, approves, or edits reviews automatically.
+
+Generated artifacts are written to `adr/ingested-adrs.json`, `adr/obligation-candidates.json`, `adr/obligation-candidates.md`, and the repository/obligation reports at the repository root. The candidate index is regenerated on each run so stale approvals cannot be hidden by reusing an old index.
+
 ## Current CLI workflow
 
 The current implementation can join a repository assessment to reviewed candidate obligations without running a second, potentially different scan:
