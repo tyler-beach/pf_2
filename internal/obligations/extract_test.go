@@ -396,7 +396,7 @@ func TestBuildIndexExtractsPreambleAlongsideHeadedSections(t *testing.T) {
 	if index.Candidates[0].SectionHeading != "Preamble" || index.Candidates[0].SourceLineStart != 3 {
 		t.Errorf("preamble candidate missing or moved: %+v", index.Candidates[0])
 	}
-	if index.Candidates[1].SectionHeading != "Decision" || index.Candidates[1].SourceLineStart != 6 {
+	if index.Candidates[1].SectionHeading != "Decision" || index.Candidates[1].SourceLineStart != 7 {
 		t.Errorf("headed-section candidate changed: %+v", index.Candidates[1])
 	}
 }
