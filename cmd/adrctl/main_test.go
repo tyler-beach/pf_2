@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -62,6 +64,14 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
 	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
+	}
+	registryBytes, err := os.ReadFile(registryPath)
+	if err != nil { t.Fatal(err) }
+	indexDigest, registryDigest, assessmentDigest := sha256.Sum256(indexBytes), sha256.Sum256(registryBytes), sha256.Sum256(evidenceBytes)
+	if report.CandidateIndexArtifactSHA256 != hex.EncodeToString(indexDigest[:]) ||
+		report.ReviewRegistryArtifactSHA256 != hex.EncodeToString(registryDigest[:]) ||
+		report.AssessmentArtifactSHA256 != hex.EncodeToString(assessmentDigest[:]) {
+		t.Fatalf("report did not preserve exact input artifact digests: %+v", report)
 	}
 	markdown, err := os.ReadFile(markdownPath)
 	if err != nil { t.Fatal(err) }

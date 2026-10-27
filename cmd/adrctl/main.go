@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"flag"
@@ -574,6 +575,16 @@ func runAssessObligations(args []string) error {
 	if err := json.Unmarshal(data, &evidence); err != nil { return fmt.Errorf("decode repository assessment: %w", err) }
 	report, err := obligations.AssessCandidates(index, catalog, registry, evidence)
 	if err != nil { return fmt.Errorf("assess obligation candidates: %w", err) }
+	indexBytes, err := os.ReadFile(*indexPath)
+	if err != nil { return fmt.Errorf("read candidate index for provenance: %w", err) }
+	registryBytes, err := os.ReadFile(*registryPath)
+	if err != nil { return fmt.Errorf("read review registry for provenance: %w", err) }
+	indexDigest := sha256.Sum256(indexBytes)
+	registryDigest := sha256.Sum256(registryBytes)
+	assessmentDigest := sha256.Sum256(data)
+	report.CandidateIndexArtifactSHA256 = hex.EncodeToString(indexDigest[:])
+	report.ReviewRegistryArtifactSHA256 = hex.EncodeToString(registryDigest[:])
+	report.AssessmentArtifactSHA256 = hex.EncodeToString(assessmentDigest[:])
 	encoded, err := json.MarshalIndent(report, "", "  ")
 	if err != nil { return fmt.Errorf("encode obligation assessment: %w", err) }
 	if err := writeFile(*jsonPath, encoded); err != nil { return err }
