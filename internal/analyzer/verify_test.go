@@ -142,3 +142,19 @@ func TestVerifyScanEvidenceRejectsMissingBinaryOrRuleSetDigest(t *testing.T) {
 		})
 	}
 }
+
+func TestVerifyScopedScanEvidenceRequiresExactPlannedInventory(t *testing.T) {
+	root, raw, envelope := verificationFixture(t)
+	envelope.ScannedPaths = []string{"src/main.py"}
+	got, err := VerifyScopedScanEvidence(root, envelope, raw, []string{"src/main.py"})
+	if err != nil { t.Fatalf("valid scoped evidence rejected: %v", err) }
+	if len(got.ScannedPaths) != 1 || got.ScannedPaths[0] != "src/main.py" {
+		t.Fatalf("verified scope mismatch: %v", got.ScannedPaths)
+	}
+
+	envelope.ScannedPaths = []string{"src/other.py"}
+	got, err = VerifyScopedScanEvidence(root, envelope, raw, []string{"src/main.py"})
+	if err == nil || got.Status != ScanStatusError || !strings.Contains(err.Error(), "planned scope") {
+		t.Fatalf("expected scope mismatch rejection, got result=%+v err=%v", got, err)
+	}
+}
