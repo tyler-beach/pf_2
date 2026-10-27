@@ -185,3 +185,28 @@ func TestRunExtractObligationsRefusesToOverwriteIndex(t *testing.T) {
 	err := runExtractObligations([]string{"--index", indexPath, "--root", root, "--json-out", indexPath})
 	if err == nil || !strings.Contains(err.Error(), "must not overwrite") { t.Fatalf("expected index overwrite rejection, got %v", err) }
 }
+
+
+func TestRunAssertIssueVerdict(t *testing.T) {
+	root := t.TempDir()
+	reportPath := filepath.Join(root, "assessment.json")
+	writeResult := func(verdict, coverage string) {
+		t.Helper()
+		data, err := json.Marshal(assessment.Result{SchemaVersion:"1", Verdict:verdict, CoverageStatus:coverage})
+		if err != nil { t.Fatal(err) }
+		if err := os.WriteFile(reportPath, data, 0600); err != nil { t.Fatal(err) }
+	}
+	writeResult("INDETERMINATE", "PARTIAL")
+	if err := runAssertIssueVerdict([]string{"--title", "[ADR Assessment] [expected:INDETERMINATE] missing source scope", "--assessment", reportPath}); err != nil {
+		t.Fatalf("matching expected verdict failed: %v", err)
+	}
+	if err := runAssertIssueVerdict([]string{"--title", "[ADR Assessment] no assertion", "--assessment", reportPath}); err != nil {
+		t.Fatalf("unmarked issue title should not assert a verdict: %v", err)
+	}
+	if err := runAssertIssueVerdict([]string{"--title", "[ADR Assessment] [expected:PASS] missing source scope", "--assessment", reportPath}); err == nil || !strings.Contains(err.Error(), "expected PASS") {
+		t.Fatalf("mismatched verdict should fail, got %v", err)
+	}
+	if err := runAssertIssueVerdict([]string{"--assessment", reportPath}); err == nil || !strings.Contains(err.Error(), "--title is required") {
+		t.Fatalf("missing title should fail, got %v", err)
+	}
+}

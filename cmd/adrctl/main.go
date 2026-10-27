@@ -35,6 +35,8 @@ func main() {
 		err = runExtractObligations(os.Args[2:])
 	case "scan-opengrep":
 		err = runOpenGrepScan(os.Args[2:])
+	case "assert-issue-verdict":
+		err = runAssertIssueVerdict(os.Args[2:])
 	case "version":
 		fmt.Println("adrctl 0.1.0")
 	default:
@@ -48,7 +50,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|assert-issue-verdict|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -265,5 +267,29 @@ func runExtractObligations(args []string) error {
 	if err := writeFile(*output, data); err != nil { return err }
 	fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s. No candidate was approved or made enforceable.\n",
 		candidates.CandidateCount, candidates.DocumentCount, *output)
+	return nil
+}
+
+
+// runAssertIssueVerdict makes GitHub issue regressions executable rather than
+// merely descriptive. Add exactly one [expected:PASS], [expected:FAIL], or
+// [expected:INDETERMINATE] marker to the issue title to assert its assessment.
+func runAssertIssueVerdict(args []string) error {
+	fs := flag.NewFlagSet("assert-issue-verdict", flag.ContinueOnError)
+	title := fs.String("title", "", "GitHub issue title")
+	assessmentPath := fs.String("assessment", "assessment.json", "assessment JSON output")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*title) == "" { return fmt.Errorf("--title is required") }
+	data, err := os.ReadFile(*assessmentPath)
+	if err != nil { return fmt.Errorf("read assessment output: %w", err) }
+	var result assessment.Result
+	if err := json.Unmarshal(data, &result); err != nil { return fmt.Errorf("decode assessment output: %w", err) }
+	matched, err := assessment.CheckExpectedVerdict(*title, result)
+	if err != nil { return err }
+	if !matched {
+		fmt.Println("No expected-verdict marker in issue title; assertion skipped.")
+		return nil
+	}
+	fmt.Printf("Issue regression matched: verdict=%s coverage=%s\n", result.Verdict, result.CoverageStatus)
 	return nil
 }

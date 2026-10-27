@@ -147,3 +147,13 @@ go run ./cmd/adrctl extract-obligations --index adr/ingested-adrs.json --json-ou
 The extractor uses explicit normative cues such as must, shall, should, may, prohibited, or required and records a conservative reusable-pattern hint. Every candidate remains pending review, uses review-required enforcement, and sets executable to false. The index is deterministic and includes the source-index digest, source SHA-256, repository-relative path, exact source line, section heading, modality, candidate kind, and exception candidates. It rejects stale source indexes, duplicate ADR IDs, unsafe paths, symlinked source paths, and oversized source files.
 
 This is candidate discovery, not natural-language policy enforcement. It does not synthesize or modify adr/requirements.json, call an LLM, approve any obligation, or make a statement enforceable. An ADR owner must review the source, modality, scope, exceptions, pattern mapping, and regression fixtures before a requirement can gate CI.
+
+
+## Issue-driven regression assertions
+
+The issue workflow can enforce a regression's expected overall verdict by including exactly one marker in the issue title:
+- `[expected:PASS]` for a compliant submitted scope (which may still have `PARTIAL` coverage).
+- `[expected:FAIL]` for a demonstrated violation.
+- `[expected:INDETERMINATE]` when required evidence is missing or a submitted language is not assessed.
+
+The assessment comment and JSON/SARIF artifacts are published before the assertion runs, so a failed regression preserves evidence for diagnosis. Issues without a marker remain ordinary assessments and do not have their verdict asserted.
