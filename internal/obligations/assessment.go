@@ -41,6 +41,7 @@ type AssessmentReport struct {
 	SchemaVersion       string                `json:"schema_version"`
 	EvidenceMode        string                `json:"evidence_mode"`
 	RepositoryVerdict   string                `json:"repository_verdict"`
+	ObligationVerdict    string                `json:"obligation_verdict"`
 	AssessmentSourceSnapshotSHA256 string `json:"assessment_source_snapshot_sha256,omitempty"`
 	CurrentSourceSnapshotSHA256 string `json:"current_source_snapshot_sha256,omitempty"`
 	CurrentRepositorySnapshotSHA256 string `json:"current_repository_snapshot_sha256,omitempty"`
@@ -208,14 +209,23 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 		out.Counts = map[string]int{"PASS": 0, "FAIL": 0, "INDETERMINATE": 0, "NOT_APPLICABLE": 0}
 		for _, item := range out.Candidates { out.Counts[item.Status]++ }
 	}
+	out.ObligationVerdict = deriveObligationVerdict(out.Counts)
 	sort.Strings(out.Warnings)
 	return out, nil
+}
+
+func deriveObligationVerdict(counts map[string]int) string {
+	if counts["FAIL"] > 0 { return "FAIL" }
+	if counts["INDETERMINATE"] > 0 { return "INDETERMINATE" }
+	if counts["PASS"] > 0 { return "PASS" }
+	return "NOT_APPLICABLE"
 }
 
 // MarkdownAssessmentReport renders a compact audit-friendly per-obligation view.
 func MarkdownAssessmentReport(report AssessmentReport) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Specification obligation assessment\n\n")
+	fmt.Fprintf(&b, "- Obligation verdict: **%s**\n", report.ObligationVerdict)
 	fmt.Fprintf(&b, "- Repository assessment verdict: **%s**\n", report.RepositoryVerdict)
 	fmt.Fprintf(&b, "- Evidence freshness: **%t**\n", report.EvidenceFresh)
 	if report.AssessmentSourceSnapshotSHA256 != "" { fmt.Fprintf(&b, "- Assessment source snapshot SHA-256: `%s`\n", report.AssessmentSourceSnapshotSHA256) }
