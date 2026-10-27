@@ -61,7 +61,7 @@ Use thin, version-pinned adapters to run established tools and normalize results
 - **ast-grep:** alternative for tree-sitter-based syntax-pattern checks when it is simpler or has better fit for a particular pattern family.
 - **Joern:** defer to requirements needing code-property-graph or deeper data-flow evidence unavailable from simpler analyzers; pilot language support and evidence quality before adoption.
 - **gosec, Bandit, SpotBugs/Find Security Bugs:** add only when the relevant language and ADR coverage justifies those analyzers.
-- **OpenGrep adapter (implemented):** version-pinned CLI, timeout/cancellation, restricted environment, symlink-safe repository-local configuration, SARIF 2.1.0 normalization, stable finding fingerprints, path containment checks, input/config/output hashes, and clean/vulnerable multilingual CI fixtures.
+- **OpenGrep adapter (implemented):** version-pinned CLI, timeout/cancellation, restricted environment, symlink-safe repository-local configuration, SARIF 2.1.0 normalization, stable finding fingerprints, path containment checks, input/config/output hashes, and clean/vulnerable multilingual CI fixtures. Assessment re-parses raw SARIF and rejects evidence whose hashes no longer match the current source/config snapshot.
 - **reviewdog:** retain as a PR annotation consumer, not as an analyzer or coverage oracle.
 
 License is evaluated per engine, adapter, dependency, plugin, and ruleset. Pin versions/digests, preserve original tool outputs, and track an SBOM/license inventory. Do not assume a rule pack shares its engine's license. Analyzer selection and ruleset licensing must be reviewed before adoption or redistribution.

@@ -114,9 +114,10 @@ go run ./cmd/adrctl assess-repo \
   --root . \
   --requirements adr/requirements.json \
   --analyzer-evidence analyzer-evidence/opengrep.json \
+  --analyzer-sarif analyzer-evidence/opengrep.sarif \
   --report report.md \
   --json-out assessment.json \
   --sarif-out results.sarif
 ```
 
-Analyzer-rule obligations require a complete scan, input/configuration/raw-output SHA-256 provenance, and at least one discovered path in the declared scope. Missing or partial scan evidence is `EVIDENCE_MISSING` and makes the verdict `INDETERMINATE`; a finding without a source path also fails closed. Findings outside an obligation's declared path prefixes do not violate that obligation.
+Before findings are used, Pathfinder re-parses the paired raw SARIF and verifies its SHA-256, the recorded configuration file's SHA-256, and the current repository-tree digest. Evidence from another source snapshot or changed rules is rejected rather than silently reused. These digests provide integrity and freshness checks, not a digital signature. Analyzer-rule obligations require a complete scan, input/configuration/raw-output SHA-256 provenance, and at least one discovered path in the declared scope. Missing or partial scan evidence is `EVIDENCE_MISSING` and makes the verdict `INDETERMINATE`; a finding without a source path also fails closed. Findings outside an obligation's declared path prefixes do not violate that obligation.

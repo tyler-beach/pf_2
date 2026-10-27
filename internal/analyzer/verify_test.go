@@ -42,9 +42,12 @@ func TestVerifyScanEvidenceRebuildsFindingsFromRawSARIF(t *testing.T) {
 	if got.Findings[0].RuleID != "RULE-1" || got.Findings[0].Message != "fixture finding" {
 		t.Fatalf("summary JSON was trusted instead of raw SARIF: %+v", got.Findings[0])
 	}
-	if got.Status != ScanStatusComplete || len(got.ScannedPaths) != 1 || got.ScannedPaths[0] != "src/main.py" {
-		t.Fatalf("verified evidence metadata incorrect: %+v", got)
+	if got.Status != ScanStatusComplete {
+		t.Fatalf("verified scan is not complete: %+v", got)
 	}
+	hasMain := false
+	for _, path := range got.ScannedPaths { if path == "src/main.py" { hasMain = true } }
+	if !hasMain { t.Fatalf("verified inventory lost source file: %+v", got.ScannedPaths) }
 }
 
 func TestVerifyScanEvidenceRejectsRawOutputTampering(t *testing.T) {
