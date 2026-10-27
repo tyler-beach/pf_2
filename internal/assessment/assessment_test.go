@@ -600,15 +600,14 @@ func TestEmptyCatalogCannotClaimCompliance(t *testing.T) {
 	}
 }
 
-
 func TestManualReviewVerifierIsSupportedButCannotEstablishCompliance(t *testing.T) {
 	catalog := Catalog{
 		SchemaVersion: "1",
 		ADRs: []ADR{{
-			ID:           "ADR-REVIEW",
-			Title:        "Runtime suitability",
-			Version:      1,
-			Status:       "accepted",
+			ID:      "ADR-REVIEW",
+			Title:   "Runtime suitability",
+			Version: 1,
+			Status:  "accepted",
 			Requirements: []Requirement{
 				{
 					ID:       "REQ-REVIEW-01",
@@ -621,9 +620,9 @@ func TestManualReviewVerifierIsSupportedButCannotEstablishCompliance(t *testing.
 					Title:    "Domain code must not depend on infrastructure adapters",
 					Severity: "error",
 					Verifier: Verifier{
-						Type:                      "go-import-boundary",
-						SourcePathPrefixes:        []string{"internal/domain/"},
-						ForbiddenImportPrefixes:   []string{"internal/infrastructure/"},
+						Type:                    "go-import-boundary",
+						SourcePathPrefixes:      []string{"internal/domain/"},
+						ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 					},
 				},
 			},
@@ -692,35 +691,34 @@ func TestManualReviewOnlyCatalogIsIndeterminateNotUnsupported(t *testing.T) {
 }
 
 
-
 func TestConfirmedViolationTakesPrecedenceOverManualReview(t *testing.T) {
 	catalog := Catalog{
 		SchemaVersion: "1",
 		ADRs: []ADR{
 			{
-				ID: "ADR-REVIEW",
-				Title: "Runtime suitability",
+				ID:      "ADR-REVIEW",
+				Title:   "Runtime suitability",
 				Version: 1,
-				Status: "accepted",
+				Status:  "accepted",
 				Requirements: []Requirement{{
-					ID: "REQ-REVIEW-01",
-					Title: "The timeout must suit the service's business latency budget",
+					ID:       "REQ-REVIEW-01",
+					Title:    "The timeout must suit the service's business latency budget",
 					Severity: "warning",
 					Verifier: Verifier{Type: "manual-review"},
 				}},
 			},
 			{
-				ID: "ADR-BOUNDARY",
-				Title: "Preserve domain boundaries",
+				ID:      "ADR-BOUNDARY",
+				Title:   "Preserve domain boundaries",
 				Version: 1,
-				Status: "accepted",
+				Status:  "accepted",
 				Requirements: []Requirement{{
-					ID: "REQ-BOUNDARY-01",
-					Title: "Domain code must not depend on infrastructure adapters",
+					ID:       "REQ-BOUNDARY-01",
+					Title:    "Domain code must not depend on infrastructure adapters",
 					Severity: "error",
 					Verifier: Verifier{
-						Type: "go-import-boundary",
-						SourcePathPrefixes: []string{"internal/domain/"},
+						Type:                    "go-import-boundary",
+						SourcePathPrefixes:      []string{"internal/domain/"},
 						ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 					},
 				}},
@@ -728,9 +726,9 @@ func TestConfirmedViolationTakesPrecedenceOverManualReview(t *testing.T) {
 		},
 	}
 	files := []SourceFile{{
-		Path: "internal/domain/customer.go",
+		Path:     "internal/domain/customer.go",
 		Language: "go",
-		Content: "package domain\nimport _ \"internal/infrastructure/storage\"\n",
+		Content:  "package domain\nimport _ \"internal/infrastructure/storage\"\n",
 	}}
 	result := AssessWithOptions(catalog, files, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
 	statuses := make(map[string]string, len(result.Requirements))
