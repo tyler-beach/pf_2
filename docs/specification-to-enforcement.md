@@ -102,6 +102,8 @@ The current implementation can join a repository assessment to reviewed candidat
 Example:
 
 ```sh
+go run ./cmd/adrctl ingest-adrs --root adrs --json-out adr/ingested-adrs.json
+go run ./cmd/adrctl extract-obligations --index adr/ingested-adrs.json --json-out adr/obligation-candidates.json --report adr/obligation-candidates.md
 go run ./cmd/adrctl assess-repo --root . --json-out assessment.json
 go run ./cmd/adrctl assess-obligations \
   --root . \
