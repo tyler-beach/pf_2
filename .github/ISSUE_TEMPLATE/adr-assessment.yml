@@ -1,0 +1,52 @@
+name: ADR compliance assessment
+description: Assess a technical specification or source snippet against accepted architectural decisions.
+title: "[ADR Assessment] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit source or a technical specification for deterministic ADR checks. Source snippets are parsed as data and never executed. Runtime LLM calls are disabled.
+  - type: dropdown
+    id: assessment_mode
+    attributes:
+      label: Assessment mode
+      description: Choose what evidence you are providing.
+      options:
+        - Implementation snippet
+        - Technical specification
+        - Both specification and implementation
+    validations:
+      required: true
+  - type: textarea
+    id: adr_ids
+    attributes:
+      label: ADR IDs
+      description: Optional ADR identifiers. The MVP evaluates all accepted requirements in its catalog.
+      placeholder: "ADR-001"
+  - type: textarea
+    id: context
+    attributes:
+      label: Design context
+      description: Explain the intended architecture, assumptions, and relevant constraints.
+  - type: textarea
+    id: source_code
+    attributes:
+      label: Source code
+      description: Include the file path and a fenced code block for each Go source file you want assessed.
+      value: |
+        ### File: internal/domain/example.go
+        ```go
+        package domain
+        ```
+  - type: textarea
+    id: spec_facts
+    attributes:
+      label: Structured architecture facts (optional)
+      description: The MVP does not infer missing facts from prose. Unsupported requirements will be indeterminate.
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I understand results are limited to supported requirements and supplied evidence.
+          required: true
