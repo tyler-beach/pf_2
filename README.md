@@ -125,3 +125,8 @@ Before findings are used, Pathfinder re-parses the paired raw SARIF and verifies
 ## Issue-submission language coverage
 
 Issue submissions retain common source and configuration snippets with explicit language labels, including Go, JSON, Python, JavaScript/TypeScript, Java, C#, PHP, Ruby, Rust, shell, YAML, Terraform/HCL, Kotlin, Scala, C/C++, SQL, HTML/XML, and Vue. Only Go and JSON have direct deterministic snippet verifiers today. Other submitted languages are listed under `unassessed_source_files`; they force a partial-coverage `INDETERMINATE` result instead of being ignored or implicitly passing. Issue workflows never execute submitted code or launch external analyzers against issue-provided snippets.
+
+
+### Repository rule bindings
+
+The accepted example catalog maps each OpenGrep rule family to a reusable requirement. Analyzer requirements may declare `source_extensions` in addition to repository path prefixes. A completed, integrity-verified inventory with no matching extension/scope is explicitly `NOT_APPLICABLE`; a missing or incomplete inventory remains `EVIDENCE_MISSING` and cannot pass. The current sample bindings cover Go shell execution, dynamic evaluation in JavaScript/TypeScript/PHP/Python/Ruby, and process invocation in Java/C#.

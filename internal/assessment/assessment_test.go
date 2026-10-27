@@ -180,7 +180,7 @@ func analyzerRuleCatalog() Catalog {
 		ID: "ADR-003", Title: "Avoid dynamic shell execution", Version: 1, Status: "accepted",
 		Requirements: []Requirement{{
 			ID: "REQ-003-01", Title: "Do not invoke shell with dynamic command strings", Severity: "error",
-			Verifier: Verifier{Type: "analyzer-rule", Analyzer: "opengrep", RuleIDs: []string{"pathfinder.go-shell-command"}, SourcePathPrefixes: []string{"cmd/", "internal/"}},
+			Verifier: Verifier{Type: "analyzer-rule", Analyzer: "opengrep", RuleIDs: []string{"pathfinder.go-shell-command"}, SourcePathPrefixes: []string{"cmd/", "internal/"}, SourceExtensions: []string{".go"}},
 		}},
 	}}}
 }
@@ -236,7 +236,8 @@ func TestAnalyzerRuleMissingOrPartialEvidenceIsIndeterminate(t *testing.T) {
 	partial := completeAnalyzerEvidence(nil); partial.Status = analyzer.ScanStatusPartial; partial.Errors = []string{"timeout"}
 	missingHash := completeAnalyzerEvidence(nil); missingHash.RawOutputSHA256 = ""
 	emptyInventory := completeAnalyzerEvidence(nil); emptyInventory.ScannedPaths = nil
-	cases := map[string][]analyzer.ScanResult{"missing": nil, "partial": {partial}, "missing hashes": {missingHash}, "empty inventory": {emptyInventory}}
+	incompleteInventory := completeAnalyzerEvidence(nil); incompleteInventory.ScannedPaths = nil
+	cases := map[string][]analyzer.ScanResult{"missing": nil, "partial": {partial}, "missing hashes": {missingHash}, "empty inventory": {incompleteInventory}}
 	for name, evidence := range cases {
 		t.Run(name, func(t *testing.T) {
 			result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository, AnalyzerResults: evidence})
@@ -450,5 +451,36 @@ func TestSafeSubmissionPathSanitizesFallbackExtension(t *testing.T) {
 	got := safeSubmissionPath("../../outside."+string(rune(96)), 1, unsafeExtension)
 	if got != "issue-snippet-1.txt" {
 		t.Fatalf("unsafe extension escaped fallback path: %q", got)
+	}
+}
+
+
+func TestAnalyzerRuleIsNotApplicableWhenCompletedInventoryHasNoMatchingExtension(t *testing.T) {
+	c := analyzerRuleCatalog()
+	c.ADRs[0].Requirements[0].Verifier.SourceExtensions = []string{".py"}
+	result := AssessWithOptions(c, nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository,
+		AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence(nil)},
+	})
+	if result.Requirements[0].Status != "NOT_APPLICABLE" {
+		t.Fatalf("no Python files in a complete inventory should be NOT_APPLICABLE, got %+v", result.Requirements[0])
+	}
+	if result.Verdict != "INDETERMINATE" || result.CoverageStatus != "NONE" {
+		t.Fatalf("non-applicable-only assessment must not claim PASS, got verdict=%s coverage=%s", result.Verdict, result.CoverageStatus)
+	}
+	if len(result.Requirements[0].Evidence) == 0 { t.Fatal("non-applicability should cite verified inventory evidence") }
+}
+
+func TestAnalyzerRuleCatalogValidatesSourceExtensions(t *testing.T) {
+	c := analyzerRuleCatalog()
+	if err := ValidateCatalog(c); err != nil { t.Fatalf("valid analyzer rule rejected: %v", err) }
+	c.ADRs[0].Requirements[0].Verifier.SourceExtensions = []string{"../outside"}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "invalid source extension") {
+		t.Fatalf("expected invalid source extension rejection, got %v", err)
+	}
+	c = analyzerRuleCatalog()
+	c.ADRs[0].Requirements[0].Verifier.SourceExtensions = []string{".go", ".GO"}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "duplicate source extension") {
+		t.Fatalf("expected duplicate source extension rejection, got %v", err)
 	}
 }

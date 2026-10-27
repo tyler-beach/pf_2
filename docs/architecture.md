@@ -47,7 +47,7 @@ See [Scaling ADR Compliance to Thousands of Decisions](scaling-adr-design.md) fo
 - `go-import-boundary`: parses Go with the standard-library parser, scopes files by path prefix, and flags exact or child-package import matches.
 - `json-required-keys`: parses a declared JSON configuration file and checks required top-level keys; missing keys produce line-addressable findings (line 1 for the document-level check).
 - `json-number-range`: checks configured top-level numeric values against inclusive bounds.
-- `analyzer-rule`: maps normalized analyzer rule IDs to a reviewed repository-relative path scope. It requires a completed scan plus input/configuration/raw-output SHA-256 provenance; incomplete evidence never passes.
+- `analyzer-rule`: maps normalized analyzer rule IDs to a reviewed repository-relative path scope and optional `source_extensions`. It requires a completed scan plus input/configuration/raw-output SHA-256 provenance; incomplete evidence never passes. If the verified inventory has no matching extension/scope, the result is `NOT_APPLICABLE`, not a false PASS; missing inventory is `EVIDENCE_MISSING`.
 
 ## Analyzer integration strategy
 
@@ -85,7 +85,7 @@ Current behavior:
 - `PASS`: every evaluated applicable mandatory requirement passed.
 - `FAIL`: at least one requirement has reproducible violating evidence.
 - `INDETERMINATE`: required evidence is absent, parsing failed, a verifier errored, or no requirement was applicable.
-- Requirement-level `NOT_APPLICABLE`: current implementation uses this for an evidence item that doesn't match an explicit scope; do not extend that meaning to missing required repository files.
+- Requirement-level `NOT_APPLICABLE`: used only when a complete, verified repository inventory confirms that an explicitly declared path/extension scope has no applicable files, or when a repository-only analyzer is not run against issue snippets; absent required evidence remains `EVIDENCE_MISSING`.
 - Requirement-level `ERROR`: unsupported verifier type or analysis failure.
 
 A missing file is never evidence of compliance. During the next schema iteration, make applicability independent from evidence availability and distinguish at least `EVIDENCE_MISSING`, `UNSUPPORTED`, and `REVIEW_REQUIRED` from `NOT_APPLICABLE`, `PASS`, and `FAIL`. Preserve compatibility and define merge-blocking versus warning behavior before those states enter CI policy.

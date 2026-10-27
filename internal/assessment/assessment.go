@@ -41,6 +41,7 @@ type Verifier struct {
 	NumericJSONBounds []JSONNumberBound `json:"numeric_json_bounds,omitempty"`
 	Analyzer string `json:"analyzer,omitempty"`
 	RuleIDs []string `json:"rule_ids,omitempty"`
+	SourceExtensions []string `json:"source_extensions,omitempty"`
 }
 type JSONNumberBound struct { Key string `json:"key"`; Min *float64 `json:"min,omitempty"`; Max *float64 `json:"max,omitempty"` }
 type SourceFile struct {
@@ -149,6 +150,22 @@ func ValidateCatalog(c Catalog) error {
 					if prefix == "" || filepath.IsAbs(p) || p == ".." || strings.HasPrefix(p, ".."+string(filepath.Separator)) {
 						return fmt.Errorf("requirement %s: analyzer source_path_prefixes must be repository-relative", r.ID)
 					}
+				}
+				seenExtensions := map[string]bool{}
+				for _, sourceExtension := range r.Verifier.SourceExtensions {
+					ext := strings.ToLower(strings.TrimSpace(sourceExtension))
+					valid := len(ext) >= 2 && len(ext) <= 12 && ext[0] == '.'
+					if valid {
+						for _, ch := range ext[1:] {
+							if !((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9')) {
+								valid = false
+								break
+							}
+						}
+					}
+					if !valid { return fmt.Errorf("requirement %s: invalid source extension %q", r.ID, sourceExtension) }
+					if seenExtensions[ext] { return fmt.Errorf("requirement %s: duplicate source extension %q", r.ID, ext) }
+					seenExtensions[ext] = true
 				}
 			case "json-required-keys":
 				p := filepath.Clean(filepath.FromSlash(strings.TrimSpace(r.Verifier.FilePath)))
@@ -530,16 +547,34 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 		rr.Reason = fmt.Sprintf("Analyzer %q evidence is missing input, configuration, or raw-output SHA-256 provenance.", verifier.Analyzer)
 		return
 	}
+	if len(scan.ScannedPaths) == 0 {
+		rr.Status = "EVIDENCE_MISSING"
+		rr.Reason = fmt.Sprintf("The completed %q scan supplied no source-path inventory; applicability cannot be established.", verifier.Analyzer)
+		return
+	}
 	var scopedPaths []string
 	scannedPathSet := make(map[string]bool, len(scan.ScannedPaths))
+	extensionSet := make(map[string]bool, len(verifier.SourceExtensions))
+	for _, ext := range verifier.SourceExtensions { extensionSet[strings.ToLower(ext)] = true }
 	for _, sourcePath := range scan.ScannedPaths {
 		normalizedPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(sourcePath)))
+		if normalizedPath == "." || normalizedPath == ".." || strings.HasPrefix(normalizedPath, "../") || filepath.IsAbs(filepath.FromSlash(normalizedPath)) {
+			rr.Status = "EVIDENCE_MISSING"
+			rr.Reason = fmt.Sprintf("Analyzer %q inventory contains an unsafe repository path %q.", verifier.Analyzer, sourcePath)
+			return
+		}
 		scannedPathSet[normalizedPath] = true
-		if pathMatches(sourcePath, verifier.SourcePathPrefixes) { scopedPaths = append(scopedPaths, normalizedPath) }
+		extensionMatches := len(extensionSet) == 0 || extensionSet[strings.ToLower(filepath.Ext(normalizedPath))]
+		if extensionMatches && pathMatches(normalizedPath, verifier.SourcePathPrefixes) { scopedPaths = append(scopedPaths, normalizedPath) }
 	}
 	if len(scopedPaths) == 0 {
-		rr.Status = "EVIDENCE_MISSING"
-		rr.Reason = fmt.Sprintf("The completed %q scan inventory contains no source files in required scope %s; absence of scoped evidence is not compliance.", verifier.Analyzer, strings.Join(verifier.SourcePathPrefixes, ", "))
+		rr.Status = "NOT_APPLICABLE"
+		rr.Evidence = append(rr.Evidence, fmt.Sprintf(
+			"Verified %q inventory contains %d source path(s), but none match scope %s and source extensions %s.",
+			verifier.Analyzer, len(scan.ScannedPaths), strings.Join(verifier.SourcePathPrefixes, ", "),
+			strings.Join(verifier.SourceExtensions, ", "),
+		))
+		rr.Reason = "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
 		return
 	}
 	version := ""
@@ -568,8 +603,9 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q without a repository path; scope cannot be verified.", verifier.Analyzer, finding.RuleID)
 			return
 		}
-		if !pathMatches(finding.Path, verifier.SourcePathPrefixes) { continue }
 		findingPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(finding.Path)))
+		if !pathMatches(findingPath, verifier.SourcePathPrefixes) { continue }
+		if len(extensionSet) > 0 && !extensionSet[strings.ToLower(filepath.Ext(findingPath))] { continue }
 		if !scannedPathSet[findingPath] {
 			rr.Status = "EVIDENCE_MISSING"
 			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q for path %q that is absent from the verified source inventory.", verifier.Analyzer, finding.RuleID, finding.Path)
