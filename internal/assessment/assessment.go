@@ -656,15 +656,25 @@ func importMatches(p, forbidden string) bool {
 	return forbidden!="" && (p==forbidden || strings.HasPrefix(p,forbidden+"/"))
 }
 func rollup(rs []RequirementResult) string {
-	if len(rs)==0 { return "INDETERMINATE" }
-	passed:=0
-	for _, r := range rs { switch r.Status {
-		case "FAIL": return "FAIL"
-		case "ERROR", "INDETERMINATE", "EVIDENCE_MISSING", "UNSUPPORTED", "REVIEW_REQUIRED": return "INDETERMINATE"
-		case "PASS": passed++
+	if len(rs) == 0 { return "INDETERMINATE" }
+	passed := 0
+	indeterminate := false
+	for _, r := range rs {
+		switch r.Status {
+		case "FAIL":
+			// A confirmed violation remains a failure even when another check
+			// lacks evidence; report both at requirement level and roll up FAIL.
+			return "FAIL"
+		case "PASS":
+			passed++
 		case "NOT_APPLICABLE":
-		default: return "INDETERMINATE"
-	} }
-	if passed==0 { return "INDETERMINATE" }
+			// Non-applicable is neutral, but cannot establish compliance alone.
+		case "ERROR", "INDETERMINATE", "EVIDENCE_MISSING", "UNSUPPORTED", "REVIEW_REQUIRED":
+			indeterminate = true
+		default:
+			indeterminate = true
+		}
+	}
+	if indeterminate || passed == 0 { return "INDETERMINATE" }
 	return "PASS"
 }

@@ -143,7 +143,7 @@ func TestCoverageIsPartialWhenAcceptedRequirementsHaveNoMatchingEvidence(t *test
 	c.ADRs = append(c.ADRs, fixtureCatalog().ADRs...)
 	files := []SourceFile{{Path:"config/service.json", Language:"json", Content:`{"timeout_seconds":30,"retry_limit":3}`}}
 	result := Assess(c, files)
-	if result.Verdict != "PASS" { t.Fatalf("expected scoped PASS among applicable requirements, got %s", result.Verdict) }
+	if result.Verdict != "INDETERMINATE" { t.Fatalf("missing issue source scope must not be treated as PASS, got %s", result.Verdict) }
 	if result.CoverageStatus != "PARTIAL" { t.Fatalf("expected PARTIAL coverage, got %s", result.CoverageStatus) }
 	if result.ApplicableRequirementCount != 1 || result.RequirementCount != 3 { t.Fatalf("unexpected coverage counts: applicable=%d total=%d", result.ApplicableRequirementCount, result.RequirementCount) }
 }
@@ -504,4 +504,22 @@ func TestSubmissionModeMissingGoScopeIsEvidenceMissing(t *testing.T) {
 	if result.Counts["EVIDENCE_MISSING"] != len(result.Requirements) {
 		t.Fatalf("every Go boundary check should report missing evidence, got counts=%v", result.Counts)
 	}
+}
+
+
+func TestRollupFailureTakesPrecedenceOverMissingEvidence(t *testing.T) {
+	result := rollup([]RequirementResult{
+		{RequirementID: "REQ-MISSING", Status: "EVIDENCE_MISSING"},
+		{RequirementID: "REQ-FAIL", Status: "FAIL"},
+	})
+	if result != "FAIL" { t.Fatalf("confirmed violation should take precedence over missing evidence, got %s", result) }
+}
+
+func TestRollupDoesNotPassWhenAnyApplicableEvidenceIsMissing(t *testing.T) {
+	result := rollup([]RequirementResult{
+		{RequirementID: "REQ-PASS", Status: "PASS"},
+		{RequirementID: "REQ-MISSING", Status: "EVIDENCE_MISSING"},
+		{RequirementID: "REQ-NA", Status: "NOT_APPLICABLE"},
+	})
+	if result != "INDETERMINATE" { t.Fatalf("incomplete evidence should prevent PASS, got %s", result) }
 }
