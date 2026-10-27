@@ -48,7 +48,7 @@ index 1111111..2222222 100644
      use(value)
  }
 """
-        self.assertEqual(unformatted_changed_lines(output, [(5, 5)]), [5])
+        self.assertEqual(unformatted_changed_lines(output, [(4, 4)]), [4])
 
     def test_preexisting_formatting_debt_elsewhere_does_not_fail_changed_lines(self) -> None:
         output = """diff -u example.go.orig example.go
@@ -67,7 +67,7 @@ index 1111111..2222222 100644
      use(newValue)
  }
 """
-        self.assertEqual(unformatted_changed_lines(output, [(42, 42)]), [42])
+        self.assertEqual(unformatted_changed_lines(output, [(41, 41)]), [41])
         self.assertEqual(unformatted_changed_lines(output, [(7, 7)]), [])
 
     def test_empty_or_deletion_only_diff_has_no_changed_lines(self) -> None:
