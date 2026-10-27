@@ -173,8 +173,21 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 		out.Errors = append(out.Errors, wrapped.Error())
 		return out, wrapped
 	}
-	if len(normalized.Analyzers) == 0 || !strings.EqualFold(normalized.Analyzers[0].Name, "opengrep") {
+	if len(normalized.Analyzers) == 0 || !strings.Contains(strings.ToLower(normalized.Analyzers[0].Name), "opengrep") {
 		return out, fmt.Errorf("OpenGrep returned unexpected SARIF tool metadata: %+v", normalized.Analyzers)
+	}
+	// Some OpenGrep releases emit the driver version in the driver name and
+	// leave driver.version empty. The executable version was already checked
+	// against the pinned version above; preserve that verified identity.
+	for i := range normalized.Analyzers {
+		if normalized.Analyzers[i].Version == "" {
+			normalized.Analyzers[i].Version = s.Version
+		}
+	}
+	for i := range normalized.Findings {
+		if normalized.Findings[i].AnalyzerVersion == "" {
+			normalized.Findings[i].AnalyzerVersion = s.Version
+		}
 	}
 	normalized.ConfigurationSHA256 = configHash
 	normalized.InputSHA256 = inputHash
