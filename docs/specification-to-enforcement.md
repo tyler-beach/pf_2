@@ -92,7 +92,7 @@ Repository scanning and issue-snippet assessment are separate surfaces. Never ex
 
 ## One-command specification check
 
-For a runnable first pass in this repository, initialize the review registry once (skip initialization if it already exists; the command will not overwrite review history), then run against the checked-in sample ADR corpus in report-only mode:
+For a runnable first pass in this repository, initialize the review registry once (skip initialization if it already exists; the command will not overwrite review history), then run against the checked-in plain-English technical specification samples in report-only mode:
 
 ```sh
 go run ./cmd/adrctl review-init --output adr/obligation-reviews.json
@@ -105,7 +105,7 @@ go run ./cmd/adrctl specification-check \\
   --report-only
 ```
 
-For an application repository, replace `testdata/adr-corpus` with the directory containing that repository's ADR Markdown. The command enforces blocking obligations by default; `--report-only` writes artifacts without failing on pending candidates while a team bootstraps and reviews coverage. The review registry must already exist, and the command never initializes, approves, or edits reviews automatically. If the catalog uses `analyzer-rule` verifiers, pass both `--analyzer-evidence path/to/normalized-scan.json` and `--analyzer-sarif path/to/raw-scan.sarif`; the repository assessment verifies the pair against the current repository snapshot. The orchestrator does not run or install analyzers itself.
+For an application repository, set `--source-root` to the directory containing its ADR or plain-English technical-specification Markdown. A source file needs a level-one Markdown title; when the title has no ADR identifier, the filename provides its stable document ID. The legacy `--adr-root` flag remains available as an alias. The command enforces blocking obligations by default; `--report-only` writes artifacts without failing on pending candidates while a team bootstraps and reviews coverage. The review registry must already exist, and the command never initializes, approves, or edits reviews automatically. If the catalog uses `analyzer-rule` verifiers, pass both `--analyzer-evidence path/to/normalized-scan.json` and `--analyzer-sarif path/to/raw-scan.sarif`; the repository assessment verifies the pair against the current repository snapshot. The orchestrator does not run or install analyzers itself.
 
 Generated artifacts are written to `adr/ingested-adrs.json`, `adr/obligation-candidates.json`, `adr/obligation-candidates.md`, and the repository/obligation reports at the repository root. The candidate index is regenerated on each run so stale approvals cannot be hidden by reusing an old index.
 
