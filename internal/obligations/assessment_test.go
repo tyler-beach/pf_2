@@ -56,6 +56,9 @@ func TestAssessCandidatesMapsApprovedBindingToEvidenceStatus(t *testing.T) {
 			if tc.evidence == "PASS" && len(item.Evidence) != 1 {
 				t.Fatalf("assessment evidence was not preserved: %+v", item)
 			}
+			if !validSHA256(item.RequirementSHA256) || !strings.Contains(MarkdownAssessmentReport(report), item.RequirementSHA256) {
+				t.Fatalf("assessment report did not expose the exact approved binding snapshot: %+v", item)
+			}
 		})
 	}
 }
