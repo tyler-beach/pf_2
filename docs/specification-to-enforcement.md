@@ -41,7 +41,7 @@ The engine must not collapse this into a single generic “secure” result. If 
 
 - **Source document:** immutable input, source digest, parser version, document metadata.
 - **Candidate obligation:** stable candidate ID, exact source citation, statement, modality, obligation kind, scope/conditions/exception hints, extraction method/version, and review-required state.
-- **Approved binding:** reviewer and decision reference, approval revision, target requirement/pattern IDs, enforcement mode, and source identity to prevent stale approvals.
+- **Approved binding:** reviewer and decision reference, approval revision, target requirement/pattern IDs, enforcement mode, source identity, and a digest of the exact owning ADR metadata plus requirement/verifier definition. If that definition changes or an older approval has no digest, the binding becomes stale and requires re-review.
 - **Verification evidence:** repository snapshot, paths/locations, analyzer and rule versions, config/rule/input digests, scan status, and evidence completeness.
 - **Assessment result:** per-obligation status, evidence references, explanation, coverage status, and explicit unknown reasons.
 

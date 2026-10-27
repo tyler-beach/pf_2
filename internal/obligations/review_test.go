@@ -81,6 +81,9 @@ func TestRecordReviewCreatesSourceBoundBlockingBinding(t *testing.T) {
 	if record.Revision != 1 || record.Decision != DecisionApproved || record.Candidate.SourceSHA256 != candidate.SourceSHA256 {
 		t.Fatalf("review record lacks stable source binding: %+v", record)
 	}
+	if !validSHA256(record.RequirementSHA256) {
+		t.Fatalf("review record lacks a digest of the approved requirement/verifier configuration: %+v", record)
+	}
 	if coverage.CandidateCount != 1 || coverage.ApprovedCount != 1 || coverage.BlockingBindingCount != 1 ||
 		coverage.PendingReviewCount != 0 || coverage.StaleCount != 0 || coverage.OrphanedCount != 0 || coverage.UnboundCount != 0 {
 		t.Fatalf("unexpected binding coverage: %+v", coverage)

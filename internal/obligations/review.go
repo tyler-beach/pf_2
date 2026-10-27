@@ -1,6 +1,8 @@
 package obligations
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -52,6 +54,7 @@ type ReviewRecord struct {
 	Decision        string            `json:"decision"`
 	Candidate       CandidateSnapshot `json:"candidate"`
 	RequirementID   string            `json:"requirement_id,omitempty"`
+	RequirementSHA256 string          `json:"requirement_sha256,omitempty"`
 	PatternID       string            `json:"pattern_id,omitempty"`
 	EnforcementMode string            `json:"enforcement_mode"`
 	Reviewer        string            `json:"reviewer"`
@@ -180,6 +183,11 @@ func RecordReview(index Index, catalog assessment.Catalog, registry Registry, pr
 	if previous, ok := latest[record.CandidateID]; ok {
 		record.Revision = previous.Revision + 1
 	}
+	if record.Decision == DecisionApproved && record.PatternID != "manual_review" && record.RequirementID != "" {
+		digest, err := requirementBindingSHA256(catalog, record.RequirementID)
+		if err != nil { return registry, BindingCoverage{}, err }
+		record.RequirementSHA256 = digest
+	}
 	if err := validateReviewRecord(record); err != nil {
 		return registry, BindingCoverage{}, err
 	}
@@ -242,6 +250,12 @@ func ValidateRegistry(index Index, catalog assessment.Catalog, registry Registry
 			coverage.RejectedCount++
 			coverage.UnboundCount++
 		case DecisionApproved:
+			if record.RequirementID != "" && record.PatternID != "manual_review" && !bindingSnapshotMatches(record, catalog) {
+				coverage.StaleCount++
+				coverage.PendingReviewCount++
+				coverage.UnboundCount++
+				continue
+			}
 			if err := validateApprovedBinding(record, candidate, catalog); err != nil {
 				return coverage, fmt.Errorf("active review record %s revision %d: %w", id, record.Revision, err)
 			}
@@ -486,6 +500,38 @@ func validPattern(pattern string) bool {
 	default:
 		return false
 	}
+}
+
+// bindingSnapshotMatches requires an approval to reference the exact accepted
+// ADR/requirement/verifier definition the reviewer approved. Missing digests
+// from older registries are treated as stale rather than trusted implicitly.
+func bindingSnapshotMatches(record ReviewRecord, catalog assessment.Catalog) bool {
+	if record.RequirementID == "" || record.PatternID == "manual_review" {
+		return true
+	}
+	if !validSHA256(record.RequirementSHA256) { return false }
+	current, err := requirementBindingSHA256(catalog, record.RequirementID)
+	return err == nil && strings.EqualFold(current, record.RequirementSHA256)
+}
+
+func requirementBindingSHA256(catalog assessment.Catalog, requirementID string) (string, error) {
+	for _, adr := range catalog.ADRs {
+		for _, requirement := range adr.Requirements {
+			if requirement.ID != requirementID { continue }
+			snapshot := struct {
+				ADRID string `json:"adr_id"`
+				ADRTitle string `json:"adr_title"`
+				ADRVersion int `json:"adr_version"`
+				ADRStatus string `json:"adr_status"`
+				Requirement assessment.Requirement `json:"requirement"`
+			}{adr.ID, adr.Title, adr.Version, adr.Status, requirement}
+			data, err := json.Marshal(snapshot)
+			if err != nil { return "", fmt.Errorf("encode binding snapshot for requirement %s: %w", requirementID, err) }
+			digest := sha256.Sum256(data)
+			return hex.EncodeToString(digest[:]), nil
+		}
+	}
+	return "", fmt.Errorf("requirement %s does not exist in the active requirements catalog", requirementID)
 }
 
 func validateApprovedBinding(record ReviewRecord, candidate Candidate, catalog assessment.Catalog) error {

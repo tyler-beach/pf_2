@@ -60,6 +60,25 @@ func TestAssessCandidatesMapsApprovedBindingToEvidenceStatus(t *testing.T) {
 	}
 }
 
+func TestAssessCandidatesDowngradesChangedVerifierBinding(t *testing.T) {
+	index, catalog, candidate := reviewFixture()
+	registry, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
+	if err != nil { t.Fatal(err) }
+
+	// Keep the requirement ID and verifier type but change the actual policy.
+	catalog.ADRs[0].Requirements[0].Verifier.ForbiddenImportPrefixes = []string{"internal/infrastructure/", "internal/secrets/"}
+	report, err := assessCandidatesForTest(index, catalog, registry, repositoryEvidence("PASS"))
+	if err != nil { t.Fatal(err) }
+	item := report.Candidates[0]
+	if item.Status != "INDETERMINATE" || item.EvidenceStatus != "STALE" ||
+		!strings.Contains(item.Reason, "binding snapshot is stale") || report.BindingCoverage.StaleCount != 1 {
+		t.Fatalf("changed verifier config retained prior approval: %+v; coverage=%+v", item, report.BindingCoverage)
+	}
+	if report.ObligationVerdict != "INDETERMINATE" {
+		t.Fatalf("changed verifier config should not pass: %+v", report)
+	}
+}
+
 func TestAssessCandidatesNeverPassesReviewRequiredOrMissingEvidence(t *testing.T) {
 	index, catalog, candidate := reviewFixture()
 	proposal := validReviewProposal(candidate)
