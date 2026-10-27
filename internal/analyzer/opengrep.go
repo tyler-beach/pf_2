@@ -92,6 +92,7 @@ type OpenGrepScanner struct {
 	ConfigPath       string
 	RuleSetSHA256    string
 	SourceExtensions []string
+	ScanPaths        []string
 	MaxFileBytes     int64
 	Timeout          time.Duration
 	Runner           CommandRunner
@@ -207,7 +208,14 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 
 	sarifPath := filepath.Join(tempDir, "results.sarif")
-	args := []string{"scan", "--sarif-output=" + sarifPath, "--exclude", analyzerFixtureDirectory, "-f", configRel, "."}
+	selectedPaths, err := normalizeScanPaths(rootAbs, s.ScanPaths, configRel)
+	if err != nil { return out, fmt.Errorf("validate requested scan paths: %w", err) }
+	args := []string{"scan", "--sarif-output=" + sarifPath, "--exclude", analyzerFixtureDirectory, "-f", configRel}
+	if len(selectedPaths) == 0 {
+		args = append(args, ".")
+	} else {
+		for _, selected := range selectedPaths { args = append(args, "./"+filepath.FromSlash(selected)) }
+	}
 	commandResult, err := runner.Run(runCtx, binary, args, rootAbs)
 	if err != nil {
 		out.Errors = append(out.Errors, err.Error())
@@ -251,8 +259,12 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	normalized.BinarySHA256 = binarySHA256
 	normalized.RuleSetSHA256 = ruleSetHash
 	normalized.InputSHA256 = inputHash
-	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
-	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
+	if len(selectedPaths) > 0 {
+		normalized.ScannedPaths = append([]string(nil), selectedPaths...)
+	} else {
+		normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
+		if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
+	}
 	if incompleteAnalysisDiagnostic(string(commandResult.Stderr)) {
 		normalized.Status = ScanStatusPartial
 		normalized.Errors = append(normalized.Errors, "OpenGrep reported incomplete analysis: "+truncate(string(commandResult.Stderr), 4096))
@@ -448,4 +460,44 @@ func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []strin
 		}
 		return nil
 	})
+}
+
+// normalizeScanPaths validates the explicit file inventory used by a scoped
+// plan. Paths are repository-relative regular files; symlinks, traversal,
+// duplicate entries, and the analyzer configuration itself are rejected.
+func normalizeScanPaths(root string, requested []string, configRel string) ([]string, error) {
+	if len(requested) == 0 { return nil, nil }
+	seen := make(map[string]bool, len(requested))
+	out := make([]string, 0, len(requested))
+	for _, raw := range requested {
+		item := strings.TrimSpace(strings.ReplaceAll(raw, "\\", "/"))
+		clean := filepath.ToSlash(filepath.Clean(filepath.FromSlash(item)))
+		if item == "" || clean == "." || clean != item || filepath.IsAbs(filepath.FromSlash(clean)) ||
+			(len(clean) >= 2 && clean[1] == ':') || clean == ".." || strings.HasPrefix(clean, "../") {
+			return nil, fmt.Errorf("scan path %q must be normalized and repository-relative", raw)
+		}
+		absolute := filepath.Join(root, filepath.FromSlash(clean))
+		resolved, err := filepath.EvalSymlinks(absolute)
+		if err != nil { return nil, fmt.Errorf("resolve scan path %q: %w", clean, err) }
+		if filepath.Clean(resolved) != filepath.Clean(absolute) {
+			return nil, fmt.Errorf("scan path %q traverses a symlink", clean)
+		}
+		info, err := os.Lstat(absolute)
+		if err != nil { return nil, fmt.Errorf("inspect scan path %q: %w", clean, err) }
+		if info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular() {
+			return nil, fmt.Errorf("scan path %q must be a regular non-symlink file", clean)
+		}
+		rel, err := filepath.Rel(root, resolved)
+		if err != nil { return nil, fmt.Errorf("make scan path repository-relative: %w", err) }
+		if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+			return nil, fmt.Errorf("scan path %q escapes repository root", clean)
+		}
+		relative := filepath.ToSlash(rel)
+		if relative == configRel { return nil, fmt.Errorf("scan path %q is the analyzer configuration, not source", clean) }
+		if seen[relative] { return nil, fmt.Errorf("duplicate scan path %q", relative) }
+		seen[relative] = true
+		out = append(out, relative)
+	}
+	sort.Strings(out)
+	return out, nil
 }
