@@ -1,0 +1,3 @@
+const userInput: string = process.argv[2] ?? "";
+const result = eval(userInput);
+console.log(result);
