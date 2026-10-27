@@ -183,3 +183,16 @@ go run ./cmd/adrctl verify-plan --root . --manifest analyzer-evidence/plan.json
 ```
 
 The schema records the global input-tree digest, sorted per-file inventory and hashes, analyzer/config identity, task scope, cache key, idempotency key, attempt/timeout/output limits, and a global concurrency cap. Cache keys change when source content, configuration, analyzer version, or scoped inventory changes. Planning and verification are deterministic; neither command runs the scanner. An empty declared scope is recorded explicitly as `EMPTY`, never silently treated as proof of compliance. The manifest is an execution contract; it is not itself a scan result.
+
+Execute the verified plan locally with bounded concurrency/retries, source-bound evidence validation, raw SARIF retention, and a private file cache. Keep the cache outside the repository so it cannot change the input snapshot during the run:
+
+```sh
+go run ./cmd/adrctl execute-plan \
+  --root . \
+  --manifest analyzer-evidence/plan.json \
+  --cache-dir "$HOME/.cache/pathfinder/analyzers" \
+  --json-out analyzer-evidence/execution.json \
+  --sarif-dir analyzer-evidence/raw
+```
+
+The execution adapter currently supports OpenGrep. Other analyzer names are rejected as unsupported until their adapters are implemented; a planned analyzer is not assumed to have run merely because the plan was created. Only complete results whose source/configuration digests and scanned-file inventory match the plan can be cached and reused. See [docs/analyzer-plan-manifest.md](docs/analyzer-plan-manifest.md) for the execution contract and failure semantics.
