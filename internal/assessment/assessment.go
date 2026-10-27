@@ -179,7 +179,7 @@ func Assess(c Catalog, files []SourceFile) Result {
 		for _, r := range a.Requirements {
 			rr := RequirementResult{ADR:a.ID, ADRVersion:a.Version, RequirementID:r.ID, Title:r.Title, Severity:r.Severity, Evidence:[]string{}, Findings:[]Finding{}}
 			switch r.Verifier.Type {
-			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files, options.EvidenceMode)
+			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
 			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
 			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
 			default: rr.Status="ERROR"; rr.Reason="Unsupported verifier type: "+r.Verifier.Type
