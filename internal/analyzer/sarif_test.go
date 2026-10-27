@@ -169,13 +169,13 @@ func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings
 	root := t.TempDir()
 	makeFinding := func(message, artifactPath, fingerprint string) any {
 		return map[string]any{
-			"ruleId":              "RULE-A",
-			"level":               "warning",
-			"message":             map[string]any{"text": message},
-			"locations":           []any{map[string]any{
+			"ruleId":  "RULE-A",
+			"level":   "warning",
+			"message": map[string]any{"text": message},
+			"locations": []any{map[string]any{
 				"physicalLocation": map[string]any{
 					"artifactLocation": map[string]any{"uri": artifactPath},
-					"region":            map[string]any{"startLine": 5, "startColumn": 3},
+					"region":           map[string]any{"startLine": 5, "startColumn": 3},
 				},
 			}},
 			"partialFingerprints": map[string]any{"primaryLocationLineHash": fingerprint},
