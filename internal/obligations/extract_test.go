@@ -145,7 +145,7 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 		}
 		for _, hint := range candidate.ReviewHints {
 			switch hint {
-			case "condition_or_exception", "compound_or_conjoined", "conditional_scope", "subjective_or_underspecified":
+			case "condition_or_exception", "compound_or_conjoined", "conditional_scope", "subjective_or_underspecified", "non_decision_section":
 			default:
 				t.Errorf("unexpected review hint %q", hint)
 			}
@@ -169,6 +169,23 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 	}
 }
 
+
+func TestContextualNormativeTextRequiresExtraReview(t *testing.T) {
+	source := []byte("# ADR-901: Timeout policy\n\n## Status\n\nAccepted\n\n## Context\n\nLegacy clients must use the old timeout setting.\n\n## Decision\n\nThe service must use a finite request timeout.\n")
+	doc, err := adringest.Parse("ADR-901.md", source)
+	if err != nil { t.Fatal(err) }
+	candidates, err := ExtractDocument(doc, "adrs/ADR-901.md", source)
+	if err != nil { t.Fatal(err) }
+	if len(candidates) != 2 { t.Fatalf("expected two normative candidates, got %+v", candidates) }
+	for _, candidate := range candidates {
+		if candidate.SectionHeading == "Context" && !hasReviewHint(candidate, "non_decision_section") {
+			t.Errorf("contextual normative text must be flagged for review: %+v", candidate)
+		}
+		if candidate.SectionHeading == "Decision" && hasReviewHint(candidate, "non_decision_section") {
+			t.Errorf("decision text was incorrectly marked contextual: %+v", candidate)
+		}
+	}
+}
 
 func hasReviewHint(candidate Candidate, wanted string) bool {
 	for _, hint := range candidate.ReviewHints {
