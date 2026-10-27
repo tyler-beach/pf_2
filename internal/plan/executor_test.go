@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -139,10 +138,15 @@ func TestExecuteManifestCacheCorruptionFailsClosed(t *testing.T) {
 }
 
 func TestExecuteManifestEmptyScopeIsMissingEvidence(t *testing.T) {
-	root,manifest:=executionFixture(t,1)
-	manifest.Tasks[0].InputStatus="EMPTY"
-	manifest.Tasks[0].SourcePaths=nil
-	if err:=sealManifest(&manifest); err!=nil { t.Fatal(err) }
+	root,original:=executionFixture(t,1)
+	task:=original.Tasks[0]
+	manifest,err:=BuildManifest(root,[]AnalyzerSpec{{
+		Name:task.Analyzer, Version:task.Version, ConfigurationPath:task.ConfigurationPath,
+		ScopePrefixes:[]string{"internal/missing"}, TimeoutMillis:task.TimeoutMillis, MaxRetries:task.MaxAttempts-1,
+		MaxOutputBytes:task.MaxOutputBytes, RetryBackoffMillis:task.RetryBackoffMillis,
+		MaxRetryBackoffMillis:task.MaxRetryBackoffMillis, RetryableFailureKinds:task.RetryableFailureKinds,
+	}},original.MaxConcurrency)
+	if err!=nil { t.Fatal(err) }
 	var calls atomic.Int32
 	result,err:=ExecuteManifest(context.Background(),root,manifest,TaskRunnerFunc(func(ctx context.Context,root string,task Task)(analyzer.ScanResult,error){calls.Add(1);return validTaskEvidence(root,task)}),nil)
 	if err!=nil { t.Fatal(err) }

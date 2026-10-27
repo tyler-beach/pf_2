@@ -41,6 +41,8 @@ func main() {
 		err = runPlanRepo(os.Args[2:])
 	case "verify-plan":
 		err = runVerifyPlan(os.Args[2:])
+	case "execute-plan":
+		err = runExecutePlan(os.Args[2:])
 	case "assert-issue-verdict":
 		err = runAssertIssueVerdict(os.Args[2:])
 	case "version":
@@ -56,7 +58,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|assert-issue-verdict|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -371,5 +373,54 @@ func runVerifyPlan(args []string) error {
 	if err != nil { return err }
 	if err := plan.VerifyManifest(*root, manifest); err != nil { return err }
 	fmt.Printf("Plan verified: %s; input %s; tasks %d.\n", manifest.ManifestSHA256, manifest.InputSHA256, len(manifest.Tasks))
+	return nil
+}
+
+
+func runExecutePlan(args []string) error {
+	return runExecutePlanWithRunner(args,nil)
+}
+
+// runExecutePlanWithRunner supports deterministic CLI integration tests while
+// keeping production runner selection explicit and pinned by the plan manifest.
+func runExecutePlanWithRunner(args []string, injected plan.TaskRunner) error {
+	fs:=flag.NewFlagSet("execute-plan",flag.ContinueOnError)
+	root:=fs.String("root",".","repository root")
+	manifestPath:=fs.String("manifest","analyzer-evidence/plan.json","source-bound plan manifest")
+	binary:=fs.String("binary","opengrep","OpenGrep executable path")
+	cacheDirDefault,cacheErr:=os.UserCacheDir()
+	if cacheErr!=nil{cacheDirDefault=os.TempDir()}
+	cacheDir:=fs.String("cache-dir",filepath.Join(cacheDirDefault,"pathfinder","analyzers"),"private local cache directory (prefer outside repository root)")
+	output:=fs.String("json-out","analyzer-evidence/execution.json","execution result manifest JSON")
+	sarifDir:=fs.String("sarif-dir","analyzer-evidence/raw","directory for per-task raw SARIF artifacts")
+	if err:=fs.Parse(args);err!=nil{return err}
+	if fs.NArg()!=0{return fmt.Errorf("execute-plan accepts no positional arguments")}
+	manifest,err:=readPlanManifest(*manifestPath)
+	if err!=nil{return err}
+	if err:=plan.VerifyManifest(*root,manifest);err!=nil{return fmt.Errorf("verify plan before execution: %w",err)}
+	cache,err:=plan.NewFileCache(*cacheDir)
+	if err!=nil{return err}
+	runner:=injected
+	if runner==nil{runner=plan.OpenGrepTaskRunner{Binary:*binary}}
+	result,runErr:=plan.ExecuteManifest(context.Background(),*root,manifest,runner,cache)
+	for i:=range result.Tasks{
+		task:=&result.Tasks[i]
+		if len(task.RawSARIF)==0{continue}
+		path:=filepath.Join(*sarifDir,task.TaskID+".sarif")
+		if err:=writeFile(path,task.RawSARIF);err!=nil{
+			task.Status=plan.TaskStatusError
+			task.Error="write raw SARIF artifact: "+err.Error()
+			result.Status=plan.RunStatusPartial
+			if runErr==nil{runErr=err}
+			continue
+		}
+		task.RawSARIFPath=path
+	}
+	data,err:=json.MarshalIndent(result,"","  ")
+	if err!=nil{return fmt.Errorf("encode execution result manifest: %w",err)}
+	if err:=writeFile(*output,append(data,'\n'));err!=nil{return err}
+	fmt.Printf("Execution %s; plan %s; tasks %d; output %s.\n",result.Status,result.PlanManifestSHA256,len(result.Tasks),*output)
+	if runErr!=nil{return runErr}
+	if result.Status!=plan.RunStatusComplete{return fmt.Errorf("execution did not complete successfully; status %s; inspect %s",result.Status,*output)}
 	return nil
 }
