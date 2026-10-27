@@ -95,14 +95,22 @@ The input directory should contain ADR documents (MADR-style or legacy Markdown)
 
 **Important:** this is source ingestion, not automatic approval or obligation generation. The generated index does not overwrite `adr/requirements.json`, and no natural-language statement becomes an enforceable compliance rule without an explicit reviewed requirement/verifier mapping. Runtime assessment remains deterministic and makes zero LLM calls.
 
-For the complete deterministic lifecycle, use the one-command orchestrator after creating the review registry:
+For a runnable first pass, initialize the review registry once (skip this command if the registry already exists; initialization never overwrites review history), then run against the checked-in sample ADR corpus in report-only mode:
 
 ```sh
-go run ./cmd/adrctl specification-check --root . --adr-root adrs \
-  --requirements adr/requirements.json --registry adr/obligation-reviews.json
+# One-time setup in a fresh checkout
+go run ./cmd/adrctl review-init --output adr/obligation-reviews.json
+
+# Repeatable report-only run against the sample corpus
+go run ./cmd/adrctl specification-check \
+  --root . \
+  --adr-root testdata/adr-corpus \
+  --requirements adr/requirements.json \
+  --registry adr/obligation-reviews.json \
+  --report-only
 ```
 
-It regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default. Use `--report-only` to produce reports without enforcing the gate. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. It never creates or approves review records automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
+For a real repository, replace `testdata/adr-corpus` with the directory containing that repository's ADR Markdown. The command regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default; use `--report-only` while bootstrapping or reviewing pending candidates. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. The orchestrator never creates or approves reviews automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
 
 ## Validated analyzer language coverage
 
