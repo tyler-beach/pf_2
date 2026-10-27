@@ -235,7 +235,6 @@ func TestAnalyzerRuleFiltersFindingsOutsideDeclaredScope(t *testing.T) {
 func TestAnalyzerRuleMissingOrPartialEvidenceIsIndeterminate(t *testing.T) {
 	partial := completeAnalyzerEvidence(nil); partial.Status = analyzer.ScanStatusPartial; partial.Errors = []string{"timeout"}
 	missingHash := completeAnalyzerEvidence(nil); missingHash.RawOutputSHA256 = ""
-	emptyInventory := completeAnalyzerEvidence(nil); emptyInventory.ScannedPaths = nil
 	incompleteInventory := completeAnalyzerEvidence(nil); incompleteInventory.ScannedPaths = nil
 	cases := map[string][]analyzer.ScanResult{"missing": nil, "partial": {partial}, "missing hashes": {missingHash}, "empty inventory": {incompleteInventory}}
 	for name, evidence := range cases {
