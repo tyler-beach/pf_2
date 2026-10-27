@@ -102,7 +102,7 @@ go run ./cmd/adrctl specification-check --root . --adr-root adrs \
   --requirements adr/requirements.json --registry adr/obligation-reviews.json
 ```
 
-It regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default. Use `--report-only` to produce reports without enforcing the gate. It never creates or approves review records automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
+It regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default. Use `--report-only` to produce reports without enforcing the gate. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. It never creates or approves review records automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
 
 ## Validated analyzer language coverage
 
