@@ -1,6 +1,7 @@
 package assessment
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -305,4 +306,30 @@ func FuzzParseIssueMarkdown(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestLoadSourceFilesExcludesGeneratedEvidenceAndCaches(t *testing.T) {
+	root := t.TempDir()
+	files := map[string]string{
+		"cmd/main.go": "package main\\n",
+		"config/service.json": "{}\\n",
+		"analyzer-evidence/opengrep.json": "{}\\n",
+		"analyzer-evidence/untrusted.go": "package ignored\\n",
+		".opengrep-cache/generated.go": "package ignored\\n",
+		"assessment.json": "{}\\n",
+		"adr/ingested-adrs.json": "{}\\n",
+		"testdata/fixture.go": "package ignored\\n",
+	}
+	for path, body := range files {
+		full := filepath.Join(root, filepath.FromSlash(path))
+		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil { t.Fatal(err) }
+		if err := os.WriteFile(full, []byte(body), 0600); err != nil { t.Fatal(err) }
+	}
+	got, err := LoadSourceFiles(root)
+	if err != nil { t.Fatal(err) }
+	var paths []string
+	for _, file := range got { paths = append(paths, file.Path) }
+	if strings.Join(paths, ",") != "cmd/main.go,config/service.json" {
+		t.Fatalf("source loader included generated artifacts or skipped source files: %v", paths)
+	}
 }

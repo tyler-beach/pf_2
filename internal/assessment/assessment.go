@@ -217,16 +217,18 @@ func LoadSourceFiles(root string) ([]SourceFile, error) {
 		if walkErr != nil { return walkErr }
 		if d.IsDir() {
 			name := d.Name()
-			if path != root && (name == ".git" || name == "vendor" || name == "node_modules" || name == "testdata") { return filepath.SkipDir }
+			if path != root && (name == ".git" || name == "vendor" || name == "node_modules" || name == "testdata" || name == "analyzer-evidence" || name == ".opengrep-cache") { return filepath.SkipDir }
 			return nil
 		}
 		ext := filepath.Ext(path)
 		if ext != ".go" && ext != ".json" { return nil }
-		data, err := os.ReadFile(path); if err != nil { return err }
 		rel, err := filepath.Rel(root, path); if err != nil { return err }
+		relative := filepath.ToSlash(rel)
+		if relative == "assessment.json" || relative == "adr/ingested-adrs.json" { return nil }
+		data, err := os.ReadFile(path); if err != nil { return err }
 		language := "go"
 		if ext == ".json" { language = "json" }
-		files = append(files, SourceFile{Path: filepath.ToSlash(rel), Language: language, Content: string(data)})
+		files = append(files, SourceFile{Path: relative, Language: language, Content: string(data)})
 		return nil
 	})
 	sort.Slice(files, func(i, j int) bool { return files[i].Path < files[j].Path })
