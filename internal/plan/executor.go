@@ -97,7 +97,7 @@ func (r OpenGrepTaskRunner) Run(ctx context.Context, root string, task Task) (an
 	if task.RuleSetSHA256 == "" || !validDigest(task.RuleSetSHA256) {
 		return analyzer.ScanResult{}, &RunFailure{Kind:FailureAnalyzer,Err:fmt.Errorf("OpenGrep plan must pin ruleset_sha256")}
 	}
-	scanner:=analyzer.OpenGrepScanner{Binary:r.Binary,BinarySHA256:task.BinarySHA256,RuleSetSHA256:task.RuleSetSHA256,Version:task.Version,ConfigPath:task.ConfigurationPath}
+	scanner:=analyzer.OpenGrepScanner{Binary:r.Binary,BinarySHA256:task.BinarySHA256,RuleSetSHA256:task.RuleSetSHA256,Version:task.Version,ConfigPath:task.ConfigurationPath,ScanPaths:append([]string(nil),task.SourcePaths...)}
 	result,err:=scanner.Scan(ctx,root)
 	if err==nil { return result,nil }
 	kind:=FailureAnalyzer
@@ -266,7 +266,7 @@ func verifyTaskEvidence(root string,task Task,evidence analyzer.ScanResult,raw [
 	if evidence.Status!=analyzer.ScanStatusComplete { return evidence,fmt.Errorf("status is %s, not COMPLETE",evidence.Status) }
 	if len(raw)==0 { return evidence,fmt.Errorf("raw SARIF is empty") }
 	if int64(len(raw))>task.MaxOutputBytes { return evidence,fmt.Errorf("raw SARIF exceeds configured output limit") }
-	verified,err:=analyzer.VerifyScanEvidence(root,evidence,raw)
+	verified,err:=analyzer.VerifyScopedScanEvidence(root,evidence,raw,task.SourcePaths)
 	if err!=nil { return verified,err }
 	if verified.InputSHA256!=task.InputSHA256 { return verified,fmt.Errorf("input SHA-256 does not match planned snapshot") }
 	if task.BinarySHA256!="" && verified.BinarySHA256!=task.BinarySHA256 { return verified,fmt.Errorf("binary SHA-256 does not match planned executable") }
