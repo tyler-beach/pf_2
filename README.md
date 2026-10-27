@@ -1,6 +1,6 @@
 # ADR Compliance Engine
 
-A zero-token, deterministic MVP for evaluating architectural requirements from GitHub Issues and repository source.
+A zero-token, deterministic MVP for evaluating architectural requirements from GitHub Issues and repository source. The target architecture evolves this into a scalable evidence platform with composable analyzers and normalized outputs.
 
 ## What it does
 
@@ -62,4 +62,9 @@ The mixed cases verify that multiple requirements across different verifier type
 
 ## Architecture and limitations
 
-See [docs/architecture.md](docs/architecture.md). The catalog is an example and should be replaced/expanded with your accepted ADRs. The MVP supports `go-import-boundary`, `json-required-keys`, and `json-number-range`. Each report includes `coverage_status` (`COMPLETE`, `PARTIAL`, or `NONE`) and the number of requirements with applicable evidence. A `PASS` verdict is scoped to evaluated requirements; it must not be treated as a complete assessment when coverage is `PARTIAL` or `NONE`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
+- [Current architecture overview](docs/architecture.md)
+- [Scalable architecture: ADR ingestion, normalized evidence, composite analyzers, and AWS deployment](docs/scalable-architecture.md)
+
+The catalog is an example and should be replaced/expanded with accepted ADRs. The MVP supports `go-import-boundary`, `json-required-keys`, and `json-number-range`. Each report includes `coverage_status` (`COMPLETE`, `PARTIAL`, or `NONE`) and the number of requirements with applicable evidence. A `PASS` verdict is scoped to evaluated requirements; it must not be treated as a complete assessment when coverage is `PARTIAL` or `NONE`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
+
+The scalable design proposes composable analyzers such as Opengrep, Joern, and language-specific tools behind one versioned evidence contract. These are design candidates, not implemented integrations in the current MVP.
