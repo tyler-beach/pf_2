@@ -246,7 +246,7 @@ func resolveConfig(root, config string) (absolute, relative string, err error) {
 func hashInputTree(root string) (string, error) {
 	h := sha256.New()
 	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true}
-	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true}
+	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true, "obligation-candidates.json": true}
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
 		if entry.IsDir() {
@@ -319,6 +319,7 @@ func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) 
 		if err != nil { return err }
 		rel = filepath.ToSlash(rel)
 		if excludedPath != "" && rel == excludedPath { return nil }
+		if rel == "adr/obligation-candidates.json" || rel == "adr/ingested-adrs.json" { return nil }
 		paths = append(paths, rel)
 		return nil
 	})

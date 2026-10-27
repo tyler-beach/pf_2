@@ -318,6 +318,7 @@ func TestLoadSourceFilesExcludesGeneratedEvidenceAndCaches(t *testing.T) {
 		".opengrep-cache/generated.go": "package ignored\\n",
 		"assessment.json": "{}\\n",
 		"adr/ingested-adrs.json": "{}\\n",
+		"adr/obligation-candidates.json": "{}\\n",
 		"testdata/fixture.go": "package ignored\\n",
 	}
 	for path, body := range files {

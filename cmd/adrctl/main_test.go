@@ -10,6 +10,7 @@ import (
 	"github.com/tyler-beach/pf_2/internal/adringest"
 	"github.com/tyler-beach/pf_2/internal/analyzer"
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/obligations"
 )
 
 func TestRunIngestADRsWritesDeterministicIndex(t *testing.T) {
@@ -145,4 +146,42 @@ func TestRunAssessRejectsNormalizedEvidenceWithoutRawSARIF(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "--analyzer-sarif is required") {
 		t.Fatalf("expected missing raw SARIF rejection, got %v", err)
 	}
+}
+
+func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *testing.T) {
+	root := t.TempDir()
+	adrRoot := filepath.Join(root, "adrs")
+	if err := os.MkdirAll(adrRoot, 0700); err != nil { t.Fatal(err) }
+	source := "# ADR-001: Explicit timeouts\n\n## Status\n\nAccepted\n\n## Decision\n\nEvery network client must set a finite timeout.\n"
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(source), 0600); err != nil { t.Fatal(err) }
+	docs, err := adringest.ParseDir(adrRoot)
+	if err != nil { t.Fatal(err) }
+	indexBytes, err := json.MarshalIndent(ingestionIndex{SchemaVersion:"1", SourceRoot:adrRoot, Documents:docs}, "", "  ")
+	if err != nil { t.Fatal(err) }
+	indexPath := filepath.Join(root, "ingested.json")
+	if err := os.WriteFile(indexPath, indexBytes, 0600); err != nil { t.Fatal(err) }
+	outPath := filepath.Join(root, "candidates.json")
+	args := []string{"--index", indexPath, "--root", adrRoot, "--json-out", outPath}
+	if err := runExtractObligations(args); err != nil { t.Fatalf("runExtractObligations() error: %v", err) }
+	first, err := os.ReadFile(outPath)
+	if err != nil { t.Fatal(err) }
+	var got obligations.Index
+	if err := json.Unmarshal(first, &got); err != nil { t.Fatal(err) }
+	if got.DocumentCount != 1 || got.CandidateCount != 1 || got.Candidates[0].ApprovalStatus != "pending_review" || got.Candidates[0].Executable {
+		t.Fatalf("candidate output was not review-only: %+v", got)
+	}
+	secondPath := filepath.Join(root, "candidates-again.json")
+	args[5] = secondPath
+	if err := runExtractObligations(args); err != nil { t.Fatalf("second run: %v", err) }
+	second, err := os.ReadFile(secondPath)
+	if err != nil { t.Fatal(err) }
+	if string(first) != string(second) { t.Fatalf("candidate generation changed across identical inputs:\n%s\n%s", first, second) }
+}
+
+func TestRunExtractObligationsRefusesToOverwriteIndex(t *testing.T) {
+	root := t.TempDir()
+	indexPath := filepath.Join(root, "index.json")
+	if err := os.WriteFile(indexPath, []byte("{"), 0600); err != nil { t.Fatal(err) }
+	err := runExtractObligations([]string{"--index", indexPath, "--root", root, "--json-out", indexPath})
+	if err == nil || !strings.Contains(err.Error(), "must not overwrite") { t.Fatalf("expected index overwrite rejection, got %v", err) }
 }

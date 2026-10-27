@@ -134,3 +134,7 @@ go run ./cmd/adrctl assess \
   --json-out /tmp/deviation-assessment.json \
   --sarif-out /tmp/deviation-results.sarif
 ```
+
+## ADR candidate interpretation (implemented, non-enforcing)
+
+The deterministic extract-obligations stage converts indexed ADR statements with explicit normative cues into a source-cited review queue. Candidates include the ADR/source hash, section, line range, modality, candidate kind, and a non-binding reusable-pattern hint. Every candidate is emitted as pending_review, review_required, and executable=false; no candidate is inserted into the active requirements catalog. Optional batch-time AI interpretation remains separate and is not required by this deterministic pipeline.

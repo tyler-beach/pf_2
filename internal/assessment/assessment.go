@@ -327,7 +327,7 @@ func LoadSourceFiles(root string) ([]SourceFile, error) {
 		rel, err := filepath.Rel(root, path)
 		if err != nil { return err }
 		relative := filepath.ToSlash(rel)
-		if relative == "assessment.json" || relative == "adr/ingested-adrs.json" { return nil }
+		if relative == "assessment.json" || relative == "adr/ingested-adrs.json" || relative == "adr/obligation-candidates.json" { return nil }
 		info, err := d.Info()
 		if err != nil { return fmt.Errorf("inspect source evidence %s: %w", relative, err) }
 		if !info.Mode().IsRegular() { return nil }

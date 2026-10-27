@@ -134,3 +134,16 @@ The accepted example catalog maps each OpenGrep rule family to a reusable requir
 ### Analyzer fixture isolation
 
 The intentionally vulnerable samples under `testdata/analyzer-fixtures/` are scanned separately by the CI fixture test. The repository compliance scan excludes that directory from both the OpenGrep invocation and the verified scanned-path inventory. This keeps known-positive test fixtures from being mistaken for production-source violations while still requiring the fixture job to detect them. No other test or repository directory is excluded by this fixture-specific rule.
+
+## Review-only ADR obligation candidates
+
+After ingesting ADR Markdown, Pathfinder can emit deterministic candidate obligations with exact source line and SHA-256 provenance:
+
+~~~sh
+go run ./cmd/adrctl ingest-adrs --root adrs --json-out adr/ingested-adrs.json
+go run ./cmd/adrctl extract-obligations --index adr/ingested-adrs.json --json-out adr/obligation-candidates.json
+~~~
+
+The extractor uses explicit normative cues such as must, shall, should, may, prohibited, or required and records a conservative reusable-pattern hint. Every candidate remains pending review, uses review-required enforcement, and sets executable to false. The index is deterministic and includes the source-index digest, source SHA-256, repository-relative path, exact source line, section heading, modality, candidate kind, and exception candidates. It rejects stale source indexes, duplicate ADR IDs, unsafe paths, symlinked source paths, and oversized source files.
+
+This is candidate discovery, not natural-language policy enforcement. It does not synthesize or modify adr/requirements.json, call an LLM, approve any obligation, or make a statement enforceable. An ADR owner must review the source, modality, scope, exceptions, pattern mapping, and regression fixtures before a requirement can gate CI.
