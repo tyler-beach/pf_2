@@ -238,6 +238,24 @@ func TestRegistryRejectsRevisionGapsAndTamperedSnapshots(t *testing.T) {
 	}
 }
 
+func TestChangingReviewHintsInvalidatesPriorApproval(t *testing.T) {
+	index, catalog, candidate := reviewFixture()
+	candidate.ReviewHints = []string{"compound_or_conjoined"}
+	candidate.ID = candidateID(candidate)
+	index.Candidates[0] = candidate
+	approved, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
+	if err != nil { t.Fatal(err) }
+
+	changed := candidate
+	changed.ReviewHints = []string{"conditional_scope"}
+	index.Candidates[0] = changed
+	coverage, err := ValidateRegistry(index, catalog, approved)
+	if err != nil { t.Fatal(err) }
+	if coverage.StaleCount != 1 || coverage.BlockingBindingCount != 0 || coverage.UnboundCount != 1 {
+		t.Fatalf("changed interpretation hints must invalidate the old approval: %+v", coverage)
+	}
+}
+
 func TestSaveAndLoadRegistryRoundTripWithRestrictedPermissions(t *testing.T) {
 	root := t.TempDir()
 	path := filepath.Join(root, "nested", "bindings.json")

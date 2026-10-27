@@ -36,6 +36,7 @@ type Candidate struct {
 	ApprovalStatus  string `json:"approval_status"`
 	EnforcementMode string `json:"enforcement_mode"`
 	Executable      bool   `json:"executable"`
+	ReviewHints     []string `json:"review_hints,omitempty"`
 }
 
 // Index is a deterministic candidate inventory tied to exact input bytes.
@@ -142,6 +143,7 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 				Kind: kind, PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
 				SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex+1, SourceLineEnd: lineIndex+1,
 				ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
+				ReviewHints: reviewHints(statement, kind),
 			}
 			candidate.ID = candidateID(candidate)
 			result = append(result, candidate)
@@ -233,6 +235,27 @@ func runeAtStart(value string) rune {
 }
 
 func isWordRune(r rune) bool { return unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' }
+
+// reviewHints marks deterministic extraction risks for a human reviewer. Hints
+// never change the candidate's review-required state and never activate a verifier.
+func reviewHints(statement, kind string) []string {
+	lower := strings.ToLower(statement)
+	hints := make([]string, 0, 4)
+	if kind == "exception_candidate" || anyPhrase(statement, "unless", "except", "only when", "provided that", "waiver", "exception") {
+		hints = append(hints, "condition_or_exception")
+	}
+	if strings.Contains(lower, ";") || strings.Contains(lower, " and ") || strings.Contains(lower, " or ") ||
+		(anyPhrase(statement, "finite", "bounded") && anyPhrase(statement, "no greater than", "at most", "maximum", "less than or equal to")) {
+		hints = append(hints, "compound_or_conjoined")
+	}
+	if anyPhrase(statement, "if", "when", "only when", "provided that", "unless") {
+		hints = append(hints, "conditional_scope")
+	}
+	if anyPhrase(statement, "appropriate", "reasonable", "timely", "as needed", "best effort", "sufficient", "adequate", "quickly", "secure") {
+		hints = append(hints, "subjective_or_underspecified")
+	}
+	return hints
+}
 
 func suggestPattern(statement string) string {
 	lower := strings.ToLower(statement)
