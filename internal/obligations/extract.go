@@ -177,7 +177,12 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 		for lineIndex := start; lineIndex < end; lineIndex++ {
 			trimmed := strings.TrimSpace(lines[lineIndex])
 			if isFenceLine(trimmed) { inFence = !inFence; continue }
-			if inFence || trimmed == "" || strings.HasPrefix(trimmed, "<!--") { continue }
+			// Quoted source is context, not a fresh normative decision. In particular,
+			// do not turn quoted examples or copied historical requirements into live
+			// obligation candidates merely because they contain MUST/SHALL language.
+			if inFence || trimmed == "" || strings.HasPrefix(trimmed, "<!--") || strings.HasPrefix(trimmed, ">") {
+				continue
+			}
 			lineText := normalizeStatement(trimmed)
 			if lineText == "" {
 				continue

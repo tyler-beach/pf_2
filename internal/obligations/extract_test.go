@@ -420,3 +420,47 @@ func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 		t.Errorf("non-normative word containing 'must' should not be classified, got %q, %v", got, ok)
 	}
 }
+
+func TestBuildIndexDoesNotExtractQuotedNormativeExamples(t *testing.T) {
+	root := t.TempDir()
+	source := strings.Join([]string{
+		"# ADR-904: Normative extraction",
+		"",
+		"## Decision",
+		"",
+		"The service must set a finite timeout.",
+		"",
+		"> Historical note: Every service must disable certificate validation.",
+		"> The API shall expose secrets.",
+		"> - Each client must send credentials in query parameters.",
+		"",
+	}, "\n")
+	path := filepath.Join(root, "ADR-904-quotes.md")
+	if err := os.WriteFile(path, []byte(source), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("ADR-904-quotes.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	index, err := BuildIndex(
+		[]adringest.Document{doc},
+		root,
+		"adrs",
+		[]byte("{\"schema_version\":\"1\",\"source_root\":\"adrs\"}"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.CandidateCount != 1 {
+		t.Fatalf("quoted imperative examples must not become candidate obligations; got %d candidates: %+v",
+			index.CandidateCount, index.Candidates)
+	}
+	candidate := index.Candidates[0]
+	if candidate.Statement != "The service must set a finite timeout." || candidate.SourceLineStart != 5 {
+		t.Fatalf("unquoted normative statement or its provenance changed: %+v", candidate)
+	}
+	if candidate.ApprovalStatus != "pending_review" || candidate.Executable {
+		t.Fatalf("remaining candidate must stay review-only: %+v", candidate)
+	}
+}
