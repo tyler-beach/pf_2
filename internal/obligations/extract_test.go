@@ -329,6 +329,78 @@ func TestSplitSentencesPreservesAbbreviationsAndDecimals(t *testing.T) {
 	}
 }
 
+func TestBuildIndexExtractsNormativePreambleWithoutSubheadings(t *testing.T) {
+	root := t.TempDir()
+	source := "# Runtime requirements\n\nEvery service must expose a health endpoint.\n"
+	path := filepath.Join(root, "runtime.md")
+	if err := os.WriteFile(path, []byte(source), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("runtime.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(doc.Sections) != 0 {
+		t.Fatalf("fixture should exercise a title-only document, got sections: %+v", doc.Sections)
+	}
+	index, err := BuildIndex(
+		[]adringest.Document{doc},
+		root,
+		"specifications",
+		[]byte("{\"schema_version\":\"1\",\"source_root\":\"specifications\"}"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.CandidateCount != 1 {
+		t.Fatalf("title-only specification lost normative preamble text: %+v", index)
+	}
+	candidate := index.Candidates[0]
+	if candidate.Statement != "Every service must expose a health endpoint." {
+		t.Fatalf("unexpected extracted preamble statement: %+v", candidate)
+	}
+	if candidate.SectionHeading != "Preamble" || candidate.SourceLineStart != 3 || candidate.SourceLineEnd != 3 {
+		t.Fatalf("preamble must preserve source line provenance: %+v", candidate)
+	}
+	if !hasReviewHint(candidate, "non_decision_section") {
+		t.Fatalf("preamble candidate should be flagged for reviewer attention: %+v", candidate)
+	}
+	if candidate.ApprovalStatus != "pending_review" || candidate.Executable {
+		t.Fatalf("preamble extraction must remain review-only: %+v", candidate)
+	}
+}
+
+func TestBuildIndexExtractsPreambleAlongsideHeadedSections(t *testing.T) {
+	root := t.TempDir()
+	source := "# Runtime requirements\n\nEvery service must expose a health endpoint.\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
+	path := filepath.Join(root, "runtime.md")
+	if err := os.WriteFile(path, []byte(source), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("runtime.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	index, err := BuildIndex(
+		[]adringest.Document{doc},
+		root,
+		"specifications",
+		[]byte("{\"schema_version\":\"1\",\"source_root\":\"specifications\"}"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.CandidateCount != 2 {
+		t.Fatalf("expected preamble and Decision candidates, got %+v", index.Candidates)
+	}
+	if index.Candidates[0].SectionHeading != "Preamble" || index.Candidates[0].SourceLineStart != 3 {
+		t.Errorf("preamble candidate missing or moved: %+v", index.Candidates[0])
+	}
+	if index.Candidates[1].SectionHeading != "Decision" || index.Candidates[1].SourceLineStart != 7 {
+		t.Errorf("headed-section candidate changed: %+v", index.Candidates[1])
+	}
+}
+
 func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 	tests := []struct { statement, want string }{
 		{"The service must not execute shell commands.", "must_not"},

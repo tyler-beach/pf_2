@@ -145,7 +145,30 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 	if err != nil { return nil, fmt.Errorf("candidate display path: %w", err) }
 	lines := strings.Split(string(source), "\n")
 	result := make([]Candidate, 0)
-	for _, section := range parsed.Sections {
+	// Normative statements may appear directly below the H1 title, especially in
+	// free-form specifications without formal ADR headings. Treat this prefix as
+	// a review-only preamble, stopping before the first parsed section heading.
+	sections := append([]adringest.Section(nil), parsed.Sections...)
+	preambleEnd := len(lines)
+	if len(parsed.Sections) > 0 {
+		preambleEnd = parsed.Sections[0].StartLine - 1
+	}
+	if preambleEnd > 1 {
+		sections = append([]adringest.Section{{
+			Heading: "Preamble",
+			Level: 0,
+			StartLine: 1,
+			EndLine: preambleEnd,
+		}}, sections...)
+	} else if len(parsed.Sections) == 0 && len(lines) > 1 {
+		sections = append([]adringest.Section{{
+			Heading: "Preamble",
+			Level: 0,
+			StartLine: 1,
+			EndLine: len(lines),
+		}}, sections...)
+	}
+	for _, section := range sections {
 		start, end := section.StartLine, section.EndLine
 		if start < 1 || end < start || end > len(lines) {
 			return nil, fmt.Errorf("section %q has invalid source line range %d-%d", section.Heading, start, end)
@@ -364,7 +387,7 @@ func isNonDecisionSection(heading string) bool {
 	for _, prefix := range []string{
 		"context", "background", "motivation", "example", "examples",
 		"alternatives considered", "rejected alternatives", "non-goal", "non-goals",
-		"references", "appendix", "appendices",
+		"references", "appendix", "appendices", "preamble",
 	} {
 		if value == prefix || strings.HasPrefix(value, prefix+":") || strings.HasPrefix(value, prefix+" ") {
 			return true
