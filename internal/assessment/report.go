@@ -9,6 +9,8 @@ import (
 func MarkdownReport(r Result) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# ADR Compliance Assessment: %s\n\n", r.Verdict)
+	fmt.Fprintf(&b, "- **Coverage:** %s (%d/%d requirements applicable)\n", r.CoverageStatus, r.ApplicableRequirementCount, r.RequirementCount)
+	if r.CoverageStatus != "COMPLETE" { b.WriteString("> Coverage is incomplete; requirements without applicable evidence are not counted as passing.\n\n") }
 	fmt.Fprintf(&b, "- **Engine:** %s\n- **Runtime LLM calls:** %d\n- **Source files:** %d\n- **Requirements evaluated:** %d\n\n", r.EngineVersion, r.LLMCalls, r.SourceFileCount, r.RequirementCount)
 	b.WriteString("## Requirement results\n\n| ADR | Requirement | Status | Severity | Details |\n|---|---|---|---|---|\n")
 	for _, q := range r.Requirements {
