@@ -15,6 +15,33 @@ A plan is a reproducible description of the work an analyzer would run against a
 - Manifest SHA-256 covers the canonical JSON representation with the digest field omitted. The verifier reconstructs the plan from current inputs and rejects stale or manually edited values.
 - Retries are bounded to five retries, output is capped at 512 MiB, per-attempt timeouts at 24 hours, and global planned concurrency at sixteen tasks.
 
-## Current boundary
+## Execution and cache
 
-`plan-repo` builds the manifest and `verify-plan` validates it. They do not execute analyzers or claim evidence was collected. The next execution layer must check the manifest at dispatch time, enforce the manifest's limits, preserve raw outputs, distinguish retryable transport/process failures from malformed or partial analyzer evidence, and cache only validated complete outputs. AWS scheduling remains outside this package.
+`execute-plan` is the local execution path for a verified manifest. It rechecks the manifest against the current repository snapshot before dispatch, avoids launching tasks whose declared scope is empty, bounds worker concurrency, applies per-attempt timeouts, and retries only failure kinds explicitly allow-listed by the plan.
+
+For each task, the runner preserves the original SARIF, validates the analyzer identity/version, source-tree digest, configuration digest, and scanned-path inventory, then publishes an execution manifest and one raw SARIF artifact per completed task. Partial evidence, malformed output, unsupported analyzer adapters, cache corruption, and stale source are never silently converted to a clean result. The current production runner supports the pinned OpenGrep adapter; other analyzer names fail closed until a runner is registered.
+
+Use a cache directory outside the repository to avoid changing the input-tree digest between plan creation and execution:
+
+```sh
+go run ./cmd/adrctl plan-repo \
+  --root . \
+  --analyzer opengrep \
+  --version 1.30.0 \
+  --config rules/pathfinder-security.yml \
+  --scope . \
+  --json-out analyzer-evidence/plan.json
+
+go run ./cmd/adrctl verify-plan --root . --manifest analyzer-evidence/plan.json
+
+go run ./cmd/adrctl execute-plan \
+  --root . \
+  --manifest analyzer-evidence/plan.json \
+  --cache-dir "$HOME/.cache/pathfinder/analyzers" \
+  --json-out analyzer-evidence/execution.json \
+  --sarif-dir analyzer-evidence/raw
+```
+
+Only complete, source-bound evidence is cacheable. A corrupt cache entry fails closed and does not trigger an unverified fallback. A cache write/read failure, timeout, malformed output, or incomplete scope is represented as a run/task failure, not a pass. Cache keys and idempotency keys include the source/configuration/analyzer and execution policy inputs relevant to reproducibility.
+
+The execution layer is local and cloud-SDK-free. AWS scheduling, durable shared evidence storage, and multi-repository orchestration remain deployment work; this package does not claim they are implemented.
