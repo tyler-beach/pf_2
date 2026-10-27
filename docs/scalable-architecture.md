@@ -47,6 +47,35 @@ flowchart TD
 
 This is a logical architecture, not a requirement to deploy every box as a separate service. The current Go CLI can implement the core contracts first. In AWS, ingestion, orchestration, analyzer execution, evidence storage, and reporting can scale independently.
 
+### AWS execution topology
+
+```mermaid
+flowchart TD
+    GH[GitHub event or scheduled scan] --> IN[API Gateway / intake Lambda]
+    IN --> EB[EventBridge] --> Q[SQS work queue]
+    Q --> SF[Step Functions assessment workflow]
+    SF --> SNAP[ECS Fargate source snapshot / inventory]
+    SNAP --> PLAN[Analyzer planner and cache lookup]
+    PLAN --> FAN[Step Functions Map: parallel analyzer jobs]
+    FAN --> STRUCT[ECS Fargate: structural analyzers]
+    FAN --> LANG[ECS Fargate: language-specific analyzers]
+    FAN --> GRAPH[ECS Fargate or AWS Batch: graph/data-flow profile]
+    FAN --> POLICY[ECS Fargate: config and policy analyzers]
+    STRUCT --> RAW[(S3 raw outputs)]
+    LANG --> RAW
+    GRAPH --> RAW
+    POLICY --> RAW
+    RAW --> NORM[Normalization and validation]
+    NORM --> EV[(S3 normalized evidence)]
+    NORM --> META[(DynamoDB or Aurora: run metadata)]
+    EV --> EVAL[Obligation correlation and deterministic evaluation]
+    META --> EVAL
+    EVAL --> REPORT[Markdown / JSON / SARIF]
+    REPORT --> GHOUT[GitHub check, issue comment, or API]
+```
+
+Use Lambda for short control-plane work and lightweight parsing, not heavy scanner execution. Run long-lived or resource-intensive tools in isolated ECS/Fargate tasks; consider AWS Batch only when its scheduling model is useful for larger batch jobs. Use Step Functions Map for bounded parallel fan-out and explicit aggregation. EventBridge and SQS decouple intake from worker capacity, with idempotency, retry limits and dead-letter handling. This is a target topology, not an assertion that it is deployed today.
+
 ## ADR corpus ingestion: scale to thousands of ADRs
 
 ### Ingestion pipeline
@@ -96,9 +125,12 @@ Composite analyzers are first-class. A composite is a versioned analyzer bundle 
 | Go security | **gosec** | Go-specific security findings | Treat as one evidence producer, not a complete architecture verifier. |
 | Python security | **Bandit** | Python-specific security findings | Same normalized adapter contract as other tools. |
 | Java security | **SpotBugs + Find Security Bugs** | Bytecode and Java security analysis | Run only for relevant language/build artifacts. |
+| Go architecture constraints | **Arch-Go** | Full-repository package dependency and architecture rules | Benchmark against the current `go-import-boundary` fixtures. Keep the existing Go parser for submitted snippets and as a parity reference until results are equivalent. |
 | Native language structure | Go standard library parser; tree-sitter where useful | Fast syntax, import, and structural evidence | Prefer native parsers for precise language facts. |
 | Architecture and policy | OPA/Conftest where appropriate; custom graph policies only where no reusable tool fits | Evaluate structured policy/relationship evidence | Keep policy inputs normalized and versioned. |
 | Configuration and interface artifacts | Parsers for JSON/YAML, OpenAPI, Terraform/IaC, dependency manifests and lockfiles | Configuration, API, infrastructure, and dependency evidence | Choose maintained tools per artifact family rather than a single universal scanner. |
+
+For the general multi-language structural-pattern slot, benchmark **OpenGrep** against **Semgrep CE** and **ast-grep** for representative rules; choose one default rather than running overlapping engines by default. Keep engine and rules-pack licensing decisions separate. Conftest is a convenient policy-testing front end for OPA/Rego; retain the small built-in JSON verifiers until parity tests demonstrate that replacing them materially reduces maintenance.
 
 The list is a candidate stack, not a mandate to install every tool. Start with the analyzers needed by the pilot ADR corpus. Benchmark accuracy, language coverage, runtime, memory, output quality, deployment friction, and license posture before adding a tool. Do not run multiple tools that provide redundant coverage by default unless overlap is intentional and measured.
 
@@ -116,6 +148,50 @@ Each composite declares its input artifact types, required environment, supporte
 ## Canonical normalized evidence contract
 
 Raw scanner output is retained as an artifact. Adapters translate it into a stable internal schema so downstream policy evaluation is independent of analyzer vendors.
+
+Use a versioned JSON Schema (and matching Go types) to make the following fields explicit. For example, a normalized finding may look like this illustrative envelope; optional producer-specific details can remain under namespaced metadata:
+
+```json
+{
+  "schema_version": "1.0",
+  "run_id": "run-identifier",
+  "repository": "owner/repository",
+  "revision": "git-commit-or-tree-digest",
+  "producer": {
+    "analyzer": "opengrep",
+    "version": "pinned-version",
+    "adapter_version": "adapter-version",
+    "ruleset_digest": "sha256:..."
+  },
+  "finding": {
+    "id": "stable-finding-id",
+    "rule_id": "rule.identifier",
+    "severity": "MEDIUM",
+    "message": "Illustrative finding message"
+  },
+  "artifact": {
+    "path": "relative/path/file.go",
+    "sha256": "sha256:...",
+    "start_line": 12,
+    "start_column": 1
+  },
+  "evidence": {
+    "kind": "source_span",
+    "raw_artifact_uri": "s3://bucket/run/raw/tool-output.json",
+    "raw_artifact_sha256": "sha256:..."
+  },
+  "scope": {
+    "declared": ["**/*.go"],
+    "analyzed_files": 123,
+    "unsupported_files": 0
+  },
+  "status": "observed",
+  "diagnostics": [],
+  "limitations": []
+}
+```
+
+The identifiers and digests above are placeholders for schema illustration, not real run evidence. Exact required/optional fields and enums should be finalized before implementing external adapters.
 
 A normalized evidence record should contain:
 
