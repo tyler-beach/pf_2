@@ -762,14 +762,31 @@ func runSpecificationCheck(args []string) error {
 	obligationReportPath := filepath.Join(rootReal, "obligation-assessment.json")
 	obligationMarkdownPath := filepath.Join(rootReal, "obligation-assessment.md")
 	outputs := []string{ingestionPath, candidatePath, candidateReportPath, assessmentPath, repositoryReportPath, sarifPath, obligationReportPath, obligationMarkdownPath}
+	canonicalOutputs := make([]string, len(outputs))
+	outputOwners := make(map[string]string, len(outputs))
+	for i, output := range outputs {
+		canonicalOutput := canonicalPathForCollision(output)
+		relativeOutput, err := filepath.Rel(rootReal, canonicalOutput)
+		if err != nil || relativeOutput == ".." ||
+			strings.HasPrefix(relativeOutput, ".."+string(filepath.Separator)) ||
+			filepath.IsAbs(relativeOutput) {
+			return fmt.Errorf("generated output %q resolves outside repository root", output)
+		}
+		if previous, exists := outputOwners[canonicalOutput]; exists {
+			return fmt.Errorf("generated output paths %q and %q resolve to the same target", previous, output)
+		}
+		outputOwners[canonicalOutput] = output
+		canonicalOutputs[i] = canonicalOutput
+	}
+
 	inputs := []string{catalogPath, registryPath}
 	if *analyzerEvidence != "" {
 		inputs = append(inputs, resolveInput(*analyzerEvidence), resolveInput(*analyzerSARIF))
 	}
 	for _, input := range inputs {
 		canonicalInput := canonicalPathForCollision(input)
-		for _, output := range outputs {
-			if canonicalInput == canonicalPathForCollision(output) {
+		for i, output := range outputs {
+			if canonicalInput == canonicalOutputs[i] {
 				return fmt.Errorf("input path %q collides with generated output %q", input, output)
 			}
 		}
