@@ -63,8 +63,7 @@ func TestExecutePlanCLIUsesCacheAndWritesRawSARIF(t *testing.T) {
 		evidence.RuleSetSHA256=evidence.ConfigurationSHA256
 		evidence.BinarySHA256=task.BinarySHA256
 		evidence.InputSHA256,err=analyzer.HashInputTree(root);if err!=nil{return evidence,err}
-		paths,err:=analyzer.DiscoverScannedPaths(root);if err!=nil{return evidence,err}
-		for _,p:=range paths{if p!=task.ConfigurationPath{evidence.ScannedPaths=append(evidence.ScannedPaths,p)}}
+		evidence.ScannedPaths=append([]string(nil),task.SourcePaths...)
 		return evidence,nil
 	})
 	args:=[]string{"--root",root,"--manifest",manifestPath,"--cache-dir",cacheDir,"--json-out",runPath,"--sarif-dir",sarifDir}
