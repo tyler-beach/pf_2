@@ -68,3 +68,12 @@ The mixed cases verify that multiple requirements across different verifier type
 The catalog is an example and should be replaced/expanded with accepted ADRs. The MVP supports `go-import-boundary`, `json-required-keys`, and `json-number-range`. Each report includes `coverage_status` (`COMPLETE`, `PARTIAL`, or `NONE`) and the number of requirements with applicable evidence. A `PASS` verdict is scoped to evaluated requirements; it must not be treated as a complete assessment when coverage is `PARTIAL` or `NONE`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
 
 The scalable design proposes composable analyzers such as Opengrep, Joern, and language-specific tools behind one versioned evidence contract. These are design candidates, not implemented integrations in the current MVP.
+
+
+## Scaling toward a large ADR corpus
+
+Pathfinder is being evolved incrementally: the existing Go assessment engine, deterministic Go/JSON verifiers, Issue workflow, and Markdown/JSON/SARIF outputs remain the foundation. The scale strategy adds Goldmark-based ADR ingestion, reviewed/versioned obligation records, reusable verification patterns, and thin adapters over established analyzers. Each enabled analyzer runs once per repository snapshot and its findings are mapped to applicable obligations.
+
+The current `adr/requirements.json` remains supported while this ingestion path matures. Runtime assessment continues to make zero LLM calls; any optional assisted interpretation belongs in a separate batch-time workflow and requires review before enforcement.
+
+See [docs/scaling-adr-design.md](docs/scaling-adr-design.md) for the migration plan and analyzer choices, and [docs/architecture.md](docs/architecture.md) for the current runtime architecture.
