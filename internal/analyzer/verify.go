@@ -13,6 +13,24 @@ import (
 // findings are re-parsed from raw SARIF so hand-edited summaries cannot erase or
 // invent violations. Digests provide integrity checks, not a digital signature.
 func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (ScanResult, error) {
+	return verifyScanEvidence(root, envelope, rawSARIF, nil)
+}
+
+// VerifyScopedScanEvidence verifies a result against the exact source inventory
+// declared by a previously verified execution plan. It prevents a runner from
+// claiming a narrow scope while actually scanning a different file set.
+func VerifyScopedScanEvidence(root string, envelope ScanResult, rawSARIF []byte, expectedPaths []string) (ScanResult, error) {
+	if len(expectedPaths) == 0 {
+		envelope.Status = ScanStatusError
+		envelope.Errors = append(envelope.Errors, "planned scan scope is empty")
+		envelope.Findings = nil
+		envelope.ScannedPaths = nil
+		return envelope, fmt.Errorf("planned scan scope is empty")
+	}
+	return verifyScanEvidence(root, envelope, rawSARIF, expectedPaths)
+}
+
+func verifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte, expectedPaths []string) (ScanResult, error) {
 	fail := func(message string) (ScanResult, error) {
 		envelope.Status = ScanStatusError
 		envelope.Errors = append(envelope.Errors, message)
@@ -91,9 +109,23 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	if envelope.InputSHA256 == "" || inputHash != envelope.InputSHA256 {
 		return fail("input tree SHA-256 does not match the current repository snapshot")
 	}
-	paths, err := discoverScannedPathsExcluding(rootAbs, envelope.ConfigurationPath)
-	if err != nil {
-		return fail(fmt.Sprintf("rebuild repository scan inventory: %v", err))
+	var paths []string
+	if expectedPaths != nil {
+		paths, err = normalizeScanPaths(rootAbs, expectedPaths, envelope.ConfigurationPath)
+		if err != nil { return fail(fmt.Sprintf("validate planned scan inventory: %v", err)) }
+		if len(envelope.ScannedPaths) != len(paths) {
+			return fail("scanned path inventory does not match planned scope")
+		}
+		for i := range paths {
+			if filepath.ToSlash(envelope.ScannedPaths[i]) != paths[i] {
+				return fail("scanned path inventory does not match planned scope")
+			}
+		}
+	} else {
+		paths, err = discoverScannedPathsExcluding(rootAbs, envelope.ConfigurationPath)
+		if err != nil {
+			return fail(fmt.Sprintf("rebuild repository scan inventory: %v", err))
+		}
 	}
 	parsed.ConfigurationPath = envelope.ConfigurationPath
 	parsed.ConfigurationSHA256 = configHash
