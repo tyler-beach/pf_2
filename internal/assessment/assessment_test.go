@@ -691,3 +691,62 @@ func TestManualReviewOnlyCatalogIsIndeterminateNotUnsupported(t *testing.T) {
 	}
 }
 
+
+
+func TestConfirmedViolationTakesPrecedenceOverManualReview(t *testing.T) {
+	catalog := Catalog{
+		SchemaVersion: "1",
+		ADRs: []ADR{
+			{
+				ID: "ADR-REVIEW",
+				Title: "Runtime suitability",
+				Version: 1,
+				Status: "accepted",
+				Requirements: []Requirement{{
+					ID: "REQ-REVIEW-01",
+					Title: "The timeout must suit the service's business latency budget",
+					Severity: "warning",
+					Verifier: Verifier{Type: "manual-review"},
+				}},
+			},
+			{
+				ID: "ADR-BOUNDARY",
+				Title: "Preserve domain boundaries",
+				Version: 1,
+				Status: "accepted",
+				Requirements: []Requirement{{
+					ID: "REQ-BOUNDARY-01",
+					Title: "Domain code must not depend on infrastructure adapters",
+					Severity: "error",
+					Verifier: Verifier{
+						Type: "go-import-boundary",
+						SourcePathPrefixes: []string{"internal/domain/"},
+						ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+					},
+				}},
+			},
+		},
+	}
+	files := []SourceFile{{
+		Path: "internal/domain/customer.go",
+		Language: "go",
+		Content: "package domain\nimport _ \"internal/infrastructure/storage\"\n",
+	}}
+	result := AssessWithOptions(catalog, files, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	statuses := make(map[string]string, len(result.Requirements))
+	for _, requirement := range result.Requirements {
+		statuses[requirement.RequirementID] = requirement.Status
+	}
+	if statuses["REQ-REVIEW-01"] != "REVIEW_REQUIRED" {
+		t.Fatalf("manual review must remain explicit, got %v", statuses)
+	}
+	if statuses["REQ-BOUNDARY-01"] != "FAIL" {
+		t.Fatalf("confirmed boundary violation must remain FAIL, got %v", statuses)
+	}
+	if result.Verdict != "FAIL" {
+		t.Fatalf("a confirmed violation must take precedence over review-required evidence, got %s", result.Verdict)
+	}
+	if result.LLMCalls != 0 {
+		t.Fatalf("manual-review verifier unexpectedly made runtime LLM calls: %d", result.LLMCalls)
+	}
+}
