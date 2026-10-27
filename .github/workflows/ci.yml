@@ -92,14 +92,26 @@ jobs:
           jq -r '[.findings[] | (.path | split(".")[-1])] | group_by(.) | map({language:.[0], count:length})' "$RUNNER_TEMP/opengrep-vulnerable.json"
           jq -e '
             .status == "COMPLETE"
-            and (.findings | length) >= 8
+            and (.findings | length) >= 18
             and ([.findings[].rule_id] | unique | sort) == [
+              "rules.pathfinder.bash-dynamic-eval",
+              "rules.pathfinder.c-shell-command",
+              "rules.pathfinder.cpp-shell-command",
               "rules.pathfinder.csharp-process-start",
+              "rules.pathfinder.dart-process-run",
+              "rules.pathfinder.elixir-dynamic-eval",
               "rules.pathfinder.go-shell-command",
               "rules.pathfinder.java-runtime-exec",
+              "rules.pathfinder.kotlin-runtime-exec",
+              "rules.pathfinder.lua-dynamic-eval",
               "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.ocaml-system-command",
               "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.ruby-dynamic-eval"
+              "rules.pathfinder.ruby-dynamic-eval",
+              "rules.pathfinder.rust-shell-command",
+              "rules.pathfinder.scala-runtime-exec",
+              "rules.pathfinder.swift-shell-command",
+              "rules.pathfinder.visualbasic-process-start"
             ]
           ' "$RUNNER_TEMP/opengrep-vulnerable.json"
 
