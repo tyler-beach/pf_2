@@ -1,0 +1,807 @@
+{
+  "schema_version": "workshop-corpus-index-v1",
+  "corpus_size": 100,
+  "source": "testdata/corpus/labels.json",
+  "entries": [
+    {
+      "adr_id": "ADR-2001",
+      "statement_contains": "finite request timeout no greater than 1 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2002",
+      "statement_contains": "infrastructure adapters layer 1",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2003",
+      "statement_contains": "dynamic interpreter for workload 1",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2004",
+      "statement_contains": "asynchronous messaging for service family 1",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2005",
+      "statement_contains": "interoperability constraint for integration slot 1",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2006",
+      "statement_contains": "finite request timeout no greater than 2 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2007",
+      "statement_contains": "infrastructure adapters layer 2",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2008",
+      "statement_contains": "dynamic interpreter for workload 2",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2009",
+      "statement_contains": "asynchronous messaging for service family 2",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2010",
+      "statement_contains": "interoperability constraint for integration slot 2",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2011",
+      "statement_contains": "finite request timeout no greater than 3 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2012",
+      "statement_contains": "infrastructure adapters layer 3",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2013",
+      "statement_contains": "dynamic interpreter for workload 3",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2014",
+      "statement_contains": "asynchronous messaging for service family 3",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2015",
+      "statement_contains": "interoperability constraint for integration slot 3",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2016",
+      "statement_contains": "finite request timeout no greater than 4 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2017",
+      "statement_contains": "infrastructure adapters layer 4",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2018",
+      "statement_contains": "dynamic interpreter for workload 4",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2019",
+      "statement_contains": "asynchronous messaging for service family 4",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2020",
+      "statement_contains": "interoperability constraint for integration slot 4",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2021",
+      "statement_contains": "finite request timeout no greater than 5 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2022",
+      "statement_contains": "infrastructure adapters layer 5",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2023",
+      "statement_contains": "dynamic interpreter for workload 5",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2024",
+      "statement_contains": "asynchronous messaging for service family 5",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2025",
+      "statement_contains": "interoperability constraint for integration slot 5",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2026",
+      "statement_contains": "finite request timeout no greater than 6 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2027",
+      "statement_contains": "infrastructure adapters layer 6",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2028",
+      "statement_contains": "dynamic interpreter for workload 6",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2029",
+      "statement_contains": "asynchronous messaging for service family 6",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2030",
+      "statement_contains": "interoperability constraint for integration slot 6",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2031",
+      "statement_contains": "finite request timeout no greater than 7 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2032",
+      "statement_contains": "infrastructure adapters layer 7",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2033",
+      "statement_contains": "dynamic interpreter for workload 7",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2034",
+      "statement_contains": "asynchronous messaging for service family 7",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2035",
+      "statement_contains": "interoperability constraint for integration slot 7",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2036",
+      "statement_contains": "finite request timeout no greater than 8 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2037",
+      "statement_contains": "infrastructure adapters layer 8",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2038",
+      "statement_contains": "dynamic interpreter for workload 8",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2039",
+      "statement_contains": "asynchronous messaging for service family 8",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2040",
+      "statement_contains": "interoperability constraint for integration slot 8",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2041",
+      "statement_contains": "finite request timeout no greater than 9 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2042",
+      "statement_contains": "infrastructure adapters layer 9",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2043",
+      "statement_contains": "dynamic interpreter for workload 9",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2044",
+      "statement_contains": "asynchronous messaging for service family 9",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2045",
+      "statement_contains": "interoperability constraint for integration slot 9",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2046",
+      "statement_contains": "finite request timeout no greater than 10 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2047",
+      "statement_contains": "infrastructure adapters layer 10",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2048",
+      "statement_contains": "dynamic interpreter for workload 10",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2049",
+      "statement_contains": "asynchronous messaging for service family 10",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2050",
+      "statement_contains": "interoperability constraint for integration slot 10",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2051",
+      "statement_contains": "finite request timeout no greater than 11 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2052",
+      "statement_contains": "infrastructure adapters layer 11",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2053",
+      "statement_contains": "dynamic interpreter for workload 11",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2054",
+      "statement_contains": "asynchronous messaging for service family 11",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2055",
+      "statement_contains": "interoperability constraint for integration slot 11",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2056",
+      "statement_contains": "finite request timeout no greater than 12 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2057",
+      "statement_contains": "infrastructure adapters layer 12",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2058",
+      "statement_contains": "dynamic interpreter for workload 12",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2059",
+      "statement_contains": "asynchronous messaging for service family 12",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2060",
+      "statement_contains": "interoperability constraint for integration slot 12",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2061",
+      "statement_contains": "finite request timeout no greater than 13 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2062",
+      "statement_contains": "infrastructure adapters layer 13",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2063",
+      "statement_contains": "dynamic interpreter for workload 13",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2064",
+      "statement_contains": "asynchronous messaging for service family 13",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2065",
+      "statement_contains": "interoperability constraint for integration slot 13",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2066",
+      "statement_contains": "finite request timeout no greater than 14 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2067",
+      "statement_contains": "infrastructure adapters layer 14",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2068",
+      "statement_contains": "dynamic interpreter for workload 14",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2069",
+      "statement_contains": "asynchronous messaging for service family 14",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2070",
+      "statement_contains": "interoperability constraint for integration slot 14",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2071",
+      "statement_contains": "finite request timeout no greater than 15 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2072",
+      "statement_contains": "infrastructure adapters layer 15",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2073",
+      "statement_contains": "dynamic interpreter for workload 15",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2074",
+      "statement_contains": "asynchronous messaging for service family 15",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2075",
+      "statement_contains": "interoperability constraint for integration slot 15",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2076",
+      "statement_contains": "finite request timeout no greater than 16 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2077",
+      "statement_contains": "infrastructure adapters layer 16",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2078",
+      "statement_contains": "dynamic interpreter for workload 16",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2079",
+      "statement_contains": "asynchronous messaging for service family 16",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2080",
+      "statement_contains": "interoperability constraint for integration slot 16",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2081",
+      "statement_contains": "finite request timeout no greater than 17 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2082",
+      "statement_contains": "infrastructure adapters layer 17",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2083",
+      "statement_contains": "dynamic interpreter for workload 17",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2084",
+      "statement_contains": "asynchronous messaging for service family 17",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2085",
+      "statement_contains": "interoperability constraint for integration slot 17",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2086",
+      "statement_contains": "finite request timeout no greater than 18 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2087",
+      "statement_contains": "infrastructure adapters layer 18",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2088",
+      "statement_contains": "dynamic interpreter for workload 18",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2089",
+      "statement_contains": "asynchronous messaging for service family 18",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2090",
+      "statement_contains": "interoperability constraint for integration slot 18",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2091",
+      "statement_contains": "finite request timeout no greater than 19 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2092",
+      "statement_contains": "infrastructure adapters layer 19",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2093",
+      "statement_contains": "dynamic interpreter for workload 19",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2094",
+      "statement_contains": "asynchronous messaging for service family 19",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2095",
+      "statement_contains": "interoperability constraint for integration slot 19",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2096",
+      "statement_contains": "finite request timeout no greater than 20 seconds",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2097",
+      "statement_contains": "infrastructure adapters layer 20",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2098",
+      "statement_contains": "dynamic interpreter for workload 20",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2099",
+      "statement_contains": "asynchronous messaging for service family 20",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2100",
+      "statement_contains": "interoperability constraint for integration slot 20",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    }
+  ]
+}

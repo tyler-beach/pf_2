@@ -115,6 +115,44 @@ export function setTopActions(html: string) {
   if (el) el.innerHTML = html;
 }
 
+export async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function copyControl(text: string, label = 'Copy'): string {
+  return `<button type="button" class="btn copy-btn" data-copy="${escapeHTML(encodeURIComponent(text))}">${escapeHTML(label)}</button>`;
+}
+
+export function bindCopyButtons(root: ParentNode = document) {
+  root.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    if (btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', async () => {
+      let raw = btn.getAttribute('data-copy') || '';
+      try {
+        raw = decodeURIComponent(raw);
+      } catch {
+        /* keep raw */
+      }
+      const ok = await copyText(raw);
+      const prev = btn.textContent;
+      btn.textContent = ok ? 'Copied' : 'Failed';
+      setTimeout(() => {
+        btn.textContent = prev;
+      }, 1200);
+    });
+  });
+}
+
+export function idLink(href: string, id: string): string {
+  return `<a class="id" href="${escapeHTML(href)}" title="${escapeHTML(id)}">${escapeHTML(id)}</a>`;
+}
+
 export function emptyState(title: string, body: string): string {
   return `<div class="empty"><h1>${escapeHTML(title)}</h1><p class="muted" style="margin-top:0.5rem">${escapeHTML(body)}</p></div>`;
 }

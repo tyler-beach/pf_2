@@ -4,20 +4,26 @@ import DOMPurify from 'dompurify';
 import { createTwoFilesPatch } from 'diff';
 import { html as diff2html } from 'diff2html';
 import {
+  githubBlobURL,
   issueURL,
+  loadActiveContext,
   loadADR,
   loadADRIndex,
+  loadCorpusIndex,
   loadCosts,
   loadLatest,
   loadLinkJSON,
-  loadManifest,
   loadPipeline,
   loadRuns,
   loadSampleJourney,
+  previousRun,
   repoBase,
   workflowDispatchURL,
 } from './data';
+import { queryParam, setSelectedRunId } from './session';
 import {
+  bindCopyButtons,
+  copyControl,
   emptyState,
   escapeHTML,
   fmt,
@@ -61,28 +67,131 @@ function chart(el: HTMLElement, series: Array<{ label: string; stroke: string; d
   );
 }
 
+type TriageItem = { sev: 'bad' | 'warn' | 'ok'; label: string; msg: string; href: string };
+
+function metricDelta(curr: unknown, prev: unknown): { text: string; cls: string } {
+  const a = Number(curr);
+  const b = Number(prev);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return { text: `${fmt(prev)} → ${fmt(curr)}`, cls: '' };
+  const d = a - b;
+  if (Math.abs(d) < 1e-9) return { text: `${fmt(prev)} → ${fmt(curr)}`, cls: '' };
+  return { text: `${fmt(prev)} → ${fmt(curr)} (${d > 0 ? '+' : ''}${fmt(d)})`, cls: d > 0 ? 'up' : 'down' };
+}
+
 export async function renderHome(app: HTMLElement) {
   setCrumb('Overview');
-  setPurpose('Latest run health and the path into deeper investigation.');
+  setPurpose('Triage what needs attention, see what changed, then drill into evidence.');
   setTopActions(`
     <a class="btn" href="#/sample">Sample journey</a>
     <a class="btn primary" href="${workflowDispatchURL('llm-assist.yml')}">Run LLM assist</a>
   `);
-  const [latest, manifest, runs, pipeline] = await Promise.all([
-    loadLatest(),
-    loadManifest(),
-    loadRuns(),
+  const [ctx, pipeline, candidates, proposals, assessment] = await Promise.all([
+    loadActiveContext(),
     loadPipeline(),
+    loadLinkJSON<{
+      candidates?: Array<{ id: string; adr_id: string; confidence: string; statement: string }>;
+      confidence_summary?: { low: number };
+    }>('candidates'),
+    loadLinkJSON<{ proposals?: Array<{ proposal_id: string; parent_candidate_id: string; approval_status: string }> }>('proposals'),
+    loadLinkJSON<{
+      verdict?: string;
+      runtime_llm_calls?: number;
+      requirements?: Array<{ requirement_id: string; status: string; title?: string }>;
+    }>('assessment'),
   ]);
+  const latest = ctx.latest;
   if (!latest) {
     app.innerHTML = emptyState('No published data', 'Run CI / workshop-publish to populate this view.');
     return;
   }
   const m = latest.metrics;
-  const sloLLM = latest.slo.assess_runtime_llm_calls_zero === true;
+  const runs = ctx.runs;
+  const prev = previousRun(runs, ctx.runId);
+  const sloLLM = latest.slo.assess_runtime_llm_calls_zero === true || Number(m['kpi.invariant.llm_calls'] || 0) === 0;
   const sloPF = latest.slo.promptfoo_offline_pass !== false;
   const steps = pipeline?.steps || [];
+  const low = (candidates?.candidates || []).filter((c) => c.confidence === 'low');
+  const pendingProps = (proposals?.proposals || []).filter((p) => p.approval_status === 'pending_review');
+  const failing = (assessment?.requirements || []).filter((r) => r.status === 'FAIL' || r.status === 'REVIEW_REQUIRED');
+
+  const triage: TriageItem[] = [];
+  if (!sloLLM || Number(m['kpi.invariant.llm_calls'] || 0) !== 0) {
+    triage.push({ sev: 'bad', label: 'Assess', msg: 'runtime_llm_calls invariant broken', href: '#/assess' });
+  }
+  if (String(m['kpi.assess.verdict'] || assessment?.verdict || '') === 'FAIL') {
+    triage.push({ sev: 'bad', label: 'Assess', msg: 'Assessment verdict is FAIL', href: '#/assess' });
+  }
+  for (const r of failing.slice(0, 5)) {
+    triage.push({
+      sev: 'warn',
+      label: 'Requirement',
+      msg: `${r.requirement_id}: ${r.title || r.status}`,
+      href: '#/assess',
+    });
+  }
+  if (low.length) {
+    triage.push({
+      sev: 'warn',
+      label: 'Confidence',
+      msg: `${low.length} low-confidence candidate(s) need review`,
+      href: '#/candidates',
+    });
+  }
+  if (pendingProps.length) {
+    triage.push({
+      sev: 'warn',
+      label: 'Proposals',
+      msg: `${pendingProps.length} assist proposal(s) pending_review`,
+      href: '#/proposals',
+    });
+  }
+  if (Number(m['kpi.assess.stale'] || 0) > 0) {
+    triage.push({
+      sev: 'warn',
+      label: 'Stale',
+      msg: `${fmt(m['kpi.assess.stale'])} stale binding(s)`,
+      href: '#/assess',
+    });
+  }
+  if (Number(m['kpi.assess.unbound'] || 0) > 0) {
+    triage.push({
+      sev: 'warn',
+      label: 'Unbound',
+      msg: `${fmt(m['kpi.assess.unbound'])} unbound obligation(s)`,
+      href: '#/assess',
+    });
+  }
+  if (sloPF === false || (m['kpi.promptfoo.pass_rate'] != null && Number(m['kpi.promptfoo.pass_rate']) < 1)) {
+    triage.push({ sev: 'warn', label: 'Evals', msg: 'Promptfoo offline pass rate needs attention', href: '#/evals' });
+  }
+  if (!triage.length) {
+    triage.push({ sev: 'ok', label: 'Clear', msg: 'No open triage items for this run', href: '#/metrics' });
+  }
+
+  const watchKeys = [
+    ['kpi.escalation.rate', 'Escalation'],
+    ['confidence_low', 'Low band'],
+    ['kpi.assist.cost_usd', 'Assist cost'],
+    ['kpi.assist.proposal_count', 'Proposals'],
+    ['kpi.promptfoo.pass_rate', 'Promptfoo'],
+    ['kpi.assess.verdict', 'Verdict'],
+  ] as const;
+
+  const changedRows = prev
+    ? watchKeys
+        .map(([key, label]) => {
+          const cur = m[key];
+          const was = prev.metrics[key];
+          if (JSON.stringify(cur) === JSON.stringify(was)) return '';
+          const delta = metricDelta(cur, was);
+          return `<div class="changed-row"><span>${label}</span><span class="${delta.cls}">${escapeHTML(delta.text)}</span><span class="faint">${escapeHTML(prev.run.run_id)}</span></div>`;
+        })
+        .filter(Boolean)
+        .join('')
+    : '';
+
   app.innerHTML = `
+    ${!ctx.artifactsFromSnapshot ? `<div class="banner warn">Metrics for <code>${escapeHTML(ctx.runId)}</code>; detailed artifacts fall back to the latest snapshot.</div>` : ''}
     <div class="status-row">
       ${statusItem('Assess LLM', sloLLM ? '0 calls' : 'invariant broken', sloLLM ? 'ok' : 'bad')}
       ${statusItem('Promptfoo', sloPF ? 'offline pass' : 'check', sloPF ? 'ok' : 'warn')}
@@ -90,10 +199,10 @@ export async function renderHome(app: HTMLElement) {
       ${statusItem('Assist cost', fmtUSD(m['kpi.assist.cost_usd']), '')}
     </div>
     <p class="run-meta">
-      Latest run <code>${escapeHTML(latest.run.run_id)}</code>
-      from ${escapeHTML(latest.run.workflow)}
-      ${latest.run.timestamp ? `at ${escapeHTML(latest.run.timestamp)}` : ''}
-      ${manifest?.updated_at ? `· published ${escapeHTML(manifest.updated_at)}` : ''}
+      Viewing <code>${escapeHTML(latest.run.run_id)}</code>
+      · ${escapeHTML(latest.run.workflow)}
+      ${latest.run.timestamp ? `· ${escapeHTML(latest.run.timestamp)}` : ''}
+      ${ctx.manifest?.updated_at ? `· published ${escapeHTML(ctx.manifest.updated_at)}` : ''}
     </p>
     ${metricsRow([
       { label: 'Candidates', value: fmt(m.candidate_total), href: '#/candidates' },
@@ -102,6 +211,24 @@ export async function renderHome(app: HTMLElement) {
       { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']), href: '#/proposals' },
       { label: 'Corpus', value: fmt(m['kpi.corpus.size']), href: '#/corpus' },
     ])}
+    <h2>Needs attention</h2>
+    <div class="inbox">
+      ${triage
+        .map(
+          (t) => `<a class="inbox-item" href="${escapeHTML(t.href)}">
+            <span class="sev ${t.sev}">${escapeHTML(t.label)}</span>
+            <span class="msg" title="${escapeHTML(t.msg)}">${escapeHTML(t.msg)}</span>
+            <span class="go">Open →</span>
+          </a>`,
+        )
+        .join('')}
+    </div>
+    <h2>What changed</h2>
+    ${
+      changedRows
+        ? `<div class="changed">${changedRows}</div>`
+        : `<p class="muted">${prev ? 'No watched KPI deltas vs previous run.' : 'Need at least two runs in runs.jsonl to diff.'}</p>`
+    }
     <h2>Pipeline</h2>
     <div class="steps">
       ${steps
@@ -369,6 +496,12 @@ async function renderADRDetail(app: HTMLElement, id: string) {
   );
   app.innerHTML = `
     <p class="run-meta">${tag(adr.status, 'ok')} · <code>${escapeHTML(adr.path)}</code></p>
+    <div class="entity-links">
+      <a href="#/candidates">Candidates</a>
+      <a href="#/proposals">Proposals</a>
+      <a href="#/assess">Assess</a>
+      ${copyControl(adr.id, 'Copy ADR id')}
+    </div>
     ${metricsRow([
       { label: 'Linked', value: fmt(linked.length) },
       { label: 'High', value: fmt(adr.confidence_mix?.high ?? linked.filter((c) => c.confidence === 'high').length) },
@@ -399,21 +532,27 @@ async function renderADRDetail(app: HTMLElement, id: string) {
 export async function renderCandidates(app: HTMLElement) {
   setCrumb('Candidates');
   setPurpose('Filter extracted obligations by confidence band and open a review checklist.');
-  const data = await loadLinkJSON<{
-    candidates?: Array<{
-      id: string;
-      adr_id: string;
-      confidence: string;
-      escalation_reasons?: string[];
-      statement: string;
-      pattern_hint: string;
-      source_path?: string;
-      source_line_start?: number;
-      source_line_end?: number;
-    }>;
-    confidence_summary?: { high: number; medium: number; low: number };
-  }>('candidates');
+  const focusId = queryParam('id');
+  const [data, proposals] = await Promise.all([
+    loadLinkJSON<{
+      candidates?: Array<{
+        id: string;
+        adr_id: string;
+        confidence: string;
+        escalation_reasons?: string[];
+        statement: string;
+        pattern_hint: string;
+        source_path?: string;
+        source_line_start?: number;
+        source_line_end?: number;
+      }>;
+      confidence_summary?: { high: number; medium: number; low: number };
+    }>('candidates'),
+    loadLinkJSON<{ proposals?: Array<{ proposal_id: string; parent_candidate_id: string }> }>('proposals'),
+  ]);
   const rows = data?.candidates || [];
+  const propByParent = new Map<string, string>();
+  for (const p of proposals?.proposals || []) propByParent.set(p.parent_candidate_id, p.proposal_id);
   const low = rows.filter((c) => c.confidence === 'low');
   const body = [
     '## Low-confidence checklist',
@@ -423,7 +562,7 @@ export async function renderCandidates(app: HTMLElement) {
     ...low.map((c) => `- [ ] ${c.id} (${c.adr_id}): ${c.statement}`),
   ].join('\n');
   setTopActions(
-    `<a class="btn primary" href="${issueURL('[ADR Assessment] Low-confidence review batch', body)}">Open checklist issue</a>`,
+    `${copyControl(body, 'Copy checklist')}<a class="btn primary" href="${issueURL('[ADR Assessment] Low-confidence review batch', body)}">Open checklist issue</a>`,
   );
   app.innerHTML = `
     ${metricsRow([
@@ -439,23 +578,28 @@ export async function renderCandidates(app: HTMLElement) {
         <button type="button" data-band="medium">Medium</button>
         <button type="button" data-band="low">Low</button>
       </div>
-      <input class="search" id="cand-q" placeholder="Search id or statement" />
+      <input class="search" id="cand-q" placeholder="Search id or statement" value="${escapeHTML(focusId || '')}" />
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>ID</th><th>ADR</th><th>Band</th><th>Pattern</th><th>Citation</th><th>Statement</th></tr></thead>
+        <thead><tr><th>ID</th><th>ADR</th><th>Band</th><th>Links</th><th>Pattern</th><th>Statement</th></tr></thead>
         <tbody id="cand-body">
           ${rows
-            .map(
-              (c) => `<tr data-band="${escapeHTML(c.confidence)}" data-q="${escapeHTML((c.id + ' ' + c.statement).toLowerCase())}">
-              <td><code class="id" title="${escapeHTML(c.id)}">${escapeHTML(c.id)}</code></td>
+            .map((c) => {
+              const prop = propByParent.get(c.id);
+              return `<tr data-band="${escapeHTML(c.confidence)}" data-q="${escapeHTML((c.id + ' ' + c.statement).toLowerCase())}">
+              <td><code class="id" title="${escapeHTML(c.id)}">${escapeHTML(c.id)}</code> ${copyControl(c.id, 'Copy')}</td>
               <td><a class="id" href="#/adrs/${escapeHTML(c.adr_id)}" title="${escapeHTML(c.adr_id)}">${escapeHTML(c.adr_id)}</a></td>
               <td>${tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : '')}</td>
+              <td class="entity-links">
+                <a href="#/adrs/${escapeHTML(c.adr_id)}">ADR</a>
+                ${prop ? `<a href="#/proposals?parent=${escapeHTML(c.id)}">Proposal</a>` : '<span class="faint">No proposal</span>'}
+                <a href="#/assess">Assess</a>
+              </td>
               <td><code class="id" title="${escapeHTML(c.pattern_hint)}">${escapeHTML(c.pattern_hint)}</code></td>
-              <td class="faint truncate" title="${escapeHTML(`${c.source_path || ''}:${fmt(c.source_line_start)}`)}">${escapeHTML(c.source_path || '')}:${fmt(c.source_line_start)}</td>
               <td class="wrap">${escapeHTML(c.statement)}</td>
-            </tr>`,
-            )
+            </tr>`;
+            })
             .join('')}
         </tbody>
       </table>
@@ -480,6 +624,8 @@ export async function renderCandidates(app: HTMLElement) {
     });
   });
   document.getElementById('cand-q')?.addEventListener('input', apply);
+  apply();
+  bindCopyButtons(app);
 }
 
 export async function renderProposals(app: HTMLElement) {
@@ -506,9 +652,13 @@ export async function renderProposals(app: HTMLElement) {
       approval_status: string;
     }>;
   }>('proposals');
-  const proposals = data?.proposals || [];
+  const parentFilter = queryParam('parent');
+  const proposals = (data?.proposals || []).filter((p) => !parentFilter || p.parent_candidate_id === parentFilter);
   const latest = await loadLatest();
+  const cands = await loadLinkJSON<{ candidates?: Array<{ id: string; adr_id: string }> }>('candidates');
+  const adrByCand = new Map((cands?.candidates || []).map((c) => [c.id, c.adr_id]));
   app.innerHTML = `
+    ${parentFilter ? `<div class="banner">Filtered to parent <code>${escapeHTML(parentFilter)}</code> · <a href="#/proposals">Clear</a></div>` : ''}
     ${metricsRow([
       { label: 'Proposals', value: fmt(data?.proposal_count ?? proposals.length) },
       { label: 'Provider', value: fmt(data?.provider || latest?.metrics['kpi.assist.provider']) },
@@ -519,7 +669,7 @@ export async function renderProposals(app: HTMLElement) {
   `;
   const list = document.getElementById('prop-list')!;
   if (!proposals.length) {
-    list.innerHTML = `<p class="muted" style="margin-top:1rem">No proposals in the latest snapshot.</p>`;
+    list.innerHTML = `<p class="muted" style="margin-top:1rem">No proposals in the selected snapshot.</p>`;
     return;
   }
   for (const p of proposals) {
@@ -534,19 +684,26 @@ export async function renderProposals(app: HTMLElement) {
       '',
       { context: 4 },
     );
+    const adr = adrByCand.get(p.parent_candidate_id);
     panel.innerHTML = `
       <div class="meta">
         <code>${escapeHTML(p.proposal_id)}</code>
-        <span>${escapeHTML(p.parent_candidate_id)}</span>
-        <span>${escapeHTML(p.parent_confidence || p.confidence || '')}</span>
+        ${copyControl(p.proposal_id, 'Copy')}
         <span>${tag(p.approval_status)}</span>
         <span>${tag(`executable=${p.executable}`, p.executable ? 'bad' : 'ok')}</span>
+      </div>
+      <div class="entity-links">
+        <a href="#/candidates?id=${escapeHTML(p.parent_candidate_id)}">Candidate ${escapeHTML(p.parent_candidate_id)}</a>
+        ${adr ? `<a href="#/adrs/${escapeHTML(adr)}">ADR ${escapeHTML(adr)}</a>` : ''}
+        <a href="#/assess">Assess</a>
+        <a href="#/costs">Cost</a>
       </div>
       <p class="prose">${escapeHTML(p.rationale)}</p>
       <p class="faint" style="margin:0.45rem 0">Suggested pattern: <code>${escapeHTML(p.suggested_pattern_id)}</code></p>
       <div class="diff">${diff2html(patch, { drawFileList: false, matching: 'lines', outputFormat: 'side-by-side' })}</div>`;
     list.appendChild(panel);
   }
+  bindCopyButtons(list);
 }
 
 export async function renderAssess(app: HTMLElement) {
@@ -689,7 +846,10 @@ export async function renderSample(app: HTMLElement, stepId?: string) {
           <h2>What happens technically</h2>
           <p class="prose">${escapeHTML(step.technical)}</p>
           ${(step.commands || [])
-            .map((c) => `<div class="cmd-line" title="${escapeHTML(c)}"><code>${escapeHTML(c)}</code></div>`)
+            .map(
+              (c) =>
+                `<div class="cmd-line" title="${escapeHTML(c)}"><code>${escapeHTML(c)}</code> ${copyControl(c, 'Copy')}</div>`,
+            )
             .join('')}
           ${
             (step.checks || []).length
@@ -704,16 +864,34 @@ export async function renderSample(app: HTMLElement, stepId?: string) {
           ${fieldRows(artifact || null)}
         </section>
         <div class="journey-nav">
-          ${prev ? `<a class="btn" href="#/sample/${escapeHTML(prev.id)}">← ${escapeHTML(prev.short || prev.title)}</a>` : `<span></span>`}
+          ${prev ? `<a class="btn" id="sample-prev" href="#/sample/${escapeHTML(prev.id)}">← ${escapeHTML(prev.short || prev.title)}</a>` : `<span></span>`}
           ${
             next
-              ? `<a class="btn primary" href="#/sample/${escapeHTML(next.id)}">${escapeHTML(next.short || next.title)} →</a>`
+              ? `<a class="btn primary" id="sample-next" href="#/sample/${escapeHTML(next.id)}">${escapeHTML(next.short || next.title)} →</a>`
               : `<a class="btn primary" href="#/pipeline">Explore live pipeline →</a>`
           }
         </div>
+        <p class="faint">Keyboard: ← previous · → next</p>
       </div>
     </div>
   `;
+  bindCopyButtons(app);
+  const keyFlag = '__pfSampleKeyHandler' as const;
+  const w = window as Window & { [keyFlag]?: (e: KeyboardEvent) => void };
+  if (w[keyFlag]) window.removeEventListener('keydown', w[keyFlag]!);
+  w[keyFlag] = (e: KeyboardEvent) => {
+    if (!location.hash.startsWith('#/sample')) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+    if (e.key === 'ArrowLeft' && prev) {
+      e.preventDefault();
+      location.hash = `#/sample/${prev.id}`;
+    }
+    if (e.key === 'ArrowRight' && next) {
+      e.preventDefault();
+      location.hash = `#/sample/${next.id}`;
+    }
+  };
+  window.addEventListener('keydown', w[keyFlag]);
 }
 
 export async function renderRuns(app: HTMLElement) {
@@ -737,7 +915,7 @@ export async function renderRuns(app: HTMLElement) {
         <thead><tr><th>Run</th><th>Workflow</th><th>When</th><th>Candidates</th><th>Low</th><th>Cost</th><th>Verdict</th></tr></thead>
         <tbody>${ordered
           .map(
-            (r) => `<tr>
+            (r) => `<tr class="row-link" data-run="${escapeHTML(r.run.run_id)}">
           <td><code class="id" title="${escapeHTML(r.run.run_id)}">${escapeHTML(r.run.run_id)}</code></td>
           <td class="truncate">${escapeHTML(r.run.workflow)}</td>
           <td class="truncate">${escapeHTML(r.run.timestamp || '')}</td>
@@ -751,6 +929,14 @@ export async function renderRuns(app: HTMLElement) {
       </table>
     </div>
   `;
+  document.querySelectorAll<HTMLElement>('#app tr.row-link[data-run]').forEach((tr) => {
+    tr.addEventListener('click', () => {
+      const id = tr.dataset.run;
+      if (!id) return;
+      setSelectedRunId(id);
+      location.hash = '#/';
+    });
+  });
   const a = document.getElementById('run-a') as HTMLSelectElement | null;
   const b = document.getElementById('run-b') as HTMLSelectElement | null;
   if (a && b && ordered.length >= 2) {
@@ -796,25 +982,72 @@ export async function renderEvals(app: HTMLElement) {
 
 export async function renderCorpus(app: HTMLElement) {
   setCrumb('Corpus');
-  setPurpose('Labeled ADR scale and harness precision / recall, including by confidence band.');
-  const latest = await loadLatest();
+  setPurpose('Browse labeled corpus entries, filter by confidence band, and jump to source ADRs on GitHub.');
+  const [latest, corpus] = await Promise.all([loadLatest(), loadCorpusIndex()]);
   const { owner, repo } = repoBase();
+  const entries = corpus?.entries || [];
   setTopActions(`
-    <a class="btn" href="#/adrs">Browse ADRs</a>
+    <a class="btn" href="#/adrs">Published ADRs</a>
     <a class="btn primary" href="${workflowDispatchURL('corpus-eval.yml')}">Run corpus eval</a>
   `);
   app.innerHTML = `
     ${metricsRow([
-      { label: 'Corpus size', value: fmt(latest?.metrics['kpi.corpus.size']) },
+      { label: 'Corpus size', value: fmt(corpus?.corpus_size ?? latest?.metrics['kpi.corpus.size'] ?? entries.length) },
       { label: 'Precision', value: fmt(latest?.metrics['kpi.harness.precision']) },
       { label: 'Recall', value: fmt(latest?.metrics['kpi.harness.recall']) },
       { label: 'Recall H/M/L', value: `${fmt(latest?.metrics['kpi.harness.recall.high'])} / ${fmt(latest?.metrics['kpi.harness.recall.medium'])} / ${fmt(latest?.metrics['kpi.harness.recall.low'])}` },
+      { label: 'Escalate labels', value: fmt(entries.filter((e) => e.escalate_expected).length) },
     ])}
-    <p class="run-meta" style="margin-top:1rem">
-      Label via PR with <code>[corpus-label]</code>.
-      <a href="https://github.com/${owner}/${repo}/compare">Open compare</a>
-    </p>
+    <div class="toolbar">
+      <div class="seg" id="corpus-band">
+        <button type="button" class="active" data-band="all">All</button>
+        <button type="button" data-band="high">High</button>
+        <button type="button" data-band="medium">Medium</button>
+        <button type="button" data-band="low">Low</button>
+      </div>
+      <input class="search" id="corpus-q" placeholder="Search ADR id or statement marker" />
+      <a class="btn" href="https://github.com/${owner}/${repo}/compare">Open labeling PR</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ADR</th><th>Band</th><th>Modality</th><th>Pattern</th><th>Escalate</th><th>Marker</th></tr></thead>
+        <tbody id="corpus-body">
+          ${entries
+            .map(
+              (e) => `<tr data-band="${escapeHTML(e.confidence_band)}" data-q="${escapeHTML((e.adr_id + ' ' + e.statement_contains).toLowerCase())}">
+              <td><a class="id" href="${githubBlobURL(`testdata/corpus/adrs/${e.adr_id}.md`)}" title="${escapeHTML(e.adr_id)}">${escapeHTML(e.adr_id)}</a></td>
+              <td>${tag(e.confidence_band, e.confidence_band === 'low' ? 'warn' : e.confidence_band === 'high' ? 'ok' : '')}</td>
+              <td>${escapeHTML(e.modality)}</td>
+              <td><code class="id" title="${escapeHTML(e.pattern_id)}">${escapeHTML(e.pattern_id)}</code></td>
+              <td>${e.escalate_expected ? tag('yes', 'warn') : tag('no')}</td>
+              <td class="wrap">${escapeHTML(e.statement_contains)}</td>
+            </tr>`,
+            )
+            .join('')}
+        </tbody>
+      </table>
+    </div>
+    <p class="run-meta" style="margin-top:1rem">Source: <code>${escapeHTML(corpus?.source || 'testdata/corpus/labels.json')}</code> · label via PR with <code>[corpus-label]</code>.</p>
   `;
+  let band = 'all';
+  const apply = () => {
+    const q = (document.getElementById('corpus-q') as HTMLInputElement)?.value.toLowerCase() || '';
+    document.querySelectorAll('#corpus-body tr').forEach((tr) => {
+      const el = tr as HTMLElement;
+      const okBand = band === 'all' || el.dataset.band === band;
+      const okQ = !q || (el.dataset.q || '').includes(q);
+      el.style.display = okBand && okQ ? '' : 'none';
+    });
+  };
+  document.querySelectorAll('#corpus-band button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#corpus-band button').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      band = (btn as HTMLElement).dataset.band || 'all';
+      apply();
+    });
+  });
+  document.getElementById('corpus-q')?.addEventListener('input', apply);
 }
 
 export async function renderDocs(app: HTMLElement) {

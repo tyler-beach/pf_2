@@ -1,5 +1,7 @@
 import 'uplot/dist/uPlot.min.css';
 import 'diff2html/bundles/css/diff2html.min.css';
+import { renderChrome } from './chrome';
+import { bindCopyButtons } from './ui';
 import {
   renderADRs,
   renderAssess,
@@ -76,41 +78,56 @@ function nav() {
 
 async function render() {
   nav();
+  await renderChrome();
   const app = document.getElementById('app')!;
   const { path, rest } = routeParts();
   switch (path) {
     case '/':
-      return renderHome(app);
+      await renderHome(app);
+      break;
     case '/metrics':
-      return renderMetrics(app);
+      await renderMetrics(app);
+      break;
     case '/pipeline':
-      return renderPipeline(app, rest[0]);
+      await renderPipeline(app, rest[0]);
+      break;
     case '/sample':
-      return renderSample(app, rest[0]);
+      await renderSample(app, rest[0]);
+      break;
     case '/adrs':
-      return renderADRs(app, rest[0]);
+      await renderADRs(app, rest[0]);
+      break;
     case '/candidates':
-      return renderCandidates(app);
+      await renderCandidates(app);
+      break;
     case '/proposals':
-      return renderProposals(app);
+      await renderProposals(app);
+      break;
     case '/assess':
-      return renderAssess(app);
+      await renderAssess(app);
+      break;
     case '/costs':
-      return renderCosts(app);
+      await renderCosts(app);
+      break;
     case '/runs':
-      return renderRuns(app);
+      await renderRuns(app);
+      break;
     case '/evals':
-      return renderEvals(app);
+      await renderEvals(app);
+      break;
     case '/corpus':
-      return renderCorpus(app);
+      await renderCorpus(app);
+      break;
     case '/docs':
-      return renderDocs(app);
+      await renderDocs(app);
+      break;
     case '/kpis':
       location.hash = '#/metrics';
       return;
     default:
       app.innerHTML = `<div class="empty"><h1>Not found</h1><p class="muted" style="margin-top:0.5rem"><a href="#/">Back to overview</a></p></div>`;
   }
+  bindCopyButtons(app);
 }
 
 document.getElementById('nav-toggle')?.addEventListener('click', () => {
@@ -119,6 +136,9 @@ document.getElementById('nav-toggle')?.addEventListener('click', () => {
 
 window.addEventListener('hashchange', () => {
   document.getElementById('sidebar')?.classList.remove('open');
+  void render();
+});
+window.addEventListener('pf:run-change', () => {
   void render();
 });
 void render();
