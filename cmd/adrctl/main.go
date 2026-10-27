@@ -658,16 +658,8 @@ func runAssessObligations(args []string) error {
 		report.CandidateCount, report.ObligationVerdict, report.Counts["PASS"], report.Counts["FAIL"], report.Counts["INDETERMINATE"],
 		report.Counts["NOT_APPLICABLE"], *jsonPath, *markdownPath)
 	if *enforceBlocking {
-		for _, candidate := range report.Candidates {
-			// An unreviewed or source-stale candidate may represent a newly
-			// introduced blocking obligation. Do not let absence of an approval
-			// silently bypass the enforcement gate.
-			if candidate.Decision == obligations.DecisionPending {
-				return fmt.Errorf("obligation candidate %s remains pending review (status=%s); review or explicitly reject it before enforcing blocking obligations; see %s", candidate.CandidateID, candidate.Status, *markdownPath)
-			}
-			if candidate.Decision == obligations.DecisionApproved && candidate.EnforcementMode == obligations.EnforcementBlocking && candidate.Status != "PASS" {
-				return fmt.Errorf("blocking obligation %s did not pass (status=%s, evidence=%s); see %s", candidate.CandidateID, candidate.Status, candidate.EvidenceStatus, *markdownPath)
-			}
+		if err := validateBlockingGate(report); err != nil {
+			return fmt.Errorf("%w; see %s", err, *markdownPath)
 		}
 	}
 	return nil
@@ -676,6 +668,27 @@ func runAssessObligations(args []string) error {
 // runPlanRepo creates a deterministic, source-bound execution plan. Planning
 // does not launch analyzers; every execution must re-verify the manifest before
 // using its cache keys or dispatching tasks.
+func validateBlockingGate(report obligations.AssessmentReport) error {
+	if report.BindingCoverage.OrphanedCount > 0 {
+		return fmt.Errorf("%d orphaned review history record(s) must be explicitly superseded before enforcing blocking obligations", report.BindingCoverage.OrphanedCount)
+	}
+	if report.BindingCoverage.StaleCount > 0 {
+		return fmt.Errorf("%d stale candidate review or verifier binding snapshot(s) must be re-reviewed before enforcing blocking obligations", report.BindingCoverage.StaleCount)
+	}
+	for _, candidate := range report.Candidates {
+		// An unreviewed or source-stale candidate may represent a newly
+		// introduced blocking obligation. Do not let absence of an approval
+		// silently bypass the enforcement gate.
+		if candidate.Decision == obligations.DecisionPending {
+			return fmt.Errorf("obligation candidate %s remains pending review (status=%s); review or explicitly reject it before enforcing blocking obligations", candidate.CandidateID, candidate.Status)
+		}
+		if candidate.Decision == obligations.DecisionApproved && candidate.EnforcementMode == obligations.EnforcementBlocking && candidate.Status != "PASS" {
+			return fmt.Errorf("blocking obligation %s did not pass (status=%s, evidence=%s)", candidate.CandidateID, candidate.Status, candidate.EvidenceStatus)
+		}
+	}
+	return nil
+}
+
 func runPlanRepo(args []string) error {
 	fs := flag.NewFlagSet("plan-repo", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root")
