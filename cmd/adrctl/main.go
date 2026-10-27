@@ -695,7 +695,21 @@ func runSpecificationCheck(args []string) error {
 	if err != nil { return fmt.Errorf("resolve ADR source root: %w", err) }
 	adrRootReal, err := filepath.EvalSymlinks(adrRootAbs)
 	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	relativeADRRoot, err := filepath.Rel(rootReal, adrRootReal)
+	if err != nil { return fmt.Errorf("validate ADR source root containment: %w", err) }
+	if relativeADRRoot == ".." || strings.HasPrefix(relativeADRRoot, ".."+string(filepath.Separator)) || filepath.IsAbs(relativeADRRoot) {
+		return fmt.Errorf("ADR source root must remain inside repository root")
+	}
 	artifactDir := filepath.Join(rootReal, "adr")
+	if resolved, resolveErr := filepath.EvalSymlinks(artifactDir); resolveErr == nil {
+		artifactDir = resolved
+	} else if !os.IsNotExist(resolveErr) {
+		return fmt.Errorf("resolve generated artifact directory: %w", resolveErr)
+	}
+	relativeArtifactDir, err := filepath.Rel(rootReal, artifactDir)
+	if err != nil || relativeArtifactDir == ".." || strings.HasPrefix(relativeArtifactDir, ".."+string(filepath.Separator)) || filepath.IsAbs(relativeArtifactDir) {
+		return fmt.Errorf("generated artifact directory must remain inside repository root")
+	}
 	relArtifacts, err := filepath.Rel(adrRootReal, artifactDir)
 	if err != nil { return fmt.Errorf("validate generated artifact directory: %w", err) }
 	if relArtifacts == "." || (relArtifacts != ".." && !strings.HasPrefix(relArtifacts, ".."+string(filepath.Separator))) {
