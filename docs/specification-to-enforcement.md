@@ -102,7 +102,7 @@ go run ./cmd/adrctl specification-check \
   --registry adr/obligation-reviews.json
 ```
 
-The command enforces blocking obligations by default. Use `--report-only` to generate the same artifacts without returning a gate failure while reviewing or bootstrapping coverage. The review registry must already exist; the command never initializes, approves, or edits reviews automatically.
+The command enforces blocking obligations by default. Use `--report-only` to generate the same artifacts without returning a gate failure while reviewing or bootstrapping coverage. The review registry must already exist; the command never initializes, approves, or edits reviews automatically. If the catalog uses `analyzer-rule` verifiers, pass both `--analyzer-evidence path/to/normalized-scan.json` and `--analyzer-sarif path/to/raw-scan.sarif`; the repository assessment verifies the pair against the current repository snapshot. The orchestrator does not run or install analyzers itself.
 
 Generated artifacts are written to `adr/ingested-adrs.json`, `adr/obligation-candidates.json`, `adr/obligation-candidates.md`, and the repository/obligation reports at the repository root. The candidate index is regenerated on each run so stale approvals cannot be hidden by reusing an old index.
 
