@@ -126,16 +126,23 @@ export async function renderHome(app: HTMLElement) {
   }
 }
 
+const METRIC_TABS = ['all', 'confidence', 'escalation', 'harness', 'review', 'assist', 'assess'] as const;
+type MetricTab = (typeof METRIC_TABS)[number];
+
+function parseMetricFocus(raw: string | null): MetricTab {
+  return (METRIC_TABS as readonly string[]).includes(raw || '') ? (raw as MetricTab) : 'all';
+}
+
 export async function renderMetrics(app: HTMLElement) {
   setCrumb('Metrics');
   setPurpose('KPI trends for the selected focus. Assist and Promptfoo values are quality signals, not compliance.');
   setTopActions(`<a class="btn" href="#/runs">Compare runs</a>`);
   const params = new URLSearchParams(location.hash.split('?')[1] || '');
-  const focus = params.get('focus') || 'all';
+  const focus = parseMetricFocus(params.get('focus'));
   const [runs, latest] = await Promise.all([loadRuns(), loadLatest()]);
   const m = latest?.metrics || {};
 
-  const focusMetrics: Record<string, Array<{ label: string; value: string; hint?: string; cls?: string }>> = {
+  const focusMetrics: Record<MetricTab, Array<{ label: string; value: string; hint?: string; cls?: string }>> = {
     all: [
       { label: 'Escalation', value: fmt(m['kpi.escalation.rate']) },
       { label: 'Precision', value: fmt(m['kpi.harness.precision']) },
@@ -190,24 +197,30 @@ export async function renderMetrics(app: HTMLElement) {
     ],
   };
 
-  const tabs = ['all', 'confidence', 'escalation', 'harness', 'review', 'assist', 'assess'];
   app.innerHTML = `
     <div class="toolbar">
-      <div class="seg" id="metric-tabs">
-        ${tabs.map((t) => `<button type="button" class="${focus === t ? 'active' : ''}" data-t="${t}">${t}</button>`).join('')}
-      </div>
+      <div class="seg" id="metric-tabs"></div>
     </div>
-    ${metricsRow(focusMetrics[focus] || focusMetrics.all)}
+    ${metricsRow(focusMetrics[focus])}
     <h2>Trend</h2>
     <div id="m-chart" class="chart tall"></div>
     <h2>Raw latest metrics</h2>
     <div class="artifact"><pre>${escapeHTML(JSON.stringify(m, null, 2))}</pre></div>
   `;
-  document.querySelectorAll('#metric-tabs button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      location.hash = `#/metrics?focus=${(btn as HTMLElement).dataset.t}`;
-    });
-  });
+  const tabHost = document.getElementById('metric-tabs');
+  if (tabHost) {
+    for (const t of METRIC_TABS) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = t;
+      btn.dataset.t = t;
+      if (focus === t) btn.className = 'active';
+      btn.addEventListener('click', () => {
+        location.hash = `#/metrics?focus=${encodeURIComponent(t)}`;
+      });
+      tabHost.appendChild(btn);
+    }
+  }
   const el = document.getElementById('m-chart');
   if (el && runs.length) {
     const xs = runs.map((_, i) => i);
