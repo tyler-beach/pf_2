@@ -92,7 +92,7 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 		return report
 	}
 	passed := readReport()
-	if !passed.EvidenceFresh || passed.Candidates[0].Status != "PASS" ||
+	if !passed.EvidenceFresh || passed.ObligationVerdict != "PASS" || passed.Candidates[0].Status != "PASS" ||
 		passed.Candidates[0].Decision != obligations.DecisionApproved ||
 		passed.Candidates[0].RequirementID != "REQ-001-01" {
 		t.Fatalf("reviewed obligation did not complete the end-to-end pass path: %+v", passed)
@@ -103,7 +103,7 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	if err := runAssess(repoAssessmentArgs, true); err != nil { t.Fatal(err) }
 	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
 	failed := readReport()
-	if !failed.EvidenceFresh || failed.Candidates[0].Status != "FAIL" || failed.Candidates[0].EvidenceStatus != "FAIL" {
+	if !failed.EvidenceFresh || failed.ObligationVerdict != "FAIL" || failed.Candidates[0].Status != "FAIL" || failed.Candidates[0].EvidenceStatus != "FAIL" {
 		t.Fatalf("fresh failing repository evidence was not reported as FAIL: %+v", failed)
 	}
 
@@ -111,7 +111,7 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil { t.Fatal(err) }
 	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
 	stale := readReport()
-	if stale.EvidenceFresh || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
+	if stale.EvidenceFresh || stale.ObligationVerdict != "INDETERMINATE" || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale assessment remained compliant after source changed: %+v", stale)
 	}
 
@@ -171,7 +171,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if err != nil { t.Fatal(err) }
 	var report obligations.AssessmentReport
 	if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
-	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Candidates[0].Status != "INDETERMINATE" {
+	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.ObligationVerdict != "INDETERMINATE" || report.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
 	}
 	if !report.EvidenceFresh { t.Fatalf("matching source snapshot was incorrectly marked stale: %+v", report) }
