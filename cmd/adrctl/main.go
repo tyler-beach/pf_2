@@ -244,13 +244,6 @@ func runExtractObligations(args []string) error {
 	output := fs.String("json-out", "adr/obligation-candidates.json", "review-only candidate obligation JSON output")
 	if err := fs.Parse(args); err != nil { return err }
 	if fs.NArg() != 0 { return fmt.Errorf("extract-obligations accepts no positional arguments") }
-	indexBytes, err := os.ReadFile(*indexPath)
-	if err != nil { return fmt.Errorf("read ADR ingestion index: %w", err) }
-	var index ingestionIndex
-	if err := json.Unmarshal(indexBytes, &index); err != nil { return fmt.Errorf("decode ADR ingestion index: %w", err) }
-	if index.SchemaVersion != "1" { return fmt.Errorf("unsupported ADR ingestion index schema_version %q", index.SchemaVersion) }
-	if *root == "" { *root = index.SourceRoot }
-	if strings.TrimSpace(*root) == "" { return fmt.Errorf("source root is required via --root or source_root in the index") }
 	indexAbs, err := filepath.Abs(*indexPath)
 	if err != nil { return fmt.Errorf("resolve ingestion index path: %w", err) }
 	outputAbs, err := filepath.Abs(*output)
@@ -258,6 +251,13 @@ func runExtractObligations(args []string) error {
 	if filepath.Clean(indexAbs) == filepath.Clean(outputAbs) {
 		return fmt.Errorf("candidate output must not overwrite the ADR ingestion index")
 	}
+	indexBytes, err := os.ReadFile(*indexPath)
+	if err != nil { return fmt.Errorf("read ADR ingestion index: %w", err) }
+	var index ingestionIndex
+	if err := json.Unmarshal(indexBytes, &index); err != nil { return fmt.Errorf("decode ADR ingestion index: %w", err) }
+	if index.SchemaVersion != "1" { return fmt.Errorf("unsupported ADR ingestion index schema_version %q", index.SchemaVersion) }
+	if *root == "" { *root = index.SourceRoot }
+	if strings.TrimSpace(*root) == "" { return fmt.Errorf("source root is required via --root or source_root in the index") }
 	candidates, err := obligations.BuildIndex(index.Documents, *root, index.SourceRoot, indexBytes)
 	if err != nil { return fmt.Errorf("build review-only obligation candidates: %w", err) }
 	data, err := json.MarshalIndent(candidates, "", "  ")
