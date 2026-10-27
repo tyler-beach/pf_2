@@ -33,11 +33,35 @@ jobs:
       - name: Assess issue content without executing submitted code
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
+          set -euo pipefail
           printf '%s' "$ISSUE_BODY" > issue.md
+          requirements="adr/requirements.json"
+
+          # This title-gated fixture exercises explicit human-review semantics
+          # through the same issue-to-report pipeline. Ordinary issues always
+          # use the repository's unchanged compatibility catalog.
+          if [[ "$ISSUE_TITLE" == *"[manual-review-smoke]"* ]]; then
+            requirements="$RUNNER_TEMP/requirements-manual-review.json"
+            jq '.adrs += [{
+              "id": "ADR-E2E-MANUAL-REVIEW",
+              "title": "Human review for business semantic constraints",
+              "version": 1,
+              "status": "accepted",
+              "requirements": [{
+                "id": "REQ-E2E-MANUAL-REVIEW-01",
+                "title": "The timeout must meet the service business latency budget",
+                "description": "Whether the configured timeout meets product latency goals requires human judgment.",
+                "severity": "warning",
+                "verifier": {"type": "manual-review"}
+              }]
+            }]' adr/requirements.json > "$requirements"
+          fi
+
           go run ./cmd/adrctl assess \
             --input issue.md \
-            --requirements adr/requirements.json \
+            --requirements "$requirements" \
             --report report.md \
             --json-out assessment.json \
             --sarif-out results.sarif
@@ -94,6 +118,27 @@ jobs:
             report.md
           if-no-files-found: error
           retention-days: 14
+
+      - name: Assert manual-review status and fail-closed semantics
+        if: always() && success() && contains(github.event.issue.title, '[manual-review-smoke]')
+        run: |
+          set -euo pipefail
+          jq -e '
+            .verdict == "INDETERMINATE"
+            and .runtime_llm_calls == 0
+            and .counts["REVIEW_REQUIRED"] == 1
+            and any(.requirements[];
+              .requirement_id == "REQ-E2E-MANUAL-REVIEW-01"
+              and .status == "REVIEW_REQUIRED")
+            and any(.requirements[];
+              .requirement_id == "REQ-001-01" and .status == "PASS")
+            and any(.requirements[];
+              .requirement_id == "REQ-001-02" and .status == "PASS")
+            and any(.requirements[];
+              .requirement_id == "REQ-002-01" and .status == "PASS")
+            and any(.requirements[];
+              .requirement_id == "REQ-002-02" and .status == "PASS")
+          ' assessment.json
 
       - name: Assert expected verdict for regression issues
         if: always() && success()
