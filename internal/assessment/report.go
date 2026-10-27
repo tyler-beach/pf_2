@@ -13,6 +13,12 @@ func MarkdownReport(r Result) string {
 	fmt.Fprintf(&b, "- **Coverage:** %s (%d/%d requirements applicable)\n- **Evidence scope:** %s\n", r.CoverageStatus, r.ApplicableRequirementCount, r.RequirementCount, r.EvidenceMode)
 	if r.CoverageStatus != "COMPLETE" { b.WriteString("> Coverage is incomplete; requirements without applicable evidence are not counted as passing. Missing required evidence is reported as EVIDENCE_MISSING and makes the verdict INDETERMINATE.\n\n") }
 	fmt.Fprintf(&b, "- **Engine:** %s\n- **Runtime LLM calls:** %d\n- **Source files:** %d\n- **Requirements evaluated:** %d\n\n", r.EngineVersion, r.LLMCalls, r.SourceFileCount, r.RequirementCount)
+	if len(r.UnassessedSourceFiles) > 0 {
+		b.WriteString("## Unassessed source snippets\n\n")
+		b.WriteString("These submitted snippets were retained in the evidence inventory but were not analyzed by a compatible deterministic verifier. Issue assessments do not execute external analyzers, so the result is INDETERMINATE unless a confirmed violation already makes it FAIL.\n\n")
+		for _, source := range r.UnassessedSourceFiles { fmt.Fprintf(&b, "- %s\n", strings.ReplaceAll(source, "|", "\\|")) }
+		b.WriteString("\n")
+	}
 	if len(r.AnalyzerResults) > 0 {
 		b.WriteString("## Analyzer executions\n\n| Analyzer | Version | Status | Findings | Input SHA-256 | Configuration SHA-256 | Raw output SHA-256 |\n|---|---|---|---:|---|---|---|\n")
 		for _, scan := range r.AnalyzerResults {

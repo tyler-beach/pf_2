@@ -121,3 +121,7 @@ go run ./cmd/adrctl assess-repo \
 ```
 
 Before findings are used, Pathfinder re-parses the paired raw SARIF and verifies its SHA-256, the recorded configuration file's SHA-256, and the current repository-tree digest. Evidence from another source snapshot or changed rules is rejected rather than silently reused. These digests provide integrity and freshness checks, not a digital signature. Analyzer-rule obligations require a complete scan, input/configuration/raw-output SHA-256 provenance, and at least one discovered path in the declared scope. Missing or partial scan evidence is `EVIDENCE_MISSING` and makes the verdict `INDETERMINATE`; a finding without a source path also fails closed. Findings outside an obligation's declared path prefixes do not violate that obligation.
+
+## Issue-submission language coverage
+
+Issue submissions retain common source and configuration snippets with explicit language labels, including Go, JSON, Python, JavaScript/TypeScript, Java, C#, PHP, Ruby, Rust, shell, YAML, Terraform/HCL, Kotlin, Scala, C/C++, SQL, HTML/XML, and Vue. Only Go and JSON have direct deterministic snippet verifiers today. Other submitted languages are listed under `unassessed_source_files`; they force a partial-coverage `INDETERMINATE` result instead of being ignored or implicitly passing. Issue workflows never execute submitted code or launch external analyzers against issue-provided snippets.
