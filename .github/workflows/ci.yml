@@ -378,3 +378,78 @@ jobs:
             testdata/arch-go-benchmark/violation/.arch-go/report.json
           if-no-files-found: warn
           retention-days: 14
+
+  conftest-benchmark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Go
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          go-version: '1.23.x'
+          cache: false
+
+      - name: Install pinned Conftest and verify release checksums
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/conftest"
+          mkdir -p "$tool_dir"
+          archive="conftest_0.71.1_Linux_x86_64.tar.gz"
+          release="https://github.com/open-policy-agent/conftest/releases/download/v0.71.1"
+          curl --fail --location --silent --show-error "$release/checksums.txt" --output "$tool_dir/checksums.txt"
+          echo "5e5d7e2c0e88b3437cb659a921e0b88e997e4e0a49d01be52a9569136f01dbf9  $tool_dir/checksums.txt" | sha256sum --check
+          grep -E "^[[:xdigit:]]{64}[[:space:]]+${archive//./\\.}$" "$tool_dir/checksums.txt" > "$tool_dir/selected-checksum.txt"
+          test "$(wc -l < "$tool_dir/selected-checksum.txt")" -eq 1
+          curl --fail --location --silent --show-error "$release/$archive" --output "$tool_dir/$archive"
+          (cd "$tool_dir" && sha256sum --check selected-checksum.txt)
+          tar -xzf "$tool_dir/$archive" -C "$tool_dir"
+          "$tool_dir/conftest" --help >/dev/null
+
+      - name: Compare Conftest and Pathfinder on structured JSON policy fixtures
+        run: |
+          set -euo pipefail
+          tool="$RUNNER_TEMP/conftest/conftest"
+          policy="testdata/conftest-benchmark/policy"
+          fixtures="testdata/conftest-benchmark"
+          results="$RUNNER_TEMP/conftest-benchmark-results"
+          mkdir -p "$results"
+
+          # The same required-key and timeout-range contract must accept the
+          # compliant input and reject the missing retry key / out-of-range timeout.
+          "$tool" test --policy "$policy" --output json "$fixtures/clean/config/service.json" > "$results/conftest-clean.json"
+          jq -e 'all(.[]; (.failures | length) == 0)' "$results/conftest-clean.json"
+          if "$tool" test --policy "$policy" --output json "$fixtures/violation/config/service.json" > "$results/conftest-violation.json"; then
+            echo "Conftest unexpectedly accepted missing retry_limit and timeout_seconds=121" >&2
+            exit 1
+          fi
+          jq -e 'any(.[]; (.failures | length) >= 2)' "$results/conftest-violation.json"
+
+          # Run Pathfinder's built-in JSON verifiers against identical files.
+          catalog="$PWD/$fixtures/requirements.json"
+          for scenario in clean violation; do
+            root="$RUNNER_TEMP/pathfinder-json-$scenario"
+            mkdir -p "$root/config"
+            cp "$fixtures/$scenario/config/service.json" "$root/config/service.json"
+            go run ./cmd/adrctl assess-repo \
+              --root "$root" \
+              --requirements "$catalog" \
+              --report "$results/pathfinder-$scenario.md" \
+              --json-out "$results/pathfinder-$scenario.json" \
+              --sarif-out "$results/pathfinder-$scenario.sarif"
+          done
+          jq -e '.verdict == "PASS"' "$results/pathfinder-clean.json"
+          jq -e '.verdict == "FAIL"' "$results/pathfinder-violation.json"
+
+      - name: Upload Conftest and Pathfinder benchmark outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: conftest-json-policy-benchmark
+          path: ${{ runner.temp }}/conftest-benchmark-results
+          if-no-files-found: warn
+          retention-days: 14
