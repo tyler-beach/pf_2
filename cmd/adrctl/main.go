@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -541,6 +542,7 @@ func runValidateObligationReviews(args []string) error {
 func runAssessObligations(args []string) error {
 	fs := flag.NewFlagSet("assess-obligations", flag.ContinueOnError)
 	indexPath := fs.String("index", "adr/obligation-candidates.json", "source-cited candidate index")
+	ingestionIndexPath := fs.String("ingestion-index", "adr/ingested-adrs.json", "source ADR ingestion index used to reproduce candidates")
 	catalogPath := fs.String("requirements", "adr/requirements.json", "approved requirements catalog")
 	registryPath := fs.String("registry", "adr/obligation-reviews.json", "append-only review registry")
 	assessmentPath := fs.String("assessment", "assessment.json", "JSON result from assess-repo")
@@ -566,6 +568,35 @@ func runAssessObligations(args []string) error {
 	}
 	index, err := readObligationIndex(*indexPath)
 	if err != nil { return err }
+	ingestionBytes, err := os.ReadFile(*ingestionIndexPath)
+	if err != nil { return fmt.Errorf("read ADR ingestion index for candidate freshness: %w", err) }
+	var sourceIndex ingestionIndex
+	if err := json.Unmarshal(ingestionBytes, &sourceIndex); err != nil { return fmt.Errorf("decode ADR ingestion index for candidate freshness: %w", err) }
+	if sourceIndex.SchemaVersion != "1" { return fmt.Errorf("unsupported ADR ingestion index schema_version %q", sourceIndex.SchemaVersion) }
+	rootAbs, err := filepath.Abs(*root)
+	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
+	rootReal, err := filepath.EvalSymlinks(rootAbs)
+	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
+	sourceRootPath := sourceIndex.SourceRoot
+	if !filepath.IsAbs(sourceRootPath) { sourceRootPath = filepath.Join(rootReal, sourceRootPath) }
+	sourceRootAbs, err := filepath.Abs(sourceRootPath)
+	if err != nil { return fmt.Errorf("resolve ADR source root: %w", err) }
+	sourceRootReal, err := filepath.EvalSymlinks(sourceRootAbs)
+	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	relativeSourceRoot, err := filepath.Rel(rootReal, sourceRootReal)
+	if err != nil { return fmt.Errorf("validate ADR source root containment: %w", err) }
+	if relativeSourceRoot == ".." || strings.HasPrefix(relativeSourceRoot, ".."+string(filepath.Separator)) || filepath.IsAbs(relativeSourceRoot) {
+		return fmt.Errorf("ADR source root must remain inside the current repository root")
+	}
+	rebuiltIndex, err := obligations.BuildIndex(sourceIndex.Documents, sourceRootReal, sourceIndex.SourceRoot, ingestionBytes)
+	if err != nil { return fmt.Errorf("rebuild candidate index from current ADR sources: %w", err) }
+	expectedIndex, err := json.Marshal(rebuiltIndex)
+	if err != nil { return fmt.Errorf("encode rebuilt candidate index: %w", err) }
+	providedIndex, err := json.Marshal(index)
+	if err != nil { return fmt.Errorf("encode provided candidate index: %w", err) }
+	if !bytes.Equal(expectedIndex, providedIndex) {
+		return fmt.Errorf("candidate index does not match current ADR sources and ingestion index; rerun ingest-adrs and extract-obligations")
+	}
 	catalog, err := assessment.LoadCatalog(*catalogPath)
 	if err != nil { return err }
 	registry, err := obligations.LoadRegistry(*registryPath)

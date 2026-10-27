@@ -78,7 +78,7 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	jsonReport := filepath.Join(root, "obligation-assessment.json")
 	markdownReport := filepath.Join(root, "obligation-assessment.md")
 	args := []string{
-		"--root", root, "--index", candidatePath, "--requirements", catalogPath,
+		"--root", root, "--index", candidatePath, "--ingestion-index", ingestionPath, "--requirements", catalogPath,
 		"--registry", registryPath, "--assessment", assessmentPath,
 		"--json-out", jsonReport, "--report", markdownReport,
 	}
@@ -104,6 +104,12 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	if stale.EvidenceFresh || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale assessment remained compliant after source changed: %+v", stale)
 	}
+
+	// An ADR edit must invalidate the extracted candidate index itself.
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), append([]byte(adrSource), '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := runAssessObligations(args); err == nil || !strings.Contains(err.Error(), "rebuild candidate index") {
+		t.Fatalf("stale candidate index should be rejected after an ADR edit, got %v", err)
+	}
 }
 
 func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testing.T) {
@@ -114,16 +120,15 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), source, 0o600); err != nil { t.Fatal(err) }
 	doc, err := adringest.Parse("ADR-001.md", source)
 	if err != nil { t.Fatal(err) }
-	candidates, err := obligations.ExtractDocument(doc, "adrs/ADR-001.md", source)
+	ingestionPath := filepath.Join(root, "adr", "ingested-adrs.json")
+	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil { t.Fatal(err) }
+	indexPath := filepath.Join(root, "adr", "obligation-candidates.json")
+	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", indexPath}); err != nil { t.Fatal(err) }
+	indexBytes, err := os.ReadFile(indexPath)
 	if err != nil { t.Fatal(err) }
-	index := obligations.Index{
-		SchemaVersion: "1", SourceRoot: "adrs", SourceIndexSHA256: strings.Repeat("a", 64),
-		DocumentCount: 1, DocumentsWithCandidates: 1, CandidateCount: len(candidates), Candidates: candidates,
-	}
-	indexPath := filepath.Join(root, "candidates.json")
-	indexBytes, err := json.Marshal(index)
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(indexPath, indexBytes, 0o600); err != nil { t.Fatal(err) }
+	var index obligations.Index
+	if err := json.Unmarshal(indexBytes, &index); err != nil { t.Fatal(err) }
+	candidates := index.Candidates
 
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
 		ID: doc.ID, Title: doc.Title, Version: 1, Status: "accepted", Requirements: []assessment.Requirement{},
@@ -149,7 +154,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	jsonPath := filepath.Join(root, "obligation-assessment.json")
 	markdownPath := filepath.Join(root, "obligation-assessment.md")
 	if err := runAssessObligations([]string{
-		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
+		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
 		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
 	}); err != nil { t.Fatal(err) }
 	data, err := os.ReadFile(jsonPath)
@@ -179,9 +184,9 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 
 	// Change an input without changing its decoded meaning. The original
 	// assessment artifact must be treated as stale against the current tree.
-	if err := os.WriteFile(indexPath, append(indexBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, append(catalogBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
 	if err := runAssessObligations([]string{
-		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
+		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
 		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
 	}); err != nil { t.Fatal(err) }
 	staleBytes, err := os.ReadFile(jsonPath)
