@@ -3,6 +3,7 @@ package analyzer
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -22,13 +23,21 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	if len(rawSARIF) == 0 {
 		return fail("raw SARIF evidence is empty")
 	}
+	rootAbs, err := filepath.Abs(root)
+	if err != nil {
+		return fail(fmt.Sprintf("resolve repository root: %v", err))
+	}
+	rootAbs, err = filepath.EvalSymlinks(rootAbs)
+	if err != nil {
+		return fail(fmt.Sprintf("resolve repository root symlinks: %v", err))
+	}
 	if envelope.Status != ScanStatusComplete && envelope.Status != ScanStatusPartial {
 		return fail(fmt.Sprintf("scan evidence status %q is not verifiable", envelope.Status))
 	}
 	if envelope.RawOutputSHA256 == "" || envelope.RawOutputSHA256 != sha256Hex(rawSARIF) {
 		return fail("raw SARIF SHA-256 does not match normalized evidence metadata")
 	}
-	parsed, err := ParseSARIF(rawSARIF, root)
+	parsed, err := ParseSARIF(rawSARIF, rootAbs)
 	if err != nil {
 		return fail(fmt.Sprintf("parse raw SARIF evidence: %v", err))
 	}
@@ -58,7 +67,7 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	if strings.TrimSpace(envelope.ConfigurationPath) == "" {
 		return fail("scan evidence is missing configuration_path")
 	}
-	configAbs, _, err := resolveConfig(root, envelope.ConfigurationPath)
+	configAbs, _, err := resolveConfig(rootAbs, envelope.ConfigurationPath)
 	if err != nil {
 		return fail(fmt.Sprintf("resolve recorded analyzer configuration: %v", err))
 	}
@@ -69,14 +78,14 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	if envelope.ConfigurationSHA256 == "" || configHash != envelope.ConfigurationSHA256 {
 		return fail("configuration SHA-256 does not match the current configuration file")
 	}
-	inputHash, err := HashInputTree(root)
+	inputHash, err := HashInputTree(rootAbs)
 	if err != nil {
 		return fail(err.Error())
 	}
 	if envelope.InputSHA256 == "" || inputHash != envelope.InputSHA256 {
 		return fail("input tree SHA-256 does not match the current repository snapshot")
 	}
-	paths, err := discoverScannedPathsExcluding(root, envelope.ConfigurationPath)
+	paths, err := discoverScannedPathsExcluding(rootAbs, envelope.ConfigurationPath)
 	if err != nil {
 		return fail(fmt.Sprintf("rebuild repository scan inventory: %v", err))
 	}

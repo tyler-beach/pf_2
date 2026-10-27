@@ -97,3 +97,17 @@ func TestVerificationFixtureMetadataIsJSONSerializable(t *testing.T) {
 	_, _, envelope := verificationFixture(t)
 	if _, err := json.Marshal(envelope); err != nil { t.Fatalf("marshal metadata: %v", err) }
 }
+
+
+func TestVerifyScanEvidenceAcceptsRelativeRepositoryRoot(t *testing.T) {
+	root, raw, envelope := verificationFixture(t)
+	previous, err := os.Getwd()
+	if err != nil { t.Fatal(err) }
+	if err := os.Chdir(root); err != nil { t.Fatal(err) }
+	defer func() {
+		if err := os.Chdir(previous); err != nil { t.Errorf("restore working directory: %v", err) }
+	}()
+	got, err := VerifyScanEvidence(".", envelope, raw)
+	if err != nil { t.Fatalf("relative root should resolve to an absolute repository path: %v", err) }
+	if got.Status != ScanStatusComplete { t.Fatalf("status = %q, want COMPLETE", got.Status) }
+}
