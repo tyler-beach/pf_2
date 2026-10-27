@@ -260,6 +260,29 @@ func TestBuildIndexSplitsMultipleNormativeSentencesInPlainEnglishSpecification(t
 	}
 }
 
+func TestBuildIndexRejectsOversizedSourceLineAfterSentenceSplitting(t *testing.T) {
+	root := t.TempDir()
+	longLine := strings.Repeat("Every client must set a finite timeout. ", maxCandidateLineBytes/20)
+	source := "# ADR-903: Long requirement line\n\n## Requirements\n\n" + longLine + "\n"
+	path := filepath.Join(root, "ADR-903.md")
+	if err := os.WriteFile(path, []byte(source), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("ADR-903.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = BuildIndex(
+		[]adringest.Document{doc},
+		root,
+		"adrs",
+		[]byte("{\"schema_version\":\"1\",\"source_root\":\"adrs\"}"),
+	)
+	if err == nil || !strings.Contains(err.Error(), "candidate statement limit") {
+		t.Fatalf("oversized normative source line should be rejected before it expands into many candidates, got %v", err)
+	}
+}
+
 func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 	tests := []struct { statement, want string }{
 		{"The service must not execute shell commands.", "must_not"},
