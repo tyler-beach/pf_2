@@ -164,3 +164,104 @@ func TestParseSARIFRejectsRemoteFileURIHost(t *testing.T) {
 		t.Fatalf("expected remote file URI rejection, got %v", err)
 	}
 }
+
+func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings(t *testing.T) {
+	root := t.TempDir()
+	makeFinding := func(message, artifactPath, fingerprint string) any {
+		return map[string]any{
+			"ruleId":  "RULE-A",
+			"level":   "warning",
+			"message": map[string]any{"text": message},
+			"locations": []any{map[string]any{
+				"physicalLocation": map[string]any{
+					"artifactLocation": map[string]any{"uri": artifactPath},
+					"region":           map[string]any{"startLine": 5, "startColumn": 3},
+				},
+			}},
+			"partialFingerprints": map[string]any{"primaryLocationLineHash": fingerprint},
+			"properties":          map[string]any{"cwe": "CWE-79"},
+		}
+	}
+	makeRun := func(results ...any) any {
+		return map[string]any{
+			"tool": map[string]any{"driver": map[string]any{
+				"name":    "scanner",
+				"version": "1",
+			}},
+			"results": results,
+		}
+	}
+	encode := func(runs ...any) []byte {
+		t.Helper()
+		data, err := json.Marshal(map[string]any{"version": "2.1.0", "runs": runs})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+
+	sameFinding := makeFinding("Same finding", "src/a.go", "stable-A")
+	variantFinding := makeFinding("Variant message", "src/a.go", "stable-A")
+	otherFinding := makeFinding("Same finding", "src/b.go", "stable-B")
+
+	firstInput := encode(
+		makeRun(sameFinding, sameFinding, variantFinding, otherFinding),
+		makeRun(sameFinding),
+	)
+	secondInput := encode(
+		makeRun(variantFinding, sameFinding, sameFinding, otherFinding),
+		makeRun(sameFinding),
+	)
+
+	first, err := ParseSARIF(firstInput, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := ParseSARIF(secondInput, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(first.Findings) != 3 || len(second.Findings) != 3 {
+		t.Fatalf("expected 3 unique normalized findings, got %d and %d: first=%+v second=%+v",
+			len(first.Findings), len(second.Findings), first.Findings, second.Findings)
+	}
+
+	var sameAtA, variantAtA, findingAtB int
+	for _, finding := range first.Findings {
+		switch {
+		case finding.Path == "src/a.go" && finding.Message == "Same finding":
+			sameAtA++
+		case finding.Path == "src/a.go" && finding.Message == "Variant message":
+			variantAtA++
+		case finding.Path == "src/b.go" && finding.Message == "Same finding":
+			findingAtB++
+		}
+	}
+	if sameAtA != 1 || variantAtA != 1 || findingAtB != 1 {
+		t.Fatalf("deduplication removed or retained the wrong findings: %+v", first.Findings)
+	}
+
+	firstJSON, err := json.Marshal(first.Findings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondJSON, err := json.Marshal(second.Findings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(firstJSON) != string(secondJSON) {
+		t.Fatalf("finding serialization depends on duplicate/order arrangement:\nfirst:  %s\nsecond: %s", firstJSON, secondJSON)
+	}
+
+	firstEvidence, err := WriteJSON(first)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondEvidence, err := WriteJSON(first)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(firstEvidence) != string(secondEvidence) {
+		t.Fatal("normalized analyzer evidence serialization is not deterministic")
+	}
+}

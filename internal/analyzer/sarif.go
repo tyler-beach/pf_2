@@ -235,20 +235,75 @@ func ParseSARIF(data []byte, repoRoot string) (ScanResult, error) {
 			out.Findings = append(out.Findings, f)
 		}
 	}
+	deduplicatedFindings, dedupErr := deduplicateAndSortFindings(out.Findings)
+	if dedupErr != nil {
+		return out, dedupErr
+	}
+	out.Findings = deduplicatedFindings
+
 	sort.Slice(out.Analyzers, func(i, j int) bool {
-		if out.Analyzers[i].Name == out.Analyzers[j].Name { return out.Analyzers[i].Version < out.Analyzers[j].Version }
+		if out.Analyzers[i].Name == out.Analyzers[j].Name {
+			return out.Analyzers[i].Version < out.Analyzers[j].Version
+		}
 		return out.Analyzers[i].Name < out.Analyzers[j].Name
-	})
-	sort.Slice(out.Findings, func(i, j int) bool {
-		a, b := out.Findings[i], out.Findings[j]
-		if a.Path != b.Path { return a.Path < b.Path }
-		if a.StartLine != b.StartLine { return a.StartLine < b.StartLine }
-		if a.RuleID != b.RuleID { return a.RuleID < b.RuleID }
-		if a.Analyzer != b.Analyzer { return a.Analyzer < b.Analyzer }
-		return a.Fingerprint < b.Fingerprint
 	})
 	sort.Strings(out.Errors)
 	return out, nil
+}
+
+// deduplicateAndSortFindings removes byte-for-byte equivalent normalized finding
+// records and applies a deterministic total order. It deliberately includes the
+// complete normalized finding in the identity so a reused producer fingerprint
+// cannot cause a distinct message or evidence-property set to be discarded.
+func deduplicateAndSortFindings(findings []Finding) ([]Finding, error) {
+	type keyedFinding struct {
+		finding  Finding
+		identity string
+	}
+	keyed := make([]keyedFinding, 0, len(findings))
+	for _, finding := range findings {
+		encoded, err := json.Marshal(finding)
+		if err != nil {
+			return nil, fmt.Errorf("encode normalized finding identity: %w", err)
+		}
+		keyed = append(keyed, keyedFinding{
+			finding:  finding,
+			identity: string(encoded),
+		})
+	}
+
+	sort.Slice(keyed, func(i, j int) bool {
+		a, b := keyed[i], keyed[j]
+		if a.finding.Path != b.finding.Path {
+			return a.finding.Path < b.finding.Path
+		}
+		if a.finding.StartLine != b.finding.StartLine {
+			return a.finding.StartLine < b.finding.StartLine
+		}
+		if a.finding.RuleID != b.finding.RuleID {
+			return a.finding.RuleID < b.finding.RuleID
+		}
+		if a.finding.Analyzer != b.finding.Analyzer {
+			return a.finding.Analyzer < b.finding.Analyzer
+		}
+		if a.finding.Fingerprint != b.finding.Fingerprint {
+			return a.finding.Fingerprint < b.finding.Fingerprint
+		}
+		return a.identity < b.identity
+	})
+
+	unique := make([]Finding, 0, len(keyed))
+	lastIdentity := ""
+	hasLast := false
+	for _, item := range keyed {
+		if hasLast && item.identity == lastIdentity {
+			continue
+		}
+		unique = append(unique, item.finding)
+		lastIdentity = item.identity
+		hasLast = true
+	}
+	return unique, nil
 }
 
 func normalizeArtifactPath(uri, rootAbs string) (string, error) {
