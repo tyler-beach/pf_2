@@ -178,7 +178,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 
 	// Change an input without changing its decoded meaning. The original
 	// assessment artifact must be treated as stale against the current tree.
-	if err := os.WriteFile(indexPath, append(indexBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, append(catalogBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
 	if err := runAssessObligations([]string{
 		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
 		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
