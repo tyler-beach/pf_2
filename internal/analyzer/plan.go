@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"path"
 	"path/filepath"
 	"sort"
@@ -258,15 +260,120 @@ type TaskExecution struct {
 	Attempts  int        `json:"attempts"`
 	Cached    bool       `json:"cached"`
 	Result    ScanResult `json:"result"`
-	RawSARIF  []byte     `json:"raw_sarif,omitempty"`
+	RawSARIF  []byte     `json:"-"`
 	Error     string     `json:"error,omitempty"`
 	Warnings  []string   `json:"warnings,omitempty"`
 }
 
 type CacheEntry struct {
-	CacheKey string     `json:"cache_key"`
-	Result   ScanResult `json:"result"`
-	RawSARIF []byte     `json:"raw_sarif"`
+	SchemaVersion string     `json:"schema_version"`
+	CacheKey      string     `json:"cache_key"`
+	Result        ScanResult `json:"result"`
+	RawSARIF      []byte     `json:"raw_sarif"`
+}
+
+// FileResultCache stores validated cache envelopes as atomic, private JSON
+// files. Keys are digests, never free-form paths.
+type FileResultCache struct {
+	Dir string
+}
+
+const maxResultCacheEntryBytes int64 = 128 << 20
+
+func (c FileResultCache) Get(ctx context.Context, key string) (CacheEntry, bool, error) {
+	var empty CacheEntry
+	if err := ctx.Err(); err != nil { return empty, false, err }
+	dir, err := c.resolveDirectory(false)
+	if err != nil {
+		if os.IsNotExist(err) { return empty, false, nil }
+		return empty, false, err
+	}
+	entryPath, err := c.entryPath(dir, key)
+	if err != nil { return empty, false, err }
+	info, err := os.Lstat(entryPath)
+	if os.IsNotExist(err) { return empty, false, nil }
+	if err != nil { return empty, false, fmt.Errorf("inspect result cache entry: %w", err) }
+	if info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular() {
+		return empty, false, fmt.Errorf("result cache entry is not a regular non-symlink file")
+	}
+	if info.Size() > maxResultCacheEntryBytes {
+		return empty, false, fmt.Errorf("result cache entry exceeds the %d-byte safety limit", maxResultCacheEntryBytes)
+	}
+	resolved, err := filepath.EvalSymlinks(entryPath)
+	if err != nil { return empty, false, fmt.Errorf("resolve cache entry path: %w", err) }
+	if filepath.Clean(resolved) != filepath.Clean(entryPath) {
+		return empty, false, fmt.Errorf("result cache entry uses a symlinked path")
+	}
+	data, err := os.ReadFile(entryPath)
+	if err != nil { return empty, false, fmt.Errorf("read result cache entry: %w", err) }
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&empty); err != nil {
+		return CacheEntry{}, false, fmt.Errorf("decode result cache entry: %w", err)
+	}
+	var trailing any
+	if err := decoder.Decode(&trailing); err != io.EOF {
+		if err == nil { return CacheEntry{}, false, fmt.Errorf("result cache entry contains trailing JSON values") }
+		return CacheEntry{}, false, fmt.Errorf("result cache entry has trailing invalid content: %w", err)
+	}
+	if empty.SchemaVersion != AnalyzerPlanSchemaVersion || empty.CacheKey != key {
+		return CacheEntry{}, false, fmt.Errorf("result cache schema or key mismatch")
+	}
+	return cloneCacheEntry(empty), true, nil
+}
+
+func (c FileResultCache) Put(ctx context.Context, key string, entry CacheEntry) error {
+	if err := ctx.Err(); err != nil { return err }
+	if !validPlanSHA256(key) || entry.CacheKey != key {
+		return fmt.Errorf("result cache key must match a valid SHA-256 digest")
+	}
+	if entry.SchemaVersion == "" { entry.SchemaVersion = AnalyzerPlanSchemaVersion }
+	if entry.SchemaVersion != AnalyzerPlanSchemaVersion {
+		return fmt.Errorf("unsupported result cache schema_version %q", entry.SchemaVersion)
+	}
+	entry = cloneCacheEntry(entry)
+	data, err := json.Marshal(entry)
+	if err != nil { return fmt.Errorf("encode result cache entry: %w", err) }
+	if int64(len(data)) > maxResultCacheEntryBytes {
+		return fmt.Errorf("result cache entry exceeds the %d-byte safety limit", maxResultCacheEntryBytes)
+	}
+	dir, err := c.resolveDirectory(true)
+	if err != nil { return err }
+	target, err := c.entryPath(dir, key)
+	if err != nil { return err }
+	temp, err := os.CreateTemp(dir, ".cache-entry-*.tmp")
+	if err != nil { return fmt.Errorf("create temporary result cache entry: %w", err) }
+	tempPath := temp.Name()
+	defer os.Remove(tempPath)
+	if err := temp.Chmod(0600); err != nil { temp.Close(); return fmt.Errorf("restrict result cache permissions: %w", err) }
+	if _, err := temp.Write(data); err != nil { temp.Close(); return fmt.Errorf("write result cache entry: %w", err) }
+	if err := temp.Sync(); err != nil { temp.Close(); return fmt.Errorf("sync result cache entry: %w", err) }
+	if err := temp.Close(); err != nil { return fmt.Errorf("close result cache entry: %w", err) }
+	if err := os.Rename(tempPath, target); err != nil { return fmt.Errorf("atomically replace result cache entry: %w", err) }
+	return nil
+}
+
+func (c FileResultCache) resolveDirectory(create bool) (string, error) {
+	if strings.TrimSpace(c.Dir) == "" { return "", fmt.Errorf("result cache directory is required") }
+	absolute, err := filepath.Abs(c.Dir)
+	if err != nil { return "", fmt.Errorf("resolve result cache directory: %w", err) }
+	if create {
+		if err := os.MkdirAll(absolute, 0700); err != nil { return "", fmt.Errorf("create result cache directory: %w", err) }
+	}
+	resolved, err := filepath.EvalSymlinks(absolute)
+	if err != nil { return "", err }
+	info, err := os.Stat(resolved)
+	if err != nil { return "", err }
+	if !info.IsDir() { return "", fmt.Errorf("result cache path is not a directory") }
+	if create {
+		if err := os.Chmod(resolved, 0700); err != nil { return "", fmt.Errorf("restrict result cache directory permissions: %w", err) }
+	}
+	return resolved, nil
+}
+
+func (c FileResultCache) entryPath(dir, key string) (string, error) {
+	if !validPlanSHA256(key) { return "", fmt.Errorf("result cache key must be a 64-character hexadecimal SHA-256") }
+	return filepath.Join(dir, strings.ToLower(key)+".json"), nil
 }
 
 type ResultCache interface {
@@ -296,6 +403,8 @@ func (c *MemoryResultCache) Get(ctx context.Context, key string) (CacheEntry, bo
 func (c *MemoryResultCache) Put(ctx context.Context, key string, entry CacheEntry) error {
 	if err := ctx.Err(); err != nil { return err }
 	if key == "" || entry.CacheKey != key { return fmt.Errorf("cache key mismatch") }
+	if entry.SchemaVersion == "" { entry.SchemaVersion = AnalyzerPlanSchemaVersion }
+	if entry.SchemaVersion != AnalyzerPlanSchemaVersion { return fmt.Errorf("unsupported result cache schema_version %q", entry.SchemaVersion) }
 	c.mu.Lock()
 	if c.entries == nil { c.entries = make(map[string]CacheEntry) }
 	c.entries[key] = cloneCacheEntry(entry)
@@ -359,11 +468,11 @@ func RunPlan(ctx context.Context, plan Plan, options RunOptions, execute TaskExe
 	wg.Wait()
 	completed, failed := 0, 0
 	for _, task := range manifest.Tasks {
-		if task.Status == ManifestTaskComplete && task.Error == "" { completed++ } else {
+		if task.Status == ManifestTaskComplete { completed++ } else {
 			failed++
 			if task.Error != "" { manifest.Errors = append(manifest.Errors, task.Analyzer+": "+task.Error) }
-			for _, warning := range task.Warnings { manifest.Errors = append(manifest.Errors, task.Analyzer+": "+warning) }
 		}
+		for _, warning := range task.Warnings { manifest.Errors = append(manifest.Errors, task.Analyzer+": "+warning) }
 	}
 	if failed == 0 {
 		manifest.Status = ManifestStatusComplete
@@ -384,10 +493,9 @@ func runOneTask(parent context.Context, plan Plan, task AnalyzerTask, options Ru
 	if options.Cache != nil {
 		entry, hit, err := options.Cache.Get(parent, task.CacheKey)
 		if err != nil {
-			report.Error = "read result cache: " + err.Error()
-			return report
+			report.Warnings = append(report.Warnings, "read result cache: "+err.Error())
 		}
-		if hit {
+		if err == nil && hit {
 			if cacheEntryMatchesPlan(entry, plan, task) {
 				report.Status = ManifestTaskComplete
 				report.Cached = true
@@ -417,7 +525,7 @@ func runOneTask(parent context.Context, plan Plan, task AnalyzerTask, options Ru
 				report.Result = result
 				report.RawSARIF = append([]byte(nil), result.RawSARIF...)
 				if options.Cache != nil {
-					entry := CacheEntry{CacheKey: task.CacheKey, Result: result, RawSARIF: append([]byte(nil), result.RawSARIF...)}
+					entry := CacheEntry{SchemaVersion: AnalyzerPlanSchemaVersion, CacheKey: task.CacheKey, Result: result, RawSARIF: append([]byte(nil), result.RawSARIF...)}
 					if cacheErr := options.Cache.Put(parent, task.CacheKey, entry); cacheErr != nil {
 						report.Warnings = append(report.Warnings, "store result cache: "+cacheErr.Error())
 					}
@@ -452,7 +560,7 @@ func failedTask(task AnalyzerTask, err error) TaskExecution {
 }
 
 func cacheEntryMatchesPlan(entry CacheEntry, plan Plan, task AnalyzerTask) bool {
-	if entry.CacheKey != task.CacheKey || entry.Result.Status != ScanStatusComplete || len(entry.RawSARIF) == 0 { return false }
+	if entry.SchemaVersion != AnalyzerPlanSchemaVersion || entry.CacheKey != task.CacheKey || entry.Result.Status != ScanStatusComplete || len(entry.RawSARIF) == 0 { return false }
 	if entry.Result.RawOutputSHA256 == "" || entry.Result.RawOutputSHA256 != sha256Hex(entry.RawSARIF) { return false }
 	if entry.Result.InputSHA256 != plan.SnapshotSHA256 { return false }
 	if entry.Result.ConfigurationPath != task.Spec.ConfigurationPath || entry.Result.ConfigurationSHA256 != task.Spec.ConfigurationSHA256 { return false }
