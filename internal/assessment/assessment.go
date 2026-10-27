@@ -138,6 +138,8 @@ func ValidateCatalog(c Catalog) error {
 					if b.Min == nil && b.Max == nil { return fmt.Errorf("requirement %s: numeric_json_bounds for %q needs min and/or max", r.ID, b.Key) }
 					if b.Min != nil && b.Max != nil && *b.Min > *b.Max { return fmt.Errorf("requirement %s: numeric_json_bounds for %q has min greater than max", r.ID, b.Key) }
 				}
+			case "manual-review":
+				// A deliberate human decision is supported without machine-verifier configuration.
 			case "analyzer-rule":
 				if strings.TrimSpace(r.Verifier.Analyzer) == "" { return fmt.Errorf("requirement %s: analyzer-rule requires analyzer", r.ID) }
 				if len(r.Verifier.RuleIDs) == 0 { return fmt.Errorf("requirement %s: analyzer-rule requires rule_ids", r.ID) }
