@@ -224,7 +224,7 @@ func runOpenGrepScan(args []string) error {
 	if err != nil { return fmt.Errorf("hash OpenGrep configuration: %w", err) }
 	snapshotHash, err := analyzer.HashInputTree(rootAbs)
 	if err != nil { return fmt.Errorf("hash repository snapshot: %w", err) }
-	extensions := []string{".go", ".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".cs", ".php", ".rb"}
+	extensions := []string{".go", ".py", ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".java", ".cs", ".php", ".rb", ".rs", ".sh", ".bash", ".zsh", ".fish", ".kt", ".kts", ".scala", ".c", ".h", ".cc", ".cpp", ".hpp", ".dart", ".swift", ".lua", ".vb", ".vbs", ".ml", ".mli", ".ex", ".exs", ".json", ".yaml", ".yml", ".tf", ".hcl", ".vue", ".html", ".xml", ".sql"}
 	timeoutSeconds := int((*timeout) / time.Second)
 	if (*timeout)%time.Second != 0 { timeoutSeconds++ }
 	spec := analyzer.AnalyzerSpec{
