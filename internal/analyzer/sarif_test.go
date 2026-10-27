@@ -167,28 +167,51 @@ func TestParseSARIFRejectsRemoteFileURIHost(t *testing.T) {
 
 func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings(t *testing.T) {
 	root := t.TempDir()
-	firstInput := []byte(`{"version":"2.1.0","runs":[
-		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Variant message"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/b.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-B"},"properties":{"cwe":"CWE-79"}}
-		]},
-		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}}
-		]}
-	]}`)
-	secondInput := []byte(`{"version":"2.1.0","runs":[
-		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}}
-		]},
-		{"tool":{"driver":{"name":"scanner","version":"1"}},"results":[
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/b.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-B"},"properties":{"cwe":"CWE-79"}},
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Variant message"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}},
-			{"ruleId":"RULE-A","level":"warning","message":{"text":"Same finding"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/a.go"},"region":{"startLine":5,"startColumn":3}}}],"partialFingerprints":{"primaryLocationLineHash":"stable-A"},"properties":{"cwe":"CWE-79"}}
-		]}
-	]}`)
+	makeFinding := func(message, artifactPath, fingerprint string) any {
+		return map[string]any{
+			"ruleId": "RULE-A",
+			"level": "warning",
+			"message": map[string]any{"text": message},
+			"locations": []any{map[string]any{
+				"physicalLocation": map[string]any{
+					"artifactLocation": map[string]any{"uri": artifactPath},
+					"region": map[string]any{"startLine": 5, "startColumn": 3},
+				},
+			}},
+			"partialFingerprints": map[string]any{"primaryLocationLineHash": fingerprint},
+			"properties": map[string]any{"cwe": "CWE-79"},
+		}
+	}
+	makeRun := func(results ...any) any {
+		return map[string]any{
+			"tool": map[string]any{"driver": map[string]any{
+				"name": "scanner",
+				"version": "1",
+			}},
+			"results": results,
+		}
+	}
+	encode := func(runs ...any) []byte {
+		t.Helper()
+		data, err := json.Marshal(map[string]any{"version": "2.1.0", "runs": runs})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return data
+	}
+
+	sameFinding := makeFinding("Same finding", "src/a.go", "stable-A")
+	variantFinding := makeFinding("Variant message", "src/a.go", "stable-A")
+	otherFinding := makeFinding("Same finding", "src/b.go", "stable-B")
+
+	firstInput := encode(
+		makeRun(sameFinding, sameFinding, variantFinding, otherFinding),
+		makeRun(sameFinding),
+	)
+	secondInput := encode(
+		makeRun(sameFinding),
+		makeRun(otherFinding, variantFinding, sameFinding, sameFinding),
+	)
 
 	first, err := ParseSARIF(firstInput, root)
 	if err != nil {
@@ -227,10 +250,9 @@ func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings
 		t.Fatal(err)
 	}
 	if string(firstJSON) != string(secondJSON) {
-		t.Fatalf("finding serialization depends on duplicate/order arrangement:
-first:  %s
-second: %s", firstJSON, secondJSON)
+		t.Fatalf("finding serialization depends on duplicate/order arrangement:\nfirst:  %s\nsecond: %s", firstJSON, secondJSON)
 	}
+
 	firstEvidence, err := WriteJSON(first)
 	if err != nil {
 		t.Fatal(err)
@@ -243,4 +265,3 @@ second: %s", firstJSON, secondJSON)
 		t.Fatal("normalized analyzer evidence serialization is not deterministic")
 	}
 }
-
