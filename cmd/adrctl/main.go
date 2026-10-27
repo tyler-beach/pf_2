@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/adringest"
 )
 
 func main() {
@@ -17,12 +18,13 @@ func main() {
 	case "validate": err=runValidate(os.Args[2:])
 	case "assess": err=runAssess(os.Args[2:],false)
 	case "assess-repo": err=runAssess(os.Args[2:],true)
+	case "ingest-adrs": err=runIngestADRs(os.Args[2:])
 	case "version": fmt.Println("adrctl 0.1.0")
 	default: usage(); os.Exit(2)
 	}
 	if err!=nil { fmt.Fprintln(os.Stderr,"adrctl:",err); os.Exit(1) }
 }
-func usage() { fmt.Fprintln(os.Stderr,"usage: adrctl <validate|assess|assess-repo|version> [flags]") }
+func usage() { fmt.Fprintln(os.Stderr,"usage: adrctl <validate|assess|assess-repo|ingest-adrs|version> [flags]") }
 func runValidate(args []string) error {
 	fs:=flag.NewFlagSet("validate",flag.ContinueOnError)
 	path:=fs.String("requirements","adr/requirements.json","requirements catalog JSON")
@@ -62,5 +64,48 @@ func writeFile(path string,data []byte) error {
 	dir:=filepath.Dir(path)
 	if dir!="." { if err:=os.MkdirAll(dir,0755); err!=nil { return err } }
 	if err:=os.WriteFile(path,data,0644); err!=nil { return fmt.Errorf("write %s: %w",path,err) }
+	return nil
+}
+
+
+// ingestionIndex is a reproducible snapshot of source ADR documents. It is
+// deliberately separate from requirements.json: parsing is not approval.
+type ingestionIndex struct {
+	SchemaVersion string               `json:"schema_version"`
+	SourceRoot    string               `json:"source_root"`
+	Documents     []adringest.Document `json:"documents"`
+}
+
+func runIngestADRs(args []string) error {
+	fs := flag.NewFlagSet("ingest-adrs", flag.ContinueOnError)
+	root := fs.String("root", "adrs", "directory containing ADR Markdown files")
+	output := fs.String("json-out", "adr/ingested-adrs.json", "JSON ingestion index output")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	docs, err := adringest.ParseDir(*root)
+	if err != nil {
+		return err
+	}
+	seen := make(map[string]string, len(docs))
+	for _, doc := range docs {
+		if previous, ok := seen[doc.ID]; ok {
+			return fmt.Errorf("duplicate ADR ID %q in %s and %s", doc.ID, previous, doc.SourcePath)
+		}
+		seen[doc.ID] = doc.SourcePath
+	}
+	index := ingestionIndex{
+		SchemaVersion: "1",
+		SourceRoot:    filepath.ToSlash(filepath.Clean(*root)),
+		Documents:     docs,
+	}
+	data, err := json.MarshalIndent(index, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode ADR ingestion index: %w", err)
+	}
+	if err := writeFile(*output, data); err != nil {
+		return err
+	}
+	fmt.Printf("Ingested %d ADR document(s) into %s. No obligations were auto-approved.\n", len(docs), *output)
 	return nil
 }
