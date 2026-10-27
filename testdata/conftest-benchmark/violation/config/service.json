@@ -1,0 +1,4 @@
+{
+  "service_name": "customer-api",
+  "timeout_seconds": 121
+}
