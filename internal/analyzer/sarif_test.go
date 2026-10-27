@@ -169,23 +169,23 @@ func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings
 	root := t.TempDir()
 	makeFinding := func(message, artifactPath, fingerprint string) any {
 		return map[string]any{
-			"ruleId": "RULE-A",
-			"level": "warning",
-			"message": map[string]any{"text": message},
-			"locations": []any{map[string]any{
+			"ruleId":              "RULE-A",
+			"level":               "warning",
+			"message":             map[string]any{"text": message},
+			"locations":           []any{map[string]any{
 				"physicalLocation": map[string]any{
 					"artifactLocation": map[string]any{"uri": artifactPath},
-					"region": map[string]any{"startLine": 5, "startColumn": 3},
+					"region":            map[string]any{"startLine": 5, "startColumn": 3},
 				},
 			}},
 			"partialFingerprints": map[string]any{"primaryLocationLineHash": fingerprint},
-			"properties": map[string]any{"cwe": "CWE-79"},
+			"properties":          map[string]any{"cwe": "CWE-79"},
 		}
 	}
 	makeRun := func(results ...any) any {
 		return map[string]any{
 			"tool": map[string]any{"driver": map[string]any{
-				"name": "scanner",
+				"name":    "scanner",
 				"version": "1",
 			}},
 			"results": results,
@@ -209,8 +209,8 @@ func TestParseSARIFDeduplicatesExactFindingsAndKeepsDistinctSameLocationFindings
 		makeRun(sameFinding),
 	)
 	secondInput := encode(
+		makeRun(variantFinding, sameFinding, sameFinding, otherFinding),
 		makeRun(sameFinding),
-		makeRun(otherFinding, variantFinding, sameFinding, sameFinding),
 	)
 
 	first, err := ParseSARIF(firstInput, root)
