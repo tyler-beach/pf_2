@@ -181,6 +181,12 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
 	}
 	if !report.EvidenceFresh { t.Fatalf("matching source snapshot was incorrectly marked stale: %+v", report) }
+	if err := runAssessObligations([]string{
+		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
+		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath, "--enforce-blocking",
+	}); err == nil || !strings.Contains(err.Error(), "pending review") {
+		t.Fatalf("blocking gate should reject unreviewed candidates instead of silently bypassing enforcement: %v", err)
+	}
 	if len(report.Candidates[0].ReviewHints) != 1 || report.Candidates[0].ReviewHints[0] != "compound_or_conjoined" {
 		t.Fatalf("candidate interpretation hints were lost: %+v", report.Candidates[0])
 	}
