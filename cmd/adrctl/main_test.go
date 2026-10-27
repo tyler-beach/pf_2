@@ -174,7 +174,7 @@ func TestRunSpecificationCheckBindsPlainEnglishSpecificationToReviewedVerifier(t
 	if err := os.MkdirAll(sourceRoot, 0o700); err != nil {
 		t.Fatal(err)
 	}
-	specification := "# Runtime requirements\n\n## Requirements\n\nDomain code must not import internal infrastructure packages.\n"
+	specification := "# Runtime requirements\n\n## Status\n\nAccepted\n\n## Requirements\n\nDomain code must not import internal infrastructure packages.\n"
 	if err := os.WriteFile(filepath.Join(sourceRoot, "runtime.md"), []byte(specification), 0o600); err != nil {
 		t.Fatal(err)
 	}
