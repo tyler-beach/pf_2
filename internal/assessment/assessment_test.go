@@ -42,3 +42,42 @@ func TestImportPrefixBoundary(t *testing.T) {
 	if !importMatches("internal/infrastructure/db","internal/infrastructure/") { t.Fatal("expected child package match") }
 	if importMatches("internal/infrastructurex/db","internal/infrastructure/") { t.Fatal("must not match sibling prefix") }
 }
+
+func jsonRequirementCatalog() Catalog {
+	return Catalog{SchemaVersion:"1", ADRs:[]ADR{{
+		ID:"ADR-002", Title:"Explicit runtime configuration", Version:1, Status:"accepted",
+		Requirements:[]Requirement{{
+			ID:"REQ-002-01", Title:"Require timeout and retry keys", Severity:"error",
+			Verifier:Verifier{Type:"json-required-keys", FilePath:"config/service.json", RequiredJSONKeys:[]string{"timeout_seconds","retry_limit"}},
+		}},
+	}}}
+}
+
+func TestJSONRequiredKeysPassAndUsesZeroTokens(t *testing.T) {
+	md := "### File: config/service.json\n```json\n{\n  \"timeout_seconds\": 30,\n  \"retry_limit\": 3\n}\n```\n"
+	files := ParseIssueMarkdown(md)
+	if len(files)!=1 || files[0].Language!="json" { t.Fatalf("expected one parsed JSON file, got %+v", files) }
+	result := Assess(jsonRequirementCatalog(), files)
+	if result.Verdict!="PASS" { t.Fatalf("expected PASS, got %s: %+v", result.Verdict, result.Requirements) }
+	if result.LLMCalls!=0 { t.Fatalf("expected zero LLM calls, got %d", result.LLMCalls) }
+}
+
+func TestJSONRequiredKeysFindMissingKey(t *testing.T) {
+	md := "### File: config/service.json\n```json\n{\n  \"timeout_seconds\": 30\n}\n```\n"
+	result := Assess(jsonRequirementCatalog(), ParseIssueMarkdown(md))
+	if result.Verdict!="FAIL" { t.Fatalf("expected FAIL, got %s", result.Verdict) }
+	if len(result.Requirements)!=1 || result.Requirements[0].Status!="FAIL" { t.Fatalf("expected requirement failure, got %+v", result.Requirements) }
+	if len(result.Requirements[0].Findings)!=1 || !strings.Contains(result.Requirements[0].Findings[0].Message,"retry_limit") { t.Fatalf("expected missing retry_limit finding, got %+v", result.Requirements[0].Findings) }
+}
+
+func TestJSONRequiredKeysMalformedInputIsError(t *testing.T) {
+	files := []SourceFile{{Path:"config/service.json", Language:"json", Content:"{ invalid json"}}
+	result := Assess(jsonRequirementCatalog(), files)
+	if result.Requirements[0].Status!="ERROR" { t.Fatalf("expected ERROR, got %+v", result.Requirements[0]) }
+}
+
+func TestJSONRequiredKeysMissingFileIsNotApplicable(t *testing.T) {
+	files := []SourceFile{{Path:"config/other.json", Language:"json", Content:"{}"}}
+	result := Assess(jsonRequirementCatalog(), files)
+	if result.Requirements[0].Status!="NOT_APPLICABLE" { t.Fatalf("expected NOT_APPLICABLE, got %+v", result.Requirements[0]) }
+}
