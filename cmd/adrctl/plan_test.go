@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/tyler-beach/pf_2/internal/analyzer"
+	"github.com/tyler-beach/pf_2/internal/plan"
 )
 
 func planFixtureRoot(t *testing.T) string {
