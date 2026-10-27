@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -154,11 +155,38 @@ func runAssess(args []string, repoMode bool) error {
 	return nil
 }
 
+// resolveOpenGrepBinary resolves the exact executable file and records its digest.
+// If an expected digest is supplied, a mismatch fails before the analyzer starts.
+func resolveOpenGrepBinary(binary, expectedSHA256 string) (string, string, error) {
+	resolved, err := analyzer.ResolveExecutable(binary)
+	if err != nil {
+		return "", "", err
+	}
+	actual, err := analyzer.HashFile(resolved)
+	if err != nil {
+		return "", "", fmt.Errorf("hash OpenGrep executable: %w", err)
+	}
+	expected := strings.ToLower(strings.TrimSpace(expectedSHA256))
+	if expected != "" {
+		if len(expected) != 64 {
+			return "", "", fmt.Errorf("expected binary SHA-256 must be a 64-character hexadecimal digest")
+		}
+		if _, err := hex.DecodeString(expected); err != nil {
+			return "", "", fmt.Errorf("expected binary SHA-256 is invalid: %w", err)
+		}
+		if actual != expected {
+			return "", "", fmt.Errorf("OpenGrep binary SHA-256 mismatch: expected %s but found %s", expected, actual)
+		}
+	}
+	return resolved, actual, nil
+}
+
 func runOpenGrepScan(args []string) error {
 	fs := flag.NewFlagSet("scan-opengrep", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root to scan")
 	config := fs.String("config", "rules/pathfinder-security.yml", "repository-relative OpenGrep rule file")
 	binary := fs.String("binary", "opengrep", "OpenGrep executable path")
+	binarySHA256 := fs.String("binary-sha256", "", "expected OpenGrep executable SHA-256 (computed and recorded if omitted)")
 	version := fs.String("version", "1.30.0", "expected pinned OpenGrep version")
 	timeout := fs.Duration("timeout", 5*time.Minute, "scan timeout (for example 90s or 5m)")
 	jsonPath := fs.String("json-out", "analyzer-evidence/opengrep.json", "normalized analyzer evidence output")
@@ -181,10 +209,8 @@ func runOpenGrepScan(args []string) error {
 	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
 	rootAbs, err = filepath.EvalSymlinks(rootAbs)
 	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
-	binaryPath, err := analyzer.ResolveExecutable(*binary)
+	binaryPath, binaryHash, err := resolveOpenGrepBinary(*binary, *binarySHA256)
 	if err != nil { return err }
-	binaryHash, err := analyzer.HashFile(binaryPath)
-	if err != nil { return fmt.Errorf("hash OpenGrep executable: %w", err) }
 	configAbs, configRel, err := resolveRepositoryConfig(rootAbs, *config)
 	if err != nil { return err }
 	configHash, err := analyzer.HashFile(configAbs)
