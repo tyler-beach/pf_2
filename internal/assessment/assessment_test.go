@@ -79,7 +79,8 @@ func TestJSONRequiredKeysMalformedInputIsError(t *testing.T) {
 func TestJSONRequiredKeysMissingFileIsEvidenceMissing(t *testing.T) {
 	files := []SourceFile{{Path:"config/other.json", Language:"json", Content:"{}"}}
 	result := Assess(jsonRequirementCatalog(), files)
-	if result.Requirements[0].Status!="EVIDENCE_MISSING" { t.Fatalf("expected EVIDENCE_MISSING, got %+v", result.Requirements[0]) }\n\tif result.Verdict != "INDETERMINATE" { t.Fatalf("missing required file must not pass, got %s", result.Verdict) }
+	if result.Requirements[0].Status!="EVIDENCE_MISSING" { t.Fatalf("expected EVIDENCE_MISSING, got %+v", result.Requirements[0]) }
+	if result.Verdict != "INDETERMINATE" { t.Fatalf("missing required file must not pass, got %s", result.Verdict) }
 }
 
 func TestCatalogRejectsUnsafeJSONVerifierPath(t *testing.T) {
