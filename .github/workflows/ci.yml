@@ -24,6 +24,56 @@ jobs:
           go vet ./...
           go run ./cmd/adrctl validate --requirements adr/requirements.json
 
+      - name: Install pinned OpenGrep CLI and verify SHA-256
+        run: |
+          set -euo pipefail
+          install_dir="$RUNNER_TEMP/opengrep"
+          mkdir -p "$install_dir"
+          curl --fail --location --silent --show-error \
+            https://github.com/opengrep/opengrep/releases/download/v1.30.0/opengrep_manylinux_x86 \
+            --output "$install_dir/opengrep"
+          echo "35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c  $install_dir/opengrep" | sha256sum --check
+          chmod 0755 "$install_dir/opengrep"
+          echo "$install_dir" >> "$GITHUB_PATH"
+          "$install_dir/opengrep" --version
+
+      - name: Verify OpenGrep against multilingual vulnerable and clean fixtures
+        run: |
+          set -euo pipefail
+          fixture_root="$RUNNER_TEMP/pathfinder-opengrep-fixtures"
+          mkdir -p "$fixture_root/vulnerable/rules" "$fixture_root/clean/rules"
+          cp testdata/analyzer-fixtures/vulnerable/* "$fixture_root/vulnerable/"
+          cp testdata/analyzer-fixtures/clean/* "$fixture_root/clean/"
+          cp rules/pathfinder-security.yml "$fixture_root/vulnerable/rules/pathfinder-security.yml"
+          cp rules/pathfinder-security.yml "$fixture_root/clean/rules/pathfinder-security.yml"
+
+          go run ./cmd/adrctl scan-opengrep \
+            --root "$fixture_root/vulnerable" \
+            --config rules/pathfinder-security.yml \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --version 1.30.0 \
+            --json-out "$RUNNER_TEMP/opengrep-vulnerable.json"
+
+          go run ./cmd/adrctl scan-opengrep \
+            --root "$fixture_root/clean" \
+            --config rules/pathfinder-security.yml \
+            --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --version 1.30.0 \
+            --json-out "$RUNNER_TEMP/opengrep-clean.json"
+
+          jq -e '
+            .status == "COMPLETE"
+            and (.findings | length) >= 8
+            and ([.findings[].rule_id] | unique | sort) == [
+              "pathfinder.csharp-process-start",
+              "pathfinder.go-shell-command",
+              "pathfinder.java-runtime-exec",
+              "pathfinder.no-dynamic-eval"
+            ]
+          ' "$RUNNER_TEMP/opengrep-vulnerable.json"
+
+          jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
+
       - name: Assess repository source
         run: |
           go run ./cmd/adrctl assess-repo \
