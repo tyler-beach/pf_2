@@ -14,8 +14,12 @@
           "severity": "error",
           "verifier": {
             "type": "go-import-boundary",
-            "source_path_prefixes": ["internal/domain/"],
-            "forbidden_import_prefixes": ["internal/infrastructure/"]
+            "source_path_prefixes": [
+              "internal/domain/"
+            ],
+            "forbidden_import_prefixes": [
+              "internal/infrastructure/"
+            ]
           }
         },
         {
@@ -25,8 +29,36 @@
           "severity": "error",
           "verifier": {
             "type": "go-import-boundary",
-            "source_path_prefixes": ["internal/domain/"],
-            "forbidden_import_prefixes": ["net/http", "github.com/gin-gonic/gin", "github.com/go-chi/chi"]
+            "source_path_prefixes": [
+              "internal/domain/"
+            ],
+            "forbidden_import_prefixes": [
+              "net/http",
+              "github.com/gin-gonic/gin",
+              "github.com/go-chi/chi"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-002",
+      "title": "Make service runtime behavior explicit",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-002-01",
+          "title": "Service configuration must declare timeout and retry limits",
+          "description": "The service JSON configuration must explicitly include timeout_seconds and retry_limit as top-level keys.",
+          "severity": "error",
+          "verifier": {
+            "type": "json-required-keys",
+            "file_path": "config/service.json",
+            "required_json_keys": [
+              "timeout_seconds",
+              "retry_limit"
+            ]
           }
         }
       ]
