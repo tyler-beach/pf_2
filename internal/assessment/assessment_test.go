@@ -600,3 +600,150 @@ func TestEmptyCatalogCannotClaimCompliance(t *testing.T) {
 	}
 }
 
+func TestManualReviewVerifierIsSupportedButCannotEstablishCompliance(t *testing.T) {
+	catalog := Catalog{
+		SchemaVersion: "1",
+		ADRs: []ADR{{
+			ID:      "ADR-REVIEW",
+			Title:   "Runtime suitability",
+			Version: 1,
+			Status:  "accepted",
+			Requirements: []Requirement{
+				{
+					ID:       "REQ-REVIEW-01",
+					Title:    "The timeout must suit the service's business latency budget",
+					Severity: "warning",
+					Verifier: Verifier{Type: "manual-review"},
+				},
+				{
+					ID:       "REQ-REVIEW-02",
+					Title:    "Domain code must not depend on infrastructure adapters",
+					Severity: "error",
+					Verifier: Verifier{
+						Type:                    "go-import-boundary",
+						SourcePathPrefixes:      []string{"internal/domain/"},
+						ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+					},
+				},
+			},
+		}},
+	}
+	if err := ValidateCatalog(catalog); err != nil {
+		t.Fatalf("manual-review verifier should be a supported catalog type: %v", err)
+	}
+
+	files := []SourceFile{{
+		Path:     "internal/domain/customer.go",
+		Language: "go",
+		Content:  "package domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n",
+	}}
+	result := AssessWithOptions(catalog, files, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	if len(result.Requirements) != 2 {
+		t.Fatalf("got %d requirements, want 2", len(result.Requirements))
+	}
+	statuses := make(map[string]string, len(result.Requirements))
+	for _, requirement := range result.Requirements {
+		statuses[requirement.RequirementID] = requirement.Status
+	}
+	if statuses["REQ-REVIEW-01"] != "REVIEW_REQUIRED" {
+		t.Fatalf("manual review status = %s, want REVIEW_REQUIRED; result=%+v", statuses["REQ-REVIEW-01"], result.Requirements[0])
+	}
+	if statuses["REQ-REVIEW-02"] != "PASS" {
+		t.Fatalf("deterministic Go check should pass independently; statuses=%v", statuses)
+	}
+	if result.Counts["REVIEW_REQUIRED"] != 1 || result.Counts["UNSUPPORTED"] != 0 {
+		t.Fatalf("manual review should be counted separately from unsupported: %v", result.Counts)
+	}
+	if result.CoverageStatus != "PARTIAL" {
+		t.Fatalf("manual review must remain outside automatic coverage; got %s", result.CoverageStatus)
+	}
+	if result.Verdict != "INDETERMINATE" {
+		t.Fatalf("a human-review requirement must prevent an overall PASS, got %s", result.Verdict)
+	}
+	if result.LLMCalls != 0 {
+		t.Fatalf("manual-review verifier unexpectedly made runtime LLM calls: %d", result.LLMCalls)
+	}
+}
+
+func TestManualReviewOnlyCatalogIsIndeterminateNotUnsupported(t *testing.T) {
+	catalog := Catalog{
+		SchemaVersion: "1",
+		ADRs: []ADR{{
+			ID:      "ADR-REVIEW-ONLY",
+			Title:   "Business semantic constraint",
+			Version: 1,
+			Status:  "accepted",
+			Requirements: []Requirement{{
+				ID:       "REQ-REVIEW-ONLY-01",
+				Title:    "A reviewer must confirm the exception is justified",
+				Severity: "warning",
+				Verifier: Verifier{Type: "manual-review"},
+			}},
+		}},
+	}
+	result := AssessWithOptions(catalog, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	if result.RequirementCount != 1 || result.Requirements[0].Status != "REVIEW_REQUIRED" {
+		t.Fatalf("manual-only requirement should remain explicitly review-required: %+v", result)
+	}
+	if result.Counts["REVIEW_REQUIRED"] != 1 || result.CoverageStatus != "NONE" || result.Verdict != "INDETERMINATE" {
+		t.Fatalf("manual-only catalog must not imply automated coverage: %+v", result)
+	}
+}
+
+func TestConfirmedViolationTakesPrecedenceOverManualReview(t *testing.T) {
+	catalog := Catalog{
+		SchemaVersion: "1",
+		ADRs: []ADR{
+			{
+				ID:      "ADR-REVIEW",
+				Title:   "Runtime suitability",
+				Version: 1,
+				Status:  "accepted",
+				Requirements: []Requirement{{
+					ID:       "REQ-REVIEW-01",
+					Title:    "The timeout must suit the service's business latency budget",
+					Severity: "warning",
+					Verifier: Verifier{Type: "manual-review"},
+				}},
+			},
+			{
+				ID:      "ADR-BOUNDARY",
+				Title:   "Preserve domain boundaries",
+				Version: 1,
+				Status:  "accepted",
+				Requirements: []Requirement{{
+					ID:       "REQ-BOUNDARY-01",
+					Title:    "Domain code must not depend on infrastructure adapters",
+					Severity: "error",
+					Verifier: Verifier{
+						Type:                    "go-import-boundary",
+						SourcePathPrefixes:      []string{"internal/domain/"},
+						ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+					},
+				}},
+			},
+		},
+	}
+	files := []SourceFile{{
+		Path:     "internal/domain/customer.go",
+		Language: "go",
+		Content:  "package domain\nimport _ \"internal/infrastructure/storage\"\n",
+	}}
+	result := AssessWithOptions(catalog, files, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	statuses := make(map[string]string, len(result.Requirements))
+	for _, requirement := range result.Requirements {
+		statuses[requirement.RequirementID] = requirement.Status
+	}
+	if statuses["REQ-REVIEW-01"] != "REVIEW_REQUIRED" {
+		t.Fatalf("manual review must remain explicit, got %v", statuses)
+	}
+	if statuses["REQ-BOUNDARY-01"] != "FAIL" {
+		t.Fatalf("confirmed boundary violation must remain FAIL, got %v", statuses)
+	}
+	if result.Verdict != "FAIL" {
+		t.Fatalf("a confirmed violation must take precedence over review-required evidence, got %s", result.Verdict)
+	}
+	if result.LLMCalls != 0 {
+		t.Fatalf("manual-review verifier unexpectedly made runtime LLM calls: %d", result.LLMCalls)
+	}
+}

@@ -138,6 +138,8 @@ func ValidateCatalog(c Catalog) error {
 					if b.Min == nil && b.Max == nil { return fmt.Errorf("requirement %s: numeric_json_bounds for %q needs min and/or max", r.ID, b.Key) }
 					if b.Min != nil && b.Max != nil && *b.Min > *b.Max { return fmt.Errorf("requirement %s: numeric_json_bounds for %q has min greater than max", r.ID, b.Key) }
 				}
+			case "manual-review":
+				// A deliberate human decision is supported without machine-verifier configuration.
 			case "analyzer-rule":
 				if strings.TrimSpace(r.Verifier.Analyzer) == "" { return fmt.Errorf("requirement %s: analyzer-rule requires analyzer", r.ID) }
 				if len(r.Verifier.RuleIDs) == 0 { return fmt.Errorf("requirement %s: analyzer-rule requires rule_ids", r.ID) }
@@ -395,8 +397,15 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 				if options.EvidenceMode == EvidenceModeSubmission && len(options.AnalyzerResults) == 0 {
 					rr.Status = "NOT_APPLICABLE"
 					rr.Reason = "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
-				} else { assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults) }
-			default: rr.Status="UNSUPPORTED"; rr.Reason="No approved verifier is registered for type: "+r.Verifier.Type
+				} else {
+					assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults)
+				}
+			case "manual-review":
+				rr.Status = "REVIEW_REQUIRED"
+				rr.Reason = "This requirement needs human judgment and cannot be established by an automatic verifier."
+			default:
+				rr.Status = "UNSUPPORTED"
+				rr.Reason = "No approved verifier is registered for type: " + r.Verifier.Type
 			}
 			out.Counts[rr.Status]++
 			out.Requirements = append(out.Requirements, rr)
