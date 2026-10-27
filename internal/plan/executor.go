@@ -57,6 +57,8 @@ func (e *RunFailure) Unwrap() error { if e==nil{return nil}; return e.Err }
 type TaskExecution struct {
 	TaskID         string              `json:"task_id"`
 	Analyzer       string              `json:"analyzer"`
+	BinarySHA256   string              `json:"binary_sha256,omitempty"`
+	RuleSetSHA256  string              `json:"ruleset_sha256,omitempty"`
 	CacheKey       string              `json:"cache_key"`
 	IdempotencyKey string              `json:"idempotency_key"`
 	Status         string              `json:"status"`
@@ -89,7 +91,13 @@ func (r OpenGrepTaskRunner) Run(ctx context.Context, root string, task Task) (an
 	if !strings.EqualFold(strings.TrimSpace(task.Analyzer), "opengrep") {
 		return analyzer.ScanResult{}, &RunFailure{Kind:FailureUnsupported,Err:fmt.Errorf("no executor registered for analyzer %q",task.Analyzer)}
 	}
-	scanner:=analyzer.OpenGrepScanner{Binary:r.Binary,Version:task.Version,ConfigPath:task.ConfigurationPath}
+	if task.BinarySHA256 == "" || !validDigest(task.BinarySHA256) {
+		return analyzer.ScanResult{}, &RunFailure{Kind:FailureAnalyzer,Err:fmt.Errorf("OpenGrep plan must pin binary_sha256")}
+	}
+	if task.RuleSetSHA256 == "" || !validDigest(task.RuleSetSHA256) {
+		return analyzer.ScanResult{}, &RunFailure{Kind:FailureAnalyzer,Err:fmt.Errorf("OpenGrep plan must pin ruleset_sha256")}
+	}
+	scanner:=analyzer.OpenGrepScanner{Binary:r.Binary,BinarySHA256:task.BinarySHA256,RuleSetSHA256:task.RuleSetSHA256,Version:task.Version,ConfigPath:task.ConfigurationPath}
 	result,err:=scanner.Scan(ctx,root)
 	if err==nil { return result,nil }
 	kind:=FailureAnalyzer
@@ -150,7 +158,8 @@ func executeOne(ctx context.Context,root string,task Task,runner TaskRunner,cach
 		cached,found,err:=cache.Load(task.CacheKey)
 		if err!=nil { return newTaskResult(task,TaskStatusError,"read analyzer cache: "+err.Error()) }
 		if found {
-			if cached.CacheKey!=task.CacheKey||cached.TaskID!=task.ID||cached.IdempotencyKey!=task.IdempotencyKey {
+			if cached.CacheKey!=task.CacheKey||cached.TaskID!=task.ID||cached.IdempotencyKey!=task.IdempotencyKey||
+				cached.BinarySHA256!=task.BinarySHA256||cached.RuleSetSHA256!=task.RuleSetSHA256 {
 				return newTaskResult(task,TaskStatusError,"cache entry identity does not match the planned task")
 			}
 			if cached.Evidence==nil { return newTaskResult(task,TaskStatusError,"cache entry is missing normalized analyzer evidence") }
@@ -232,7 +241,7 @@ func executeOne(ctx context.Context,root string,task Task,runner TaskRunner,cach
 }
 
 func newTaskResult(task Task,status,reason string) TaskExecution {
-	return TaskExecution{TaskID:task.ID,Analyzer:task.Analyzer,CacheKey:task.CacheKey,IdempotencyKey:task.IdempotencyKey,Status:status,Error:reason}
+	return TaskExecution{TaskID:task.ID,Analyzer:task.Analyzer,BinarySHA256:task.BinarySHA256,RuleSetSHA256:task.RuleSetSHA256,CacheKey:task.CacheKey,IdempotencyKey:task.IdempotencyKey,Status:status,Error:reason}
 }
 
 func retryableFailure(err error,allowed []string) bool {
@@ -260,6 +269,8 @@ func verifyTaskEvidence(root string,task Task,evidence analyzer.ScanResult,raw [
 	verified,err:=analyzer.VerifyScanEvidence(root,evidence,raw)
 	if err!=nil { return verified,err }
 	if verified.InputSHA256!=task.InputSHA256 { return verified,fmt.Errorf("input SHA-256 does not match planned snapshot") }
+	if task.BinarySHA256!="" && verified.BinarySHA256!=task.BinarySHA256 { return verified,fmt.Errorf("binary SHA-256 does not match planned executable") }
+	if task.RuleSetSHA256!="" && verified.RuleSetSHA256!=task.RuleSetSHA256 { return verified,fmt.Errorf("ruleset SHA-256 does not match planned rule set") }
 	if verified.ConfigurationPath!=task.ConfigurationPath||verified.ConfigurationSHA256!=task.ConfigurationSHA256 {
 		return verified,fmt.Errorf("configuration identity/digest does not match planned task")
 	}

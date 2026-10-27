@@ -92,6 +92,14 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	parsed.ConfigurationPath = envelope.ConfigurationPath
 	parsed.ConfigurationSHA256 = configHash
 	parsed.InputSHA256 = inputHash
+	if envelope.BinarySHA256 != "" && !isSHA256Digest(envelope.BinarySHA256) {
+		return fail("binary SHA-256 provenance is malformed")
+	}
+	if envelope.RuleSetSHA256 != "" && envelope.RuleSetSHA256 != configHash {
+		return fail("ruleset SHA-256 does not match the configuration digest")
+	}
+	parsed.BinarySHA256 = envelope.BinarySHA256
+	parsed.RuleSetSHA256 = configHash
 	parsed.ScannedPaths = paths
 	inventory := make(map[string]bool, len(paths))
 	for _, p := range paths { inventory[filepath.ToSlash(p)] = true }
@@ -108,4 +116,13 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 		return fail("raw SARIF changed while verifying analyzer evidence")
 	}
 	return parsed, nil
+}
+
+
+func isSHA256Digest(value string) bool {
+	if len(value) != 64 { return false }
+	for _, r := range value {
+		if !((r >= '0' && r <= '9') || (r >= 'a' && r <= 'f')) { return false }
+	}
+	return true
 }

@@ -25,6 +25,8 @@ type cacheRecord struct {
 	CacheKey       string              `json:"cache_key"`
 	TaskID         string              `json:"task_id"`
 	Analyzer       string              `json:"analyzer"`
+	BinarySHA256   string              `json:"binary_sha256,omitempty"`
+	RuleSetSHA256  string              `json:"ruleset_sha256,omitempty"`
 	IdempotencyKey string              `json:"idempotency_key"`
 	Evidence       analyzer.ScanResult `json:"evidence"`
 	RawSARIF       []byte              `json:"raw_sarif"`
@@ -68,11 +70,11 @@ func (c *FileCache) Load(cacheKey string)(TaskExecution,bool,error) {
 		return empty,false,fmt.Errorf("cache entry has trailing content: %w",err)
 	}
 	if record.SchemaVersion!=cacheSchemaVersion||record.CacheKey!=cacheKey{return empty,false,fmt.Errorf("cache entry schema or key mismatch")}
-	if record.TaskID==""||record.Analyzer==""||record.IdempotencyKey==""||len(record.RawSARIF)==0 {
+	if record.TaskID==""||record.Analyzer==""||record.IdempotencyKey==""||record.RuleSetSHA256==""||len(record.RawSARIF)==0 {
 		return empty,false,fmt.Errorf("cache entry is missing required identity or raw SARIF")
 	}
 	record.Evidence.RawSARIF=append([]byte(nil),record.RawSARIF...)
-	result:=TaskExecution{TaskID:record.TaskID,Analyzer:record.Analyzer,CacheKey:record.CacheKey,IdempotencyKey:record.IdempotencyKey,
+	result:=TaskExecution{TaskID:record.TaskID,Analyzer:record.Analyzer,BinarySHA256:record.BinarySHA256,RuleSetSHA256:record.RuleSetSHA256,CacheKey:record.CacheKey,IdempotencyKey:record.IdempotencyKey,
 		Status:TaskStatusComplete,Attempts:0,CacheHit:true,Evidence:&record.Evidence,RawSARIF:append([]byte(nil),record.RawSARIF...)}
 	return result,true,nil
 }
@@ -90,6 +92,7 @@ func (c *FileCache) Store(cacheKey string,result TaskExecution) error {
 	evidence:=*result.Evidence
 	evidence.RawSARIF=nil
 	record:=cacheRecord{SchemaVersion:cacheSchemaVersion,CacheKey:cacheKey,TaskID:result.TaskID,Analyzer:result.Analyzer,
+		BinarySHA256:result.BinarySHA256,RuleSetSHA256:result.RuleSetSHA256,
 		IdempotencyKey:result.IdempotencyKey,Evidence:evidence,RawSARIF:append([]byte(nil),result.RawSARIF...)}
 	data,err:=json.MarshalIndent(record,"","  ")
 	if err!=nil{return fmt.Errorf("encode cache record: %w",err)}
