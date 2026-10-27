@@ -56,6 +56,40 @@ export function metricsRow(items: Metric[]): string {
     .join('')}</div>`;
 }
 
+/** DOM-safe metrics strip — prefer this over metricsRow + innerHTML. */
+export function mountMetricsRow(parent: HTMLElement, items: Metric[]): HTMLElement {
+  const row = document.createElement('div');
+  row.className = 'metrics';
+  for (const m of items) {
+    const href = safeHref(m.href);
+    const cell = document.createElement(href ? 'a' : 'div');
+    cell.className = 'metric';
+    if (href && cell instanceof HTMLAnchorElement) cell.href = href;
+
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = m.label;
+    cell.appendChild(label);
+
+    const value = document.createElement('div');
+    value.className = 'value';
+    const cls = safeClass(m.cls);
+    if (cls) value.classList.add(cls);
+    value.textContent = m.value;
+    cell.appendChild(value);
+
+    if (m.hint) {
+      const hint = document.createElement('div');
+      hint.className = 'hint';
+      hint.textContent = m.hint;
+      cell.appendChild(hint);
+    }
+    row.appendChild(cell);
+  }
+  parent.appendChild(row);
+  return row;
+}
+
 export function statusItem(label: string, value: string, kind: 'ok' | 'warn' | 'bad' | '' = ''): string {
   const cls = safeClass(kind);
   return `<span class="item"><span class="dot${cls ? ` ${cls}` : ''}"></span>${escapeHTML(label)} <strong${cls ? ` class="${cls}"` : ''}>${escapeHTML(value)}</strong></span>`;

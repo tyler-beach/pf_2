@@ -23,6 +23,7 @@ import {
   fmt,
   fmtUSD,
   metricsRow,
+  mountMetricsRow,
   setCrumb,
   setPurpose,
   setTopActions,
@@ -197,32 +198,48 @@ export async function renderMetrics(app: HTMLElement) {
     ],
   };
 
-  app.innerHTML = `
-    <div class="toolbar">
-      <div class="seg" id="metric-tabs"></div>
-    </div>
-    ${metricsRow(focusMetrics[focus])}
-    <h2>Trend</h2>
-    <div id="m-chart" class="chart tall"></div>
-    <h2>Raw latest metrics</h2>
-    <div class="artifact"><pre>${escapeHTML(JSON.stringify(m, null, 2))}</pre></div>
-  `;
-  const tabHost = document.getElementById('metric-tabs');
-  if (tabHost) {
-    for (const t of METRIC_TABS) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = t;
-      btn.dataset.t = t;
-      if (focus === t) btn.className = 'active';
-      btn.addEventListener('click', () => {
-        location.hash = `#/metrics?focus=${encodeURIComponent(t)}`;
-      });
-      tabHost.appendChild(btn);
-    }
+  app.replaceChildren();
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'toolbar';
+  const tabHost = document.createElement('div');
+  tabHost.className = 'seg';
+  tabHost.id = 'metric-tabs';
+  for (const t of METRIC_TABS) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = t;
+    btn.dataset.t = t;
+    if (focus === t) btn.className = 'active';
+    btn.addEventListener('click', () => {
+      location.hash = `#/metrics?focus=${encodeURIComponent(t)}`;
+    });
+    tabHost.appendChild(btn);
   }
-  const el = document.getElementById('m-chart');
-  if (el && runs.length) {
+  toolbar.appendChild(tabHost);
+  app.appendChild(toolbar);
+
+  mountMetricsRow(app, focusMetrics[focus]);
+
+  const trendHeading = document.createElement('h2');
+  trendHeading.textContent = 'Trend';
+  app.appendChild(trendHeading);
+  const el = document.createElement('div');
+  el.id = 'm-chart';
+  el.className = 'chart tall';
+  app.appendChild(el);
+
+  const rawHeading = document.createElement('h2');
+  rawHeading.textContent = 'Raw latest metrics';
+  app.appendChild(rawHeading);
+  const artifact = document.createElement('div');
+  artifact.className = 'artifact';
+  const pre = document.createElement('pre');
+  pre.textContent = JSON.stringify(m, null, 2);
+  artifact.appendChild(pre);
+  app.appendChild(artifact);
+
+  if (runs.length) {
     const xs = runs.map((_, i) => i);
     const series =
       focus === 'assist'
