@@ -14,7 +14,13 @@ import (
 type CandidateAssessment struct {
 	CandidateID     string   `json:"candidate_id"`
 	ADRID           string   `json:"adr_id"`
+	ADRTitle        string   `json:"adr_title"`
+	SectionHeading  string   `json:"section_heading"`
 	Statement       string   `json:"statement"`
+	Modality        string   `json:"modality"`
+	Kind            string   `json:"kind"`
+	PatternHint     string   `json:"pattern_hint"`
+	ReviewHints     []string `json:"review_hints,omitempty"`
 	SourcePath      string   `json:"source_path"`
 	SourceSHA256    string   `json:"source_sha256"`
 	SourceLineStart int      `json:"source_line_start"`
@@ -83,7 +89,10 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 	latest := latestRecords(registry)
 	for _, candidate := range index.Candidates {
 		item := CandidateAssessment{
-			CandidateID: candidate.ID, ADRID: candidate.ADRID, Statement: candidate.Statement,
+			CandidateID: candidate.ID, ADRID: candidate.ADRID, ADRTitle: candidate.ADRTitle,
+		SectionHeading: candidate.SectionHeading, Statement: candidate.Statement,
+		Modality: candidate.Modality, Kind: candidate.Kind, PatternHint: candidate.PatternHint,
+		ReviewHints: append([]string(nil), candidate.ReviewHints...),
 			SourcePath: candidate.SourcePath, SourceSHA256: candidate.SourceSHA256,
 			SourceLineStart: candidate.SourceLineStart, SourceLineEnd: candidate.SourceLineEnd,
 			Decision: DecisionPending, EnforcementMode: EnforcementReviewRequired,
@@ -183,12 +192,12 @@ func MarkdownAssessmentReport(report AssessmentReport) string {
 		for _, warning := range report.Warnings { fmt.Fprintf(&b, "- %s\n", warning) }
 		b.WriteString("\n")
 	}
-	b.WriteString("| Candidate | Status | Review | Requirement | Source | Reason |\n|---|---|---|---|---|---|\n")
+	b.WriteString("| Candidate | Modality | Review hints | Status | Review | Requirement | Source | Reason |\n|---|---|---|---|---|---|---|---|\n")
 	for _, candidate := range report.Candidates {
-		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s:%d-%d | %s |\n",
-			mdCell(candidate.CandidateID), mdCell(candidate.Status), mdCell(candidate.Decision),
-			mdCell(candidate.RequirementID), mdCell(candidate.SourcePath), candidate.SourceLineStart,
-			candidate.SourceLineEnd, mdCell(candidate.Reason))
+		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s | %s | %s:%d-%d | %s |\n",
+			mdCell(candidate.CandidateID), mdCell(candidate.Modality), mdCell(strings.Join(candidate.ReviewHints, ", ")),
+			mdCell(candidate.Status), mdCell(candidate.Decision), mdCell(candidate.RequirementID),
+			mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd, mdCell(candidate.Reason))
 	}
 	return b.String()
 }
