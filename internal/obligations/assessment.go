@@ -96,7 +96,7 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 	}
 	out.BindingCoverage = coverage
 	if coverage.StaleCount > 0 {
-		out.Warnings = append(out.Warnings, fmt.Sprintf("%d stale candidate review(s) require re-review", coverage.StaleCount))
+		out.Warnings = append(out.Warnings, fmt.Sprintf("%d stale candidate review or verifier binding snapshot(s) require re-review", coverage.StaleCount))
 	}
 	if coverage.OrphanedCount > 0 {
 		out.Warnings = append(out.Warnings, fmt.Sprintf("%d orphaned review history record(s) require explicit supersession", coverage.OrphanedCount))
@@ -149,6 +149,14 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 			item.Status = "NOT_APPLICABLE"
 			item.Reason = "candidate interpretation was explicitly rejected during review"
 		case DecisionApproved:
+			if record.RequirementID != "" && record.PatternID != "manual_review" && !bindingSnapshotMatches(record, catalog) {
+				item.Status = "INDETERMINATE"
+				item.EvidenceStatus = "STALE"
+				item.Reason = "approved verifier binding snapshot is stale or missing; re-review the requirement and verifier configuration"
+				out.Candidates = append(out.Candidates, item)
+				out.Counts[item.Status]++
+				continue
+			}
 			if err := validateApprovedBinding(record, candidate, catalog); err != nil {
 				return out, fmt.Errorf("approved candidate %s has invalid binding: %w", candidate.ID, err)
 			}
