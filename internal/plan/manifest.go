@@ -250,7 +250,7 @@ func resolveConfiguration(root, raw string) (string, string, error) {
 }
 
 func normalizeRepoPath(raw string, allowRoot bool) (string, error) {
-	raw = strings.TrimSpace(strings.ReplaceAll(raw, "\", "/"))
+	raw = strings.TrimSpace(strings.ReplaceAll(raw, "\\", "/"))
 	if raw == "" || strings.ContainsRune(raw, 0) || path.IsAbs(raw) || (len(raw) >= 2 && raw[1] == ':') {
 		return "", fmt.Errorf("path must be a non-empty repository-relative path")
 	}
