@@ -244,7 +244,8 @@ func reviewHints(statement, kind string) []string {
 	if kind == "exception_candidate" || anyPhrase(statement, "unless", "except", "only when", "provided that", "waiver", "exception") {
 		hints = append(hints, "condition_or_exception")
 	}
-	if strings.Contains(lower, ";") || strings.Contains(lower, " and ") || strings.Contains(lower, " or ") {
+	if strings.Contains(lower, ";") || strings.Contains(lower, " and ") || strings.Contains(lower, " or ") ||
+		(anyPhrase(statement, "finite", "bounded") && anyPhrase(statement, "no greater than", "at most", "maximum", "less than or equal to")) {
 		hints = append(hints, "compound_or_conjoined")
 	}
 	if anyPhrase(statement, "if", "when", "only when", "provided that", "unless") {
