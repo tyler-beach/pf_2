@@ -155,13 +155,13 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 		}
 		switch {
 		case strings.Contains(candidate.Statement, "timeout no greater than 30 seconds"):
-			timeout = candidate.Modality == "must" && candidate.PatternHint == "configuration.bounds_or_required_values"
+			timeout = candidate.Modality == "must" && candidate.PatternHint == "configuration.bounds_or_required_values" && hasReviewHint(candidate, "compound_or_conjoined")
 		case strings.Contains(candidate.Statement, "limited to three attempts"):
 			retries = candidate.Modality == "must" && candidate.PatternHint == "configuration.bounds_or_required_values"
 		case strings.Contains(candidate.Statement, "expose a health endpoint"):
 			health = candidate.Modality == "must"
 		case strings.Contains(candidate.Statement, "exception may be approved only when"):
-			exception = candidate.Modality == "may" && candidate.Kind == "exception_candidate"
+			exception = candidate.Modality == "may" && candidate.Kind == "exception_candidate" && hasReviewHint(candidate, "condition_or_exception") && hasReviewHint(candidate, "conditional_scope")
 		}
 	}
 	if !timeout || !retries || !health || !exception {
