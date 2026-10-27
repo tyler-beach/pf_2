@@ -47,6 +47,12 @@ func TestBlockingGateDoesNotPromoteAdvisoryOrReviewRequiredBindings(t *testing.T
 	}
 }
 
+func TestRunSpecificationCheckRequiresAnalyzerEvidencePair(t *testing.T) {
+	if err := runSpecificationCheck([]string{"--analyzer-evidence", "scan.json"}); err == nil || !strings.Contains(err.Error(), "must be provided together") {
+		t.Fatalf("specification-check should require normalized evidence and raw SARIF together, got %v", err)
+	}
+}
+
 func TestRunSpecificationCheckOrchestratesLifecycleAndEnforcesReview(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
