@@ -15,6 +15,97 @@ import (
 	"github.com/tyler-beach/pf_2/internal/obligations"
 )
 
+func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
+	root := t.TempDir()
+	adrRoot := filepath.Join(root, "adrs")
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
+	adrSource := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(filepath.Join(root, "internal", "domain"), 0o700); err != nil { t.Fatal(err) }
+	sourcePath := filepath.Join(root, "internal", "domain", "customer.go")
+	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n"), 0o600); err != nil { t.Fatal(err) }
+
+	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
+		ID: "ADR-001", Title: "Preserve domain boundaries", Version: 1, Status: "accepted",
+		Requirements: []assessment.Requirement{{
+			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
+			Description: "Domain source files must not import internal infrastructure packages.",
+			Severity: "error", Verifier: assessment.Verifier{
+				Type: "go-import-boundary", SourcePathPrefixes: []string{"internal/domain/"},
+				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+			},
+		}},
+	}}}
+	catalogPath := filepath.Join(root, "adr", "requirements.json")
+	if err := os.MkdirAll(filepath.Dir(catalogPath), 0o700); err != nil { t.Fatal(err) }
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil { t.Fatal(err) }
+
+	ingestionPath := filepath.Join(root, "adr", "ingested-adrs.json")
+	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil { t.Fatal(err) }
+	candidatePath := filepath.Join(root, "adr", "obligation-candidates.json")
+	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil { t.Fatal(err) }
+	index, err := readObligationIndex(candidatePath)
+	if err != nil { t.Fatal(err) }
+	if len(index.Candidates) != 1 { t.Fatalf("candidate count=%d, want 1: %+v", len(index.Candidates), index) }
+	candidate := index.Candidates[0]
+
+	registryPath := filepath.Join(root, "adr", "obligation-reviews.json")
+	if err := runInitReviewRegistry([]string{"--output", registryPath}); err != nil { t.Fatal(err) }
+	proposalPath := filepath.Join(t.TempDir(), "review-proposal.json")
+	proposal := obligations.ReviewProposal{
+		CandidateID: candidate.ID, Decision: obligations.DecisionApproved,
+		RequirementID: "REQ-001-01", PatternID: candidate.PatternHint,
+		EnforcementMode: obligations.EnforcementBlocking,
+		Reviewer: "security-architect@example.com", ReviewedAt: "2026-10-27T12:00:00Z",
+		ReviewReference: "https://github.com/tyler-beach/pf_2/issues/900",
+		Rationale: "The reviewed boundary obligation matches the existing deterministic Go import verifier.",
+	}
+	proposalBytes, err := json.Marshal(proposal)
+	if err != nil { t.Fatal(err) }
+	if err := os.WriteFile(proposalPath, proposalBytes, 0o600); err != nil { t.Fatal(err) }
+	if err := runRecordObligationReview([]string{
+		"--index", candidatePath, "--requirements", catalogPath, "--registry", registryPath, "--proposal", proposalPath,
+	}); err != nil { t.Fatal(err) }
+
+	assessmentPath := filepath.Join(root, "assessment.json")
+	if err := runAssess([]string{
+		"--root", root, "--requirements", catalogPath,
+		"--report", filepath.Join(root, "report.md"), "--json-out", assessmentPath,
+		"--sarif-out", filepath.Join(root, "results.sarif"),
+	}, true); err != nil { t.Fatal(err) }
+	jsonReport := filepath.Join(root, "obligation-assessment.json")
+	markdownReport := filepath.Join(root, "obligation-assessment.md")
+	args := []string{
+		"--root", root, "--index", candidatePath, "--requirements", catalogPath,
+		"--registry", registryPath, "--assessment", assessmentPath,
+		"--json-out", jsonReport, "--report", markdownReport,
+	}
+	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
+	readReport := func() obligations.AssessmentReport {
+		data, err := os.ReadFile(jsonReport)
+		if err != nil { t.Fatal(err) }
+		var report obligations.AssessmentReport
+		if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
+		return report
+	}
+	passed := readReport()
+	if !passed.EvidenceFresh || passed.Candidates[0].Status != "PASS" ||
+		passed.Candidates[0].Decision != obligations.DecisionApproved ||
+		passed.Candidates[0].RequirementID != "REQ-001-01" {
+		t.Fatalf("reviewed obligation did not complete the end-to-end pass path: %+v", passed)
+	}
+
+	// Mutating source after the assessment must not preserve the earlier PASS.
+	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"internal/infrastructure/storage\"\n"), 0o600); err != nil { t.Fatal(err) }
+	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
+	stale := readReport()
+	if stale.EvidenceFresh || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
+		t.Fatalf("stale assessment remained compliant after source changed: %+v", stale)
+	}
+}
+
 func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
