@@ -707,7 +707,9 @@ func canonicalPathForCollision(path string) string {
 func runSpecificationCheck(args []string) error {
 	fs := flag.NewFlagSet("specification-check", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root")
-	adrRoot := fs.String("adr-root", "adrs", "repository-relative directory containing ADR Markdown")
+	var sourceRoot string
+	fs.StringVar(&sourceRoot, "source-root", "adrs", "repository-relative directory containing ADR or plain-English specification Markdown")
+	fs.StringVar(&sourceRoot, "adr-root", "adrs", "legacy alias for --source-root")
 	requirements := fs.String("requirements", "adr/requirements.json", "accepted requirements catalog JSON")
 	registry := fs.String("registry", "adr/obligation-reviews.json", "append-only obligation review registry JSON")
 	analyzerEvidence := fs.String("analyzer-evidence", "", "optional normalized analyzer scan evidence JSON")
@@ -727,7 +729,7 @@ func runSpecificationCheck(args []string) error {
 		if filepath.IsAbs(raw) { return filepath.Clean(raw) }
 		return filepath.Join(rootReal, raw)
 	}
-	adrRootAbs, err := filepath.Abs(resolveInput(*adrRoot))
+	adrRootAbs, err := filepath.Abs(resolveInput(sourceRoot))
 	if err != nil { return fmt.Errorf("resolve ADR source root: %w", err) }
 	adrRootReal, err := filepath.EvalSymlinks(adrRootAbs)
 	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }

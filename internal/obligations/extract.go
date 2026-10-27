@@ -18,6 +18,8 @@ const (
 	maxCandidateLineBytes = 16 << 10
 )
 
+var sentenceAbbreviations = []string{"e.g.", "i.e.", "vs.", "mr.", "mrs.", "ms.", "dr.", "prof.", "fig.", "approx.", "u.s.", "u.k.", "e.u.", "u.n."}
+
 // Candidate is a source-cited interpretation suggestion, never an approved policy.
 type Candidate struct {
 	ID              string `json:"id"`
@@ -153,25 +155,41 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 			trimmed := strings.TrimSpace(lines[lineIndex])
 			if isFenceLine(trimmed) { inFence = !inFence; continue }
 			if inFence || trimmed == "" || strings.HasPrefix(trimmed, "<!--") { continue }
-			statement := normalizeStatement(trimmed)
-			if statement == "" { continue }
-			modality, ok := detectModality(statement)
-			if !ok { continue }
-			if len(statement) > maxCandidateLineBytes {
+			lineText := normalizeStatement(trimmed)
+			if lineText == "" {
+				continue
+			}
+			// Avoid expanding arbitrary prose into thousands of sentence fragments.
+			// Preserve the original line-size bound before segmentation as well.
+			if _, ok := detectModality(lineText); !ok {
+				continue
+			}
+			if len(lineText) > maxCandidateLineBytes {
 				return nil, fmt.Errorf("normative source line %d exceeds the %d-byte candidate statement limit", lineIndex+1, maxCandidateLineBytes)
 			}
-			kind := "normative_candidate"
-			if anyPhrase(statement, "unless", "except", "only when", "other than", "waiver", "exception") { kind = "exception_candidate" }
-			candidate := Candidate{
-				ADRID: parsed.ID, ADRTitle: parsed.Title, ADRStatus: parsed.Status,
-				SectionHeading: section.Heading, Statement: statement, Modality: modality,
-				Kind: kind, PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
-				SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex+1, SourceLineEnd: lineIndex+1,
-				ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
-				ReviewHints: reviewHints(statement, kind, section.Heading),
+			for _, statement := range splitSentences(lineText) {
+				modality, ok := detectModality(statement)
+				if !ok {
+					continue
+				}
+				if len(statement) > maxCandidateLineBytes {
+					return nil, fmt.Errorf("normative source line %d exceeds the %d-byte candidate statement limit", lineIndex+1, maxCandidateLineBytes)
+				}
+				kind := "normative_candidate"
+				if anyPhrase(statement, "unless", "except", "only when", "other than", "waiver", "exception") {
+					kind = "exception_candidate"
+				}
+				candidate := Candidate{
+					ADRID: parsed.ID, ADRTitle: parsed.Title, ADRStatus: parsed.Status,
+					SectionHeading: section.Heading, Statement: statement, Modality: modality,
+					Kind: kind, PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
+					SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex + 1, SourceLineEnd: lineIndex + 1,
+					ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
+					ReviewHints: reviewHints(statement, kind, section.Heading),
+				}
+				candidate.ID = candidateID(candidate)
+				result = append(result, candidate)
 			}
-			candidate.ID = candidateID(candidate)
-			result = append(result, candidate)
 		}
 	}
 	return result, nil
@@ -208,6 +226,63 @@ func detectModality(statement string) (string, bool) {
 	}
 	if bestIndex < 0 { return "", false }
 	return bestModality, true
+}
+
+// splitSentences separates independently reviewable prose sentences while keeping
+// each fragment traceable to the same original source line. It splits only after
+// sentence punctuation followed by whitespace, avoids common abbreviations and
+// decimal numbers, and leaves comma/semicolon clauses intact because they may
+// carry important scope or exception semantics.
+func splitSentences(line string) []string {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return nil
+	}
+	sentences := make([]string, 0, 2)
+	start := 0
+	for i := 0; i < len(line); i++ {
+		punctuation := line[i]
+		if punctuation != '.' && punctuation != '!' && punctuation != '?' {
+			continue
+		}
+		end := i + 1
+		if end < len(line) && line[end] != ' ' && line[end] != '\t' && line[end] != '\r' && line[end] != '\n' {
+			continue
+		}
+
+		next := end
+		for next < len(line) && (line[next] == ' ' || line[next] == '\t' || line[next] == '\r' || line[next] == '\n') {
+			next++
+		}
+		if next >= len(line) {
+			continue
+		}
+
+		prefix := strings.ToLower(strings.TrimSpace(line[start:end]))
+		isAbbreviation := false
+		if punctuation == '.' {
+			for _, abbreviation := range sentenceAbbreviations {
+				if strings.HasSuffix(prefix, abbreviation) {
+					isAbbreviation = true
+					break
+				}
+			}
+		}
+		if isAbbreviation {
+			continue
+		}
+
+		sentence := strings.TrimSpace(line[start:end])
+		if sentence != "" {
+			sentences = append(sentences, sentence)
+		}
+		start = next
+		i = next - 1
+	}
+	if tail := strings.TrimSpace(line[start:]); tail != "" {
+		sentences = append(sentences, tail)
+	}
+	return sentences
 }
 
 // firstPhraseIndex returns the first case-insensitive whole-word occurrence.

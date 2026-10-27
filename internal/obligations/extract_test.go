@@ -194,6 +194,141 @@ func hasReviewHint(candidate Candidate, wanted string) bool {
 	return false
 }
 
+func TestBuildIndexSplitsMultipleNormativeSentencesInPlainEnglishSpecification(t *testing.T) {
+	root := t.TempDir()
+	source := strings.Join([]string{
+		"# Service runtime requirements",
+		"",
+		"## Requirements",
+		"",
+		"All outbound HTTP clients must set a finite request timeout no greater than 30 seconds. Automatic retries must be limited to three attempts. Each service must expose a health endpoint. Exceptions may be approved only when an approved, documented interoperability constraint requires it.",
+	}, "\n")
+	path := filepath.Join(root, "service-runtime.md")
+	if err := os.WriteFile(path, []byte(source), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("service-runtime.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if doc.ID != "service-runtime" {
+		t.Fatalf("free-form specification should use stable filename ID, got %q", doc.ID)
+	}
+
+	index, err := BuildIndex(
+		[]adringest.Document{doc},
+		root,
+		"specifications",
+		[]byte("{\"schema_version\":\"1\",\"source_root\":\"specifications\"}"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.CandidateCount != 4 {
+		t.Fatalf("got %d candidates; want one per normative sentence (4): %+v", index.CandidateCount, index.Candidates)
+	}
+
+	wantStatements := []string{
+		"All outbound HTTP clients must set a finite request timeout no greater than 30 seconds.",
+		"Automatic retries must be limited to three attempts.",
+		"Each service must expose a health endpoint.",
+		"Exceptions may be approved only when an approved, documented interoperability constraint requires it.",
+	}
+	gotStatements := make(map[string]bool, len(index.Candidates))
+	ids := make(map[string]bool, len(index.Candidates))
+	lines := strings.Split(source, "\n")
+	for _, candidate := range index.Candidates {
+		gotStatements[candidate.Statement] = true
+		if ids[candidate.ID] {
+			t.Errorf("duplicate candidate ID %q", candidate.ID)
+		}
+		ids[candidate.ID] = true
+		if candidate.SourceLineStart != 5 || candidate.SourceLineEnd != 5 {
+			t.Errorf("candidate should retain exact source line 5, got %d-%d", candidate.SourceLineStart, candidate.SourceLineEnd)
+		}
+		if !strings.Contains(lines[candidate.SourceLineStart-1], candidate.Statement) {
+			t.Errorf("candidate statement %q is not present on cited source line", candidate.Statement)
+		}
+		if candidate.ApprovalStatus != "pending_review" || candidate.Executable {
+			t.Errorf("plain-English extraction must remain review-only: %+v", candidate)
+		}
+	}
+	for _, statement := range wantStatements {
+		if !gotStatements[statement] {
+			t.Errorf("missing standalone candidate sentence %q", statement)
+		}
+	}
+}
+
+func TestBuildIndexRejectsOversizedSourceLineAfterSentenceSplitting(t *testing.T) {
+	root := t.TempDir()
+	longLine := strings.Repeat("Every client must set a finite timeout. ", maxCandidateLineBytes/20)
+	source := "# ADR-903: Long requirement line\n\n## Requirements\n\n" + longLine + "\n"
+	path := filepath.Join(root, "ADR-903.md")
+	if err := os.WriteFile(path, []byte(source), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("ADR-903.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = BuildIndex(
+		[]adringest.Document{doc},
+		root,
+		"adrs",
+		[]byte("{\"schema_version\":\"1\",\"source_root\":\"adrs\"}"),
+	)
+	if err == nil || !strings.Contains(err.Error(), "candidate statement limit") {
+		t.Fatalf("oversized normative source line should be rejected before it expands into many candidates, got %v", err)
+	}
+}
+
+func TestSplitSentencesPreservesAbbreviationsAndDecimals(t *testing.T) {
+	tests := []struct {
+		name string
+		line string
+		want []string
+	}{
+		{
+			name: "country abbreviation",
+			line: "Clients must follow U.S. policy. Every service must expose a health endpoint.",
+			want: []string{
+				"Clients must follow U.S. policy.",
+				"Every service must expose a health endpoint.",
+			},
+		},
+		{
+			name: "decimal value",
+			line: "Clients must set a timeout of 3.5 seconds. Every service must expose a health endpoint.",
+			want: []string{
+				"Clients must set a timeout of 3.5 seconds.",
+				"Every service must expose a health endpoint.",
+			},
+		},
+		{
+			name: "example abbreviation",
+			line: "Clients must use e.g. a shared HTTP client. Every service must expose a health endpoint.",
+			want: []string{
+				"Clients must use e.g. a shared HTTP client.",
+				"Every service must expose a health endpoint.",
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := splitSentences(tc.line)
+			if len(got) != len(tc.want) {
+				t.Fatalf("splitSentences() produced %d fragments, want %d: %#v", len(got), len(tc.want), got)
+			}
+			for i := range tc.want {
+				if got[i] != tc.want[i] {
+					t.Errorf("fragment %d = %q, want %q", i, got[i], tc.want[i])
+				}
+			}
+		})
+	}
+}
+
 func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 	tests := []struct { statement, want string }{
 		{"The service must not execute shell commands.", "must_not"},

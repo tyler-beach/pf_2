@@ -95,7 +95,7 @@ The input directory should contain ADR documents (MADR-style or legacy Markdown)
 
 **Important:** this is source ingestion, not automatic approval or obligation generation. The generated index does not overwrite `adr/requirements.json`, and no natural-language statement becomes an enforceable compliance rule without an explicit reviewed requirement/verifier mapping. Runtime assessment remains deterministic and makes zero LLM calls.
 
-For a runnable first pass, initialize the review registry once (skip this command if the registry already exists; initialization never overwrites review history), then run against the checked-in sample ADR corpus in report-only mode:
+For a runnable first pass, initialize the review registry once (skip this command if the registry already exists; initialization never overwrites review history), then run against the checked-in plain-English technical specification samples in report-only mode:
 
 ```sh
 # One-time setup in a fresh checkout
@@ -104,13 +104,13 @@ go run ./cmd/adrctl review-init --output adr/obligation-reviews.json
 # Repeatable report-only run against the sample corpus
 go run ./cmd/adrctl specification-check \
   --root . \
-  --adr-root testdata/adr-corpus \
+  --source-root testdata/specifications \
   --requirements adr/requirements.json \
   --registry adr/obligation-reviews.json \
   --report-only
 ```
 
-For a real repository, replace `testdata/adr-corpus` with the directory containing that repository's ADR Markdown. The command regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default; use `--report-only` while bootstrapping or reviewing pending candidates. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. The orchestrator never creates or approves reviews automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
+For a real repository, set `--source-root` to its ADR or plain-English technical-specification Markdown directory. A source file needs a level-one Markdown title; if the title has no ADR ID, Pathfinder uses the filename as its stable document ID. Blocking bindings also require the source document to declare `Accepted` status and the matching catalog entry to be accepted. The command regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default; use `--report-only` while bootstrapping or reviewing pending candidates. For `analyzer-rule` requirements, pass both `--analyzer-evidence` and `--analyzer-sarif` from a verified `scan-opengrep` run. The orchestrator never creates or approves reviews automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
 
 ## Validated analyzer language coverage
 
