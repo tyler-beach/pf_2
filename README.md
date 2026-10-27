@@ -53,8 +53,10 @@ These issues exercise the actual Issue-triggered workflow and include its genera
 - [#10 — mixed Go + JSON deviations](https://github.com/tyler-beach/pf_2/issues/10)
 - [#12 — numeric range inclusive upper-bound PASS](https://github.com/tyler-beach/pf_2/issues/12)
 - [#13 — timeout above maximum FAIL](https://github.com/tyler-beach/pf_2/issues/13)
+- [#14 — numeric range inclusive lower-bound PASS](https://github.com/tyler-beach/pf_2/issues/14)
+- [#15 — numeric verifier rejects string values](https://github.com/tyler-beach/pf_2/issues/15)
 
-The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report. Issues #12 and #13 exercise the numeric verifier at the inclusive upper boundary and above the maximum. Implementation work is tracked in [#11](https://github.com/tyler-beach/pf_2/issues/11).
+The mixed cases verify that multiple requirements across different verifier types are evaluated independently in one report. Issues #12–#15 exercise inclusive lower/upper boundaries, above-maximum values, and non-numeric values. Implementation work is tracked in [#11](https://github.com/tyler-beach/pf_2/issues/11).
 
 ## Architecture and limitations
 
