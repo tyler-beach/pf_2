@@ -343,3 +343,21 @@ func TestOpenGrepScannerRejectsExcludedFixturePaths(t *testing.T) {
 		t.Fatalf("scanner must reject excluded paths before starting a scan; calls=%+v", runner.calls)
 	}
 }
+
+func TestDiscoverScannedPathsIncludesAllEnabledRuleExtensions(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	extensions := []string{".bash", ".dart", ".swift", ".lua", ".vb", ".ml"}
+	for _, ext := range extensions {
+		name := filepath.Join(root, "src", "fixture"+ext)
+		if err := os.WriteFile(name, []byte("fixture\n"), 0600); err != nil { t.Fatal(err) }
+	}
+	paths, err := discoverScannedPaths(root)
+	if err != nil { t.Fatal(err) }
+	inventory := make(map[string]bool, len(paths))
+	for _, path := range paths { inventory[path] = true }
+	for _, ext := range extensions {
+		if !inventory["src/fixture"+ext] {
+			t.Errorf("source inventory omitted enabled language extension %s: %v", ext, paths)
+		}
+	}
+}
