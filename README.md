@@ -5,7 +5,7 @@ A zero-token, deterministic MVP for evaluating architectural requirements from G
 ## What it does
 
 - Models multiple independently assessable requirements per accepted ADR.
-- Reuses typed deterministic verifiers; current implementation checks Go import boundaries with the Go standard library parser.
+- Reuses typed deterministic verifiers; current implementations check Go import boundaries with the Go standard library parser and required top-level keys in JSON configuration.
 - Accepts Markdown issue submissions and parses Go code fences without executing submitted code.
 - Emits a Markdown report, JSON evidence, and SARIF findings.
 - Runs through GitHub Actions and posts the report to the originating issue.
@@ -43,4 +43,4 @@ Expected results are `PASS` for the compliant fixture and `FAIL` with two requir
 
 ## Architecture and limitations
 
-See [docs/architecture.md](docs/architecture.md). The catalog is an example and should be replaced/expanded with your accepted ADRs. The MVP supports Go import-boundary rules only. Unsupported evidence produces `INDETERMINATE`, not a pass.
+See [docs/architecture.md](docs/architecture.md). The catalog is an example and should be replaced/expanded with your accepted ADRs. The MVP supports `go-import-boundary` and `json-required-keys`. Unsupported evidence produces `INDETERMINATE` or a requirement-level error, not a pass.
