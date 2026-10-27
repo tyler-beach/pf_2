@@ -78,6 +78,19 @@ func TestAssessCandidatesNeverPassesReviewRequiredOrMissingEvidence(t *testing.T
 	}
 }
 
+func TestAssessCandidatesDoesNotPassWhenEvidenceIsEmpty(t *testing.T) {
+	index, catalog, candidate := reviewFixture()
+	registry, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
+	if err != nil { t.Fatal(err) }
+	evidence := repositoryEvidence("PASS")
+	evidence.Requirements[0].Evidence = nil
+	report, err := AssessCandidates(index, catalog, registry, evidence)
+	if err != nil { t.Fatal(err) }
+	if report.Candidates[0].Status != "INDETERMINATE" || report.Candidates[0].EvidenceStatus != "MISSING" {
+		t.Fatalf("a result without evidence was treated as compliant: %+v", report.Candidates[0])
+	}
+}
+
 func TestAssessCandidatesRejectsSubmissionModeAndDuplicateEvidence(t *testing.T) {
 	index, catalog, _ := reviewFixture()
 	submission := repositoryEvidence("PASS")
