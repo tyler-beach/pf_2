@@ -157,3 +157,34 @@ The issue workflow can enforce a regression's expected overall verdict by includ
 - `[expected:INDETERMINATE]` when required evidence is missing or a submitted language is not assessed.
 
 The assessment comment and JSON/SARIF artifacts are published before the assertion runs, so a failed regression preserves evidence for diagnosis. Issues without a marker remain ordinary assessments and do not have their verdict asserted.
+
+
+## Human review registry for ADR obligation candidates
+
+Candidate extraction is intentionally separate from approval and enforcement. A reviewer decision is stored in an append-only, versioned registry with a source snapshot, source SHA-256, exact line range, reviewer identity, RFC3339 timestamp, HTTPS review reference, rationale, and an incrementing revision.
+
+Initialize a new ledger once; the command refuses to overwrite an existing one:
+
+~~~sh
+go run ./cmd/adrctl review-init --output adr/obligation-reviews.json
+~~~
+
+Create a proposal JSON file using snake_case fields such as candidate_id, decision, requirement_id, pattern_id, enforcement_mode, reviewer, reviewed_at, review_reference, and rationale. Then append and validate the decision:
+
+~~~sh
+go run ./cmd/adrctl record-obligation-review \
+  --index adr/obligation-candidates.json \
+  --requirements adr/requirements.json \
+  --registry adr/obligation-reviews.json \
+  --proposal review-proposal.json \
+  --coverage-out adr/obligation-review-coverage.json
+
+go run ./cmd/adrctl validate-obligation-reviews \
+  --index adr/obligation-candidates.json \
+  --requirements adr/requirements.json \
+  --registry adr/obligation-reviews.json \
+  --json-out adr/obligation-review-coverage.json \
+  --strict
+~~~
+
+Pending, rejected, and superseded decisions cannot bind a requirement or claim enforcement. Blocking/advisory approval requires a current source snapshot, an accepted ADR, an existing requirement owned by the same ADR, and a compatible reviewed verifier pattern. Semantic/manual-review candidates cannot block CI. A changed candidate source is stale until re-reviewed; a removed candidate's history must be explicitly superseded. The registry never edits adr/requirements.json automatically. See [docs/obligation-review.md](docs/obligation-review.md) for the decision lifecycle and limitations.

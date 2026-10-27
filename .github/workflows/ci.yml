@@ -47,6 +47,42 @@ jobs:
             and ([.candidates[].source_line_start] | all(. > 0))
           ' "$RUNNER_TEMP/obligation-candidates.json"
 
+      - name: Verify source-bound obligation review registry
+        run: |
+          set -euo pipefail
+          go run ./cmd/adrctl review-init --output "$RUNNER_TEMP/obligation-reviews.json"
+          candidate_id="$(jq -er '.candidates[0].id' "$RUNNER_TEMP/obligation-candidates.json")"
+          jq -n --arg candidate_id "$candidate_id" '{
+            candidate_id: $candidate_id,
+            decision: "pending_review",
+            enforcement_mode: "review_required",
+            reviewer: "ci-regression",
+            reviewed_at: "2026-10-27T12:00:00Z",
+            review_reference: "https://github.com/tyler-beach/pf_2/issues/19",
+            rationale: "Candidate extraction is not approval; CI preserves review-required state."
+          }' > "$RUNNER_TEMP/review-proposal.json"
+          go run ./cmd/adrctl record-obligation-review \
+            --index "$RUNNER_TEMP/obligation-candidates.json" \
+            --requirements adr/requirements.json \
+            --registry "$RUNNER_TEMP/obligation-reviews.json" \
+            --proposal "$RUNNER_TEMP/review-proposal.json" \
+            --coverage-out "$RUNNER_TEMP/obligation-review-coverage.json"
+          go run ./cmd/adrctl validate-obligation-reviews \
+            --index "$RUNNER_TEMP/obligation-candidates.json" \
+            --requirements adr/requirements.json \
+            --registry "$RUNNER_TEMP/obligation-reviews.json" \
+            --json-out "$RUNNER_TEMP/obligation-review-coverage-validated.json" \
+            --strict
+          jq -e '
+            .candidate_count >= 3
+            and .pending_review_count == .candidate_count
+            and .approved_count == 0
+            and .blocking_binding_count == 0
+            and .stale_count == 0
+            and .orphaned_count == 0
+            and .unbound_count == .candidate_count
+          ' "$RUNNER_TEMP/obligation-review-coverage-validated.json"
+
       - name: Install pinned OpenGrep CLI and verify SHA-256
         run: |
           set -euo pipefail

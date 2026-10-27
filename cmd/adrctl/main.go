@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -352,8 +353,9 @@ func readReviewProposal(path string) (obligations.ReviewProposal, error) {
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&proposal); err != nil { return proposal, fmt.Errorf("decode review proposal: %w", err) }
 	var extra any
-	if err := decoder.Decode(&extra); err == nil {
-		return proposal, fmt.Errorf("decode review proposal: trailing JSON value")
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err == nil { return proposal, fmt.Errorf("decode review proposal: trailing JSON value") }
+		return proposal, fmt.Errorf("decode review proposal: trailing content: %w", err)
 	}
 	return proposal, nil
 }
