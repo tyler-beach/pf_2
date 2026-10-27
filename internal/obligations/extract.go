@@ -18,6 +18,8 @@ const (
 	maxCandidateLineBytes = 16 << 10
 )
 
+var sentenceAbbreviations = []string{"e.g.", "i.e.", "vs.", "mr.", "mrs.", "ms.", "dr.", "prof.", "fig.", "approx."}
+
 // Candidate is a source-cited interpretation suggestion, never an approved policy.
 type Candidate struct {
 	ID              string `json:"id"`
@@ -157,6 +159,14 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 			if lineText == "" {
 				continue
 			}
+			// Avoid expanding arbitrary prose into thousands of sentence fragments.
+			// Preserve the original line-size bound before segmentation as well.
+			if _, ok := detectModality(lineText); !ok {
+				continue
+			}
+			if len(lineText) > maxCandidateLineBytes {
+				return nil, fmt.Errorf("normative source line %d exceeds the %d-byte candidate statement limit", lineIndex+1, maxCandidateLineBytes)
+			}
 			for _, statement := range splitSentences(lineText) {
 				modality, ok := detectModality(statement)
 				if !ok {
@@ -253,10 +263,9 @@ func splitSentences(line string) []string {
 		}
 
 		prefix := strings.ToLower(strings.TrimSpace(line[start:end]))
-		abbreviations := []string{"e.g.", "i.e.", "vs.", "mr.", "mrs.", "ms.", "dr.", "prof.", "fig.", "approx."}
 		isAbbreviation := false
 		if punctuation == '.' {
-			for _, abbreviation := range abbreviations {
+			for _, abbreviation := range sentenceAbbreviations {
 				if strings.HasSuffix(prefix, abbreviation) {
 					isAbbreviation = true
 					break
