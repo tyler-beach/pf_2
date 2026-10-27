@@ -36,7 +36,9 @@ type Verifier struct {
 	ForbiddenImportPrefixes []string `json:"forbidden_import_prefixes"`
 	FilePath string `json:"file_path,omitempty"`
 	RequiredJSONKeys []string `json:"required_json_keys,omitempty"`
+	NumericJSONBounds []JSONNumberBound `json:"numeric_json_bounds,omitempty"`
 }
+type JSONNumberBound struct { Key string `json:"key"`; Min *float64 `json:"min,omitempty"`; Max *float64 `json:"max,omitempty"` }
 type SourceFile struct {
 	Path string `json:"path"`
 	Language string `json:"language"`
