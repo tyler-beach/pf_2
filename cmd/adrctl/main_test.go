@@ -19,7 +19,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
 	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
-	source := []byte("# ADR-001: Explicit timeout policy\n\n## Status\n\nAccepted\n\n## Decision\n\nThe service must set a finite timeout.\n")
+	source := []byte("# ADR-001: Explicit timeout policy\n\n## Status\n\nAccepted\n\n## Decision\n\nThe service must set a finite timeout and must keep it below 30 seconds.\n")
 	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), source, 0o600); err != nil { t.Fatal(err) }
 	doc, err := adringest.Parse("ADR-001.md", source)
 	if err != nil { t.Fatal(err) }
@@ -65,6 +65,9 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
 	}
+	if len(report.Candidates[0].ReviewHints) != 1 || report.Candidates[0].ReviewHints[0] != "compound_or_conjoined" {
+		t.Fatalf("candidate interpretation hints were lost: %+v", report.Candidates[0])
+	}
 	registryBytes, err := os.ReadFile(registryPath)
 	if err != nil { t.Fatal(err) }
 	indexDigest, registryDigest, assessmentDigest := sha256.Sum256(indexBytes), sha256.Sum256(registryBytes), sha256.Sum256(evidenceBytes)
@@ -75,7 +78,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	}
 	markdown, err := os.ReadFile(markdownPath)
 	if err != nil { t.Fatal(err) }
-	if !strings.Contains(string(markdown), "INDETERMINATE") || !strings.Contains(string(markdown), candidates[0].ID) {
+	if !strings.Contains(string(markdown), "INDETERMINATE") || !strings.Contains(string(markdown), candidates[0].ID) || !strings.Contains(string(markdown), "compound_or_conjoined") {
 		t.Fatalf("Markdown report is missing obligation status or identity: %s", markdown)
 	}
 }
