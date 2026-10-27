@@ -151,20 +151,53 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 }
 
 func detectModality(statement string) (string, bool) {
-	switch {
-	case anyPhrase(statement, "not required"):
-		return "not_required", true
-	case anyPhrase(statement, "must not", "mustn't", "shall not", "should not", "may not", "do not", "does not", "never", "prohibited", "forbidden", "cannot", "can't", "not permitted"):
-		return "must_not", true
-	case anyPhrase(statement, "must", "shall", "required", "requires", "has to", "have to"):
-		return "must", true
-	case anyPhrase(statement, "should"):
-		return "should", true
-	case anyPhrase(statement, "may", "permitted", "allowed"):
-		return "may", true
-	default:
-		return "", false
+	// Use the first normative cue in the sentence, not whichever modality has
+	// the highest global priority. For example, "An exception may be approved
+	// only when ... requires it" is permission conditioned on a requirement,
+	// not an unconditional MUST. At the same position, prefer the longer phrase
+	// so "must not" is not reduced to "must".
+	type cue struct { phrase, modality string }
+	cues := []cue{
+		{"not required", "not_required"},
+		{"must not", "must_not"}, {"mustn't", "must_not"},
+		{"shall not", "must_not"}, {"should not", "must_not"},
+		{"may not", "must_not"}, {"do not", "must_not"},
+		{"does not", "must_not"}, {"never", "must_not"},
+		{"prohibited", "must_not"}, {"forbidden", "must_not"},
+		{"cannot", "must_not"}, {"can't", "must_not"},
+		{"not permitted", "must_not"},
+		{"must", "must"}, {"shall", "must"}, {"required", "must"},
+		{"requires", "must"}, {"has to", "must"}, {"have to", "must"},
+		{"should", "should"},
+		{"may", "may"}, {"permitted", "may"}, {"allowed", "may"},
 	}
+	bestIndex, bestLength, bestModality := -1, -1, ""
+	for _, candidate := range cues {
+		index := firstPhraseIndex(statement, candidate.phrase)
+		if index < 0 { continue }
+		if bestIndex < 0 || index < bestIndex || (index == bestIndex && len(candidate.phrase) > bestLength) {
+			bestIndex, bestLength, bestModality = index, len(candidate.phrase), candidate.modality
+		}
+	}
+	if bestIndex < 0 { return "", false }
+	return bestModality, true
+}
+
+// firstPhraseIndex returns the first case-insensitive whole-word occurrence.
+func firstPhraseIndex(value, phrase string) int {
+	lowerValue, lowerPhrase := strings.ToLower(value), strings.ToLower(phrase)
+	offset := 0
+	for offset <= len(lowerValue)-len(lowerPhrase) {
+		idx := strings.Index(lowerValue[offset:], lowerPhrase)
+		if idx < 0 { return -1 }
+		start := offset + idx
+		end := start + len(lowerPhrase)
+		leftOK := start == 0 || !isWordRune(runeAtEnd(lowerValue[:start]))
+		rightOK := end == len(lowerValue) || !isWordRune(runeAtStart(lowerValue[end:]))
+		if leftOK && rightOK { return start }
+		offset = start + 1
+	}
+	return -1
 }
 
 // anyPhrase performs case-insensitive phrase matching on word boundaries so
@@ -204,7 +237,7 @@ func isWordRune(r rune) bool { return unicode.IsLetter(r) || unicode.IsDigit(r) 
 func suggestPattern(statement string) string {
 	lower := strings.ToLower(statement)
 	switch {
-	case anyPhrase(lower, "timeout", "retry", "configuration", "config", "required key", "setting"):
+	case anyPhrase(lower, "timeout", "retry", "retries", "attempt", "attempts", "backoff", "configuration", "config", "required key", "setting"):
 		return "configuration.bounds_or_required_values"
 	case anyPhrase(lower, "shell", "command", "process.start", "runtime.exec", "eval", "credential", "secret"):
 		return "security.source_pattern"
