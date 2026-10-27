@@ -110,6 +110,7 @@ jobs:
             --root "$fixture_root/vulnerable" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --json-out "$RUNNER_TEMP/opengrep-vulnerable.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-vulnerable.sarif"
@@ -118,6 +119,7 @@ jobs:
             --root "$fixture_root/clean" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --json-out "$RUNNER_TEMP/opengrep-clean.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-clean.sarif"
@@ -149,6 +151,7 @@ jobs:
             --root . \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
             --manifest-out analyzer-evidence/run-manifest.json \
@@ -161,6 +164,7 @@ jobs:
             --root . \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
             --manifest-out analyzer-evidence/run-manifest.json \
