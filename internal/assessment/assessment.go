@@ -395,8 +395,15 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 				if options.EvidenceMode == EvidenceModeSubmission && len(options.AnalyzerResults) == 0 {
 					rr.Status = "NOT_APPLICABLE"
 					rr.Reason = "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
-				} else { assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults) }
-			default: rr.Status="UNSUPPORTED"; rr.Reason="No approved verifier is registered for type: "+r.Verifier.Type
+				} else {
+					assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults)
+				}
+			case "manual-review":
+				rr.Status = "REVIEW_REQUIRED"
+				rr.Reason = "This requirement needs human judgment and cannot be established by an automatic verifier."
+			default:
+				rr.Status = "UNSUPPORTED"
+				rr.Reason = "No approved verifier is registered for type: " + r.Verifier.Type
 			}
 			out.Counts[rr.Status]++
 			out.Requirements = append(out.Requirements, rr)
