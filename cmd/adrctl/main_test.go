@@ -15,6 +15,38 @@ import (
 	"github.com/tyler-beach/pf_2/internal/obligations"
 )
 
+func TestBlockingGateFailsClosedOnIncompleteReviewCoverage(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		coverage obligations.BindingCoverage
+		candidates []obligations.CandidateAssessment
+		want string
+	}{
+		{name: "orphaned review history", coverage: obligations.BindingCoverage{OrphanedCount: 1}, want: "orphaned review history"},
+		{name: "stale binding", coverage: obligations.BindingCoverage{StaleCount: 1}, want: "stale candidate review"},
+		{name: "pending candidate", candidates: []obligations.CandidateAssessment{{CandidateID: "CAND-1", Decision: obligations.DecisionPending, Status: "INDETERMINATE"}}, want: "pending review"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := validateBlockingGate(obligations.AssessmentReport{BindingCoverage: tc.coverage, Candidates: tc.candidates})
+			if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("gate should fail closed for %s, got %v", tc.name, err)
+			}
+		})
+	}
+}
+
+func TestBlockingGateDoesNotPromoteAdvisoryOrReviewRequiredBindings(t *testing.T) {
+	for _, mode := range []string{obligations.EnforcementAdvisory, obligations.EnforcementReviewRequired} {
+		report := obligations.AssessmentReport{Candidates: []obligations.CandidateAssessment{{
+			CandidateID: "CAND-1", Decision: obligations.DecisionApproved, EnforcementMode: mode,
+			Status: "INDETERMINATE", EvidenceStatus: "MISSING",
+		}}}
+		if err := validateBlockingGate(report); err != nil {
+			t.Fatalf("non-blocking %s binding unexpectedly triggered the blocking gate: %v", mode, err)
+		}
+	}
+}
+
 func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
