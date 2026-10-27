@@ -34,6 +34,8 @@ func planTestResult(spec AnalyzerSpec, snapshot string, status string) ScanResul
 	result, _ := ParseSARIF(raw, ".")
 	result.Status = status
 	result.Analyzers = []AnalyzerInfo{{Name: spec.Name, Version: spec.Version}}
+	result.BinarySHA256 = spec.BinarySHA256
+	result.RuleSetSHA256 = spec.RuleSetSHA256
 	result.ConfigurationPath = spec.ConfigurationPath
 	result.ConfigurationSHA256 = spec.ConfigurationSHA256
 	result.InputSHA256 = snapshot
