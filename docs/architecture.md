@@ -53,12 +53,12 @@ No analyzer is treated as proof of completeness merely because it emits no findi
 
 ## Known MVP limitations
 
-- The initial verifier supports Go import-boundary requirements only.
+- Verifiers currently cover Go import boundaries and top-level JSON keys/numeric bounds; nested JSON paths and other configuration formats are not supported.
 - Technical prose is not semantically inferred; unsupported or missing evidence remains indeterminate.
 - The catalog contains example ADR requirements and should be expanded with accepted organizational ADRs.
 - Issue comments are appended on each edit; a later iteration should update one bot-owned comment.
 - Artifact retention is temporary and is not an audit archive.
-- The first live Actions run must confirm reviewdog SARIF parsing and action execution.
+- Issue-triggered Actions runs have validated the assessment workflow and report publishing. Reviewdog SARIF annotation behavior remains a separate PR-path validation.
 
 ## Local usage
 
