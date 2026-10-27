@@ -45,9 +45,7 @@ func validTaskEvidence(root string, task Task) (analyzer.ScanResult,error) {
 	result.BinarySHA256=task.BinarySHA256
 	result.InputSHA256,err=analyzer.HashInputTree(root)
 	if err!=nil { return result,err }
-	paths,err:=analyzer.DiscoverScannedPaths(root)
-	if err!=nil { return result,err }
-	for _,p:=range paths { if p!=task.ConfigurationPath { result.ScannedPaths=append(result.ScannedPaths,p) } }
+	result.ScannedPaths = append([]string(nil), task.SourcePaths...)
 	return result,nil
 }
 
