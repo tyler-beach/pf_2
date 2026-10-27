@@ -16,6 +16,7 @@ import (
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/text"
 )
 
 var (
@@ -62,7 +63,7 @@ func Parse(sourcePath string, source []byte) (Document, error) {
 		return zero, errors.New("ADR document is empty")
 	}
 
-	root := goldmark.New().Parser().Parse(textReader(source))
+	root := goldmark.New().Parser().Parse(text.NewReader(source))
 	lines := strings.Split(string(source), "\n")
 	headings := make([]headingInfo, 0, 8)
 	err = ast.Walk(root, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
