@@ -95,6 +95,15 @@ The input directory should contain ADR documents (MADR-style or legacy Markdown)
 
 **Important:** this is source ingestion, not automatic approval or obligation generation. The generated index does not overwrite `adr/requirements.json`, and no natural-language statement becomes an enforceable compliance rule without an explicit reviewed requirement/verifier mapping. Runtime assessment remains deterministic and makes zero LLM calls.
 
+For the complete deterministic lifecycle, use the one-command orchestrator after creating the review registry:
+
+```sh
+go run ./cmd/adrctl specification-check --root . --adr-root adrs \
+  --requirements adr/requirements.json --registry adr/obligation-reviews.json
+```
+
+It regenerates the source and candidate indexes, assesses the repository, joins evidence to current reviews, and enforces blocking bindings by default. Use `--report-only` to produce reports without enforcing the gate. It never creates or approves review records automatically. See [the full workflow contract](docs/specification-to-enforcement.md).
+
 ## Validated analyzer language coverage
 
 The repository-scan adapter has rule-level, vulnerable/clean fixture coverage for Go, Python, JavaScript, TypeScript, Java, C#, PHP, Ruby, Bash, C, C++, Rust, Kotlin, Scala, Elixir, Dart, Swift, Lua, Visual Basic, and OCaml. The fixtures assert that the expected rule families match intentionally vulnerable examples and that the corresponding clean examples produce no findings.
