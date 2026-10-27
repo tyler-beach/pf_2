@@ -78,7 +78,7 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	jsonReport := filepath.Join(root, "obligation-assessment.json")
 	markdownReport := filepath.Join(root, "obligation-assessment.md")
 	args := []string{
-		"--root", root, "--index", candidatePath, "--requirements", catalogPath,
+		"--root", root, "--index", candidatePath, "--ingestion-index", ingestionPath, "--requirements", catalogPath,
 		"--registry", registryPath, "--assessment", assessmentPath,
 		"--json-out", jsonReport, "--report", markdownReport,
 	}
