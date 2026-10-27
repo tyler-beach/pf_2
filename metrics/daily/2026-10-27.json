@@ -1,8 +1,8 @@
 {
-  "candidate_total": 16,
-  "confidence_high": 8,
-  "confidence_low": 4,
-  "confidence_medium": 4,
+  "candidate_total": 20,
+  "confidence_high": 10,
+  "confidence_low": 5,
+  "confidence_medium": 5,
   "date": "2026-10-27",
-  "runs": 4
+  "runs": 5
 }

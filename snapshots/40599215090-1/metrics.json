@@ -1,0 +1,20 @@
+{
+  "schema_version": "workshop-metrics-v1",
+  "candidate_total": 4,
+  "confidence_high": 2,
+  "confidence_medium": 1,
+  "confidence_low": 1,
+  "kpi.confidence.share.high": 0.5,
+  "kpi.confidence.share.medium": 0.25,
+  "kpi.confidence.share.low": 0.25,
+  "kpi.escalation.rate": 0.25,
+  "kpi.assist.proposal_count": 1,
+  "kpi.assist.prompt_tokens": 0,
+  "kpi.assist.completion_tokens": 0,
+  "kpi.assist.cost_usd": 0,
+  "kpi.assist.provider": "offline-fixture",
+  "kpi.assist.model": "offline-replay",
+  "kpi.promptfoo.pass_rate": 1,
+  "promptfoo_mode": "offline",
+  "kpi.evidence.gap_rate": 0
+}
