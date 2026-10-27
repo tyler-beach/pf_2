@@ -546,3 +546,57 @@ func TestRollupDoesNotPassWhenAnyApplicableEvidenceIsMissing(t *testing.T) {
 	})
 	if result != "INDETERMINATE" { t.Fatalf("incomplete evidence should prevent PASS, got %s", result) }
 }
+
+
+func TestUnsupportedVerifierIsExplicitAndCannotPass(t *testing.T) {
+	catalog := Catalog{
+		SchemaVersion: "1",
+		ADRs: []ADR{{
+			ID: "ADR-UNSUPPORTED",
+			Title: "Unsupported policy",
+			Version: 1,
+			Status: "accepted",
+			Requirements: []Requirement{{
+				ID: "REQ-UNSUPPORTED-01",
+				Title: "Apply a policy engine that is not installed",
+				Severity: "error",
+				Verifier: Verifier{Type: "rego-bundle-v1"},
+			}},
+		}},
+	}
+	if err := ValidateCatalog(catalog); err != nil {
+		t.Fatalf("unknown verifier type should remain assessable as unsupported: %v", err)
+	}
+
+	result := AssessWithOptions(catalog, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	if len(result.Requirements) != 1 {
+		t.Fatalf("got %d requirements, want 1", len(result.Requirements))
+	}
+	if got := result.Requirements[0].Status; got != "UNSUPPORTED" {
+		t.Fatalf("unknown verifier status = %s, want UNSUPPORTED; result=%+v", got, result.Requirements[0])
+	}
+	if result.Counts["UNSUPPORTED"] != 1 {
+		t.Fatalf("unsupported status not reflected in counts: %v", result.Counts)
+	}
+	if result.Verdict != "INDETERMINATE" {
+		t.Fatalf("unsupported verifier must not establish compliance, got %s", result.Verdict)
+	}
+}
+
+func TestEmptyCatalogCannotClaimCompliance(t *testing.T) {
+	catalog := Catalog{SchemaVersion: "1", ADRs: []ADR{}}
+	if err := ValidateCatalog(catalog); err != nil {
+		t.Fatalf("empty schema-valid catalog should be explicitly assessed rather than misreported as compliance: %v", err)
+	}
+	result := AssessWithOptions(catalog, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	if result.RequirementCount != 0 || len(result.Requirements) != 0 {
+		t.Fatalf("empty catalog unexpectedly evaluated requirements: %+v", result.Requirements)
+	}
+	if result.CoverageStatus != "NONE" {
+		t.Fatalf("empty catalog coverage = %s, want NONE", result.CoverageStatus)
+	}
+	if result.Verdict != "INDETERMINATE" {
+		t.Fatalf("empty catalog must not claim PASS, got %s", result.Verdict)
+	}
+}
+
