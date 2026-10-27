@@ -1,0 +1,49 @@
+# Promptfoo evaluates the batch LLM assist only.
+# Scores are NOT a Pathfinder compliance verdict.
+description: Pathfinder offline assist regression (zero provider cost)
+
+prompts:
+  - |
+    Parent candidate ID: {{candidate_id}}
+    ADR: {{adr_id}}
+    Source path: {{source_path}}
+    Source lines: {{source_line_start}}-{{source_line_end}}
+    Source SHA-256: {{source_sha256}}
+    Confidence: {{confidence}}
+    Escalation reasons: {{escalation_reasons}}
+    Statement quote (must be preserved): {{statement}}
+    Return JSON with normalized_statement, modality, suggested_pattern_id, rationale.
+
+providers:
+  - file://provider-offline.mjs
+
+tests: file://cases.json
+
+defaultTest:
+  assert:
+    - type: is-json
+    - type: javascript
+      value: |
+        const obj = typeof output === 'string' ? JSON.parse(output) : output;
+        if (!obj || typeof obj !== 'object') throw new Error('expected object');
+        if (!obj.normalized_statement) throw new Error('missing normalized_statement');
+        if (!obj.modality) throw new Error('missing modality');
+        if (!obj.suggested_pattern_id) throw new Error('missing suggested_pattern_id');
+        if (!obj.rationale) throw new Error('missing rationale');
+        if (obj.executable === true) throw new Error('executable must not be true');
+        if (obj.approval_status && obj.approval_status !== 'pending_review') {
+          throw new Error('approval_status must remain pending_review');
+        }
+        return true;
+    - type: javascript
+      value: |
+        const prompt = context.prompt || '';
+        if (!prompt.includes(context.vars.statement)) {
+          throw new Error('prompt missing source statement citation');
+        }
+        if (!String(context.vars.source_line_start) || Number(context.vars.source_line_start) < 1) {
+          throw new Error('source_line_start required');
+        }
+        return true;
+
+outputPath: ./output/results.json

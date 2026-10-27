@@ -22,10 +22,11 @@ A zero-token, deterministic MVP for evaluating architectural requirements from G
 ## Local validation
 
 ```bash
-go test ./...
-go vet ./...
+./scripts/go_test.sh
+go vet $(go list ./... | grep -v '/node_modules/')
 go run ./cmd/adrctl validate --requirements adr/requirements.json
 ```
+
 
 Compliant fixture:
 
@@ -63,6 +64,17 @@ The mixed cases verify that multiple requirements across different verifier type
 ## Specification-to-enforcement milestone
 
 The staged contract for translating plain-English technical specifications into reviewed obligations, typed verifier bindings, and auditable evidence is documented in [Specification-to-enforcement milestone](docs/specification-to-enforcement.md). The representative [service runtime specification fixture](testdata/specifications/service-runtime.md) is a target-workflow fixture, not a claim that arbitrary prose is already automatically enforced.
+
+## Workshop (GitHub Pages)
+
+End-to-end operational console and KPI trends for Pathfinder runs (extract → confidence → assist → assess → Promptfoo). Snapshots are emitted by `adrctl workshop-emit`, stored on the `workshop-data` branch, and published by `.github/workflows/workshop-publish.yml`.
+
+- [Workshop architecture + Pages bootstrap](docs/workshop.md)
+- [KPI dictionary](docs/kpi-dictionary.md)
+- Local UI: `cd workshop && npm ci && npm run dev` (seeded fixtures under `workshop/public/data`)
+- First deploy: enable **Settings → Pages → Source: GitHub Actions**, then run CI or manually dispatch **Workshop Publish**
+
+Batch LLM assist is confidence-gated (`adrctl assist-obligations`); default CI uses the offline provider. Promptfoo scores are **not** compliance verdicts.
 
 ## Architecture and limitations
 
@@ -158,7 +170,7 @@ Issue submissions retain common source and configuration snippets with explicit 
 
 ### Repository rule bindings
 
-The accepted example catalog maps each OpenGrep rule family to a reusable requirement. Analyzer requirements may declare `source_extensions` in addition to repository path prefixes. A completed, integrity-verified inventory with no matching extension/scope is explicitly `NOT_APPLICABLE`; a missing or incomplete inventory remains `EVIDENCE_MISSING` and cannot pass. The current sample bindings cover Go shell execution, dynamic evaluation in JavaScript/TypeScript/PHP/Python/Ruby, and process invocation in Java/C#.
+CI proves **20 OpenGrep rule families** with vulnerable/clean fixtures (see [language support](docs/language-support.md)). The accepted example catalog in `adr/requirements.json` binds those fixture-proven families to enforceable `analyzer-rule` requirements (ADR-003 through ADR-006), each with explicit path/extension scope. Fixture coverage and catalog enforcement are kept aligned for those families; a completed, integrity-verified inventory with no matching extension/scope is explicitly `NOT_APPLICABLE`; a missing or incomplete inventory remains `EVIDENCE_MISSING` and cannot pass. Reusable pattern definitions live in [`adr/patterns.json`](adr/patterns.json).
 
 ### Analyzer fixture isolation
 

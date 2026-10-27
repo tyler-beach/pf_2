@@ -1,0 +1,67 @@
+{
+  "expected_candidates": [
+    {
+      "adr_id": "ADR-1120",
+      "statement_contains": "finite request timeout",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false,
+      "pattern_id": "configuration.bounds_or_required_values"
+    },
+    {
+      "adr_id": "ADR-1114",
+      "statement_contains": "automatic retries",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false,
+      "pattern_id": "configuration.bounds_or_required_values"
+    },
+    {
+      "adr_id": "ADR-1115",
+      "statement_contains": "shells with dynamic",
+      "pattern_hint": "security.source_pattern",
+      "confidence_band": "high",
+      "escalate_expected": false,
+      "pattern_id": "security.source_pattern"
+    },
+    {
+      "adr_id": "ADR-1116",
+      "statement_contains": "evaluate untrusted input",
+      "pattern_hint": "security.source_pattern",
+      "confidence_band": "high",
+      "escalate_expected": false,
+      "pattern_id": "security.source_pattern"
+    },
+    {
+      "adr_id": "ADR-1117",
+      "statement_contains": "infrastructure adapters",
+      "pattern_hint": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false,
+      "pattern_id": "architecture.dependency_or_boundary"
+    },
+    {
+      "adr_id": "ADR-1118",
+      "statement_contains": "asynchronous messaging",
+      "pattern_hint": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true,
+      "pattern_id": "manual_review"
+    },
+    {
+      "adr_id": "ADR-1119",
+      "statement_contains": "documented constraint requires",
+      "pattern_hint": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true,
+      "pattern_id": "manual_review"
+    }
+  ],
+  "thresholds": {
+    "min_precision": 0.7,
+    "min_recall": 0.7,
+    "max_escalation_rate": 0.6
+  },
+  "corpus_size": 120,
+  "generated_adrs": 120
+}

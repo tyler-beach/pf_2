@@ -14,7 +14,10 @@ func MarkdownReport(r Result) string {
 	if r.CoverageStatus != "COMPLETE" {
 		b.WriteString("> Coverage is incomplete; requirements without applicable evidence are not counted as passing. Missing required evidence is reported as EVIDENCE_MISSING and makes the verdict INDETERMINATE.\n\n")
 	}
-	fmt.Fprintf(&b, "- **Engine:** %s\n- **Runtime LLM calls:** %d\n- **Source files:** %d\n- **Requirements evaluated:** %d\n\n", r.EngineVersion, r.LLMCalls, r.SourceFileCount, r.RequirementCount)
+	fmt.Fprintf(&b, "- **Engine:** %s\n- **Runtime LLM calls:** %d\n- **Source files:** %d\n- **Requirements evaluated:** %d\n", r.EngineVersion, r.LLMCalls, r.SourceFileCount, r.RequirementCount)
+	fmt.Fprintf(&b, "- **Corpus coverage:** inventory=%d accepted=%d interpreted=%d bound=%d evidence_complete=%d assessment_complete=%d\n\n",
+		r.CorpusCoverage.InventoryADRs, r.CorpusCoverage.AcceptedADRs, r.CorpusCoverage.InterpretedRequirements,
+		r.CorpusCoverage.BoundRequirements, r.CorpusCoverage.EvidenceComplete, r.CorpusCoverage.AssessmentComplete)
 	if len(r.UnassessedSourceFiles) > 0 {
 		b.WriteString("## Unassessed source snippets\n\n")
 		b.WriteString("These submitted snippets were retained in the evidence inventory but were not analyzed by a compatible deterministic verifier. Issue assessments do not execute external analyzers, so the result is INDETERMINATE unless a confirmed violation already makes it FAIL.\n\n")

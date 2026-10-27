@@ -149,7 +149,8 @@ The join first rebuilds the candidate index from the supplied ingestion index an
 - Source paths must be repository-relative and traversal-safe.
 - Analyzer subprocesses must remain pinned, bounded, and credential-restricted.
 - Results must be deterministic for the same inputs, versions, and configuration.
-- Runtime LLM calls remain zero unless a future, separately approved design explicitly changes that constraint; any optional batch-time model output must remain untrusted candidate data requiring review.
+- Runtime LLM calls remain zero on assess/PR gates. Batch `assist-obligations` may use an LLM for low-confidence proposals only; proposals never auto-approve or mutate the catalog. Promptfoo evaluates that assist path and is not a compliance verdict.
+- Joern / CPG adapters are a subsequent iteration: adopt only when ≥N accepted ADRs require data-flow evidence OpenGrep cannot supply.
 
 ## Definition of done
 

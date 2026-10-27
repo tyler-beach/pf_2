@@ -59,7 +59,7 @@ Use thin, version-pinned adapters to run established tools and normalize results
 - **Conftest + OPA:** introduce for broader structured configuration and infrastructure policy families. Keep the small JSON checks until parity tests prove a net benefit from switching.
 - **Opengrep:** primary multi-language structural/security pattern-engine candidate for an enterprise-open-source deployment; compare against ast-grep on representative rules. Keep Semgrep CE only as an optional benchmark/comparison, not an assumed default.
 - **ast-grep:** alternative for tree-sitter-based syntax-pattern checks when it is simpler or has better fit for a particular pattern family.
-- **Joern:** defer to requirements needing code-property-graph or deeper data-flow evidence unavailable from simpler analyzers; pilot language support and evidence quality before adoption.
+- **Joern:** subsequent iteration trigger only — pilot when ≥N accepted ADRs require cross-file/data-flow evidence OpenGrep cannot supply. Not the current path; confidence-gated batch assist and the GitHub Pages workshop address interpretation/review throughput first.
 - **gosec, Bandit, SpotBugs/Find Security Bugs:** add only when the relevant language and ADR coverage justifies those analyzers.
 - **OpenGrep adapter (implemented):** version-pinned CLI, timeout/cancellation, restricted environment, symlink-safe repository-local configuration, SARIF 2.1.0 normalization, stable finding fingerprints, path containment checks, input/config/output hashes, and clean/vulnerable multilingual CI fixtures. Assessment re-parses raw SARIF and rejects evidence whose hashes no longer match the current source/config snapshot.
 - **reviewdog:** retain as a PR annotation consumer, not as an analyzer or coverage oracle.
@@ -88,9 +88,20 @@ Current behavior:
 - Requirement-level `NOT_APPLICABLE`: used only when a complete, verified repository inventory confirms that an explicitly declared path/extension scope has no applicable files, or when a repository-only analyzer is not run against issue snippets; absent required evidence remains `EVIDENCE_MISSING`.
 - Requirement-level `ERROR`: unsupported verifier type or analysis failure.
 
-A missing file is never evidence of compliance. During the next schema iteration, make applicability independent from evidence availability and distinguish at least `EVIDENCE_MISSING`, `UNSUPPORTED`, and `REVIEW_REQUIRED` from `NOT_APPLICABLE`, `PASS`, and `FAIL`. Preserve compatibility and define merge-blocking versus warning behavior before those states enter CI policy.
+A missing file is never evidence of compliance. Requirement-level statuses already distinguish `EVIDENCE_MISSING`, `UNSUPPORTED`, `REVIEW_REQUIRED`, `NOT_APPLICABLE`, `PASS`, `FAIL`, and `ERROR`. Reports also emit additive `corpus_coverage` metrics (inventory, accepted, interpreted, bound, evidence_complete, assessment_complete, outcome_counts) alongside catalog-scoped `COMPLETE`/`PARTIAL`/`NONE`. Zero findings from an analyzer cannot prove completeness beyond its configured rules and supported scope.
 
-The current `COMPLETE`/`PARTIAL`/`NONE` assessment coverage means only that the current catalog's requirements produced applicable PASS/FAIL results; it does not establish that every ADR in a large corpus was interpreted. Add separate corpus metrics for inventory, interpretation, approved pattern binding, evidence collection, and per-commit assessment coverage. Zero findings from an analyzer cannot prove completeness beyond its configured rules and supported scope.
+### CI policy for requirement statuses
+
+| Status | PR / repository gate | Issue regression |
+|---|---|---|
+| `FAIL` | Merge-blocking | Assert with `[expected:FAIL]` |
+| `EVIDENCE_MISSING`, `ERROR`, overall `INDETERMINATE` | Merge-blocking (fail closed) | Assert with `[expected:INDETERMINATE]` |
+| `UNSUPPORTED` | Merge-blocking until a pattern exists or the requirement is removed/superseded | Prefer fixing the catalog |
+| `REVIEW_REQUIRED` | Does not alone create a `PASS`; overall verdict stays `INDETERMINATE` unless another requirement `FAIL`s | Assert with `[expected:INDETERMINATE]` when expected |
+| `NOT_APPLICABLE` | Non-blocking for that requirement; excluded from applicable PASS/FAIL coverage | N/A |
+| `PASS` | Allowed only with complete applicable evidence | Assert with `[expected:PASS]` |
+
+Advisory / `manual-review` bindings never block solely by existing; blocking gates require an approved deterministic binding.
 
 Semantic preferences (for example, preferring async messaging to reduce coupling) should generally produce scoped evidence and advisory/review outcomes unless the accepted decision defines a clear mandatory invariant. Do not infer a blocking rule from intent alone.
 
@@ -109,14 +120,14 @@ Semantic preferences (for example, preferring async messaging to reduce coupling
 - Current built-in verifiers cover Go import boundaries and top-level JSON keys/numeric bounds; nested JSON paths and other configuration formats are not supported.
 - Technical prose is not semantically inferred yet; unsupported or missing evidence remains indeterminate.
 - The catalog contains example ADR requirements and should be expanded/ingested from accepted organizational ADRs.
-- Issue comments are appended on each edit; a later iteration should update one bot-owned comment.
-- Artifact retention is temporary and is not an audit archive.
+- Issue assessment publishes/updates a single github-actions[bot] comment marked `<!-- pathfinder-bot-assessment -->` rather than appending a new comment on every edit.
+- Artifact retention is temporary (GitHub Actions default upload retention: 14 days) and is not a durable audit archive. Retain raw SARIF + assessment JSON outside Actions if long-term audit evidence is required.
 - Issue-triggered Actions runs have validated the assessment workflow and report publishing. Reviewdog SARIF annotation behavior remains a separate PR-path validation.
 
 ## Local usage
 
 ```bash
-go test ./...
+./scripts/go_test.sh
 go vet ./...
 go run ./cmd/adrctl validate --requirements adr/requirements.json
 
@@ -138,3 +149,30 @@ go run ./cmd/adrctl assess \
 ## ADR candidate interpretation (implemented, non-enforcing)
 
 The deterministic extract-obligations stage converts indexed ADR statements with explicit normative cues into a source-cited review queue. Candidates include the ADR/source hash, section, line range, modality, candidate kind, and a non-binding reusable-pattern hint. Every candidate is emitted as pending_review, review_required, and executable=false; no candidate is inserted into the active requirements catalog. Optional batch-time AI interpretation remains separate and is not required by this deterministic pipeline.
+
+## Implemented vs target
+
+| Scalable-architecture phase | Status | Concrete packages / commands |
+|---|---|---|
+| Phase 1 — Stabilize contracts | In progress | `internal/assessment`, `internal/evidence`, `internal/plan` (intended sole planner), `internal/analyzer` (OpenGrep/SARIF/verify only) |
+| Phase 2 — Prove composite analyzers | Partial | OpenGrep production adapter; native `json-fact` second producer on the canonical evidence envelope; Arch-Go / Conftest remain CI benchmarks |
+| Phase 3 — Prove ADR reuse | Partial | `ingest-adrs`, `extract-obligations`, review registry, `specification-check`, `adr/patterns.json`, synthetic 120-ADR reuse pilot + harness |
+| Phase 4 — AWS orchestration | Deferred | Local plan/execute only; no cloud SDKs in the assessment engine |
+| Phase 5 — Scale corpus | Deferred | Depends on Phase 3 quality gates |
+
+| Spec-to-enforcement phase | Status |
+|---|---|
+| Phase 1 — Contract and fixtures | Done |
+| Phase 2 — Candidate quality | Partial (cue-based extract; compound/ambiguity hardening remaining) |
+| Phase 3 — Typed binding and evidence | Partial (review registry exists; reusable pattern catalog remaining) |
+| Phase 4 — End-to-end specification assessment | Partial (`specification-check` works; outcome-matrix fixtures expanding) |
+| Phase 5 — Broader language/policy | Partial (20 fixture families; subset bound in catalog) |
+
+### Planner package debt
+
+Two overlapping plan/cache implementations exist historically:
+
+- `internal/plan` — intended survivor for `plan-repo` / `verify-plan` / `execute-plan` manifests, cache keys, and local execution.
+- `internal/analyzer` — retains OpenGrep scanning, SARIF normalization, and evidence verification. Its older `BuildPlan`/`RunPlan` path is being collapsed onto `internal/plan` so `scan-opengrep` shares one planner.
+
+Do not add a third planner. New analyzers register as `plan.TaskRunner` implementations and emit the canonical evidence envelope.

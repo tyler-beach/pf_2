@@ -45,3 +45,7 @@ go run ./cmd/adrctl execute-plan \
 Only complete, source-bound evidence is cacheable. A corrupt cache entry fails closed and does not trigger an unverified fallback. A cache write/read failure, timeout, malformed output, or incomplete scope is represented as a run/task failure, not a pass. Cache keys and idempotency keys include the source/configuration/analyzer and execution policy inputs relevant to reproducibility.
 
 The execution layer is local and cloud-SDK-free. AWS scheduling, durable shared evidence storage, and multi-repository orchestration remain deployment work; this package does not claim they are implemented.
+
+## Package ownership
+
+`internal/plan` is the sole planner/executor for repository analyzer work. `scan-opengrep` builds and executes through the same manifest + cache contracts as `plan-repo` / `execute-plan`. `internal/analyzer` owns OpenGrep invocation, SARIF parse/normalize, and digest verification, and participates as a registered `TaskRunner`. Do not reintroduce a parallel cache/plan implementation inside `internal/analyzer`.

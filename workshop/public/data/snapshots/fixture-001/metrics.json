@@ -1,0 +1,16 @@
+{
+  "schema_version": "workshop-metrics-v1",
+  "candidate_total": 4,
+  "confidence_high": 2,
+  "confidence_medium": 1,
+  "confidence_low": 1,
+  "kpi.escalation.rate": 0.25,
+  "kpi.harness.precision": 0.8,
+  "kpi.harness.recall": 0.75,
+  "kpi.assess.verdict": "PASS",
+  "kpi.invariant.llm_calls": 0,
+  "kpi.assist.proposal_count": 1,
+  "kpi.promptfoo.pass_rate": 1,
+  "promptfoo_mode": "offline",
+  "kpi.corpus.size": 5
+}

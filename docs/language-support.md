@@ -32,6 +32,10 @@ OpenGrep supports a wider language set than Pathfinder currently has security ru
 | Visual Basic | `.vb` | `pathfinder.visualbasic-process-start` | Process creation |
 | OCaml | `.ml` | `pathfinder.ocaml-system-command` | `Sys.command` invocation |
 
+## Catalog bindings
+
+Each CI-validated rule family above is bound to an accepted `analyzer-rule` requirement in `adr/requirements.json` (ADR-003 through ADR-006) with explicit `source_path_prefixes` and `source_extensions`. Reusable pattern IDs for those bindings are defined in `adr/patterns.json`.
+
 ## Test and enforcement boundaries
 
 - The CI fixture gate requires a complete scan and exact expected rule-family set for the vulnerable fixture corpus; a clean corpus must produce zero findings. Any rule/parser behavior change is therefore visible as a regression.

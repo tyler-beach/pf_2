@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "patterns": [
+    {
+      "id": "configuration.bounds_or_required_values",
+      "title": "Configuration required keys and numeric bounds",
+      "verifier_types": ["json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files"],
+      "applicability": "Top-level JSON keys and inclusive numeric ranges in declared files",
+      "blind_spots": ["Nested JSON paths", "YAML/HCL/TOML", "environment variables"],
+      "fixture_refs": ["testdata/pass-issue.md", "testdata/json-pass-issue.md", "config/service.json"]
+    },
+    {
+      "id": "security.source_pattern",
+      "title": "Source security patterns via analyzer-rule",
+      "verifier_types": ["analyzer-rule"],
+      "inputs": ["repository source inventory", "normalized analyzer evidence"],
+      "applicability": "OpenGrep rule families bound in adr/requirements.json with path/extension scope",
+      "blind_spots": ["Semantic exploitability", "Issue-snippet mode", "Unbound rule families"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable", "testdata/analyzer-fixtures/clean", "rules/pathfinder-security.yml"]
+    },
+    {
+      "id": "architecture.dependency_or_boundary",
+      "title": "Package and dependency boundaries",
+      "verifier_types": ["go-import-boundary", "analyzer-rule"],
+      "inputs": ["Go source AST", "optional analyzer evidence"],
+      "applicability": "Import and package boundary constraints under declared path prefixes",
+      "blind_spots": ["Non-Go languages", "Runtime reflection imports"],
+      "fixture_refs": ["testdata/pass-issue.md", "testdata/deviation-issue.md", "testdata/arch-go-benchmark"]
+    },
+    {
+      "id": "manual_review",
+      "title": "Human judgment / semantic preference",
+      "verifier_types": ["manual-review"],
+      "inputs": ["source ADR statement", "reviewer decision"],
+      "applicability": "Subjective, qualitative, or underspecified obligations",
+      "blind_spots": ["Cannot produce automated PASS", "Cannot block CI alone"],
+      "fixture_refs": ["testdata/specifications/service-runtime.md"]
+    },
+    {
+      "id": "configuration.json_fact",
+      "title": "Native JSON configuration facts",
+      "verifier_types": ["json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files"],
+      "applicability": "Same observation contract as JSON verifiers, emitted as canonical evidence facts",
+      "blind_spots": ["Nested paths", "Non-JSON formats"],
+      "fixture_refs": ["config/service.json", "testdata/conftest-benchmark"]
+    }
+  ]
+}

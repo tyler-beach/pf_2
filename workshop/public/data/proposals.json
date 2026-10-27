@@ -1,0 +1,20 @@
+{
+  "schema_version": "1",
+  "proposal_count": 1,
+  "candidate_count": 1,
+  "provider": "offline-fixture",
+  "model": "offline-replay",
+  "proposals": [
+    {
+      "proposal_id": "PROP-fixture",
+      "parent_candidate_id": "CAND-LOW",
+      "statement": "Services should prefer asynchronous messaging where appropriate.",
+      "normalized_statement": "offline assist replay — review required",
+      "suggested_pattern_id": "manual_review",
+      "rationale": "Deterministic offline fixture response for Promptfoo/CI; not a live model judgment.",
+      "parent_confidence": "low",
+      "executable": false,
+      "approval_status": "pending_review"
+    }
+  ]
+}

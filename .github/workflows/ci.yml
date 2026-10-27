@@ -28,14 +28,14 @@ jobs:
           if [ -n "${BASE_SHA:-}" ] && ! [[ "$BASE_SHA" =~ ^0+$ ]]; then
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
           fi
-          python3 -m unittest discover -s scripts -p 'test_check_gofmt_changed.py'
+          python3 -m unittest discover -s scripts -p 'test_*.py'
           python3 scripts/check_gofmt_changed.py --base-sha "${BASE_SHA:-}" --head-sha "$GITHUB_SHA"
 
       - name: Test and validate catalog
         run: |
-          go test -race -coverprofile=coverage.out ./...
+          ./scripts/go_test.sh -race -coverprofile=coverage.out
           go tool cover -func=coverage.out | tail -n 1
-          go vet ./...
+          go vet $(go list ./... | grep -v '/node_modules/')
           go run ./cmd/adrctl validate --requirements adr/requirements.json
 
       - name: Fuzz parsers with bounded smoke campaigns
@@ -272,12 +272,21 @@ jobs:
             --registry "$registry" \
             --report-only
           jq -e '
-            .document_count == 3
+            .document_count >= 3
             and .candidate_count >= 9
             and all(.candidates[]; .approval_status == "pending_review" and .executable == false)
             and any(.candidates[]; .statement == "Each service must expose a health endpoint." and .section_heading == "Preamble" and .source_line_start == 3)
             and ([.candidates[] | select(.source_path | contains("outbound-http-client.md"))] | length) >= 4
+            and any(.candidates[]; .statement | test("health endpoint|timeout_seconds|COBOL"; "i"))
           ' adr/obligation-candidates.json
+
+      - name: Measure reuse-pilot extraction quality
+        run: |
+          set -euo pipefail
+          go run ./cmd/adrctl ingest-adrs --root testdata/reuse-pilot/adrs --json-out "$RUNNER_TEMP/pilot-ingested.json"
+          go run ./cmd/adrctl extract-obligations --index "$RUNNER_TEMP/pilot-ingested.json" --root testdata/reuse-pilot/adrs --json-out "$RUNNER_TEMP/pilot-candidates.json"
+          python3 scripts/reuse_pilot_harness.py testdata/reuse-pilot/labels.json "$RUNNER_TEMP/pilot-candidates.json"
+          jq -e '.document_count == 120 and .candidate_count >= 120' "$RUNNER_TEMP/pilot-candidates.json"
 
       - name: Assess repository source
         run: |
@@ -525,4 +534,67 @@ jobs:
           name: conftest-json-policy-benchmark
           path: ${{ runner.temp }}/conftest-benchmark-results
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Setup Node.js for Promptfoo and workshop
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            eval/promptfoo/package-lock.json
+            workshop/package-lock.json
+
+      - name: Promptfoo offline assist eval (zero provider cost)
+        env:
+          WORKSHOP_INPUTS: ${{ runner.temp }}/workshop-inputs
+        working-directory: eval/promptfoo
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run eval:offline
+          mkdir -p "$WORKSHOP_INPUTS"
+          node ../scripts/summarize_promptfoo.mjs output/results.json "$WORKSHOP_INPUTS/promptfoo.json" offline
+          jq -e '.mode == "offline" and .pass_rate == 1' "$WORKSHOP_INPUTS/promptfoo.json"
+
+      - name: Build workshop SPA (typecheck, no deploy)
+        working-directory: workshop
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build
+
+      - name: Emit workshop inputs from CI artifacts
+        run: |
+          set -euo pipefail
+          inputs="$RUNNER_TEMP/workshop-inputs"
+          mkdir -p "$inputs"
+          go run ./cmd/adrctl ingest-adrs --root testdata/adr-corpus --json-out "$inputs/ingested.json"
+          go run ./cmd/adrctl extract-obligations --index "$inputs/ingested.json" --root testdata/adr-corpus --json-out "$inputs/candidates.json"
+          go run ./cmd/adrctl assist-obligations --index "$inputs/candidates.json" --json-out "$inputs/proposals.json" --provider offline --max-confidence low
+          emit_args=(
+            --out-dir "$inputs/snapshot"
+            --run-id "${{ github.run_id }}-${{ github.run_attempt }}"
+            --workflow "CI"
+            --git-sha "${{ github.sha }}"
+            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            --provider-mode offline
+            --candidates "$inputs/candidates.json"
+            --proposals "$inputs/proposals.json"
+            --promptfoo "$inputs/promptfoo.json"
+          )
+          if [ -f assessment.json ]; then
+            cp assessment.json "$inputs/assessment.json"
+            emit_args+=(--assessment "$inputs/assessment.json" --enforce-assess-llm)
+          fi
+          go run ./cmd/adrctl workshop-emit "${emit_args[@]}"
+          test -f "$inputs/snapshot/latest.json"
+
+      - name: Upload workshop inputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: workshop-inputs-ci
+          path: ${{ runner.temp }}/workshop-inputs
+          if-no-files-found: error
           retention-days: 14

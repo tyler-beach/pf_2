@@ -224,6 +224,170 @@
           }
         }
       ]
+    },
+    {
+      "id": "ADR-006",
+      "title": "Expand fixture-proven OpenGrep security bindings",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-006-01",
+          "title": "Bash must not use dynamic eval",
+          "description": "Bash scripts must not invoke eval on potentially attacker-controlled input.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.bash-dynamic-eval"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".bash", ".sh"]
+          }
+        },
+        {
+          "id": "REQ-006-02",
+          "title": "C must not invoke system with dynamic commands",
+          "description": "C sources must not call system with dynamically composed command strings.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.c-shell-command"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".c", ".h"]
+          }
+        },
+        {
+          "id": "REQ-006-03",
+          "title": "C++ must not invoke std::system with dynamic commands",
+          "description": "C++ sources must not call std::system with dynamically composed command strings.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.cpp-shell-command"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".cpp", ".cc", ".hpp"]
+          }
+        },
+        {
+          "id": "REQ-006-04",
+          "title": "Rust must not launch shells with dynamic command strings",
+          "description": "Rust sources must not compose shell commands via sh -c style process launches.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.rust-shell-command"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".rs"]
+          }
+        },
+        {
+          "id": "REQ-006-05",
+          "title": "Kotlin must not use Runtime.exec with dynamic commands",
+          "description": "Kotlin sources must not pass potentially untrusted strings to Runtime.exec.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.kotlin-runtime-exec"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".kt", ".kts"]
+          }
+        },
+        {
+          "id": "REQ-006-06",
+          "title": "Scala must not use Runtime.exec with dynamic commands",
+          "description": "Scala sources must not pass potentially untrusted strings to Runtime.exec.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.scala-runtime-exec"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".scala"]
+          }
+        },
+        {
+          "id": "REQ-006-07",
+          "title": "Elixir must not dynamically evaluate input as code",
+          "description": "Elixir sources must not evaluate dynamic expressions from untrusted input.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.elixir-dynamic-eval"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".ex", ".exs"]
+          }
+        },
+        {
+          "id": "REQ-006-08",
+          "title": "Dart must not launch shell processes with dynamic arguments",
+          "description": "Dart sources must not run shell processes with attacker-influenced -c style arguments.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.dart-process-run"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".dart"]
+          }
+        },
+        {
+          "id": "REQ-006-09",
+          "title": "Swift must not launch shells with dynamic arguments",
+          "description": "Swift sources must not use shell-style process arguments from untrusted input.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.swift-shell-command"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".swift"]
+          }
+        },
+        {
+          "id": "REQ-006-10",
+          "title": "Lua must not dynamically compile untrusted source",
+          "description": "Lua sources must not compile or evaluate attacker-controlled code.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.lua-dynamic-eval"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".lua"]
+          }
+        },
+        {
+          "id": "REQ-006-11",
+          "title": "Visual Basic must not start processes with dynamic commands",
+          "description": "VB sources must not create processes from untrusted command strings.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.visualbasic-process-start"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".vb", ".vbs"]
+          }
+        },
+        {
+          "id": "REQ-006-12",
+          "title": "OCaml must not invoke Sys.command with dynamic strings",
+          "description": "OCaml sources must not call Sys.command with dynamically composed commands.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.ocaml-system-command"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".ml", ".mli"]
+          }
+        }
+      ]
     }
   ]
 }

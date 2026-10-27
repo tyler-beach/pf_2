@@ -1,5 +1,9 @@
 package analyzer
 
+// Deprecated: plan construction and local execution live in internal/plan.
+// scan-opengrep and plan-repo/execute-plan share that package. This file remains
+// for unit coverage of the historical cache/key helpers until those tests move.
+
 import (
 	"bytes"
 	"context"

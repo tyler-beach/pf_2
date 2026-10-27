@@ -1,0 +1,129 @@
+name: LLM Assist
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_candidates:
+        description: Spend guard — max candidates to assist
+        required: false
+        default: "25"
+      max_confidence:
+        description: Escalate at or below this confidence band
+        required: false
+        default: "low"
+      provider:
+        description: offline or openai-compatible
+        required: false
+        default: "offline"
+  schedule:
+    # Weekly offline assist smoke (no secrets required)
+    - cron: "0 14 * * 1"
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  assist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: eval/promptfoo/package-lock.json
+
+      - name: Extract candidates and run confidence-gated assist
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'gpt-4o-mini' }}
+          LLM_ENDPOINT: ${{ vars.LLM_ENDPOINT || 'https://api.openai.com/v1/chat/completions' }}
+          MAX_CANDIDATES: ${{ github.event.inputs.max_candidates || '25' }}
+          MAX_CONFIDENCE: ${{ github.event.inputs.max_confidence || 'low' }}
+          REQUESTED_PROVIDER: ${{ github.event.inputs.provider || 'offline' }}
+        run: |
+          set -euo pipefail
+          inputs="$RUNNER_TEMP/workshop-inputs"
+          mkdir -p "$inputs" adr
+          go test ./internal/obligations/ -count=1
+          go run ./cmd/adrctl ingest-adrs --root testdata/corpus/adrs --json-out "$inputs/ingested.json"
+          go run ./cmd/adrctl extract-obligations \
+            --index "$inputs/ingested.json" \
+            --root testdata/corpus/adrs \
+            --json-out "$inputs/candidates.json" \
+            --min-confidence-report
+
+          provider="$REQUESTED_PROVIDER"
+          if [ "$provider" = "openai-compatible" ] && [ -z "${LLM_API_KEY:-}" ]; then
+            echo "LLM_API_KEY unset; falling back to offline provider."
+            provider="offline"
+          fi
+          echo "PROVIDER_MODE=$provider" >> "$GITHUB_ENV"
+
+          assist_args=(
+            --index "$inputs/candidates.json"
+            --json-out adr/llm-obligation-proposals.json
+            --md-out adr/llm-obligation-proposals.md
+            --max-confidence "$MAX_CONFIDENCE"
+            --max-candidates "$MAX_CANDIDATES"
+            --provider "$provider"
+          )
+          if [ "$provider" = "openai-compatible" ]; then
+            assist_args+=(--model "$LLM_MODEL" --endpoint "$LLM_ENDPOINT" --api-key-env LLM_API_KEY --max-tokens 512)
+          fi
+          go run ./cmd/adrctl assist-obligations "${assist_args[@]}"
+          cp adr/llm-obligation-proposals.json "$inputs/proposals.json"
+          cp "$inputs/candidates.json" "$inputs/candidates.json"
+
+      - name: Promptfoo eval (offline always; live when credentials present)
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'gpt-4o-mini' }}
+          OPENAI_API_KEY: ${{ secrets.LLM_API_KEY }}
+          WORKSHOP_INPUTS: ${{ runner.temp }}/workshop-inputs
+        working-directory: eval/promptfoo
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run eval:offline
+          mkdir -p "$WORKSHOP_INPUTS" output
+          node ../scripts/summarize_promptfoo.mjs output/results.json "$WORKSHOP_INPUTS/promptfoo.json" offline
+          if [ "${PROVIDER_MODE:-offline}" = "openai-compatible" ] && [ -n "${LLM_API_KEY:-}" ]; then
+            npm run eval:live || true
+            if [ -f output/results-live.json ]; then
+              node ../scripts/summarize_promptfoo.mjs output/results-live.json "$WORKSHOP_INPUTS/promptfoo-live.json" live
+            fi
+          fi
+
+      - name: Emit workshop snapshot inputs
+        run: |
+          set -euo pipefail
+          inputs="$RUNNER_TEMP/workshop-inputs"
+          go run ./cmd/adrctl workshop-emit \
+            --out-dir "$inputs/snapshot" \
+            --run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --workflow "LLM Assist" \
+            --git-sha "${{ github.sha }}" \
+            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --provider-mode "${PROVIDER_MODE:-offline}" \
+            --candidates "$inputs/candidates.json" \
+            --proposals "$inputs/proposals.json" \
+            --promptfoo "$inputs/promptfoo.json" \
+            --corpus-labels testdata/corpus/labels.json
+
+      - name: Upload assist artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: llm-assist-${{ github.run_id }}
+          path: |
+            adr/llm-obligation-proposals.json
+            adr/llm-obligation-proposals.md
+            eval/promptfoo/output/
+            ${{ runner.temp }}/workshop-inputs
+          if-no-files-found: error
+          retention-days: 14

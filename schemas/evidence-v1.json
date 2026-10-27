@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tyler-beach/pf_2/schemas/evidence-v1.json",
+  "title": "Pathfinder canonical evidence record",
+  "type": "object",
+  "required": ["schema_version", "evidence_id", "producer", "kind", "status"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "evidence_id": { "type": "string", "minLength": 1 },
+    "repository": { "type": "string" },
+    "revision": { "type": "string" },
+    "analysis_run_id": { "type": "string" },
+    "producer": {
+      "type": "object",
+      "required": ["analyzer"],
+      "properties": {
+        "analyzer": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" },
+        "adapter_version": { "type": "string" },
+        "composite_id": { "type": "string" },
+        "rule_id": { "type": "string" },
+        "ruleset_digest": { "type": "string" },
+        "config_digest": { "type": "string" },
+        "binary_digest": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["scanner_finding", "analysis_limitation", "configuration_value", "syntax_fact"]
+    },
+    "artifact": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "type": "string" },
+        "language": { "type": "string" },
+        "start_line": { "type": "integer", "minimum": 0 },
+        "start_column": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": ["id", "rule_id"],
+      "properties": {
+        "id": { "type": "string" },
+        "rule_id": { "type": "string" },
+        "severity": { "type": "string" },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": ["observed", "absent-within-declared-scope", "unsupported", "parse-error", "tool-error", "incomplete"]
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "raw_artifact_uri": { "type": "string" },
+        "raw_artifact_sha256": { "type": "string" },
+        "extraction_method": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "declared": { "type": "array", "items": { "type": "string" } },
+        "analyzed_files": { "type": "integer", "minimum": 0 },
+        "unsupported_files": { "type": "integer", "minimum": 0 },
+        "scanned_paths": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "diagnostics": { "type": "array", "items": { "type": "string" } },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

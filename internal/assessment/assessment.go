@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/tyler-beach/pf_2/internal/analyzer"
+	"github.com/tyler-beach/pf_2/internal/evidence"
 )
 
 type Catalog struct {
@@ -85,6 +86,21 @@ const (
 type AssessmentOptions struct {
 	EvidenceMode EvidenceMode
 	AnalyzerResults []analyzer.ScanResult
+	// EvidenceBundles is the vendor-neutral envelope. When empty, AssessWithOptions
+	// derives bundles from AnalyzerResults so evaluators can consume one contract.
+	EvidenceBundles []evidence.Bundle
+}
+
+// CorpusCoverage reports interpretation/binding/evidence progress beyond the
+// catalog-scoped COMPLETE/PARTIAL/NONE coverage_status field.
+type CorpusCoverage struct {
+	InventoryADRs            int            `json:"inventory_adrs"`
+	AcceptedADRs             int            `json:"accepted_adrs"`
+	InterpretedRequirements  int            `json:"interpreted_requirements"`
+	BoundRequirements         int            `json:"bound_requirements"`
+	EvidenceComplete         int            `json:"evidence_complete"`
+	AssessmentComplete       int            `json:"assessment_complete"`
+	OutcomeCounts            map[string]int `json:"outcome_counts"`
 }
 
 type Result struct {
@@ -100,6 +116,8 @@ type Result struct {
 	LLMCalls int `json:"runtime_llm_calls"`
 	Requirements []RequirementResult `json:"requirements"`
 	AnalyzerResults []analyzer.ScanResult `json:"analyzer_results,omitempty"`
+	EvidenceBundles []evidence.Bundle `json:"evidence_bundles,omitempty"`
+	CorpusCoverage CorpusCoverage `json:"corpus_coverage"`
 	SourceSnapshotSHA256 string `json:"source_snapshot_sha256"`
 	UnassessedSourceFiles []string `json:"unassessed_source_files,omitempty"`
 }
@@ -374,7 +392,16 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	if options.EvidenceMode == "" {
 		options.EvidenceMode = EvidenceModeSubmission
 	}
-	out := Result{SchemaVersion:"1", EvidenceMode:string(options.EvidenceMode), EngineVersion:"0.3.0", SourceFileCount:len(files), Counts:map[string]int{}, LLMCalls:0, AnalyzerResults:options.AnalyzerResults, SourceSnapshotSHA256:HashSourceFiles(files)}
+	if len(options.EvidenceBundles) == 0 && len(options.AnalyzerResults) > 0 {
+		options.EvidenceBundles = evidence.BundlesFromScans(options.AnalyzerResults)
+	}
+	out := Result{
+		SchemaVersion: "1", EvidenceMode: string(options.EvidenceMode), EngineVersion: "0.3.0",
+		SourceFileCount: len(files), Counts: map[string]int{}, LLMCalls: 0,
+		AnalyzerResults: options.AnalyzerResults, EvidenceBundles: options.EvidenceBundles,
+		SourceSnapshotSHA256: HashSourceFiles(files),
+		CorpusCoverage: CorpusCoverage{OutcomeCounts: map[string]int{}},
+	}
 	if options.EvidenceMode == EvidenceModeSubmission {
 		for _, source := range files {
 			language := strings.ToLower(strings.TrimSpace(source.Language))
@@ -386,21 +413,32 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 		sort.Strings(out.UnassessedSourceFiles)
 	}
 	for _, a := range c.ADRs {
+		out.CorpusCoverage.InventoryADRs++
 		if a.Status != "accepted" { continue }
+		out.CorpusCoverage.AcceptedADRs++
 		for _, r := range a.Requirements {
+			out.CorpusCoverage.InterpretedRequirements++
 			rr := RequirementResult{ADR:a.ID, ADRVersion:a.Version, RequirementID:r.ID, Title:r.Title, Severity:r.Severity, Evidence:[]string{}, Findings:[]Finding{}}
 			switch r.Verifier.Type {
-			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files, options.EvidenceMode)
-			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
-			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
+			case "go-import-boundary":
+				out.CorpusCoverage.BoundRequirements++
+				assessImportBoundary(&rr, r.Verifier, files, options.EvidenceMode)
+			case "json-required-keys":
+				out.CorpusCoverage.BoundRequirements++
+				assessJSONRequiredKeys(&rr, r.Verifier, files)
+			case "json-number-range":
+				out.CorpusCoverage.BoundRequirements++
+				assessJSONNumberRange(&rr, r.Verifier, files)
 			case "analyzer-rule":
-				if options.EvidenceMode == EvidenceModeSubmission && len(options.AnalyzerResults) == 0 {
+				out.CorpusCoverage.BoundRequirements++
+				if options.EvidenceMode == EvidenceModeSubmission && len(options.AnalyzerResults) == 0 && len(options.EvidenceBundles) == 0 {
 					rr.Status = "NOT_APPLICABLE"
 					rr.Reason = "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
 				} else {
-					assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults)
+					assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults, options.EvidenceBundles)
 				}
 			case "manual-review":
+				out.CorpusCoverage.BoundRequirements++
 				rr.Status = "REVIEW_REQUIRED"
 				rr.Reason = "This requirement needs human judgment and cannot be established by an automatic verifier."
 			default:
@@ -408,6 +446,16 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 				rr.Reason = "No approved verifier is registered for type: " + r.Verifier.Type
 			}
 			out.Counts[rr.Status]++
+			out.CorpusCoverage.OutcomeCounts[rr.Status]++
+			switch rr.Status {
+			case "PASS", "FAIL", "NOT_APPLICABLE", "REVIEW_REQUIRED":
+				out.CorpusCoverage.EvidenceComplete++
+				out.CorpusCoverage.AssessmentComplete++
+			case "EVIDENCE_MISSING", "ERROR", "INDETERMINATE":
+				// counted in outcomes only
+			case "UNSUPPORTED":
+				out.CorpusCoverage.AssessmentComplete++
+			}
 			out.Requirements = append(out.Requirements, rr)
 		}
 	}
@@ -554,13 +602,21 @@ func assessJSONNumberRange(rr *RequirementResult, v Verifier, files []SourceFile
 	}
 }
 
-func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyzer.ScanResult) {
+func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyzer.ScanResult, bundles []evidence.Bundle) {
 	var matches []analyzer.ScanResult
 	want := strings.ToLower(strings.TrimSpace(verifier.Analyzer))
 	for _, scan := range scans {
 		for _, info := range scan.Analyzers {
 			name := strings.ToLower(strings.TrimSpace(info.Name))
 			if name == want || strings.Contains(name, want) { matches = append(matches, scan); break }
+		}
+	}
+	if len(matches) == 0 {
+		// Prefer canonical bundles when ScanResult wrappers were omitted.
+		for _, bundle := range bundles {
+			if bundleMatchesAnalyzer(bundle, want) {
+				matches = append(matches, scanResultFromBundle(bundle))
+			}
 		}
 	}
 	if len(matches) == 0 {
@@ -631,28 +687,61 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 	rr.Evidence = append(rr.Evidence, fmt.Sprintf("Analyzer %s version %s completed against input SHA-256 %s with configuration SHA-256 %s and raw-output SHA-256 %s; %d discovered source path(s) matched scope.", verifier.Analyzer, version, scan.InputSHA256, scan.ConfigurationSHA256, scan.RawOutputSHA256, len(scopedPaths)))
 	ruleIDs := make(map[string]bool, len(verifier.RuleIDs))
 	for _, id := range verifier.RuleIDs { ruleIDs[id] = true }
-	for _, finding := range scan.Findings {
-		if !ruleIDs[finding.RuleID] { continue }
-		findingAnalyzer := strings.ToLower(strings.TrimSpace(finding.Analyzer))
-		if findingAnalyzer != want && !strings.Contains(findingAnalyzer, want) { continue }
-		if strings.TrimSpace(finding.Path) == "" {
-			rr.Status = "EVIDENCE_MISSING"
-			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q without a repository path; scope cannot be verified.", verifier.Analyzer, finding.RuleID)
-			return
+
+	// Prefer canonical evidence records for finding matching when present.
+	matchedFromEnvelope := false
+	for _, bundle := range bundles {
+		if !bundleMatchesAnalyzer(bundle, want) { continue }
+		matchedFromEnvelope = true
+		for _, rec := range bundle.Records {
+			if rec.Kind != evidence.KindScannerFinding || rec.Finding == nil { continue }
+			if !ruleIDs[rec.Finding.RuleID] { continue }
+			findingAnalyzer := strings.ToLower(strings.TrimSpace(rec.Producer.Analyzer))
+			if findingAnalyzer != want && !strings.Contains(findingAnalyzer, want) { continue }
+			if strings.TrimSpace(rec.Artifact.Path) == "" {
+				rr.Status = "EVIDENCE_MISSING"
+				rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q without a repository path; scope cannot be verified.", verifier.Analyzer, rec.Finding.RuleID)
+				return
+			}
+			findingPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(rec.Artifact.Path)))
+			if !pathMatches(findingPath, verifier.SourcePathPrefixes) { continue }
+			if len(extensionSet) > 0 && !extensionSet[strings.ToLower(filepath.Ext(findingPath))] { continue }
+			if !scannedPathSet[findingPath] {
+				rr.Status = "EVIDENCE_MISSING"
+				rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q for path %q that is absent from the verified source inventory.", verifier.Analyzer, rec.Finding.RuleID, rec.Artifact.Path)
+				return
+			}
+			rr.Findings = append(rr.Findings, Finding{
+				RuleID: rec.Finding.RuleID, Path: findingPath, Line: rec.Artifact.StartLine, Column: rec.Artifact.StartColumn,
+				Message: rec.Finding.Message, Analyzer: rec.Producer.Analyzer, AnalyzerVersion: rec.Producer.Version,
+				Fingerprint: rec.EvidenceID, Level: rec.Finding.Severity,
+			})
 		}
-		findingPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(finding.Path)))
-		if !pathMatches(findingPath, verifier.SourcePathPrefixes) { continue }
-		if len(extensionSet) > 0 && !extensionSet[strings.ToLower(filepath.Ext(findingPath))] { continue }
-		if !scannedPathSet[findingPath] {
-			rr.Status = "EVIDENCE_MISSING"
-			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q for path %q that is absent from the verified source inventory.", verifier.Analyzer, finding.RuleID, finding.Path)
-			return
+	}
+	if !matchedFromEnvelope {
+		for _, finding := range scan.Findings {
+			if !ruleIDs[finding.RuleID] { continue }
+			findingAnalyzer := strings.ToLower(strings.TrimSpace(finding.Analyzer))
+			if findingAnalyzer != want && !strings.Contains(findingAnalyzer, want) { continue }
+			if strings.TrimSpace(finding.Path) == "" {
+				rr.Status = "EVIDENCE_MISSING"
+				rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q without a repository path; scope cannot be verified.", verifier.Analyzer, finding.RuleID)
+				return
+			}
+			findingPath := filepath.ToSlash(filepath.Clean(filepath.FromSlash(finding.Path)))
+			if !pathMatches(findingPath, verifier.SourcePathPrefixes) { continue }
+			if len(extensionSet) > 0 && !extensionSet[strings.ToLower(filepath.Ext(findingPath))] { continue }
+			if !scannedPathSet[findingPath] {
+				rr.Status = "EVIDENCE_MISSING"
+				rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q for path %q that is absent from the verified source inventory.", verifier.Analyzer, finding.RuleID, finding.Path)
+				return
+			}
+			rr.Findings = append(rr.Findings, Finding{
+				RuleID:finding.RuleID, Path:filepath.ToSlash(finding.Path), Line:finding.StartLine, Column:finding.StartColumn,
+				Message:finding.Message, Analyzer:finding.Analyzer, AnalyzerVersion:finding.AnalyzerVersion,
+				Fingerprint:finding.Fingerprint, Level:finding.Level, Properties:finding.Properties,
+			})
 		}
-		rr.Findings = append(rr.Findings, Finding{
-			RuleID:finding.RuleID, Path:filepath.ToSlash(finding.Path), Line:finding.StartLine, Column:finding.StartColumn,
-			Message:finding.Message, Analyzer:finding.Analyzer, AnalyzerVersion:finding.AnalyzerVersion,
-			Fingerprint:finding.Fingerprint, Level:finding.Level, Properties:finding.Properties,
-		})
 	}
 	if len(rr.Findings) > 0 {
 		rr.Status = "FAIL"
@@ -661,6 +750,42 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 		rr.Status = "PASS"
 		rr.Reason = fmt.Sprintf("No finding matched rule(s) %s within %d source path(s) in scope.", strings.Join(verifier.RuleIDs, ", "), len(scopedPaths))
 	}
+}
+
+func bundleMatchesAnalyzer(bundle evidence.Bundle, want string) bool {
+	for _, info := range bundle.Producers {
+		name := strings.ToLower(strings.TrimSpace(info.Name))
+		if name == want || strings.Contains(name, want) { return true }
+	}
+	for _, rec := range bundle.Records {
+		name := strings.ToLower(strings.TrimSpace(rec.Producer.Analyzer))
+		if name == want || strings.Contains(name, want) { return true }
+	}
+	return false
+}
+
+func scanResultFromBundle(bundle evidence.Bundle) analyzer.ScanResult {
+	scan := analyzer.ScanResult{
+		SchemaVersion: "1", SARIFVersion: analyzer.SARIFVersion, Status: bundle.ScanCompleteness,
+		Analyzers: append([]analyzer.AnalyzerInfo(nil), bundle.Producers...),
+		ConfigurationPath: bundle.ConfigPath, ConfigurationSHA256: bundle.ConfigSHA256,
+		BinarySHA256: bundle.BinarySHA256, RuleSetSHA256: bundle.RuleSetSHA256,
+		InputSHA256: bundle.InputSHA256, RawOutputSHA256: bundle.RawOutputSHA256,
+		ScannedPaths: append([]string(nil), bundle.ScannedPaths...),
+		Errors: append([]string(nil), bundle.Errors...),
+		Findings: []analyzer.Finding{},
+	}
+	if scan.Status == "" { scan.Status = analyzer.ScanStatusComplete }
+	for _, rec := range bundle.Records {
+		if rec.Kind != evidence.KindScannerFinding || rec.Finding == nil { continue }
+		scan.Findings = append(scan.Findings, analyzer.Finding{
+			Analyzer: rec.Producer.Analyzer, AnalyzerVersion: rec.Producer.Version,
+			RuleID: rec.Finding.RuleID, Message: rec.Finding.Message,
+			Path: rec.Artifact.Path, StartLine: rec.Artifact.StartLine, StartColumn: rec.Artifact.StartColumn,
+			Level: rec.Finding.Severity, Fingerprint: rec.EvidenceID,
+		})
+	}
+	return scan
 }
 
 func pathMatches(path string, prefixes []string) bool {

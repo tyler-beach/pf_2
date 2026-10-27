@@ -12,7 +12,19 @@ import (
 	"time"
 
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/patterns"
 )
+
+// activePatternCatalog is consulted when set via SetPatternCatalog. Callers that
+// load adr/patterns.json should set it so approvals fail closed on unknown or
+// incompatible pattern digests.
+var activePatternCatalog *patterns.Catalog
+
+// SetPatternCatalog installs the reusable pattern registry for binding checks.
+// Pass nil to revert to the built-in pattern ID allow-list.
+func SetPatternCatalog(catalog *patterns.Catalog) {
+	activePatternCatalog = catalog
+}
 
 const RegistrySchemaVersion = "1"
 
@@ -98,6 +110,9 @@ type BindingCoverage struct {
 	AdvisoryBindingCount int    `json:"advisory_binding_count"`
 	ReviewRequiredCount  int    `json:"review_required_count"`
 	UnboundCount         int    `json:"unbound_count"`
+	PendingHighConfidence   int `json:"pending_high_confidence"`
+	PendingMediumConfidence int `json:"pending_medium_confidence"`
+	PendingLowConfidence    int `json:"pending_low_confidence"`
 }
 
 // NewRegistry returns an empty versioned audit log. Candidates without a record
@@ -114,6 +129,8 @@ func SnapshotCandidate(c Candidate) CandidateSnapshot {
 		Kind: c.Kind, PatternHint: c.PatternHint, SourcePath: c.SourcePath,
 		SourceSHA256: c.SourceSHA256, SourceLineStart: c.SourceLineStart, SourceLineEnd: c.SourceLineEnd,
 		ReviewHints: append([]string(nil), c.ReviewHints...),
+		// Conditions/exceptions/ambiguity remain on the live candidate index; the
+		// snapshot keeps review hints so historical decisions stay self-describing.
 	}
 }
 
@@ -233,6 +250,7 @@ func ValidateRegistry(index Index, catalog assessment.Catalog, registry Registry
 		if !ok {
 			coverage.PendingReviewCount++
 			coverage.UnboundCount++
+			countPendingConfidence(&coverage, candidate)
 			continue
 		}
 		seen[id] = true
@@ -240,12 +258,14 @@ func ValidateRegistry(index Index, catalog assessment.Catalog, registry Registry
 			coverage.StaleCount++
 			coverage.PendingReviewCount++
 			coverage.UnboundCount++
+			countPendingConfidence(&coverage, candidate)
 			continue
 		}
 		switch record.Decision {
 		case DecisionPending:
 			coverage.PendingReviewCount++
 			coverage.UnboundCount++
+			countPendingConfidence(&coverage, candidate)
 		case DecisionRejected:
 			coverage.RejectedCount++
 			coverage.UnboundCount++
@@ -254,6 +274,7 @@ func ValidateRegistry(index Index, catalog assessment.Catalog, registry Registry
 				coverage.StaleCount++
 				coverage.PendingReviewCount++
 				coverage.UnboundCount++
+				countPendingConfidence(&coverage, candidate)
 				continue
 			}
 			if err := validateApprovedBinding(record, candidate, catalog); err != nil {
@@ -326,6 +347,14 @@ func validateCandidateIndex(index Index) error {
 		}
 		if candidate.ApprovalStatus != DecisionPending || candidate.EnforcementMode != EnforcementReviewRequired || candidate.Executable {
 			return fmt.Errorf("candidate %s was made enforceable or altered from review-only defaults", candidate.ID)
+		}
+		switch strings.ToLower(strings.TrimSpace(candidate.Confidence)) {
+		case ConfidenceHigh, ConfidenceMedium, ConfidenceLow:
+		default:
+			return fmt.Errorf("candidate %s has invalid confidence %q", candidate.ID, candidate.Confidence)
+		}
+		if candidate.ConfidenceScore < 0 || candidate.ConfidenceScore > 1 {
+			return fmt.Errorf("candidate %s has out-of-range confidence_score %v", candidate.ID, candidate.ConfidenceScore)
 		}
 	}
 	return nil
@@ -464,7 +493,12 @@ func validateCandidateSnapshot(candidate CandidateSnapshot) error {
 	if !validPattern(candidate.PatternHint) {
 		return fmt.Errorf("unsupported candidate pattern_hint %q", candidate.PatternHint)
 	}
-	allowedHints := map[string]bool{"condition_or_exception": true, "compound_or_conjoined": true, "conditional_scope": true, "subjective_or_underspecified": true, "non_decision_section": true}
+	allowedHints := map[string]bool{
+		"condition_or_exception": true, "compound_or_conjoined": true, "conditional_scope": true,
+		"subjective_or_underspecified": true, "non_decision_section": true,
+		"ambiguous_interpretation": true, "attempts_vs_retries_clarification": true,
+		"conflicting_modality_cues": true, "split_from_compound": true,
+	}
 	seenHints := make(map[string]bool, len(candidate.ReviewHints))
 	for _, hint := range candidate.ReviewHints {
 		if !allowedHints[hint] || seenHints[hint] { return fmt.Errorf("unsupported or duplicate review hint %q", hint) }
@@ -493,13 +527,28 @@ func snapshotsMatchCurrent(snapshot CandidateSnapshot, candidate Candidate) bool
 		strings.Join(snapshot.ReviewHints, "\x00") == strings.Join(current.ReviewHints, "\x00")
 }
 
-func validPattern(pattern string) bool {
-	switch pattern {
-	case "configuration.bounds_or_required_values", "security.source_pattern", "architecture.dependency_or_boundary", "manual_review":
-		return true
+func countPendingConfidence(coverage *BindingCoverage, candidate Candidate) {
+	switch strings.ToLower(strings.TrimSpace(candidate.Confidence)) {
+	case ConfidenceHigh:
+		coverage.PendingHighConfidence++
+	case ConfidenceMedium:
+		coverage.PendingMediumConfidence++
 	default:
-		return false
+		coverage.PendingLowConfidence++
 	}
+}
+
+func validPattern(pattern string) bool {
+	if activePatternCatalog != nil {
+		_, ok := activePatternCatalog.Lookup(pattern)
+		return ok
+	}
+	for _, id := range patterns.BuiltinIDs() {
+		if id == pattern {
+			return true
+		}
+	}
+	return false
 }
 
 // bindingSnapshotMatches requires an approval to reference the exact accepted
@@ -568,8 +617,14 @@ func validateApprovedBinding(record ReviewRecord, candidate Candidate, catalog a
 	if owningADR != candidate.ADRID {
 		return fmt.Errorf("candidate ADR %s cannot be bound to requirement %s owned by ADR %s", candidate.ADRID, record.RequirementID, owningADR)
 	}
+	if activePatternCatalog != nil {
+		if !activePatternCatalog.CompatibleVerifier(record.PatternID, matched.Verifier.Type) {
+			return fmt.Errorf("pattern %q is incompatible with verifier type %q", record.PatternID, matched.Verifier.Type)
+		}
+		return nil
+	}
 	switch record.PatternID {
-	case "configuration.bounds_or_required_values":
+	case "configuration.bounds_or_required_values", "configuration.json_fact":
 		if matched.Verifier.Type != "json-required-keys" && matched.Verifier.Type != "json-number-range" {
 			return fmt.Errorf("configuration pattern requires json-required-keys or json-number-range verifier")
 		}

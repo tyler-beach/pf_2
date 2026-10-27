@@ -1,0 +1,50 @@
+{
+  "expected_candidates": [
+    {
+      "adr_id": "ADR-2001",
+      "statement_contains": "finite request timeout",
+      "modality": "must",
+      "pattern_id": "configuration.bounds_or_required_values",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2002",
+      "statement_contains": "asynchronous messaging",
+      "modality": "should",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2003",
+      "statement_contains": "infrastructure adapters",
+      "modality": "must_not",
+      "pattern_id": "architecture.dependency_or_boundary",
+      "confidence_band": "high",
+      "escalate_expected": false
+    },
+    {
+      "adr_id": "ADR-2004",
+      "statement_contains": "documented interoperability constraint",
+      "modality": "may",
+      "pattern_id": "manual_review",
+      "confidence_band": "low",
+      "escalate_expected": true
+    },
+    {
+      "adr_id": "ADR-2005",
+      "statement_contains": "evaluate untrusted input",
+      "modality": "must_not",
+      "pattern_id": "security.source_pattern",
+      "confidence_band": "medium",
+      "escalate_expected": false
+    }
+  ],
+  "thresholds": {
+    "min_precision": 0.6,
+    "min_recall": 0.6,
+    "max_escalation_rate": 0.8
+  },
+  "corpus_size": 5
+}

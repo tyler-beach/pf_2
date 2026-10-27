@@ -1,0 +1,41 @@
+[
+  {
+    "vars": {
+      "candidate_id": "CAND-CORPUS-2002",
+      "adr_id": "ADR-2002",
+      "source_path": "testdata/corpus/adrs/ADR-2002.md",
+      "source_line_start": 7,
+      "source_line_end": 7,
+      "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "confidence": "low",
+      "escalation_reasons": "manual_review_pattern_hint,subjective_or_ambiguous_language",
+      "statement": "Services should prefer asynchronous messaging where appropriate."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-CORPUS-2004",
+      "adr_id": "ADR-2004",
+      "source_path": "testdata/corpus/adrs/ADR-2004.md",
+      "source_line_start": 7,
+      "source_line_end": 7,
+      "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "confidence": "low",
+      "escalation_reasons": "manual_review_pattern_hint",
+      "statement": "Teams may adopt a documented interoperability constraint when integrating external systems."
+    }
+  },
+  {
+    "vars": {
+      "candidate_id": "CAND-CORPUS-SUBJECTIVE",
+      "adr_id": "ADR-2002",
+      "source_path": "testdata/corpus/adrs/ADR-2002.md",
+      "source_line_start": 9,
+      "source_line_end": 9,
+      "source_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "confidence": "low",
+      "escalation_reasons": "subjective_or_ambiguous_language,manual_review_pattern_hint",
+      "statement": "Prefer clear ownership boundaries when systems grow."
+    }
+  }
+]

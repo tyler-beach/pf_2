@@ -39,6 +39,14 @@ type Candidate struct {
 	EnforcementMode string `json:"enforcement_mode"`
 	Executable      bool   `json:"executable"`
 	ReviewHints     []string `json:"review_hints,omitempty"`
+	// Structured extraction aids for reviewers; never auto-enforce.
+	Conditions []string `json:"conditions,omitempty"`
+	Exceptions []string `json:"exceptions,omitempty"`
+	Ambiguity  []string `json:"ambiguity,omitempty"`
+	// Deterministic confidence; never produced by an LLM.
+	Confidence         string   `json:"confidence"`
+	ConfidenceScore    float64  `json:"confidence_score"`
+	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
 }
 
 // Index is a deterministic candidate inventory tied to exact input bytes.
@@ -49,6 +57,7 @@ type Index struct {
 	DocumentCount           int         `json:"document_count"`
 	DocumentsWithCandidates int         `json:"documents_with_candidates"`
 	CandidateCount          int         `json:"candidate_count"`
+	ConfidenceSummary       ConfidenceSummary `json:"confidence_summary"`
 	Candidates              []Candidate `json:"candidates"`
 }
 
@@ -103,6 +112,7 @@ func BuildIndex(documents []adringest.Document, sourceRootPath, sourceRootLabel 
 		return out.Candidates[i].ID < out.Candidates[j].ID
 	})
 	out.CandidateCount = len(out.Candidates)
+	out.ConfidenceSummary = SummarizeConfidence(out)
 	return out, nil
 }
 
@@ -114,18 +124,25 @@ func MarkdownCandidateReport(index Index) string {
 	b.WriteString("> Review queue only: extracted candidates are not approvals and are not executable.\n\n")
 	fmt.Fprintf(&b, "- Source root: `%s`\n", mdCell(index.SourceRoot))
 	fmt.Fprintf(&b, "- Source ingestion index SHA-256: `%s`\n", index.SourceIndexSHA256)
-	fmt.Fprintf(&b, "- Documents: %d; documents with candidates: %d; candidates: %d\n\n",
+	summary := index.ConfidenceSummary
+	if summary.High+summary.Medium+summary.Low == 0 {
+		summary = SummarizeConfidence(index)
+	}
+	fmt.Fprintf(&b, "- Documents: %d; documents with candidates: %d; candidates: %d\n",
 		index.DocumentCount, index.DocumentsWithCandidates, index.CandidateCount)
+	fmt.Fprintf(&b, "- Confidence: high=%d medium=%d low=%d (low-confidence candidates are escalation candidates for batch LLM assist)\n\n",
+		summary.High, summary.Medium, summary.Low)
 	if len(index.Candidates) == 0 {
 		b.WriteString("No normative candidate statements were found. This is not evidence that the ADR corpus has no obligations.\n")
 		return b.String()
 	}
-	b.WriteString("| Candidate | Source | Section | Modality | Pattern hint | Review hints | Statement | State |\n|---|---|---|---|---|---|---|---|\n")
+	b.WriteString("| Candidate | Confidence | Source | Section | Modality | Pattern hint | Escalation reasons | Statement | State |\n|---|---|---|---|---|---|---|---|---|\n")
 	for _, candidate := range index.Candidates {
-		fmt.Fprintf(&b, "| %s | %s:%d-%d | %s | %s | %s | %s | %s | %s / %s |\n",
-			mdCell(candidate.ID), mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd,
+		fmt.Fprintf(&b, "| %s | %s (%.2f) | %s:%d-%d | %s | %s | %s | %s | %s | %s / %s |\n",
+			mdCell(candidate.ID), mdCell(candidate.Confidence), candidate.ConfidenceScore,
+			mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd,
 			mdCell(candidate.SectionHeading), mdCell(candidate.Modality), mdCell(candidate.PatternHint),
-			mdCell(strings.Join(candidate.ReviewHints, ", ")), mdCell(candidate.Statement),
+			mdCell(strings.Join(candidate.EscalationReasons, ", ")), mdCell(candidate.Statement),
 			mdCell(candidate.ApprovalStatus), mdCell(candidate.EnforcementMode))
 	}
 	return b.String()
@@ -190,7 +207,8 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 			if len(lineText) > maxCandidateLineBytes {
 				return nil, fmt.Errorf("normative source line %d exceeds the %d-byte candidate statement limit", lineIndex+1, maxCandidateLineBytes)
 			}
-			for _, statement := range splitSentences(lineText) {
+			expanded := expandNormativeStatements(lineText)
+			for _, statement := range expanded {
 				modality, ok := detectModality(statement)
 				if !ok {
 					continue
@@ -202,14 +220,27 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 				if anyPhrase(statement, "unless", "except", "only when", "other than", "waiver", "exception") {
 					kind = "exception_candidate"
 				}
+				conditions, exceptions, ambiguity := classifyStatementStructure(statement)
+				hints := reviewHints(statement, kind, section.Heading)
+				if len(expanded) > 1 {
+					hints = appendUniqueHint(hints, "compound_or_conjoined")
+					hints = appendUniqueHint(hints, "split_from_compound")
+				}
+				if len(ambiguity) > 0 {
+					hints = appendUniqueHint(hints, "ambiguous_interpretation")
+				}
 				candidate := Candidate{
 					ADRID: parsed.ID, ADRTitle: parsed.Title, ADRStatus: parsed.Status,
 					SectionHeading: section.Heading, Statement: statement, Modality: modality,
 					Kind: kind, PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
 					SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex + 1, SourceLineEnd: lineIndex + 1,
 					ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
-					ReviewHints: reviewHints(statement, kind, section.Heading),
+					ReviewHints: hints, Conditions: conditions, Exceptions: exceptions, Ambiguity: ambiguity,
 				}
+				band, score, reasons := scoreConfidence(candidate)
+				candidate.Confidence = band
+				candidate.ConfidenceScore = score
+				candidate.EscalationReasons = reasons
 				candidate.ID = candidateID(candidate)
 				result = append(result, candidate)
 			}
@@ -249,6 +280,86 @@ func detectModality(statement string) (string, bool) {
 	}
 	if bestIndex < 0 { return "", false }
 	return bestModality, true
+}
+
+// expandNormativeStatements splits a line into independently reviewable fragments.
+// Sentence boundaries come first; compound clauses that each carry a modality are
+// then separated so timeout+retry+backoff style requirements are not collapsed.
+func expandNormativeStatements(line string) []string {
+	out := make([]string, 0, 4)
+	for _, sentence := range splitSentences(line) {
+		parts := splitCompoundNormative(sentence)
+		out = append(out, parts...)
+	}
+	return out
+}
+
+// splitCompoundNormative separates conjoined obligations when both sides contain
+// a normative cue. Pure descriptive conjunctions stay intact.
+func splitCompoundNormative(statement string) []string {
+	statement = strings.TrimSpace(statement)
+	if statement == "" {
+		return nil
+	}
+	separators := []string{"; ", ". "}
+	for _, sep := range separators {
+		if strings.Contains(statement, sep) {
+			parts := strings.Split(statement, sep)
+			usable := make([]string, 0, len(parts))
+			for _, part := range parts {
+				part = strings.TrimSpace(part)
+				if part == "" {
+					continue
+				}
+				if _, ok := detectModality(part); ok {
+					usable = append(usable, part)
+				}
+			}
+			if len(usable) > 1 {
+				return usable
+			}
+		}
+	}
+	// Split "X must ... . Y must ..." already handled. Also split "must A and must B".
+	lower := strings.ToLower(statement)
+	if idx := strings.Index(lower, " and "); idx > 0 {
+		left, right := strings.TrimSpace(statement[:idx]), strings.TrimSpace(statement[idx+5:])
+		_, leftOK := detectModality(left)
+		_, rightOK := detectModality(right)
+		if leftOK && rightOK {
+			return []string{left, right}
+		}
+	}
+	return []string{statement}
+}
+
+func classifyStatementStructure(statement string) (conditions, exceptions, ambiguity []string) {
+	if anyPhrase(statement, "if", "when", "only when", "provided that", "wherever", "where") {
+		conditions = append(conditions, "conditional_applicability")
+	}
+	if anyPhrase(statement, "unless", "except", "other than", "waiver", "exception", "only when a documented") {
+		exceptions = append(exceptions, "exception_or_waiver_language")
+	}
+	if anyPhrase(statement, "prefer", "preferably", "ideally", "as appropriate", "as needed",
+		"reasonable", "timely", "best effort", "sufficient", "adequate", "quickly", "securely", "flexible") {
+		ambiguity = append(ambiguity, "subjective_or_preference_language")
+	}
+	if anyPhrase(statement, "should") && anyPhrase(statement, "must", "shall") {
+		ambiguity = append(ambiguity, "conflicting_modality_cues")
+	}
+	if anyPhrase(statement, "attempts") && anyPhrase(statement, "retries", "retry") {
+		ambiguity = append(ambiguity, "attempts_vs_retries_clarification")
+	}
+	return conditions, exceptions, ambiguity
+}
+
+func appendUniqueHint(hints []string, hint string) []string {
+	for _, existing := range hints {
+		if existing == hint {
+			return hints
+		}
+	}
+	return append(hints, hint)
 }
 
 // splitSentences separates independently reviewable prose sentences while keeping

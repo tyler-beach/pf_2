@@ -19,6 +19,7 @@ import (
 	"github.com/tyler-beach/pf_2/internal/assessment"
 	"github.com/tyler-beach/pf_2/internal/obligations"
 	"github.com/tyler-beach/pf_2/internal/plan"
+	"github.com/tyler-beach/pf_2/internal/workshop"
 )
 
 func main() {
@@ -38,6 +39,8 @@ func main() {
 		err = runIngestADRs(os.Args[2:])
 	case "extract-obligations":
 		err = runExtractObligations(os.Args[2:])
+	case "assist-obligations":
+		err = runAssistObligations(os.Args[2:])
 	case "scan-opengrep":
 		err = runOpenGrepScan(os.Args[2:])
 	case "plan-repo":
@@ -56,6 +59,8 @@ func main() {
 		err = runValidateObligationReviews(os.Args[2:])
 	case "assess-obligations":
 		err = runAssessObligations(os.Args[2:])
+	case "workshop-emit":
+		err = runWorkshopEmit(os.Args[2:])
 	case "specification-check":
 		err = runSpecificationCheck(os.Args[2:])
 	case "version":
@@ -71,7 +76,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|specification-check|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|assist-obligations|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|workshop-emit|specification-check|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -213,8 +218,8 @@ func runOpenGrepScan(args []string) error {
 	if err := fs.Parse(args); err != nil { return err }
 	if fs.NArg() != 0 { return fmt.Errorf("scan-opengrep accepts no positional arguments") }
 	if *timeout <= 0 { return fmt.Errorf("--timeout must be positive") }
-	if *maxConcurrency < 1 || *maxConcurrency > 128 { return fmt.Errorf("--max-concurrency must be between 1 and 128") }
-	if *maxAttempts < 1 || *maxAttempts > 20 { return fmt.Errorf("--max-attempts must be between 1 and 20") }
+	if *maxConcurrency < 1 || *maxConcurrency > plan.MaxConcurrency { return fmt.Errorf("--max-concurrency must be between 1 and %d", plan.MaxConcurrency) }
+	if *maxAttempts < 1 || *maxAttempts > plan.MaxRetryCount+1 { return fmt.Errorf("--max-attempts must be between 1 and %d", plan.MaxRetryCount+1) }
 	if *maxMemoryMB < 1 { return fmt.Errorf("--max-memory-mb must be positive") }
 	if *maxFileBytes < 1 { return fmt.Errorf("--max-file-bytes must be positive") }
 
@@ -224,57 +229,96 @@ func runOpenGrepScan(args []string) error {
 	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
 	binaryPath, binaryHash, err := resolveOpenGrepBinary(*binary, *binarySHA256)
 	if err != nil { return err }
-	configAbs, configRel, err := resolveRepositoryConfig(rootAbs, *config)
+	_, configRel, err := resolveRepositoryConfig(rootAbs, *config)
 	if err != nil { return err }
-	configHash, err := analyzer.HashFile(configAbs)
-	if err != nil { return fmt.Errorf("hash OpenGrep configuration: %w", err) }
-	snapshotHash, err := analyzer.HashInputTree(rootAbs)
-	if err != nil { return fmt.Errorf("hash repository snapshot: %w", err) }
-	extensions := []string{".go", ".py", ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".java", ".cs", ".php", ".rb", ".rs", ".sh", ".bash", ".zsh", ".fish", ".kt", ".kts", ".scala", ".c", ".h", ".cc", ".cpp", ".hpp", ".dart", ".swift", ".lua", ".vb", ".vbs", ".ml", ".mli", ".ex", ".exs", ".json", ".yaml", ".yml", ".tf", ".hcl", ".vue", ".html", ".xml", ".sql"}
-	timeoutSeconds := int((*timeout) / time.Second)
-	if (*timeout)%time.Second != 0 { timeoutSeconds++ }
-	spec := analyzer.AnalyzerSpec{
-		Name: "opengrep", Version: *version, BinarySHA256: binaryHash,
-		ConfigurationPath: configRel, ConfigurationSHA256: configHash, RuleSetSHA256: configHash,
-		PathPrefixes: []string{"."}, SourceExtensions: extensions,
-		TimeoutSeconds: timeoutSeconds, MaxMemoryMB: *maxMemoryMB, MaxFileBytes: *maxFileBytes,
+	maxRetries := *maxAttempts - 1
+	spec := plan.AnalyzerSpec{
+		Name: "opengrep", Version: *version, BinarySHA256: binaryHash, RuleSetSHA256: "",
+		ConfigurationPath: configRel, ScopePrefixes: []string{"."},
+		TimeoutMillis: timeout.Milliseconds(), MaxRetries: maxRetries,
+		MaxOutputBytes: 64 << 20, RetryBackoffMillis: 500, MaxRetryBackoffMillis: 10_000,
+		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
 	}
-	plan, err := analyzer.BuildPlan(snapshotHash, []analyzer.AnalyzerSpec{spec})
+	_ = maxFileBytes // retained for CLI compatibility; plan inventory enforces file size limits
+	_ = maxMemoryMB  // retained as documented plan metadata; local OS limits are not enforced
+	manifest, err := plan.BuildManifest(rootAbs, []plan.AnalyzerSpec{spec}, *maxConcurrency)
 	if err != nil { return fmt.Errorf("build deterministic analyzer plan: %w", err) }
-	scanner := analyzer.OpenGrepScanner{
-		Binary: binaryPath, BinarySHA256: binaryHash, Version: *version,
-		ConfigPath: configRel, RuleSetSHA256: configHash,
-		SourceExtensions: extensions, MaxFileBytes: *maxFileBytes, Timeout: *timeout,
+	var cache plan.ResultCache
+	if strings.TrimSpace(*cacheDir) != "" {
+		fileCache, cacheErr := plan.NewFileCache(*cacheDir)
+		if cacheErr != nil { return fmt.Errorf("open analyzer cache: %w", cacheErr) }
+		cache = fileCache
 	}
-	options := analyzer.RunOptions{MaxConcurrency:*maxConcurrency, MaxAttempts:*maxAttempts}
-	if strings.TrimSpace(*cacheDir) != "" { options.Cache = analyzer.FileResultCache{Dir:*cacheDir} }
-	manifest, err := analyzer.RunPlan(context.Background(), plan, options, func(ctx context.Context, task analyzer.AnalyzerTask) (analyzer.ScanResult, error) {
-		return scanner.Scan(ctx, rootAbs)
-	})
-	if err != nil { return fmt.Errorf("run deterministic analyzer plan: %w", err) }
-	manifestBytes, err := json.MarshalIndent(manifest, "", "  ")
-	if err != nil { return fmt.Errorf("encode run manifest: %w", err) }
-	if err := writeFile(*manifestPath, manifestBytes); err != nil { return err }
-	if len(manifest.Tasks) != 1 { return fmt.Errorf("OpenGrep scan plan returned %d tasks; expected exactly one", len(manifest.Tasks)) }
-	task := manifest.Tasks[0]
-	result := task.Result
-	result.RawSARIF = append([]byte(nil), task.RawSARIF...)
+	run, err := plan.ExecuteManifest(context.Background(), rootAbs, manifest, plan.OpenGrepTaskRunner{Binary: binaryPath}, cache)
+	if err != nil && run.Status == "" {
+		return fmt.Errorf("run deterministic analyzer plan: %w", err)
+	}
+	if len(run.Tasks) != 1 {
+		return fmt.Errorf("OpenGrep scan plan returned %d tasks; expected exactly one", len(run.Tasks))
+	}
+	task := run.Tasks[0]
+	var result analyzer.ScanResult
+	if task.Evidence != nil {
+		result = *task.Evidence
+		result.RawSARIF = append([]byte(nil), task.RawSARIF...)
+	}
+	compat := scanRunManifest{
+		SchemaVersion:  "1",
+		ManifestID:     run.PlanManifestSHA256,
+		SnapshotSHA256: run.InputSHA256,
+		PlanSHA256:     run.PlanManifestSHA256,
+		Status:         run.Status,
+		Tasks: []scanRunTask{{
+			TaskID: task.TaskID, CacheKey: task.CacheKey, Analyzer: task.Analyzer,
+			Status: task.Status, Attempts: task.Attempts, Cached: task.CacheHit,
+			Result: result, Error: task.Error,
+		}},
+	}
+	if err != nil {
+		compat.Errors = []string{err.Error()}
+	}
+	manifestBytes, encodeErr := json.MarshalIndent(compat, "", "  ")
+	if encodeErr != nil { return fmt.Errorf("encode run manifest: %w", encodeErr) }
+	if writeErr := writeFile(*manifestPath, append(manifestBytes, '\n')); writeErr != nil { return writeErr }
 	data, encodeErr := analyzer.WriteJSON(result)
 	if encodeErr != nil { return encodeErr }
 	if err := writeFile(*jsonPath, data); err != nil { return err }
 	if len(result.RawSARIF) > 0 {
 		if err := writeFile(*sarifPath, result.RawSARIF); err != nil { return err }
 	}
-	if manifest.Status != analyzer.ManifestStatusComplete || task.Status != analyzer.ManifestTaskComplete {
+	if run.Status != plan.RunStatusComplete || task.Status != plan.TaskStatusComplete {
 		reason := task.Error
 		if reason == "" { reason = "one or more planned scan tasks did not complete" }
 		return fmt.Errorf("OpenGrep assessment %s; manifest: %s; normalized evidence: %s; raw SARIF: %s: %s",
-			manifest.Status, *manifestPath, *jsonPath, *sarifPath, reason)
+			run.Status, *manifestPath, *jsonPath, *sarifPath, reason)
 	}
 	fmt.Printf("OpenGrep %s: %d finding(s); cache hit: %t; manifest: %s; evidence: %s; SARIF: %s; configuration SHA-256: %s; rule-set SHA-256: %s; input SHA-256: %s\n",
-		*version, len(result.Findings), task.Cached, *manifestPath, *jsonPath, *sarifPath,
+		*version, len(result.Findings), task.CacheHit, *manifestPath, *jsonPath, *sarifPath,
 		result.ConfigurationSHA256, result.RuleSetSHA256, result.InputSHA256)
 	return nil
+}
+
+// scanRunManifest is the scan-opengrep compatibility envelope over plan.RunResult.
+// It preserves CI fields (manifest_id, cached) while planning/execution use internal/plan.
+type scanRunManifest struct {
+	SchemaVersion  string        `json:"schema_version"`
+	ManifestID     string        `json:"manifest_id"`
+	SnapshotSHA256 string        `json:"snapshot_sha256"`
+	PlanSHA256     string        `json:"plan_sha256"`
+	Status         string        `json:"status"`
+	Tasks          []scanRunTask `json:"tasks"`
+	Errors         []string      `json:"errors,omitempty"`
+}
+
+type scanRunTask struct {
+	TaskID   string              `json:"task_id"`
+	CacheKey string              `json:"cache_key"`
+	Analyzer string              `json:"analyzer"`
+	Status   string              `json:"status"`
+	Attempts int                 `json:"attempts"`
+	Cached   bool                `json:"cached"`
+	Result   analyzer.ScanResult `json:"result"`
+	Error    string              `json:"error,omitempty"`
 }
 
 func defaultAnalyzerCacheDirectory() string {
@@ -366,6 +410,7 @@ func runExtractObligations(args []string) error {
 	root := fs.String("root", "", "directory containing source ADR Markdown; defaults to source_root from index")
 	output := fs.String("json-out", "adr/obligation-candidates.json", "review-only candidate obligation JSON output")
 	reportPath := fs.String("report", "", "optional Markdown review queue output")
+	minConfidenceReport := fs.Bool("min-confidence-report", false, "print confidence-band summary to stdout")
 	if err := fs.Parse(args); err != nil { return err }
 	if fs.NArg() != 0 { return fmt.Errorf("extract-obligations accepts no positional arguments") }
 	indexAbs, err := filepath.Abs(*indexPath)
@@ -410,14 +455,140 @@ func runExtractObligations(args []string) error {
 		if err := writeFile(*reportPath, []byte(obligations.MarkdownCandidateReport(candidates))); err != nil { return err }
 	}
 	if err := writeFile(*output, data); err != nil { return err }
+	summary := candidates.ConfidenceSummary
+	fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s", candidates.CandidateCount, candidates.DocumentCount, *output)
 	if *reportPath != "" {
-		fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s; Markdown queue: %s. No candidate was approved or made enforceable.\n", candidates.CandidateCount, candidates.DocumentCount, *output, *reportPath)
-	} else {
-		fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s. No candidate was approved or made enforceable.\n", candidates.CandidateCount, candidates.DocumentCount, *output)
+		fmt.Printf("; Markdown queue: %s", *reportPath)
+	}
+	fmt.Printf(". No candidate was approved or made enforceable.\n")
+	if *minConfidenceReport {
+		fmt.Printf("Confidence summary: high=%d medium=%d low=%d (low band is eligible for batch LLM assist)\n",
+			summary.High, summary.Medium, summary.Low)
 	}
 	return nil
 }
 
+func runAssistObligations(args []string) error {
+	fs := flag.NewFlagSet("assist-obligations", flag.ContinueOnError)
+	indexPath := fs.String("index", "adr/obligation-candidates.json", "review-only candidate obligation JSON")
+	output := fs.String("json-out", "adr/llm-obligation-proposals.json", "proposal artifact JSON (never mutates catalog/registry)")
+	mdOut := fs.String("md-out", "", "optional Markdown proposal report")
+	maxConfidence := fs.String("max-confidence", "low", "escalate candidates at or below this confidence band")
+	maxCandidates := fs.Int("max-candidates", 50, "spend guard: maximum candidates to assist in one run")
+	providerName := fs.String("provider", "offline", "assist provider: offline|openai-compatible")
+	model := fs.String("model", "", "model id (required for openai-compatible; optional label for offline)")
+	endpoint := fs.String("endpoint", "", "OpenAI-compatible chat completions endpoint")
+	apiKeyEnv := fs.String("api-key-env", "LLM_API_KEY", "environment variable holding the API key for live assist")
+	maxTokens := fs.Int("max-tokens", 512, "spend guard: max tokens per live completion")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("assist-obligations accepts no positional arguments")
+	}
+	indexBytes, err := os.ReadFile(*indexPath)
+	if err != nil {
+		return fmt.Errorf("read candidate index: %w", err)
+	}
+	var index obligations.Index
+	if err := json.Unmarshal(indexBytes, &index); err != nil {
+		return fmt.Errorf("decode candidate index: %w", err)
+	}
+	var provider obligations.AssistProvider
+	switch strings.ToLower(strings.TrimSpace(*providerName)) {
+	case "offline", "offline-fixture":
+		provider = obligations.OfflineAssistProvider{ModelID: *model}
+	case "openai-compatible":
+		apiKey := strings.TrimSpace(os.Getenv(*apiKeyEnv))
+		if apiKey == "" {
+			return fmt.Errorf("live assist requires API key in $%s (or pass --api-key-env)", *apiKeyEnv)
+		}
+		if strings.TrimSpace(*model) == "" {
+			return fmt.Errorf("--model is required for openai-compatible provider")
+		}
+		provider = obligations.OpenAICompatProvider{
+			Endpoint:  *endpoint,
+			APIKey:    apiKey,
+			ModelID:   *model,
+			MaxTokens: *maxTokens,
+		}
+	default:
+		return fmt.Errorf("unsupported provider %q (want offline|openai-compatible)", *providerName)
+	}
+	out, err := obligations.AssistObligations(context.Background(), index, obligations.AssistOptions{
+		MaxConfidence: *maxConfidence,
+		MaxCandidates: *maxCandidates,
+		Provider:      provider,
+	})
+	if err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode proposal index: %w", err)
+	}
+	if err := writeFile(*output, append(data, '\n')); err != nil {
+		return err
+	}
+	if *mdOut != "" {
+		if err := writeFile(*mdOut, []byte(obligations.MarkdownProposalReport(out))); err != nil {
+			return err
+		}
+	}
+	fmt.Printf("Wrote %d proposal(s) from %d escalated candidate(s) to %s (provider=%s model=%s). Proposals are not approvals and do not mutate the catalog or registry.\n",
+		out.ProposalCount, out.CandidateCount, *output, out.Provider, out.Model)
+	if *mdOut != "" {
+		fmt.Printf("Markdown report: %s\n", *mdOut)
+	}
+	return nil
+}
+
+func runWorkshopEmit(args []string) error {
+	fs := flag.NewFlagSet("workshop-emit", flag.ContinueOnError)
+	outDir := fs.String("out-dir", "workshop-snapshot", "workshop snapshot output directory")
+	runID := fs.String("run-id", "", "workflow run id")
+	workflow := fs.String("workflow", "local", "workflow name")
+	gitSHA := fs.String("git-sha", "", "git commit SHA")
+	htmlURL := fs.String("html-url", "", "workflow run HTML URL")
+	providerMode := fs.String("provider-mode", "", "offline|live assist mode tag")
+	candidates := fs.String("candidates", "", "obligation candidates JSON")
+	coverage := fs.String("coverage", "", "obligation review coverage JSON")
+	assessmentPath := fs.String("assessment", "", "assessment JSON")
+	proposals := fs.String("proposals", "", "LLM assist proposals JSON")
+	harness := fs.String("harness", "", "reuse/corpus harness metrics JSON")
+	promptfooPath := fs.String("promptfoo", "", "Promptfoo results JSON")
+	corpusLabels := fs.String("corpus-labels", "", "corpus labels.json")
+	enforceAssessLLM := fs.Bool("enforce-assess-llm", false, "fail if assessment runtime_llm_calls != 0")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("workshop-emit accepts no positional arguments")
+	}
+	latest, err := workshop.Emit(workshop.EmitOptions{
+		OutDir: *outDir,
+		Run: workshop.RunIdentity{
+			RunID:        *runID,
+			Workflow:     *workflow,
+			GitSHA:       *gitSHA,
+			HTMLURL:      *htmlURL,
+			ProviderMode: *providerMode,
+		},
+		CandidatesPath:   *candidates,
+		CoveragePath:     *coverage,
+		AssessmentPath:   *assessmentPath,
+		ProposalsPath:    *proposals,
+		HarnessPath:      *harness,
+		PromptfooPath:    *promptfooPath,
+		CorpusLabelsPath: *corpusLabels,
+		EnforceAssessLLM: *enforceAssessLLM,
+	})
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Workshop snapshot %s written to %s (%s)\n", latest.Run.RunID, *outDir, latest.Summary)
+	return nil
+}
 
 // runAssertIssueVerdict makes GitHub issue regressions executable rather than
 // merely descriptive. Add exactly one [expected:PASS], [expected:FAIL], or
@@ -937,7 +1108,7 @@ func runExecutePlanWithRunner(args []string, injected plan.TaskRunner) error {
 	cache,err:=plan.NewFileCache(*cacheDir)
 	if err!=nil{return err}
 	runner:=injected
-	if runner==nil{runner=plan.OpenGrepTaskRunner{Binary:*binary}}
+	if runner==nil{runner=plan.DefaultRunnerRegistry(*binary)}
 	result,runErr:=plan.ExecuteManifest(context.Background(),*root,manifest,runner,cache)
 	for i:=range result.Tasks{
 		task:=&result.Tasks[i]

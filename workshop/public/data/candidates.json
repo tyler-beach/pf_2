@@ -1,0 +1,23 @@
+{
+  "schema_version": "1",
+  "candidate_count": 2,
+  "confidence_summary": { "high": 1, "medium": 0, "low": 1 },
+  "candidates": [
+    {
+      "id": "CAND-HIGH",
+      "adr_id": "ADR-2001",
+      "confidence": "high",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "statement": "Services must set a finite request timeout.",
+      "escalation_reasons": []
+    },
+    {
+      "id": "CAND-LOW",
+      "adr_id": "ADR-2002",
+      "confidence": "low",
+      "pattern_hint": "manual_review",
+      "statement": "Services should prefer asynchronous messaging where appropriate.",
+      "escalation_reasons": ["manual_review_pattern_hint"]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# Go
+/coverage.out
+*.test
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node (workshop + promptfoo)
+node_modules/
+workshop/dist/
+eval/promptfoo/output/
+npm-debug.log*
+
+# Local workshop snapshots
+/workshop-snapshot/
+/adr/llm-obligation-proposals.json
+/adr/llm-obligation-proposals.md

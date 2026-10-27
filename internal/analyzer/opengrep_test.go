@@ -74,7 +74,11 @@ func TestOpenGrepScannerRunsPinnedCLIAndNormalizesEvidence(t *testing.T) {
 	if len(runner.calls) != 2 { t.Fatalf("expected version probe and scan, got %d calls", len(runner.calls)) }
 	if runner.calls[0].args[0] != "--version" { t.Fatalf("version was not probed first: %+v", runner.calls) }
 	scan := runner.calls[1]
-	if scan.binary != "/opt/opengrep" || scan.dir != root { t.Fatalf("unexpected execution target: %+v", scan) }
+	rootReal, err := filepath.EvalSymlinks(root)
+	if err != nil { t.Fatal(err) }
+	if scan.binary != "/opt/opengrep" || scan.dir != rootReal {
+		t.Fatalf("unexpected execution target: %+v (want dir %q)", scan, rootReal)
+	}
 	wantArgs := []string{"scan", "-f", "rules/security.yml", "--exclude", analyzerFixtureDirectory, "."}
 	for _, want := range wantArgs {
 		found := false

@@ -1,0 +1,23 @@
+{
+  "name": "pathfinder-workshop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "diff": "7.0.0",
+    "diff2html": "3.4.51",
+    "dompurify": "3.2.4",
+    "marked": "15.0.7",
+    "uplot": "1.6.31"
+  },
+  "devDependencies": {
+    "@types/diff": "7.0.2",
+    "typescript": "5.8.2",
+    "vite": "6.2.2"
+  }
+}

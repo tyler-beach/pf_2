@@ -145,7 +145,8 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 		}
 		for _, hint := range candidate.ReviewHints {
 			switch hint {
-			case "condition_or_exception", "compound_or_conjoined", "conditional_scope", "subjective_or_underspecified", "non_decision_section":
+			case "condition_or_exception", "compound_or_conjoined", "conditional_scope", "subjective_or_underspecified", "non_decision_section",
+				"ambiguous_interpretation", "attempts_vs_retries_clarification", "conflicting_modality_cues", "split_from_compound":
 			default:
 				t.Errorf("unexpected review hint %q", hint)
 			}
@@ -418,5 +419,106 @@ func TestDetectModalityUsesFirstCueAndHandlesNegation(t *testing.T) {
 	}
 	if got, ok := detectModality("The mustache service runs normally."); ok || got != "" {
 		t.Errorf("non-normative word containing 'must' should not be classified, got %q, %v", got, ok)
+	}
+}
+
+func TestExpandNormativeStatementsSplitsCompoundObligations(t *testing.T) {
+	line := "Clients must set a finite timeout. Automatic retries must be limited to three attempts."
+	parts := expandNormativeStatements(line)
+	if len(parts) != 2 {
+		t.Fatalf("expected 2 normative fragments, got %d: %#v", len(parts), parts)
+	}
+	joined := "Timeouts must be finite and retries must be capped."
+	parts = expandNormativeStatements(joined)
+	if len(parts) != 2 {
+		t.Fatalf("expected and-split of dual modalities, got %d: %#v", len(parts), parts)
+	}
+}
+
+func TestClassifyStatementStructureSurfacesConditionsExceptionsAmbiguity(t *testing.T) {
+	conditions, exceptions, ambiguity := classifyStatementStructure(
+		"An exception may be approved only when a documented interoperability constraint requires it.")
+	if len(conditions) == 0 || len(exceptions) == 0 {
+		t.Fatalf("expected condition and exception markers, got conditions=%v exceptions=%v", conditions, exceptions)
+	}
+	_, _, ambiguity = classifyStatementStructure("Services should prefer async messaging where appropriate.")
+	if len(ambiguity) == 0 {
+		t.Fatal("expected ambiguity markers for preference language")
+	}
+}
+
+func TestExtractDocumentRejectsFencedExamplesAndDescriptiveProse(t *testing.T) {
+	root := t.TempDir()
+	source := strings.Join([]string{
+		"# ADR-950: Negative extraction cases", "",
+		"## Status", "", "Accepted", "",
+		"## Context", "",
+		"This section describes historical behavior without obligations.",
+		"Services typically used synchronous calls in the past.", "",
+		"## Decision", "",
+		"Quoted guidance such as \"services must be resilient\" in examples is illustrative only.",
+		"```",
+		"must execute forbidden fence content",
+		"```",
+		"Services must not call eval on untrusted input.",
+		"Services must set timeouts and services must limit retries.",
+	}, "\n")
+	path := filepath.Join(root, "ADR-950.md")
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("ADR-950.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	candidates, err := ExtractDocument(doc, "ADR-950.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range candidates {
+		if c.Executable {
+			t.Fatalf("candidate unexpectedly executable: %+v", c)
+		}
+		if strings.Contains(c.Statement, "forbidden fence") {
+			t.Fatalf("fenced example leaked: %+v", c)
+		}
+		if strings.Contains(c.Statement, "typically used") {
+			t.Fatalf("descriptive prose became a candidate: %+v", c)
+		}
+	}
+	var foundCompound bool
+	for _, c := range candidates {
+		if strings.Contains(c.Statement, "must set timeouts") || strings.Contains(c.Statement, "must limit retries") {
+			foundCompound = true
+		}
+	}
+	if !foundCompound {
+		t.Fatalf("expected compound split candidates, got %#v", candidates)
+	}
+}
+
+func TestExtractDocumentByteIdenticalOnRepeat(t *testing.T) {
+	root := t.TempDir()
+	source := "# ADR-951: Repeatability\n\n## Decision\n\nClients must set timeouts. Retries must be capped.\n"
+	path := filepath.Join(root, "ADR-951.md")
+	if err := os.WriteFile(path, []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := adringest.Parse("ADR-951.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, err := ExtractDocument(doc, "ADR-951.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := ExtractDocument(doc, "ADR-951.md", []byte(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, _ := json.Marshal(first)
+	b, _ := json.Marshal(second)
+	if string(a) != string(b) {
+		t.Fatalf("re-extract diverged:\n%s\n%s", a, b)
 	}
 }

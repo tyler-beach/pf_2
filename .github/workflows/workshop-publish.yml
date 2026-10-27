@@ -1,0 +1,165 @@
+name: Workshop Publish
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - ADR Assessment
+      - Labeled corpus evaluation
+      - LLM Assist
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Optional Actions run id to download workshop-inputs from
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: workshop-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: workshop/package-lock.json
+
+      - name: Download workshop-related artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id || github.event.inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          inputs="$RUNNER_TEMP/workshop-inputs"
+          mkdir -p "$inputs/snapshot"
+          if [ -z "${SOURCE_RUN_ID:-}" ]; then
+            echo "No source run id; using fixtures"
+            cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
+            exit 0
+          fi
+          # Prefer dedicated workshop-inputs artifacts over evidence-only uploads.
+          names="$(gh api "repos/${{ github.repository }}/actions/runs/${SOURCE_RUN_ID}/artifacts" --jq '.artifacts[].name')"
+          pick=""
+          for n in $names; do
+            case "$n" in
+              workshop-inputs*) pick="$n"; break ;;
+            esac
+          done
+          if [ -z "$pick" ]; then
+            for n in $names; do
+              case "$n" in
+                llm-assist-*) pick="$n"; break ;;
+              esac
+            done
+          fi
+          if [ -z "$pick" ]; then
+            echo "No workshop-inputs artifact on run ${SOURCE_RUN_ID}; using fixtures"
+            cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
+            exit 0
+          fi
+          gh run download "$SOURCE_RUN_ID" -n "$pick" -D "$inputs"
+          if [ -f "$inputs/snapshot/latest.json" ]; then
+            echo "Using pre-built snapshot from artifact $pick"
+          elif [ -f "$inputs/candidates.json" ] || [ -f "$inputs/assessment.json" ]; then
+            emit=(
+              --out-dir "$inputs/snapshot"
+              --run-id "${SOURCE_RUN_ID}-${{ github.run_attempt }}"
+              --workflow "${{ github.event.workflow_run.name || 'dispatch' }}"
+              --git-sha "${{ github.event.workflow_run.head_sha || github.sha }}"
+            )
+            [ -f "$inputs/candidates.json" ] && emit+=(--candidates "$inputs/candidates.json")
+            [ -f "$inputs/proposals.json" ] && emit+=(--proposals "$inputs/proposals.json")
+            [ -f "$inputs/promptfoo.json" ] && emit+=(--promptfoo "$inputs/promptfoo.json")
+            [ -f "$inputs/assessment.json" ] && emit+=(--assessment "$inputs/assessment.json")
+            [ -f "$inputs/harness.json" ] && emit+=(--harness "$inputs/harness.json")
+            go run ./cmd/adrctl workshop-emit "${emit[@]}"
+          else
+            echo "Artifact $pick lacked snapshot inputs; using fixtures"
+            cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
+          fi
+          test -f "$inputs/snapshot/latest.json"
+
+      - name: Merge into workshop-data layout and push branch
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/workshop-data-git"
+          rm -rf "$work"
+          if git ls-remote --exit-code --heads origin workshop-data >/dev/null 2>&1; then
+            git clone --single-branch --branch workshop-data \
+              "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "$work"
+          else
+            mkdir -p "$work"
+            git -C "$work" init
+            git -C "$work" checkout -b workshop-data
+          fi
+          # Append this run onto existing history in the branch working tree.
+          python3 scripts/workshop_publish_data.py \
+            --snapshot "$RUNNER_TEMP/workshop-inputs/snapshot" \
+            --data-dir "$work" \
+            --retain-snapshots 180
+          # Expose merged data for the site build step.
+          rm -rf "$RUNNER_TEMP/workshop-data"
+          mkdir -p "$RUNNER_TEMP/workshop-data"
+          rsync -a --exclude .git "$work/" "$RUNNER_TEMP/workshop-data/"
+          git -C "$work" config user.name "github-actions[bot]"
+          git -C "$work" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$work" add -A
+          if git -C "$work" diff --cached --quiet; then
+            echo "No workshop-data changes"
+          else
+            git -C "$work" commit -m "workshop-data: publish ${{ github.event.workflow_run.id || github.run_id }}"
+            git -C "$work" push \
+              "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+              HEAD:workshop-data
+          fi
+
+      - name: Build workshop site with data
+        run: |
+          set -euo pipefail
+          mkdir -p workshop/public/data
+          rsync -a "$RUNNER_TEMP/workshop-data/" workshop/public/data/
+          cd workshop
+          npm ci
+          npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@983d7736a7b132beee89e6b68a0f5f6aec48e0d0 # v5.0.0
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: workshop/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0bedfcec5e82f38 # v4.0.5
+
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: workshop-snapshot-${{ github.run_id }}
+          path: ${{ runner.temp }}/workshop-inputs/snapshot
+          if-no-files-found: warn
+          retention-days: 14

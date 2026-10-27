@@ -1,0 +1,54 @@
+name: Labeled corpus evaluation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "testdata/corpus/**"
+      - "scripts/reuse_pilot_harness.py"
+      - "internal/obligations/**"
+      - "cmd/adrctl/**"
+
+permissions:
+  contents: read
+
+jobs:
+  corpus-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Evaluate labeled corpus (deterministic, zero LLM)
+        run: |
+          set -euo pipefail
+          inputs="$RUNNER_TEMP/workshop-inputs"
+          mkdir -p "$inputs"
+          go run ./cmd/adrctl ingest-adrs --root testdata/corpus/adrs --json-out "$inputs/ingested.json"
+          go run ./cmd/adrctl extract-obligations \
+            --index "$inputs/ingested.json" \
+            --root testdata/corpus/adrs \
+            --json-out "$inputs/candidates.json" \
+            --min-confidence-report
+          python3 scripts/reuse_pilot_harness.py testdata/corpus/labels.json "$inputs/candidates.json" | tee "$inputs/harness.json"
+          jq -e '.confidence_summary.high + .confidence_summary.medium + .confidence_summary.low == .candidate_count' \
+            "$inputs/candidates.json"
+          go run ./cmd/adrctl workshop-emit \
+            --out-dir "$inputs/snapshot" \
+            --run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --workflow "Labeled corpus evaluation" \
+            --git-sha "${{ github.sha }}" \
+            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --candidates "$inputs/candidates.json" \
+            --harness "$inputs/harness.json" \
+            --corpus-labels testdata/corpus/labels.json
+
+      - name: Upload corpus evaluation artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: workshop-inputs-corpus
+          path: |
+            ${{ runner.temp }}/workshop-inputs
+          if-no-files-found: error
+          retention-days: 14

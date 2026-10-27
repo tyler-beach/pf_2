@@ -1,0 +1,42 @@
+# Live assist eval — only for llm-assist.yml with credentials.
+# Promptfoo scores are NOT a Pathfinder compliance verdict.
+description: Pathfinder live assist comparison (credential-gated)
+
+prompts:
+  - |
+    Parent candidate ID: {{candidate_id}}
+    ADR: {{adr_id}}
+    Source path: {{source_path}}
+    Source lines: {{source_line_start}}-{{source_line_end}}
+    Source SHA-256: {{source_sha256}}
+    Confidence: {{confidence}}
+    Escalation reasons: {{escalation_reasons}}
+    Statement quote (must be preserved): {{statement}}
+    Return JSON with normalized_statement, modality, suggested_pattern_id, rationale. Never mark approved or executable.
+
+providers:
+  - file://provider-offline.mjs
+  - id: openai:chat:gpt-4o-mini
+    label: live-openai-compatible
+    config:
+      temperature: 0
+      max_tokens: 512
+
+tests: file://cases.json
+
+defaultTest:
+  assert:
+    - type: is-json
+    - type: javascript
+      value: |
+        const obj = typeof output === 'string' ? JSON.parse(output) : output;
+        if (obj.executable === true) throw new Error('executable must not be true');
+        if (obj.approval_status && obj.approval_status === 'approved') {
+          throw new Error('approval_status must never be approved');
+        }
+        if (!obj.normalized_statement || !obj.modality || !obj.suggested_pattern_id || !obj.rationale) {
+          throw new Error('missing required assist fields');
+        }
+        return true;
+
+outputPath: ./output/results-live.json
