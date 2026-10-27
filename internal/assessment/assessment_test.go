@@ -690,7 +690,6 @@ func TestManualReviewOnlyCatalogIsIndeterminateNotUnsupported(t *testing.T) {
 	}
 }
 
-
 func TestConfirmedViolationTakesPrecedenceOverManualReview(t *testing.T) {
 	catalog := Catalog{
 		SchemaVersion: "1",
