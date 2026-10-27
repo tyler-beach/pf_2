@@ -2,63 +2,80 @@
 
 ## Goal
 
-Evaluate accepted Architectural Decision Records through independently addressable requirements, reusable deterministic verifiers, and auditable evidence. Normal assessment runs make zero LLM calls.
+Evaluate accepted Architectural Decision Records through independently addressable obligations, reusable verification patterns, composable analyzers, and auditable evidence. The current Go MVP is deterministic and makes zero runtime LLM calls. The long-term design supports thousands of ADRs and AWS-hosted analyzer orchestration without requiring a custom verifier per ADR.
 
 ## Runtime flow
 
-1. A GitHub Issue Form collects assessment mode, context, and source snippets.
-2. The issue workflow passes the issue body as data to `adrctl`; submitted code is never executed.
-3. `adr/requirements.json` is validated and accepted ADR requirements are selected.
-4. Typed verifier adapters evaluate supported, in-scope evidence.
-5. The engine emits requirement-level results, an overall verdict, explicit coverage status (`COMPLETE`, `PARTIAL`, or `NONE`), Markdown, JSON evidence, and SARIF.
-6. The workflow posts Markdown to the issue and retains machine-readable artifacts for 14 days.
-7. Repository CI runs the same engine against tracked Go source and uses reviewdog to annotate PR findings.
+1. Discover accepted ADRs and repository artifacts at a pinned revision.
+2. Parse ADR Markdown and metadata, preserve provenance, and map reviewed obligations to reusable verification patterns.
+3. Plan the relevant analyzers based on artifact types, active patterns, changed files, and cached evidence.
+4. Run one or more composite analyzers. Candidates include native language AST parsers, Opengrep, Joern for graph/data-flow use cases, gosec, Bandit, SpotBugs/Find Security Bugs, configuration/IaC parsers, OpenAPI parsers, and policy tools where justified.
+5. Normalize all tool outputs to the canonical evidence contract in [scalable-architecture.md](scalable-architecture.md). Keep raw output, producer/tool/config versions, source provenance, declared scope, diagnostics, and limitations.
+6. Evaluate approved obligation patterns against normalized evidence.
+7. Emit requirement-level results, verdicts, coverage, JSON evidence, Markdown, and SARIF; publish to GitHub checks/issues or a future API.
 
-## Requirement contract
+The current Issue-triggered GitHub Actions workflow and CLI remain the MVP execution surfaces. AWS is a future deployment target, not a prerequisite for the core contracts.
 
-Each requirement has a stable ID, title, severity, verifier type, and verifier parameters. ADR version is included in each result. Add requirements by extending the catalog when an existing verifier is sufficient; add Go code only for a genuinely new verifier type.
+## Requirement and obligation model
 
-Current verifier:
-- `go-import-boundary`: parses Go with the standard-library Go parser, scopes files by path prefix, and flags exact or child-package import matches.\n- `json-required-keys`: parses a declared JSON configuration file and checks that required top-level keys are present; missing keys produce line-addressable findings (line 1 for the document-level check).
+Separate three concepts:
 
-Verdicts:
-- `PASS`: every applicable mandatory requirement passed.
-- `FAIL`: at least one requirement has reproducible violating evidence.
-- `INDETERMINATE`: required evidence is absent, parsing failed, a verifier errored, or no requirement was applicable.
-- Requirement-level `NOT_APPLICABLE`: no submitted/discovered file matched the requirement's explicit scope.
-- Requirement-level `ERROR`: unsupported verifier type or analysis failure.
+- **ADR record:** original decision, rationale, owner, scope, exceptions, status, and version.
+- **Obligation:** an independently assessable statement derived from an ADR, including modality, scope, evidence requirements, confidence, provenance, and review status.
+- **Verification pattern:** reusable logic such as import boundaries, required configuration, dependency restrictions, API compatibility, gateway routing, or architecture-graph constraints.
 
-A missing file is never evidence of compliance. `PASS` describes only requirements with applicable evidence; coverage is tracked separately. `COMPLETE` means every accepted requirement produced a PASS or FAIL result, `PARTIAL` means only some did, and `NONE` means no requirement produced an applicable PASS/FAIL result. Results include source-file count, per-requirement status, evidence, findings, ADR version, coverage counts, and a runtime LLM call count of zero.
+One ADR may produce several obligations; many obligations may reuse one pattern; one obligation may consume evidence from several analyzers. Candidate extraction and clustering can be assisted in batches, but interpretations must be reviewable and versioned. Semantic principles such as “prefer asynchronous messaging to reduce coupling” must not automatically become hard failures without an approved scope and observable verification proxy.
 
-## Open-source integration strategy
+## Current MVP verifiers
 
-- Go standard library AST/parser: baseline Go syntax and import evidence without a third-party runtime dependency.
-- ast-grep: candidate adapter for multi-language structural checks after a benchmark demonstrates a need.
-- Semgrep CE: alternative structural matcher to benchmark against ast-grep; do not run both by default.
-- OPA/Conftest: add when requirements concern structured configuration or policy documents.
-- Arch-Go: evaluate for richer Go architecture rules that exceed the initial import-boundary verifier.
-- reviewdog: consumes SARIF from repository assessments to publish PR annotations.
-- SCIP or Joern: defer until an ADR requires cross-file symbol resolution or data-flow evidence that local AST checks cannot establish.
+- `go-import-boundary`: Go standard-library parser checks import boundaries.
+- `json-required-keys`: checks required top-level JSON keys.
+- `json-number-range`: checks numeric top-level JSON values against inclusive bounds.
 
-No analyzer is treated as proof of completeness merely because it emits no findings. Each adapter must report coverage, tool version, errors, and evidence provenance.
+Add catalog entries when an existing verifier/pattern suffices. Add a new verifier only when the capability is genuinely missing.
+
+## Normalized evidence and outcomes
+
+Analyzer adapters emit a common, versioned evidence schema with repository revision, artifact digest/path/range, producer and tool versions, rule/config digest, typed observation or finding, provenance, declared scope, status, diagnostics, and limitations. Raw outputs remain available for audit and reprocessing.
+
+Outcomes must distinguish `PASS`, `FAIL`, `NOT_APPLICABLE`, `EVIDENCE_MISSING`, `UNSUPPORTED`, `REVIEW_REQUIRED`, `INDETERMINATE`, and `ERROR`. The current MVP's `COMPLETE`/`PARTIAL`/`NONE` coverage remains useful but should be complemented by ADR-corpus interpretation coverage, obligation mapping coverage, analyzer scope coverage, and evidence freshness. No findings is not equivalent to complete assessment.
+
+## Open-source and composite analyzer strategy
+
+- Native Go parser and other language-native parsers: fast, precise syntax and dependency facts.
+- **Opengrep:** multi-language structural/pattern checks; evaluate compatibility and rule quality. Review engine and rule licenses separately.
+- **Joern:** code property graph and deep cross-file/data-flow queries when local AST evidence is insufficient.
+- **gosec**, **Bandit**, **SpotBugs + Find Security Bugs**: language-specific security evidence for applicable repositories.
+- **OPA/Conftest**, IaC/configuration parsers, OpenAPI and dependency-manifest tools: select based on the ADR corpus and artifact types.
+- **reviewdog:** publishes SARIF-derived annotations on pull requests.
+
+These are composable candidates, not a mandate to run all tools. Avoid redundant scanners by default; benchmark precision, recall, coverage, runtime, memory, operational complexity, and licensing. Audit the analyzer engine, rule packs, plugins, and transitive dependencies independently. Every adapter must report scope, tool/config version, errors, and provenance. A scanner finding is evidence to evaluate, not automatically an ADR violation.
+
+## AWS deployment direction
+
+Use EventBridge for events and routing, Step Functions for orchestration, Lambda for short control-plane tasks and lightweight parsing, and ECS/Fargate or AWS Batch for isolated heavyweight analyzer containers. Use S3 for immutable raw outputs, normalized evidence bundles, and reports; use DynamoDB or Aurora for versioned ADRs, obligations, pattern mappings, run metadata, approvals, and evidence pointers. Choose storage based on access/query requirements rather than assuming a vector database is required. Optional semantic retrieval may suggest related ADRs and patterns but cannot establish compliance.
+
+Workers should be least-privilege, isolated, resource-bounded, pinned by image digest, and denied unnecessary network access. Use idempotency keys, content hashes, incremental analysis, bounded concurrency, controlled retries, lifecycle policies, and metrics. Treat repository content and tool output as untrusted. See [the full scalable design](scalable-architecture.md) for contracts, AWS boundaries, rollout phases, and acceptance criteria.
 
 ## Security
 
-- Issue content is untrusted input. It is written to a file through a quoted environment variable and parsed as Markdown/source text.
-- Submitted code is never compiled, imported, tested, or executed.
-- GitHub Actions are pinned to full commit SHAs.
-- The issue assessment job has only the permissions needed to read source and comment on the issue.
-- Anthropic credentials are not required or used by runtime workflows.
-- Reviewdog PR comments are limited by GitHub token permissions, especially for forked pull requests.
+- Issue content and repository source are untrusted input.
+- Submitted snippets are parsed as data; they are not executed.
+- Analyzer jobs run with least privilege and no production credentials.
+- Any analyzer that requires builds or execution uses an explicit isolated sandbox.
+- Pin GitHub Actions, analyzer images, tool versions, and rule/config revisions.
+- Keep secrets out of evidence/logs; apply access controls and retention to raw artifacts.
+- Runtime LLM credentials are not required by the current MVP. Any future batch-assisted ADR interpretation is separate from deterministic assessment and requires review/approval.
 
 ## Known MVP limitations
 
-- Verifiers currently cover Go import boundaries and top-level JSON keys/numeric bounds; nested JSON paths and other configuration formats are not supported.
-- Technical prose is not semantically inferred; unsupported or missing evidence remains indeterminate.
-- The catalog contains example ADR requirements and should be expanded with accepted organizational ADRs.
-- Issue comments are appended on each edit; a later iteration should update one bot-owned comment.
-- Artifact retention is temporary and is not an audit archive.
-- Issue-triggered Actions runs have validated the assessment workflow and report publishing. Reviewdog SARIF annotation behavior remains a separate PR-path validation.
+- Current deterministic checks cover Go import boundaries and top-level JSON keys/numeric bounds.
+- Technical prose is not semantically inferred by the runtime.
+- The catalog is illustrative and does not yet represent a full organizational ADR corpus.
+- Coverage currently reflects catalog requirements evaluated by the MVP; corpus-level interpretation and mapping coverage remain future work.
+- Issue comments may append on each edit; a later iteration should update one bot-owned comment.
+- Workflow artifact retention is temporary and is not an audit archive.
+- Reviewdog SARIF annotation behavior remains a separate PR-path validation.
 
 ## Local usage
 
