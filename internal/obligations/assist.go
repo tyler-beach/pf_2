@@ -20,30 +20,30 @@ const AssistPromptVersion = "pathfinder-assist-v1"
 // Proposal is an untrusted LLM (or offline fixture) suggestion. It never
 // approves obligations and never mutates the requirements catalog.
 type Proposal struct {
-	SchemaVersion      string   `json:"schema_version"`
-	ProposalID         string   `json:"proposal_id"`
-	ParentCandidateID  string   `json:"parent_candidate_id"`
-	ADRID              string   `json:"adr_id"`
-	Statement          string   `json:"statement"`
-	NormalizedStatement string  `json:"normalized_statement"`
-	Modality           string   `json:"modality"`
-	SuggestedPatternID string   `json:"suggested_pattern_id"`
-	Rationale          string   `json:"rationale"`
-	SourcePath         string   `json:"source_path"`
-	SourceSHA256       string   `json:"source_sha256"`
-	SourceLineStart    int      `json:"source_line_start"`
-	SourceLineEnd      int      `json:"source_line_end"`
-	SourceQuote        string   `json:"source_quote"`
-	Confidence         string   `json:"parent_confidence"`
-	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
-	Provider           string   `json:"provider"`
-	Model              string   `json:"model"`
-	PromptVersion      string   `json:"prompt_version"`
-	PromptSHA256       string   `json:"prompt_sha256"`
-	RawResponseSHA256  string   `json:"raw_response_sha256"`
-	ApprovalStatus     string   `json:"approval_status"`
-	Executable         bool     `json:"executable"`
-	GeneratedAt        string   `json:"generated_at"`
+	SchemaVersion       string   `json:"schema_version"`
+	ProposalID          string   `json:"proposal_id"`
+	ParentCandidateID   string   `json:"parent_candidate_id"`
+	ADRID               string   `json:"adr_id"`
+	Statement           string   `json:"statement"`
+	NormalizedStatement string   `json:"normalized_statement"`
+	Modality            string   `json:"modality"`
+	SuggestedPatternID  string   `json:"suggested_pattern_id"`
+	Rationale           string   `json:"rationale"`
+	SourcePath          string   `json:"source_path"`
+	SourceSHA256        string   `json:"source_sha256"`
+	SourceLineStart     int      `json:"source_line_start"`
+	SourceLineEnd       int      `json:"source_line_end"`
+	SourceQuote         string   `json:"source_quote"`
+	Confidence          string   `json:"parent_confidence"`
+	EscalationReasons   []string `json:"escalation_reasons,omitempty"`
+	Provider            string   `json:"provider"`
+	Model               string   `json:"model"`
+	PromptVersion       string   `json:"prompt_version"`
+	PromptSHA256        string   `json:"prompt_sha256"`
+	RawResponseSHA256   string   `json:"raw_response_sha256"`
+	ApprovalStatus      string   `json:"approval_status"`
+	Executable          bool     `json:"executable"`
+	GeneratedAt         string   `json:"generated_at"`
 }
 
 // ProposalIndex is the assist artifact written for human review.
@@ -107,7 +107,7 @@ type OpenAICompatProvider struct {
 	MaxTokens  int
 }
 
-func (p OpenAICompatProvider) Name() string { return "openai-compatible" }
+func (p OpenAICompatProvider) Name() string  { return "openai-compatible" }
 func (p OpenAICompatProvider) Model() string { return p.ModelID }
 
 func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]byte, error) {
@@ -192,11 +192,11 @@ type AssistOptions struct {
 // MaxConfidence. It never writes requirements.json or the review registry.
 func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (ProposalIndex, error) {
 	out := ProposalIndex{
-		SchemaVersion: ProposalSchemaVersion,
+		SchemaVersion:     ProposalSchemaVersion,
 		SourceIndexSHA256: index.SourceIndexSHA256,
-		MaxConfidence: strings.ToLower(strings.TrimSpace(opts.MaxConfidence)),
-		PromptVersion: AssistPromptVersion,
-		Proposals: []Proposal{},
+		MaxConfidence:     strings.ToLower(strings.TrimSpace(opts.MaxConfidence)),
+		PromptVersion:     AssistPromptVersion,
+		Proposals:         []Proposal{},
 	}
 	if out.MaxConfidence == "" {
 		out.MaxConfidence = ConfidenceLow
@@ -236,29 +236,29 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 			return out, fmt.Errorf("assist candidate %s: %w", candidate.ID, err)
 		}
 		proposal := Proposal{
-			SchemaVersion: ProposalSchemaVersion,
-			ParentCandidateID: candidate.ID,
-			ADRID: candidate.ADRID,
-			Statement: candidate.Statement,
+			SchemaVersion:       ProposalSchemaVersion,
+			ParentCandidateID:   candidate.ID,
+			ADRID:               candidate.ADRID,
+			Statement:           candidate.Statement,
 			NormalizedStatement: parsed.NormalizedStatement,
-			Modality: parsed.Modality,
-			SuggestedPatternID: parsed.SuggestedPatternID,
-			Rationale: parsed.Rationale,
-			SourcePath: candidate.SourcePath,
-			SourceSHA256: candidate.SourceSHA256,
-			SourceLineStart: candidate.SourceLineStart,
-			SourceLineEnd: candidate.SourceLineEnd,
-			SourceQuote: quote,
-			Confidence: candidate.Confidence,
-			EscalationReasons: append([]string(nil), candidate.EscalationReasons...),
-			Provider: opts.Provider.Name(),
-			Model: opts.Provider.Model(),
-			PromptVersion: AssistPromptVersion,
-			PromptSHA256: hex.EncodeToString(promptSum[:]),
-			RawResponseSHA256: hex.EncodeToString(rawSum[:]),
-			ApprovalStatus: DecisionPending,
-			Executable: false,
-			GeneratedAt: nowFn().UTC().Format(time.RFC3339),
+			Modality:            parsed.Modality,
+			SuggestedPatternID:  parsed.SuggestedPatternID,
+			Rationale:           parsed.Rationale,
+			SourcePath:          candidate.SourcePath,
+			SourceSHA256:        candidate.SourceSHA256,
+			SourceLineStart:     candidate.SourceLineStart,
+			SourceLineEnd:       candidate.SourceLineEnd,
+			SourceQuote:         quote,
+			Confidence:          candidate.Confidence,
+			EscalationReasons:   append([]string(nil), candidate.EscalationReasons...),
+			Provider:            opts.Provider.Name(),
+			Model:               opts.Provider.Model(),
+			PromptVersion:       AssistPromptVersion,
+			PromptSHA256:        hex.EncodeToString(promptSum[:]),
+			RawResponseSHA256:   hex.EncodeToString(rawSum[:]),
+			ApprovalStatus:      DecisionPending,
+			Executable:          false,
+			GeneratedAt:         nowFn().UTC().Format(time.RFC3339),
 		}
 		proposal.ProposalID = proposalID(proposal)
 		out.Proposals = append(out.Proposals, proposal)

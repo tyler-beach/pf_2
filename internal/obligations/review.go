@@ -29,50 +29,50 @@ func SetPatternCatalog(catalog *patterns.Catalog) {
 const RegistrySchemaVersion = "1"
 
 const (
-	DecisionPending   = "pending_review"
-	DecisionApproved = "approved"
-	DecisionRejected = "rejected"
+	DecisionPending    = "pending_review"
+	DecisionApproved   = "approved"
+	DecisionRejected   = "rejected"
 	DecisionSuperseded = "superseded"
 
-	EnforcementBlocking = "blocking"
-	EnforcementAdvisory = "advisory"
+	EnforcementBlocking       = "blocking"
+	EnforcementAdvisory       = "advisory"
 	EnforcementReviewRequired = "review_required"
 )
 
 // CandidateSnapshot preserves the exact interpretation that was reviewed.
 // It is intentionally separate from the enforceable requirements catalog.
 type CandidateSnapshot struct {
-	ID              string `json:"id"`
-	ADRID           string `json:"adr_id"`
-	ADRTitle        string `json:"adr_title"`
-	ADRStatus       string `json:"adr_status,omitempty"`
-	SectionHeading  string `json:"section_heading"`
-	Statement       string `json:"statement"`
-	Modality        string `json:"modality"`
-	Kind            string `json:"kind"`
-	PatternHint     string `json:"pattern_hint"`
-	SourcePath      string `json:"source_path"`
-	SourceSHA256    string `json:"source_sha256"`
-	SourceLineStart int    `json:"source_line_start"`
-	SourceLineEnd   int    `json:"source_line_end"`
+	ID              string   `json:"id"`
+	ADRID           string   `json:"adr_id"`
+	ADRTitle        string   `json:"adr_title"`
+	ADRStatus       string   `json:"adr_status,omitempty"`
+	SectionHeading  string   `json:"section_heading"`
+	Statement       string   `json:"statement"`
+	Modality        string   `json:"modality"`
+	Kind            string   `json:"kind"`
+	PatternHint     string   `json:"pattern_hint"`
+	SourcePath      string   `json:"source_path"`
+	SourceSHA256    string   `json:"source_sha256"`
+	SourceLineStart int      `json:"source_line_start"`
+	SourceLineEnd   int      `json:"source_line_end"`
 	ReviewHints     []string `json:"review_hints,omitempty"`
 }
 
 // ReviewRecord is an append-only, revisioned human decision for a candidate.
 // A record never changes the active requirements catalog by itself.
 type ReviewRecord struct {
-	CandidateID     string            `json:"candidate_id"`
-	Revision        int               `json:"revision"`
-	Decision        string            `json:"decision"`
-	Candidate       CandidateSnapshot `json:"candidate"`
-	RequirementID   string            `json:"requirement_id,omitempty"`
-	RequirementSHA256 string          `json:"requirement_sha256,omitempty"`
-	PatternID       string            `json:"pattern_id,omitempty"`
-	EnforcementMode string            `json:"enforcement_mode"`
-	Reviewer        string            `json:"reviewer"`
-	ReviewedAt      string            `json:"reviewed_at"`
-	ReviewReference string            `json:"review_reference"`
-	Rationale       string            `json:"rationale"`
+	CandidateID       string            `json:"candidate_id"`
+	Revision          int               `json:"revision"`
+	Decision          string            `json:"decision"`
+	Candidate         CandidateSnapshot `json:"candidate"`
+	RequirementID     string            `json:"requirement_id,omitempty"`
+	RequirementSHA256 string            `json:"requirement_sha256,omitempty"`
+	PatternID         string            `json:"pattern_id,omitempty"`
+	EnforcementMode   string            `json:"enforcement_mode"`
+	Reviewer          string            `json:"reviewer"`
+	ReviewedAt        string            `json:"reviewed_at"`
+	ReviewReference   string            `json:"review_reference"`
+	Rationale         string            `json:"rationale"`
 }
 
 // Registry retains all historical decisions, including the source snapshot
@@ -97,22 +97,22 @@ type ReviewProposal struct {
 // BindingCoverage reports candidate-review state separately from code evidence
 // coverage. A registry can have zero blockers while every candidate is pending.
 type BindingCoverage struct {
-	SchemaVersion        string `json:"schema_version"`
-	CandidateIndexSHA256 string `json:"candidate_index_sha256"`
-	CandidateCount       int    `json:"candidate_count"`
-	PendingReviewCount   int    `json:"pending_review_count"`
-	ApprovedCount        int    `json:"approved_count"`
-	RejectedCount        int    `json:"rejected_count"`
-	SupersededCount      int    `json:"superseded_count"`
-	StaleCount           int    `json:"stale_count"`
-	OrphanedCount        int    `json:"orphaned_count"`
-	BlockingBindingCount int    `json:"blocking_binding_count"`
-	AdvisoryBindingCount int    `json:"advisory_binding_count"`
-	ReviewRequiredCount  int    `json:"review_required_count"`
-	UnboundCount         int    `json:"unbound_count"`
-	PendingHighConfidence   int `json:"pending_high_confidence"`
-	PendingMediumConfidence int `json:"pending_medium_confidence"`
-	PendingLowConfidence    int `json:"pending_low_confidence"`
+	SchemaVersion           string `json:"schema_version"`
+	CandidateIndexSHA256    string `json:"candidate_index_sha256"`
+	CandidateCount          int    `json:"candidate_count"`
+	PendingReviewCount      int    `json:"pending_review_count"`
+	ApprovedCount           int    `json:"approved_count"`
+	RejectedCount           int    `json:"rejected_count"`
+	SupersededCount         int    `json:"superseded_count"`
+	StaleCount              int    `json:"stale_count"`
+	OrphanedCount           int    `json:"orphaned_count"`
+	BlockingBindingCount    int    `json:"blocking_binding_count"`
+	AdvisoryBindingCount    int    `json:"advisory_binding_count"`
+	ReviewRequiredCount     int    `json:"review_required_count"`
+	UnboundCount            int    `json:"unbound_count"`
+	PendingHighConfidence   int    `json:"pending_high_confidence"`
+	PendingMediumConfidence int    `json:"pending_medium_confidence"`
+	PendingLowConfidence    int    `json:"pending_low_confidence"`
 }
 
 // NewRegistry returns an empty versioned audit log. Candidates without a record
@@ -185,24 +185,26 @@ func RecordReview(index Index, catalog assessment.Catalog, registry Registry, pr
 		proposal.PatternID = candidate.PatternHint
 	}
 	record := ReviewRecord{
-		CandidateID: proposal.CandidateID,
-		Revision: 1,
-		Decision: strings.TrimSpace(proposal.Decision),
-		Candidate: snapshot,
-		RequirementID: strings.TrimSpace(proposal.RequirementID),
-		PatternID: strings.TrimSpace(proposal.PatternID),
+		CandidateID:     proposal.CandidateID,
+		Revision:        1,
+		Decision:        strings.TrimSpace(proposal.Decision),
+		Candidate:       snapshot,
+		RequirementID:   strings.TrimSpace(proposal.RequirementID),
+		PatternID:       strings.TrimSpace(proposal.PatternID),
 		EnforcementMode: strings.TrimSpace(proposal.EnforcementMode),
-		Reviewer: strings.TrimSpace(proposal.Reviewer),
-		ReviewedAt: strings.TrimSpace(proposal.ReviewedAt),
+		Reviewer:        strings.TrimSpace(proposal.Reviewer),
+		ReviewedAt:      strings.TrimSpace(proposal.ReviewedAt),
 		ReviewReference: strings.TrimSpace(proposal.ReviewReference),
-		Rationale: strings.TrimSpace(proposal.Rationale),
+		Rationale:       strings.TrimSpace(proposal.Rationale),
 	}
 	if previous, ok := latest[record.CandidateID]; ok {
 		record.Revision = previous.Revision + 1
 	}
 	if record.Decision == DecisionApproved && record.PatternID != "manual_review" && record.RequirementID != "" {
 		digest, err := requirementBindingSHA256(catalog, record.RequirementID)
-		if err != nil { return registry, BindingCoverage{}, err }
+		if err != nil {
+			return registry, BindingCoverage{}, err
+		}
 		record.RequirementSHA256 = digest
 	}
 	if err := validateReviewRecord(record); err != nil {
@@ -226,9 +228,9 @@ func RecordReview(index Index, catalog assessment.Catalog, registry Registry, pr
 // strict validation rejects them until they are re-reviewed or superseded.
 func ValidateRegistry(index Index, catalog assessment.Catalog, registry Registry) (BindingCoverage, error) {
 	coverage := BindingCoverage{
-		SchemaVersion: "1",
+		SchemaVersion:        "1",
 		CandidateIndexSHA256: index.SourceIndexSHA256,
-		CandidateCount: len(index.Candidates),
+		CandidateCount:       len(index.Candidates),
 	}
 	if err := validateCandidateIndex(index); err != nil {
 		return coverage, err
@@ -501,7 +503,9 @@ func validateCandidateSnapshot(candidate CandidateSnapshot) error {
 	}
 	seenHints := make(map[string]bool, len(candidate.ReviewHints))
 	for _, hint := range candidate.ReviewHints {
-		if !allowedHints[hint] || seenHints[hint] { return fmt.Errorf("unsupported or duplicate review hint %q", hint) }
+		if !allowedHints[hint] || seenHints[hint] {
+			return fmt.Errorf("unsupported or duplicate review hint %q", hint)
+		}
 		seenHints[hint] = true
 	}
 	return nil
@@ -558,7 +562,9 @@ func bindingSnapshotMatches(record ReviewRecord, catalog assessment.Catalog) boo
 	if record.RequirementID == "" || record.PatternID == "manual_review" {
 		return true
 	}
-	if !validSHA256(record.RequirementSHA256) { return false }
+	if !validSHA256(record.RequirementSHA256) {
+		return false
+	}
 	current, err := requirementBindingSHA256(catalog, record.RequirementID)
 	return err == nil && strings.EqualFold(current, record.RequirementSHA256)
 }
@@ -566,16 +572,20 @@ func bindingSnapshotMatches(record ReviewRecord, catalog assessment.Catalog) boo
 func requirementBindingSHA256(catalog assessment.Catalog, requirementID string) (string, error) {
 	for _, adr := range catalog.ADRs {
 		for _, requirement := range adr.Requirements {
-			if requirement.ID != requirementID { continue }
+			if requirement.ID != requirementID {
+				continue
+			}
 			snapshot := struct {
-				ADRID string `json:"adr_id"`
-				ADRTitle string `json:"adr_title"`
-				ADRVersion int `json:"adr_version"`
-				ADRStatus string `json:"adr_status"`
+				ADRID       string                 `json:"adr_id"`
+				ADRTitle    string                 `json:"adr_title"`
+				ADRVersion  int                    `json:"adr_version"`
+				ADRStatus   string                 `json:"adr_status"`
 				Requirement assessment.Requirement `json:"requirement"`
 			}{adr.ID, adr.Title, adr.Version, adr.Status, requirement}
 			data, err := json.Marshal(snapshot)
-			if err != nil { return "", fmt.Errorf("encode binding snapshot for requirement %s: %w", requirementID, err) }
+			if err != nil {
+				return "", fmt.Errorf("encode binding snapshot for requirement %s: %w", requirementID, err)
+			}
 			digest := sha256.Sum256(data)
 			return hex.EncodeToString(digest[:]), nil
 		}
@@ -609,7 +619,9 @@ func validateApprovedBinding(record ReviewRecord, candidate Candidate, catalog a
 				break
 			}
 		}
-		if matched != nil { break }
+		if matched != nil {
+			break
+		}
 	}
 	if matched == nil {
 		return fmt.Errorf("requirement %s does not exist in the active requirements catalog", record.RequirementID)
@@ -649,20 +661,41 @@ func SaveRegistry(path string, registry Registry) error {
 		return fmt.Errorf("refusing to save invalid review registry: %w", err)
 	}
 	data, err := json.MarshalIndent(registry, "", "  ")
-	if err != nil { return fmt.Errorf("encode review registry: %w", err) }
+	if err != nil {
+		return fmt.Errorf("encode review registry: %w", err)
+	}
 	absolute, err := filepath.Abs(path)
-	if err != nil { return fmt.Errorf("resolve registry output path: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve registry output path: %w", err)
+	}
 	dir := filepath.Dir(absolute)
-	if err := os.MkdirAll(dir, 0755); err != nil { return fmt.Errorf("create registry output directory: %w", err) }
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("create registry output directory: %w", err)
+	}
 	temp, err := os.CreateTemp(dir, "."+filepath.Base(absolute)+".tmp-*")
-	if err != nil { return fmt.Errorf("create temporary registry: %w", err) }
+	if err != nil {
+		return fmt.Errorf("create temporary registry: %w", err)
+	}
 	tempName := temp.Name()
 	defer os.Remove(tempName)
-	if err := temp.Chmod(0600); err != nil { temp.Close(); return fmt.Errorf("restrict registry permissions: %w", err) }
-	if _, err := temp.Write(data); err != nil { temp.Close(); return fmt.Errorf("write temporary registry: %w", err) }
-	if err := temp.Sync(); err != nil { temp.Close(); return fmt.Errorf("sync temporary registry: %w", err) }
-	if err := temp.Close(); err != nil { return fmt.Errorf("close temporary registry: %w", err) }
-	if err := os.Rename(tempName, absolute); err != nil { return fmt.Errorf("atomically replace registry: %w", err) }
+	if err := temp.Chmod(0600); err != nil {
+		temp.Close()
+		return fmt.Errorf("restrict registry permissions: %w", err)
+	}
+	if _, err := temp.Write(data); err != nil {
+		temp.Close()
+		return fmt.Errorf("write temporary registry: %w", err)
+	}
+	if err := temp.Sync(); err != nil {
+		temp.Close()
+		return fmt.Errorf("sync temporary registry: %w", err)
+	}
+	if err := temp.Close(); err != nil {
+		return fmt.Errorf("close temporary registry: %w", err)
+	}
+	if err := os.Rename(tempName, absolute); err != nil {
+		return fmt.Errorf("atomically replace registry: %w", err)
+	}
 	return nil
 }
 
@@ -671,9 +704,17 @@ func SaveRegistry(path string, registry Registry) error {
 func LoadRegistry(path string) (Registry, error) {
 	var registry Registry
 	data, err := os.ReadFile(path)
-	if err != nil { return registry, fmt.Errorf("read review registry: %w", err) }
-	if err := json.Unmarshal(data, &registry); err != nil { return registry, fmt.Errorf("decode review registry: %w", err) }
-	if registry.Records == nil { registry.Records = []ReviewRecord{} }
-	if err := validateRegistryStructure(registry); err != nil { return registry, err }
+	if err != nil {
+		return registry, fmt.Errorf("read review registry: %w", err)
+	}
+	if err := json.Unmarshal(data, &registry); err != nil {
+		return registry, fmt.Errorf("decode review registry: %w", err)
+	}
+	if registry.Records == nil {
+		registry.Records = []ReviewRecord{}
+	}
+	if err := validateRegistryStructure(registry); err != nil {
+		return registry, err
+	}
 	return registry, nil
 }

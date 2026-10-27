@@ -11,21 +11,21 @@ import (
 
 func reviewFixture() (Index, assessment.Catalog, Candidate) {
 	candidate := Candidate{
-		ADRID: "ADR-001",
-		ADRTitle: "Preserve domain boundaries",
-		ADRStatus: "accepted",
-		SectionHeading: "Decision",
-		Statement: "Domain code must not import internal infrastructure packages.",
-		Modality: "must_not",
-		Kind: "normative_candidate",
-		PatternHint: "architecture.dependency_or_boundary",
-		SourcePath: "adrs/ADR-001-boundaries.md",
-		SourceSHA256: strings.Repeat("a", 64),
+		ADRID:           "ADR-001",
+		ADRTitle:        "Preserve domain boundaries",
+		ADRStatus:       "accepted",
+		SectionHeading:  "Decision",
+		Statement:       "Domain code must not import internal infrastructure packages.",
+		Modality:        "must_not",
+		Kind:            "normative_candidate",
+		PatternHint:     "architecture.dependency_or_boundary",
+		SourcePath:      "adrs/ADR-001-boundaries.md",
+		SourceSHA256:    strings.Repeat("a", 64),
 		SourceLineStart: 12,
-		SourceLineEnd: 12,
-		ApprovalStatus: DecisionPending,
+		SourceLineEnd:   12,
+		ApprovalStatus:  DecisionPending,
 		EnforcementMode: EnforcementReviewRequired,
-		Executable: false,
+		Executable:      false,
 	}
 	band, score, reasons := scoreConfidence(candidate)
 	candidate.Confidence = band
@@ -33,14 +33,14 @@ func reviewFixture() (Index, assessment.Catalog, Candidate) {
 	candidate.EscalationReasons = reasons
 	candidate.ID = candidateID(candidate)
 	index := Index{
-		SchemaVersion: "1",
-		SourceRoot: "adrs",
-		SourceIndexSHA256: strings.Repeat("b", 64),
-		DocumentCount: 1,
+		SchemaVersion:           "1",
+		SourceRoot:              "adrs",
+		SourceIndexSHA256:       strings.Repeat("b", 64),
+		DocumentCount:           1,
 		DocumentsWithCandidates: 1,
-		CandidateCount: 1,
-		Candidates: []Candidate{candidate},
-		ConfidenceSummary: SummarizeConfidence(Index{Candidates: []Candidate{candidate}}),
+		CandidateCount:          1,
+		Candidates:              []Candidate{candidate},
+		ConfidenceSummary:       SummarizeConfidence(Index{Candidates: []Candidate{candidate}}),
 	}
 	min := 1.0
 	_ = min
@@ -51,10 +51,10 @@ func reviewFixture() (Index, assessment.Catalog, Candidate) {
 			Requirements: []assessment.Requirement{{
 				ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
 				Description: "Domain source files must not import internal infrastructure packages.",
-				Severity: "error",
+				Severity:    "error",
 				Verifier: assessment.Verifier{
-					Type: "go-import-boundary",
-					SourcePathPrefixes: []string{"internal/domain/"},
+					Type:                    "go-import-boundary",
+					SourcePathPrefixes:      []string{"internal/domain/"},
 					ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 				},
 			}},
@@ -65,23 +65,27 @@ func reviewFixture() (Index, assessment.Catalog, Candidate) {
 
 func validReviewProposal(candidate Candidate) ReviewProposal {
 	return ReviewProposal{
-		CandidateID: candidate.ID,
-		Decision: DecisionApproved,
-		RequirementID: "REQ-001-01",
-		PatternID: candidate.PatternHint,
+		CandidateID:     candidate.ID,
+		Decision:        DecisionApproved,
+		RequirementID:   "REQ-001-01",
+		PatternID:       candidate.PatternHint,
 		EnforcementMode: EnforcementBlocking,
-		Reviewer: "security-architect@example.com",
-		ReviewedAt: "2026-10-27T12:00:00Z",
+		Reviewer:        "security-architect@example.com",
+		ReviewedAt:      "2026-10-27T12:00:00Z",
 		ReviewReference: "https://github.com/tyler-beach/pf_2/issues/20",
-		Rationale: "The ADR statement is covered by the existing, tested Go import-boundary requirement.",
+		Rationale:       "The ADR statement is covered by the existing, tested Go import-boundary requirement.",
 	}
 }
 
 func TestRecordReviewCreatesSourceBoundBlockingBinding(t *testing.T) {
 	index, catalog, candidate := reviewFixture()
 	registry, coverage, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
-	if err != nil { t.Fatal(err) }
-	if len(registry.Records) != 1 { t.Fatalf("records=%d, want 1", len(registry.Records)) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(registry.Records) != 1 {
+		t.Fatalf("records=%d, want 1", len(registry.Records))
+	}
 	record := registry.Records[0]
 	if record.Revision != 1 || record.Decision != DecisionApproved || record.Candidate.SourceSHA256 != candidate.SourceSHA256 {
 		t.Fatalf("review record lacks stable source binding: %+v", record)
@@ -101,14 +105,20 @@ func TestRecordReviewIsAppendOnlyAndRevisionsAreContiguous(t *testing.T) {
 		CandidateID: candidate.ID, Decision: DecisionPending, EnforcementMode: EnforcementReviewRequired,
 		Reviewer: "reviewer@example.com", ReviewedAt: "2026-10-27T12:00:00Z",
 		ReviewReference: "https://github.com/tyler-beach/pf_2/issues/20",
-		Rationale: "Need confirmation of applicability and exceptions before binding.",
+		Rationale:       "Need confirmation of applicability and exceptions before binding.",
 	}
 	first, firstCoverage, err := RecordReview(index, catalog, NewRegistry(), pending)
-	if err != nil { t.Fatal(err) }
-	if firstCoverage.PendingReviewCount != 1 { t.Fatalf("pending coverage=%+v", firstCoverage) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if firstCoverage.PendingReviewCount != 1 {
+		t.Fatalf("pending coverage=%+v", firstCoverage)
+	}
 	proposal := validReviewProposal(candidate)
 	second, coverage, err := RecordReview(index, catalog, first, proposal)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(second.Records) != 2 || second.Records[0].Decision != DecisionPending || second.Records[0].Revision != 1 ||
 		second.Records[1].Decision != DecisionApproved || second.Records[1].Revision != 2 {
 		t.Fatalf("review decisions were not appended as revisions: %+v", second.Records)
@@ -123,9 +133,9 @@ func TestRecordReviewIsAppendOnlyAndRevisionsAreContiguous(t *testing.T) {
 
 func TestRecordReviewRejectsInvalidBindingAndAuditMetadata(t *testing.T) {
 	cases := []struct {
-		name string
+		name   string
 		mutate func(*ReviewProposal, *assessment.Catalog)
-		want string
+		want   string
 	}{
 		{"unknown requirement", func(p *ReviewProposal, _ *assessment.Catalog) { p.RequirementID = "REQ-999-01" }, "does not exist"},
 		{"incompatible pattern", func(p *ReviewProposal, _ *assessment.Catalog) { p.PatternID = "security.source_pattern" }, "requires an analyzer-rule"},
@@ -137,7 +147,7 @@ func TestRecordReviewRejectsInvalidBindingAndAuditMetadata(t *testing.T) {
 				ID: "ADR-002", Title: "Other decision", Version: 1, Status: "accepted",
 				Requirements: []assessment.Requirement{{
 					ID: "REQ-002-01", Title: "Other boundary", Severity: "error",
-					Verifier: assessment.Verifier{Type:"go-import-boundary", SourcePathPrefixes:[]string{"x/"}, ForbiddenImportPrefixes:[]string{"y/"}},
+					Verifier: assessment.Verifier{Type: "go-import-boundary", SourcePathPrefixes: []string{"x/"}, ForbiddenImportPrefixes: []string{"y/"}},
 				}},
 			})
 			p.RequirementID = "REQ-002-01"
@@ -165,7 +175,9 @@ func TestManualReviewApprovalCanNeverBecomeBlocking(t *testing.T) {
 	proposal.RequirementID = ""
 	proposal.EnforcementMode = EnforcementReviewRequired
 	registry, coverage, err := RecordReview(index, catalog, NewRegistry(), proposal)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if coverage.ApprovedCount != 1 || coverage.ReviewRequiredCount != 1 || coverage.BlockingBindingCount != 0 ||
 		coverage.UnboundCount != 1 || registry.Records[0].RequirementID != "" {
 		t.Fatalf("manual review was incorrectly bound or enforced: coverage=%+v record=%+v", coverage, registry.Records[0])
@@ -179,20 +191,26 @@ func TestManualReviewApprovalCanNeverBecomeBlocking(t *testing.T) {
 func TestSourceDriftMakesApprovalStaleUntilReReviewed(t *testing.T) {
 	index, catalog, candidate := reviewFixture()
 	approved, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	changed := candidate
 	changed.SourceSHA256 = strings.Repeat("c", 64)
 	index.Candidates[0] = changed
 	index.SourceIndexSHA256 = strings.Repeat("d", 64)
 	coverage, err := ValidateRegistry(index, catalog, approved)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if coverage.StaleCount != 1 || coverage.ApprovedCount != 0 || coverage.BlockingBindingCount != 0 ||
 		coverage.PendingReviewCount != 1 || coverage.UnboundCount != 1 {
 		t.Fatalf("stale source approval was still considered active: %+v", coverage)
 	}
 	proposal := validReviewProposal(changed)
 	revised, coverage, err := RecordReview(index, catalog, approved, proposal)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(revised.Records) != 2 || revised.Records[0].Candidate.SourceSHA256 != candidate.SourceSHA256 ||
 		revised.Records[1].Candidate.SourceSHA256 != changed.SourceSHA256 || revised.Records[1].Revision != 2 {
 		t.Fatalf("re-review did not preserve old source revision: %+v", revised.Records)
@@ -205,7 +223,9 @@ func TestSourceDriftMakesApprovalStaleUntilReReviewed(t *testing.T) {
 func TestRemovedCandidateMustBeExplicitlySuperseded(t *testing.T) {
 	index, catalog, candidate := reviewFixture()
 	approved, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	removed := index
 	removed.Candidates = []Candidate{}
 	removed.CandidateCount = 0
@@ -220,7 +240,9 @@ func TestRemovedCandidateMustBeExplicitlySuperseded(t *testing.T) {
 		Rationale: "Source ADR was removed; preserve the audit trail and retire its review binding.",
 	}
 	superseded, coverage, err := RecordReview(removed, catalog, approved, proposal)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(superseded.Records) != 2 || superseded.Records[1].Revision != 2 ||
 		superseded.Records[1].Decision != DecisionSuperseded || coverage.SupersededCount != 1 ||
 		coverage.OrphanedCount != 0 || coverage.BlockingBindingCount != 0 {
@@ -231,7 +253,9 @@ func TestRemovedCandidateMustBeExplicitlySuperseded(t *testing.T) {
 func TestRegistryRejectsRevisionGapsAndTamperedSnapshots(t *testing.T) {
 	index, catalog, candidate := reviewFixture()
 	registry, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	gap := registry
 	gap.Records = append([]ReviewRecord{}, registry.Records...)
 	gap.Records[0].Revision = 2
@@ -252,13 +276,17 @@ func TestChangingReviewHintsInvalidatesPriorApproval(t *testing.T) {
 	candidate.ID = candidateID(candidate)
 	index.Candidates[0] = candidate
 	approved, _, err := RecordReview(index, catalog, NewRegistry(), validReviewProposal(candidate))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	changed := candidate
 	changed.ReviewHints = []string{"conditional_scope"}
 	index.Candidates[0] = changed
 	coverage, err := ValidateRegistry(index, catalog, approved)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if coverage.StaleCount != 1 || coverage.BlockingBindingCount != 0 || coverage.UnboundCount != 1 {
 		t.Fatalf("changed interpretation hints must invalidate the old approval: %+v", coverage)
 	}
@@ -268,13 +296,21 @@ func TestSaveAndLoadRegistryRoundTripWithRestrictedPermissions(t *testing.T) {
 	root := t.TempDir()
 	path := filepath.Join(root, "nested", "bindings.json")
 	registry := NewRegistry()
-	if err := SaveRegistry(path, registry); err != nil { t.Fatal(err) }
+	if err := SaveRegistry(path, registry); err != nil {
+		t.Fatal(err)
+	}
 	loaded, err := LoadRegistry(path)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if loaded.SchemaVersion != RegistrySchemaVersion || len(loaded.Records) != 0 {
 		t.Fatalf("unexpected round-tripped registry: %+v", loaded)
 	}
 	info, err := os.Stat(path)
-	if err != nil { t.Fatal(err) }
-	if info.Mode().Perm() != 0600 { t.Fatalf("registry permissions=%o, want 600", info.Mode().Perm()) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0600 {
+		t.Fatalf("registry permissions=%o, want 600", info.Mode().Perm())
+	}
 }

@@ -14,9 +14,9 @@ func TestScoreConfidenceBands(t *testing.T) {
 
 	low := Candidate{
 		Modality: "should", PatternHint: "manual_review",
-		Kind: "normative_candidate",
+		Kind:        "normative_candidate",
 		ReviewHints: []string{"subjective_or_underspecified", "ambiguous_interpretation"},
-		Ambiguity: []string{"subjective_or_preference_language"},
+		Ambiguity:   []string{"subjective_or_preference_language"},
 	}
 	band, score, reasons = scoreConfidence(low)
 	if band != ConfidenceLow {
@@ -28,7 +28,7 @@ func TestScoreConfidenceBands(t *testing.T) {
 
 	medium := Candidate{
 		Modality: "must", PatternHint: "security.source_pattern",
-		Kind: "normative_candidate",
+		Kind:        "normative_candidate",
 		ReviewHints: []string{"compound_or_conjoined", "split_from_compound"},
 	}
 	band, _, _ = scoreConfidence(medium)

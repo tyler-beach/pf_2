@@ -80,21 +80,21 @@ type Scope struct {
 
 // Record is one normalized observation or limitation.
 type Record struct {
-	SchemaVersion  string         `json:"schema_version"`
-	EvidenceID     string         `json:"evidence_id"`
-	Repository     string         `json:"repository,omitempty"`
-	Revision       string         `json:"revision,omitempty"`
-	AnalysisRunID  string         `json:"analysis_run_id,omitempty"`
-	Producer       Producer       `json:"producer"`
-	Kind           string         `json:"kind"`
-	Artifact       Artifact       `json:"artifact,omitempty"`
-	Finding        *Finding       `json:"finding,omitempty"`
-	Status         string         `json:"status"`
-	Provenance     Provenance     `json:"provenance,omitempty"`
-	Scope          Scope          `json:"scope,omitempty"`
-	Limitations    []string       `json:"limitations,omitempty"`
-	Diagnostics    []string       `json:"diagnostics,omitempty"`
-	Metadata       map[string]any `json:"metadata,omitempty"`
+	SchemaVersion string         `json:"schema_version"`
+	EvidenceID    string         `json:"evidence_id"`
+	Repository    string         `json:"repository,omitempty"`
+	Revision      string         `json:"revision,omitempty"`
+	AnalysisRunID string         `json:"analysis_run_id,omitempty"`
+	Producer      Producer       `json:"producer"`
+	Kind          string         `json:"kind"`
+	Artifact      Artifact       `json:"artifact,omitempty"`
+	Finding       *Finding       `json:"finding,omitempty"`
+	Status        string         `json:"status"`
+	Provenance    Provenance     `json:"provenance,omitempty"`
+	Scope         Scope          `json:"scope,omitempty"`
+	Limitations   []string       `json:"limitations,omitempty"`
+	Diagnostics   []string       `json:"diagnostics,omitempty"`
+	Metadata      map[string]any `json:"metadata,omitempty"`
 }
 
 // Bundle groups records from one or more producers for a single assessment.
@@ -103,16 +103,16 @@ type Bundle struct {
 	Revision      string   `json:"revision,omitempty"`
 	Records       []Record `json:"records"`
 	// ScanCompleteness mirrors analyzer.ScanResult status for fail-closed gates.
-	ScanCompleteness string            `json:"scan_completeness,omitempty"`
+	ScanCompleteness string                  `json:"scan_completeness,omitempty"`
 	Producers        []analyzer.AnalyzerInfo `json:"producers,omitempty"`
-	InputSHA256      string            `json:"input_sha256,omitempty"`
-	RawOutputSHA256  string            `json:"raw_output_sha256,omitempty"`
-	ConfigPath       string            `json:"configuration_path,omitempty"`
-	ConfigSHA256     string            `json:"configuration_sha256,omitempty"`
-	BinarySHA256     string            `json:"binary_sha256,omitempty"`
-	RuleSetSHA256    string            `json:"rule_set_sha256,omitempty"`
-	ScannedPaths     []string          `json:"scanned_paths,omitempty"`
-	Errors           []string          `json:"errors,omitempty"`
+	InputSHA256      string                  `json:"input_sha256,omitempty"`
+	RawOutputSHA256  string                  `json:"raw_output_sha256,omitempty"`
+	ConfigPath       string                  `json:"configuration_path,omitempty"`
+	ConfigSHA256     string                  `json:"configuration_sha256,omitempty"`
+	BinarySHA256     string                  `json:"binary_sha256,omitempty"`
+	RuleSetSHA256    string                  `json:"rule_set_sha256,omitempty"`
+	ScannedPaths     []string                `json:"scanned_paths,omitempty"`
+	Errors           []string                `json:"errors,omitempty"`
 }
 
 // FromScanResult adapts OpenGrep/SARIF-normalized ScanResult into the canonical envelope.
@@ -193,7 +193,7 @@ func FromScanResult(scan analyzer.ScanResult, runID string) Bundle {
 			},
 			Kind: KindScannerFinding,
 			Artifact: Artifact{
-				Path: filepathToSlash(finding.Path),
+				Path:      filepathToSlash(finding.Path),
 				StartLine: finding.StartLine, StartColumn: finding.StartColumn,
 			},
 			Finding: &Finding{

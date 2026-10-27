@@ -136,16 +136,28 @@ func runAssess(args []string, repoMode bool) error {
 	}
 	var analyzerResults []analyzer.ScanResult
 	if *analyzerEvidencePath != "" {
-		if !repoMode { return fmt.Errorf("--analyzer-evidence is supported only for repository assessments") }
-		if *analyzerSARIFPath == "" { return fmt.Errorf("--analyzer-sarif is required when --analyzer-evidence is provided") }
+		if !repoMode {
+			return fmt.Errorf("--analyzer-evidence is supported only for repository assessments")
+		}
+		if *analyzerSARIFPath == "" {
+			return fmt.Errorf("--analyzer-sarif is required when --analyzer-evidence is provided")
+		}
 		data, readErr := os.ReadFile(*analyzerEvidencePath)
-		if readErr != nil { return fmt.Errorf("read analyzer evidence: %w", readErr) }
+		if readErr != nil {
+			return fmt.Errorf("read analyzer evidence: %w", readErr)
+		}
 		var evidence analyzer.ScanResult
-		if decodeErr := json.Unmarshal(data, &evidence); decodeErr != nil { return fmt.Errorf("decode analyzer evidence: %w", decodeErr) }
+		if decodeErr := json.Unmarshal(data, &evidence); decodeErr != nil {
+			return fmt.Errorf("decode analyzer evidence: %w", decodeErr)
+		}
 		rawSARIF, readErr := os.ReadFile(*analyzerSARIFPath)
-		if readErr != nil { return fmt.Errorf("read raw analyzer SARIF: %w", readErr) }
+		if readErr != nil {
+			return fmt.Errorf("read raw analyzer SARIF: %w", readErr)
+		}
 		verified, verifyErr := analyzer.VerifyScanEvidence(*root, evidence, rawSARIF)
-		if verifyErr != nil { return fmt.Errorf("verify analyzer evidence: %w", verifyErr) }
+		if verifyErr != nil {
+			return fmt.Errorf("verify analyzer evidence: %w", verifyErr)
+		}
 		analyzerResults = append(analyzerResults, verified)
 	} else if *analyzerSARIFPath != "" {
 		return fmt.Errorf("--analyzer-sarif requires --analyzer-evidence")
@@ -215,22 +227,44 @@ func runOpenGrepScan(args []string) error {
 	maxAttempts := fs.Int("max-attempts", 2, "attempts per task, including the first")
 	maxMemoryMB := fs.Int("max-memory-mb", 1024, "worker resource-profile memory budget recorded in the plan")
 	maxFileBytes := fs.Int64("max-file-bytes", 4<<20, "maximum supported source file size")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("scan-opengrep accepts no positional arguments") }
-	if *timeout <= 0 { return fmt.Errorf("--timeout must be positive") }
-	if *maxConcurrency < 1 || *maxConcurrency > plan.MaxConcurrency { return fmt.Errorf("--max-concurrency must be between 1 and %d", plan.MaxConcurrency) }
-	if *maxAttempts < 1 || *maxAttempts > plan.MaxRetryCount+1 { return fmt.Errorf("--max-attempts must be between 1 and %d", plan.MaxRetryCount+1) }
-	if *maxMemoryMB < 1 { return fmt.Errorf("--max-memory-mb must be positive") }
-	if *maxFileBytes < 1 { return fmt.Errorf("--max-file-bytes must be positive") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("scan-opengrep accepts no positional arguments")
+	}
+	if *timeout <= 0 {
+		return fmt.Errorf("--timeout must be positive")
+	}
+	if *maxConcurrency < 1 || *maxConcurrency > plan.MaxConcurrency {
+		return fmt.Errorf("--max-concurrency must be between 1 and %d", plan.MaxConcurrency)
+	}
+	if *maxAttempts < 1 || *maxAttempts > plan.MaxRetryCount+1 {
+		return fmt.Errorf("--max-attempts must be between 1 and %d", plan.MaxRetryCount+1)
+	}
+	if *maxMemoryMB < 1 {
+		return fmt.Errorf("--max-memory-mb must be positive")
+	}
+	if *maxFileBytes < 1 {
+		return fmt.Errorf("--max-file-bytes must be positive")
+	}
 
 	rootAbs, err := filepath.Abs(*root)
-	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve repository root: %w", err)
+	}
 	rootAbs, err = filepath.EvalSymlinks(rootAbs)
-	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve repository root symlinks: %w", err)
+	}
 	binaryPath, binaryHash, err := resolveOpenGrepBinary(*binary, *binarySHA256)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	_, configRel, err := resolveRepositoryConfig(rootAbs, *config)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	maxRetries := *maxAttempts - 1
 	spec := plan.AnalyzerSpec{
 		Name: "opengrep", Version: *version, BinarySHA256: binaryHash, RuleSetSHA256: "",
@@ -242,11 +276,15 @@ func runOpenGrepScan(args []string) error {
 	_ = maxFileBytes // retained for CLI compatibility; plan inventory enforces file size limits
 	_ = maxMemoryMB  // retained as documented plan metadata; local OS limits are not enforced
 	manifest, err := plan.BuildManifest(rootAbs, []plan.AnalyzerSpec{spec}, *maxConcurrency)
-	if err != nil { return fmt.Errorf("build deterministic analyzer plan: %w", err) }
+	if err != nil {
+		return fmt.Errorf("build deterministic analyzer plan: %w", err)
+	}
 	var cache plan.ResultCache
 	if strings.TrimSpace(*cacheDir) != "" {
 		fileCache, cacheErr := plan.NewFileCache(*cacheDir)
-		if cacheErr != nil { return fmt.Errorf("open analyzer cache: %w", cacheErr) }
+		if cacheErr != nil {
+			return fmt.Errorf("open analyzer cache: %w", cacheErr)
+		}
 		cache = fileCache
 	}
 	run, err := plan.ExecuteManifest(context.Background(), rootAbs, manifest, plan.OpenGrepTaskRunner{Binary: binaryPath}, cache)
@@ -278,17 +316,29 @@ func runOpenGrepScan(args []string) error {
 		compat.Errors = []string{err.Error()}
 	}
 	manifestBytes, encodeErr := json.MarshalIndent(compat, "", "  ")
-	if encodeErr != nil { return fmt.Errorf("encode run manifest: %w", encodeErr) }
-	if writeErr := writeFile(*manifestPath, append(manifestBytes, '\n')); writeErr != nil { return writeErr }
+	if encodeErr != nil {
+		return fmt.Errorf("encode run manifest: %w", encodeErr)
+	}
+	if writeErr := writeFile(*manifestPath, append(manifestBytes, '\n')); writeErr != nil {
+		return writeErr
+	}
 	data, encodeErr := analyzer.WriteJSON(result)
-	if encodeErr != nil { return encodeErr }
-	if err := writeFile(*jsonPath, data); err != nil { return err }
+	if encodeErr != nil {
+		return encodeErr
+	}
+	if err := writeFile(*jsonPath, data); err != nil {
+		return err
+	}
 	if len(result.RawSARIF) > 0 {
-		if err := writeFile(*sarifPath, result.RawSARIF); err != nil { return err }
+		if err := writeFile(*sarifPath, result.RawSARIF); err != nil {
+			return err
+		}
 	}
 	if run.Status != plan.RunStatusComplete || task.Status != plan.TaskStatusComplete {
 		reason := task.Error
-		if reason == "" { reason = "one or more planned scan tasks did not complete" }
+		if reason == "" {
+			reason = "one or more planned scan tasks did not complete"
+		}
 		return fmt.Errorf("OpenGrep assessment %s; manifest: %s; normalized evidence: %s; raw SARIF: %s: %s",
 			run.Status, *manifestPath, *jsonPath, *sarifPath, reason)
 	}
@@ -323,7 +373,9 @@ type scanRunTask struct {
 
 func defaultAnalyzerCacheDirectory() string {
 	root, err := os.UserCacheDir()
-	if err != nil { return "" }
+	if err != nil {
+		return ""
+	}
 	return filepath.Join(root, "pathfinder", "analyzer-cache")
 }
 
@@ -336,16 +388,24 @@ func resolveRepositoryConfig(root, requested string) (string, string, error) {
 	}
 	candidate := filepath.Join(root, filepath.FromSlash(clean))
 	resolved, err := filepath.EvalSymlinks(candidate)
-	if err != nil { return "", "", fmt.Errorf("resolve OpenGrep configuration: %w", err) }
+	if err != nil {
+		return "", "", fmt.Errorf("resolve OpenGrep configuration: %w", err)
+	}
 	rel, err := filepath.Rel(root, resolved)
-	if err != nil { return "", "", fmt.Errorf("make configuration path repository-relative: %w", err) }
+	if err != nil {
+		return "", "", fmt.Errorf("make configuration path repository-relative: %w", err)
+	}
 	relSlash := filepath.ToSlash(rel)
 	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
 		return "", "", fmt.Errorf("OpenGrep configuration path escapes repository root")
 	}
 	info, err := os.Stat(resolved)
-	if err != nil { return "", "", fmt.Errorf("inspect OpenGrep configuration: %w", err) }
-	if !info.Mode().IsRegular() { return "", "", fmt.Errorf("OpenGrep configuration must be a regular file") }
+	if err != nil {
+		return "", "", fmt.Errorf("inspect OpenGrep configuration: %w", err)
+	}
+	if !info.Mode().IsRegular() {
+		return "", "", fmt.Errorf("OpenGrep configuration must be a regular file")
+	}
 	return resolved, relSlash, nil
 }
 
@@ -411,50 +471,86 @@ func runExtractObligations(args []string) error {
 	output := fs.String("json-out", "adr/obligation-candidates.json", "review-only candidate obligation JSON output")
 	reportPath := fs.String("report", "", "optional Markdown review queue output")
 	minConfidenceReport := fs.Bool("min-confidence-report", false, "print confidence-band summary to stdout")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("extract-obligations accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("extract-obligations accepts no positional arguments")
+	}
 	indexAbs, err := filepath.Abs(*indexPath)
-	if err != nil { return fmt.Errorf("resolve ingestion index path: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ingestion index path: %w", err)
+	}
 	outputAbs, err := filepath.Abs(*output)
-	if err != nil { return fmt.Errorf("resolve candidate output path: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve candidate output path: %w", err)
+	}
 	if filepath.Clean(indexAbs) == filepath.Clean(outputAbs) {
 		return fmt.Errorf("candidate output must not overwrite the ADR ingestion index")
 	}
 	reportAbs := ""
 	if *reportPath != "" {
 		reportAbs, err = filepath.Abs(*reportPath)
-		if err != nil { return fmt.Errorf("resolve candidate report path: %w", err) }
+		if err != nil {
+			return fmt.Errorf("resolve candidate report path: %w", err)
+		}
 		if filepath.Clean(reportAbs) == filepath.Clean(indexAbs) || filepath.Clean(reportAbs) == filepath.Clean(outputAbs) {
 			return fmt.Errorf("candidate report must not overwrite the ingestion index or candidate JSON output")
 		}
 	}
 	indexBytes, err := os.ReadFile(*indexPath)
-	if err != nil { return fmt.Errorf("read ADR ingestion index: %w", err) }
+	if err != nil {
+		return fmt.Errorf("read ADR ingestion index: %w", err)
+	}
 	var index ingestionIndex
-	if err := json.Unmarshal(indexBytes, &index); err != nil { return fmt.Errorf("decode ADR ingestion index: %w", err) }
-	if index.SchemaVersion != "1" { return fmt.Errorf("unsupported ADR ingestion index schema_version %q", index.SchemaVersion) }
-	if *root == "" { *root = index.SourceRoot }
-	if strings.TrimSpace(*root) == "" { return fmt.Errorf("source root is required via --root or source_root in the index") }
+	if err := json.Unmarshal(indexBytes, &index); err != nil {
+		return fmt.Errorf("decode ADR ingestion index: %w", err)
+	}
+	if index.SchemaVersion != "1" {
+		return fmt.Errorf("unsupported ADR ingestion index schema_version %q", index.SchemaVersion)
+	}
+	if *root == "" {
+		*root = index.SourceRoot
+	}
+	if strings.TrimSpace(*root) == "" {
+		return fmt.Errorf("source root is required via --root or source_root in the index")
+	}
 	sourceRootAbs, err := filepath.Abs(*root)
-	if err != nil { return fmt.Errorf("resolve ADR source root for output safety: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ADR source root for output safety: %w", err)
+	}
 	sourceRootReal, err := filepath.EvalSymlinks(sourceRootAbs)
-	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ADR source root symlinks: %w", err)
+	}
 	for _, outputFile := range []string{outputAbs, reportAbs} {
-		if outputFile == "" { continue }
+		if outputFile == "" {
+			continue
+		}
 		relative, err := filepath.Rel(sourceRootReal, outputFile)
-		if err != nil { return fmt.Errorf("validate candidate output containment: %w", err) }
+		if err != nil {
+			return fmt.Errorf("validate candidate output containment: %w", err)
+		}
 		if relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) && !filepath.IsAbs(relative) {
 			return fmt.Errorf("candidate outputs must remain outside the ADR source root")
 		}
 	}
 	candidates, err := obligations.BuildIndex(index.Documents, *root, index.SourceRoot, indexBytes)
-	if err != nil { return fmt.Errorf("build review-only obligation candidates: %w", err) }
-	data, err := json.MarshalIndent(candidates, "", "  ")
-	if err != nil { return fmt.Errorf("encode obligation candidate index: %w", err) }
-	if *reportPath != "" {
-		if err := writeFile(*reportPath, []byte(obligations.MarkdownCandidateReport(candidates))); err != nil { return err }
+	if err != nil {
+		return fmt.Errorf("build review-only obligation candidates: %w", err)
 	}
-	if err := writeFile(*output, data); err != nil { return err }
+	data, err := json.MarshalIndent(candidates, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode obligation candidate index: %w", err)
+	}
+	if *reportPath != "" {
+		if err := writeFile(*reportPath, []byte(obligations.MarkdownCandidateReport(candidates))); err != nil {
+			return err
+		}
+	}
+	if err := writeFile(*output, data); err != nil {
+		return err
+	}
 	summary := candidates.ConfidenceSummary
 	fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s", candidates.CandidateCount, candidates.DocumentCount, *output)
 	if *reportPath != "" {
@@ -597,14 +693,24 @@ func runAssertIssueVerdict(args []string) error {
 	fs := flag.NewFlagSet("assert-issue-verdict", flag.ContinueOnError)
 	title := fs.String("title", "", "GitHub issue title")
 	assessmentPath := fs.String("assessment", "assessment.json", "assessment JSON output")
-	if err := fs.Parse(args); err != nil { return err }
-	if strings.TrimSpace(*title) == "" { return fmt.Errorf("--title is required") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if strings.TrimSpace(*title) == "" {
+		return fmt.Errorf("--title is required")
+	}
 	data, err := os.ReadFile(*assessmentPath)
-	if err != nil { return fmt.Errorf("read assessment output: %w", err) }
+	if err != nil {
+		return fmt.Errorf("read assessment output: %w", err)
+	}
 	var result assessment.Result
-	if err := json.Unmarshal(data, &result); err != nil { return fmt.Errorf("decode assessment output: %w", err) }
+	if err := json.Unmarshal(data, &result); err != nil {
+		return fmt.Errorf("decode assessment output: %w", err)
+	}
 	matched, err := assessment.CheckExpectedVerdict(*title, result)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	if !matched {
 		fmt.Println("No expected-verdict marker in issue title; assertion skipped.")
 		return nil
@@ -613,17 +719,22 @@ func runAssertIssueVerdict(args []string) error {
 	return nil
 }
 
-
 // runInitReviewRegistry creates an empty append-only review ledger without
 // replacing an existing file. It is explicit so a missing/moved ledger is not
 // silently mistaken for a clean review history.
 func runInitReviewRegistry(args []string) error {
 	fs := flag.NewFlagSet("review-init", flag.ContinueOnError)
 	output := fs.String("output", "adr/obligation-reviews.json", "new review registry JSON")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("review-init accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("review-init accepts no positional arguments")
+	}
 	absolute, err := filepath.Abs(*output)
-	if err != nil { return fmt.Errorf("resolve registry output: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve registry output: %w", err)
+	}
 	if _, err := os.Lstat(absolute); err == nil {
 		return fmt.Errorf("review registry %s already exists; initialization never overwrites review history", absolute)
 	} else if !os.IsNotExist(err) {
@@ -633,17 +744,33 @@ func runInitReviewRegistry(args []string) error {
 		return fmt.Errorf("create registry directory: %w", err)
 	}
 	data, err := json.MarshalIndent(obligations.NewRegistry(), "", "  ")
-	if err != nil { return fmt.Errorf("encode empty review registry: %w", err) }
+	if err != nil {
+		return fmt.Errorf("encode empty review registry: %w", err)
+	}
 	file, err := os.OpenFile(absolute, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
-		if os.IsExist(err) { return fmt.Errorf("review registry %s already exists; initialization never overwrites review history", absolute) }
+		if os.IsExist(err) {
+			return fmt.Errorf("review registry %s already exists; initialization never overwrites review history", absolute)
+		}
 		return fmt.Errorf("create review registry: %w", err)
 	}
 	ok := false
-	defer func() { if !ok { _ = os.Remove(absolute) } }()
-	if _, err := file.Write(data); err != nil { _ = file.Close(); return fmt.Errorf("write review registry: %w", err) }
-	if err := file.Sync(); err != nil { _ = file.Close(); return fmt.Errorf("sync review registry: %w", err) }
-	if err := file.Close(); err != nil { return fmt.Errorf("close review registry: %w", err) }
+	defer func() {
+		if !ok {
+			_ = os.Remove(absolute)
+		}
+	}()
+	if _, err := file.Write(data); err != nil {
+		_ = file.Close()
+		return fmt.Errorf("write review registry: %w", err)
+	}
+	if err := file.Sync(); err != nil {
+		_ = file.Close()
+		return fmt.Errorf("sync review registry: %w", err)
+	}
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("close review registry: %w", err)
+	}
 	ok = true
 	fmt.Printf("Initialized empty review registry at %s. No candidate was approved.\n", absolute)
 	return nil
@@ -652,21 +779,31 @@ func runInitReviewRegistry(args []string) error {
 func readObligationIndex(path string) (obligations.Index, error) {
 	var index obligations.Index
 	data, err := os.ReadFile(path)
-	if err != nil { return index, fmt.Errorf("read candidate index: %w", err) }
-	if err := json.Unmarshal(data, &index); err != nil { return index, fmt.Errorf("decode candidate index: %w", err) }
+	if err != nil {
+		return index, fmt.Errorf("read candidate index: %w", err)
+	}
+	if err := json.Unmarshal(data, &index); err != nil {
+		return index, fmt.Errorf("decode candidate index: %w", err)
+	}
 	return index, nil
 }
 
 func readReviewProposal(path string) (obligations.ReviewProposal, error) {
 	var proposal obligations.ReviewProposal
 	data, err := os.ReadFile(path)
-	if err != nil { return proposal, fmt.Errorf("read review proposal: %w", err) }
+	if err != nil {
+		return proposal, fmt.Errorf("read review proposal: %w", err)
+	}
 	decoder := json.NewDecoder(strings.NewReader(string(data)))
 	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&proposal); err != nil { return proposal, fmt.Errorf("decode review proposal: %w", err) }
+	if err := decoder.Decode(&proposal); err != nil {
+		return proposal, fmt.Errorf("decode review proposal: %w", err)
+	}
 	var extra any
 	if err := decoder.Decode(&extra); err != io.EOF {
-		if err == nil { return proposal, fmt.Errorf("decode review proposal: trailing JSON value") }
+		if err == nil {
+			return proposal, fmt.Errorf("decode review proposal: trailing JSON value")
+		}
 		return proposal, fmt.Errorf("decode review proposal: trailing content: %w", err)
 	}
 	return proposal, nil
@@ -679,25 +816,47 @@ func runRecordObligationReview(args []string) error {
 	registryPath := fs.String("registry", "adr/obligation-reviews.json", "existing append-only review registry")
 	proposalPath := fs.String("proposal", "", "JSON review proposal")
 	coveragePath := fs.String("coverage-out", "", "optional binding coverage JSON output")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("record-obligation-review accepts no positional arguments") }
-	if strings.TrimSpace(*proposalPath) == "" { return fmt.Errorf("--proposal is required") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("record-obligation-review accepts no positional arguments")
+	}
+	if strings.TrimSpace(*proposalPath) == "" {
+		return fmt.Errorf("--proposal is required")
+	}
 	index, err := readObligationIndex(*indexPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	catalog, err := assessment.LoadCatalog(*catalogPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	registry, err := obligations.LoadRegistry(*registryPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	proposal, err := readReviewProposal(*proposalPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	next, coverage, err := obligations.RecordReview(index, catalog, registry, proposal)
-	if err != nil { return fmt.Errorf("record obligation review: %w", err) }
+	if err != nil {
+		return fmt.Errorf("record obligation review: %w", err)
+	}
 	// Persist the validated append-only ledger before publishing its derived summary.
-	if err := obligations.SaveRegistry(*registryPath, next); err != nil { return err }
+	if err := obligations.SaveRegistry(*registryPath, next); err != nil {
+		return err
+	}
 	if strings.TrimSpace(*coveragePath) != "" {
 		data, err := json.MarshalIndent(coverage, "", "  ")
-		if err != nil { return fmt.Errorf("encode binding coverage: %w", err) }
-		if err := writeFile(*coveragePath, data); err != nil { return err }
+		if err != nil {
+			return fmt.Errorf("encode binding coverage: %w", err)
+		}
+		if err := writeFile(*coveragePath, data); err != nil {
+			return err
+		}
 	}
 	fmt.Printf("Recorded %s revision for %s. Blocking bindings: %d; advisory bindings: %d; review required: %d; stale: %d.\n",
 		proposal.Decision, proposal.CandidateID, coverage.BlockingBindingCount, coverage.AdvisoryBindingCount, coverage.ReviewRequiredCount, coverage.StaleCount)
@@ -711,20 +870,36 @@ func runValidateObligationReviews(args []string) error {
 	registryPath := fs.String("registry", "adr/obligation-reviews.json", "append-only review registry")
 	coveragePath := fs.String("json-out", "", "binding coverage JSON output (default: stdout)")
 	strict := fs.Bool("strict", false, "fail on stale approvals or orphaned candidate history")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("validate-obligation-reviews accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("validate-obligation-reviews accepts no positional arguments")
+	}
 	index, err := readObligationIndex(*indexPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	catalog, err := assessment.LoadCatalog(*catalogPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	registry, err := obligations.LoadRegistry(*registryPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	coverage, err := obligations.ValidateRegistry(index, catalog, registry)
-	if err != nil { return fmt.Errorf("validate obligation review registry: %w", err) }
+	if err != nil {
+		return fmt.Errorf("validate obligation review registry: %w", err)
+	}
 	data, err := json.MarshalIndent(coverage, "", "  ")
-	if err != nil { return fmt.Errorf("encode binding coverage: %w", err) }
+	if err != nil {
+		return fmt.Errorf("encode binding coverage: %w", err)
+	}
 	if strings.TrimSpace(*coveragePath) != "" {
-		if err := writeFile(*coveragePath, data); err != nil { return err }
+		if err := writeFile(*coveragePath, data); err != nil {
+			return err
+		}
 	} else {
 		fmt.Println(string(data))
 	}
@@ -750,73 +925,127 @@ func runAssessObligations(args []string) error {
 	jsonPath := fs.String("json-out", "obligation-assessment.json", "per-obligation JSON report output")
 	markdownPath := fs.String("report", "obligation-assessment.md", "per-obligation Markdown report output")
 	enforceBlocking := fs.Bool("enforce-blocking", false, "return an error unless every approved blocking obligation passes with fresh evidence")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("assess-obligations accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("assess-obligations accepts no positional arguments")
+	}
 	inputs := []string{*indexPath, *catalogPath, *registryPath, *assessmentPath}
 	outputs := []string{*jsonPath, *markdownPath}
 	seen := map[string]string{}
 	for _, input := range inputs {
 		absolute, err := filepath.Abs(input)
-		if err != nil { return fmt.Errorf("resolve input path %q: %w", input, err) }
+		if err != nil {
+			return fmt.Errorf("resolve input path %q: %w", input, err)
+		}
 		seen[filepath.Clean(absolute)] = "input"
 	}
 	for _, output := range outputs {
 		absolute, err := filepath.Abs(output)
-		if err != nil { return fmt.Errorf("resolve output path %q: %w", output, err) }
+		if err != nil {
+			return fmt.Errorf("resolve output path %q: %w", output, err)
+		}
 		key := filepath.Clean(absolute)
-		if prior, exists := seen[key]; exists { return fmt.Errorf("output path %q collides with an existing %s path", output, prior) }
+		if prior, exists := seen[key]; exists {
+			return fmt.Errorf("output path %q collides with an existing %s path", output, prior)
+		}
 		seen[key] = "output"
 	}
 	index, err := readObligationIndex(*indexPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	ingestionBytes, err := os.ReadFile(*ingestionIndexPath)
-	if err != nil { return fmt.Errorf("read ADR ingestion index for candidate freshness: %w", err) }
+	if err != nil {
+		return fmt.Errorf("read ADR ingestion index for candidate freshness: %w", err)
+	}
 	var sourceIndex ingestionIndex
-	if err := json.Unmarshal(ingestionBytes, &sourceIndex); err != nil { return fmt.Errorf("decode ADR ingestion index for candidate freshness: %w", err) }
-	if sourceIndex.SchemaVersion != "1" { return fmt.Errorf("unsupported ADR ingestion index schema_version %q", sourceIndex.SchemaVersion) }
+	if err := json.Unmarshal(ingestionBytes, &sourceIndex); err != nil {
+		return fmt.Errorf("decode ADR ingestion index for candidate freshness: %w", err)
+	}
+	if sourceIndex.SchemaVersion != "1" {
+		return fmt.Errorf("unsupported ADR ingestion index schema_version %q", sourceIndex.SchemaVersion)
+	}
 	rootAbs, err := filepath.Abs(*root)
-	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve repository root: %w", err)
+	}
 	rootReal, err := filepath.EvalSymlinks(rootAbs)
-	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve repository root symlinks: %w", err)
+	}
 	sourceRootPath := sourceIndex.SourceRoot
-	if !filepath.IsAbs(sourceRootPath) { sourceRootPath = filepath.Join(rootReal, sourceRootPath) }
+	if !filepath.IsAbs(sourceRootPath) {
+		sourceRootPath = filepath.Join(rootReal, sourceRootPath)
+	}
 	sourceRootAbs, err := filepath.Abs(sourceRootPath)
-	if err != nil { return fmt.Errorf("resolve ADR source root: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ADR source root: %w", err)
+	}
 	sourceRootReal, err := filepath.EvalSymlinks(sourceRootAbs)
-	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ADR source root symlinks: %w", err)
+	}
 	relativeSourceRoot, err := filepath.Rel(rootReal, sourceRootReal)
-	if err != nil { return fmt.Errorf("validate ADR source root containment: %w", err) }
+	if err != nil {
+		return fmt.Errorf("validate ADR source root containment: %w", err)
+	}
 	if relativeSourceRoot == ".." || strings.HasPrefix(relativeSourceRoot, ".."+string(filepath.Separator)) || filepath.IsAbs(relativeSourceRoot) {
 		return fmt.Errorf("ADR source root must remain inside the current repository root")
 	}
 	rebuiltIndex, err := obligations.BuildIndex(sourceIndex.Documents, sourceRootReal, sourceIndex.SourceRoot, ingestionBytes)
-	if err != nil { return fmt.Errorf("rebuild candidate index from current ADR sources: %w", err) }
+	if err != nil {
+		return fmt.Errorf("rebuild candidate index from current ADR sources: %w", err)
+	}
 	expectedIndex, err := json.Marshal(rebuiltIndex)
-	if err != nil { return fmt.Errorf("encode rebuilt candidate index: %w", err) }
+	if err != nil {
+		return fmt.Errorf("encode rebuilt candidate index: %w", err)
+	}
 	providedIndex, err := json.Marshal(index)
-	if err != nil { return fmt.Errorf("encode provided candidate index: %w", err) }
+	if err != nil {
+		return fmt.Errorf("encode provided candidate index: %w", err)
+	}
 	if !bytes.Equal(expectedIndex, providedIndex) {
 		return fmt.Errorf("candidate index does not match current ADR sources and ingestion index; rerun ingest-adrs and extract-obligations")
 	}
 	catalog, err := assessment.LoadCatalog(*catalogPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	registry, err := obligations.LoadRegistry(*registryPath)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	data, err := os.ReadFile(*assessmentPath)
-	if err != nil { return fmt.Errorf("read repository assessment: %w", err) }
+	if err != nil {
+		return fmt.Errorf("read repository assessment: %w", err)
+	}
 	var evidence assessment.Result
-	if err := json.Unmarshal(data, &evidence); err != nil { return fmt.Errorf("decode repository assessment: %w", err) }
+	if err := json.Unmarshal(data, &evidence); err != nil {
+		return fmt.Errorf("decode repository assessment: %w", err)
+	}
 	currentFiles, err := assessment.LoadSourceFiles(*root)
-	if err != nil { return fmt.Errorf("load current repository source inventory: %w", err) }
+	if err != nil {
+		return fmt.Errorf("load current repository source inventory: %w", err)
+	}
 	currentSourceSnapshot := assessment.HashSourceFiles(currentFiles)
 	currentRepositorySnapshot, err := analyzer.HashInputTree(*root)
-	if err != nil { return fmt.Errorf("hash current repository snapshot: %w", err) }
+	if err != nil {
+		return fmt.Errorf("hash current repository snapshot: %w", err)
+	}
 	report, err := obligations.AssessCandidates(index, catalog, registry, evidence, currentSourceSnapshot, currentRepositorySnapshot)
-	if err != nil { return fmt.Errorf("assess obligation candidates: %w", err) }
+	if err != nil {
+		return fmt.Errorf("assess obligation candidates: %w", err)
+	}
 	indexBytes, err := os.ReadFile(*indexPath)
-	if err != nil { return fmt.Errorf("read candidate index for provenance: %w", err) }
+	if err != nil {
+		return fmt.Errorf("read candidate index for provenance: %w", err)
+	}
 	registryBytes, err := os.ReadFile(*registryPath)
-	if err != nil { return fmt.Errorf("read review registry for provenance: %w", err) }
+	if err != nil {
+		return fmt.Errorf("read review registry for provenance: %w", err)
+	}
 	indexDigest := sha256.Sum256(indexBytes)
 	registryDigest := sha256.Sum256(registryBytes)
 	assessmentDigest := sha256.Sum256(data)
@@ -824,9 +1053,15 @@ func runAssessObligations(args []string) error {
 	report.ReviewRegistryArtifactSHA256 = hex.EncodeToString(registryDigest[:])
 	report.AssessmentArtifactSHA256 = hex.EncodeToString(assessmentDigest[:])
 	encoded, err := json.MarshalIndent(report, "", "  ")
-	if err != nil { return fmt.Errorf("encode obligation assessment: %w", err) }
-	if err := writeFile(*jsonPath, encoded); err != nil { return err }
-	if err := writeFile(*markdownPath, []byte(obligations.MarkdownAssessmentReport(report))); err != nil { return err }
+	if err != nil {
+		return fmt.Errorf("encode obligation assessment: %w", err)
+	}
+	if err := writeFile(*jsonPath, encoded); err != nil {
+		return err
+	}
+	if err := writeFile(*markdownPath, []byte(obligations.MarkdownAssessmentReport(report))); err != nil {
+		return err
+	}
 	fmt.Printf("Obligation assessment: %d candidate(s); verdict=%s; PASS=%d FAIL=%d INDETERMINATE=%d NOT_APPLICABLE=%d; JSON=%s; report=%s\n",
 		report.CandidateCount, report.ObligationVerdict, report.Counts["PASS"], report.Counts["FAIL"], report.Counts["INDETERMINATE"],
 		report.Counts["NOT_APPLICABLE"], *jsonPath, *markdownPath)
@@ -886,26 +1121,42 @@ func runSpecificationCheck(args []string) error {
 	analyzerEvidence := fs.String("analyzer-evidence", "", "optional normalized analyzer scan evidence JSON")
 	analyzerSARIF := fs.String("analyzer-sarif", "", "raw SARIF paired with normalized analyzer evidence")
 	reportOnly := fs.Bool("report-only", false, "write assessment artifacts without enforcing blocking obligations")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("specification-check accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("specification-check accepts no positional arguments")
+	}
 	if (*analyzerEvidence == "") != (*analyzerSARIF == "") {
 		return fmt.Errorf("--analyzer-evidence and --analyzer-sarif must be provided together")
 	}
 
 	rootAbs, err := filepath.Abs(*root)
-	if err != nil { return fmt.Errorf("resolve repository root: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve repository root: %w", err)
+	}
 	rootReal, err := filepath.EvalSymlinks(rootAbs)
-	if err != nil { return fmt.Errorf("resolve repository root symlinks: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve repository root symlinks: %w", err)
+	}
 	resolveInput := func(raw string) string {
-		if filepath.IsAbs(raw) { return filepath.Clean(raw) }
+		if filepath.IsAbs(raw) {
+			return filepath.Clean(raw)
+		}
 		return filepath.Join(rootReal, raw)
 	}
 	adrRootAbs, err := filepath.Abs(resolveInput(sourceRoot))
-	if err != nil { return fmt.Errorf("resolve ADR source root: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ADR source root: %w", err)
+	}
 	adrRootReal, err := filepath.EvalSymlinks(adrRootAbs)
-	if err != nil { return fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	if err != nil {
+		return fmt.Errorf("resolve ADR source root symlinks: %w", err)
+	}
 	relativeADRRoot, err := filepath.Rel(rootReal, adrRootReal)
-	if err != nil { return fmt.Errorf("validate ADR source root containment: %w", err) }
+	if err != nil {
+		return fmt.Errorf("validate ADR source root containment: %w", err)
+	}
 	if relativeADRRoot == ".." || strings.HasPrefix(relativeADRRoot, ".."+string(filepath.Separator)) || filepath.IsAbs(relativeADRRoot) {
 		return fmt.Errorf("ADR source root must remain inside repository root")
 	}
@@ -920,7 +1171,9 @@ func runSpecificationCheck(args []string) error {
 		return fmt.Errorf("generated artifact directory must remain inside repository root")
 	}
 	relArtifacts, err := filepath.Rel(adrRootReal, artifactDir)
-	if err != nil { return fmt.Errorf("validate generated artifact directory: %w", err) }
+	if err != nil {
+		return fmt.Errorf("validate generated artifact directory: %w", err)
+	}
 	if relArtifacts == "." || (relArtifacts != ".." && !strings.HasPrefix(relArtifacts, ".."+string(filepath.Separator))) {
 		return fmt.Errorf("ADR source root must not contain the generated artifact directory %q", artifactDir)
 	}
@@ -983,7 +1236,9 @@ func runSpecificationCheck(args []string) error {
 		"--requirements", catalogPath, "--registry", registryPath, "--assessment", assessmentPath,
 		"--json-out", obligationReportPath, "--report", obligationMarkdownPath,
 	}
-	if !*reportOnly { joinArgs = append(joinArgs, "--enforce-blocking") }
+	if !*reportOnly {
+		joinArgs = append(joinArgs, "--enforce-blocking")
+	}
 	if err := runAssessObligations(joinArgs); err != nil {
 		return fmt.Errorf("specification check failed: %w", err)
 	}
@@ -1027,15 +1282,21 @@ func runPlanRepo(args []string) error {
 	backoff := fs.Duration("retry-backoff", 500*time.Millisecond, "initial retry backoff")
 	maxBackoff := fs.Duration("max-retry-backoff", 10*time.Second, "maximum retry backoff")
 	output := fs.String("json-out", "analyzer-evidence/plan.json", "deterministic plan manifest output")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("plan-repo accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("plan-repo accepts no positional arguments")
+	}
 	if *timeout < time.Millisecond || *backoff < 0 || *maxBackoff < 0 {
 		return fmt.Errorf("timeouts and retry backoffs must not be negative, and timeout must be at least 1ms")
 	}
 	scopePrefixes := []string{}
 	for _, item := range strings.Split(*scope, ",") {
 		item = strings.TrimSpace(item)
-		if item != "" { scopePrefixes = append(scopePrefixes, item) }
+		if item != "" {
+			scopePrefixes = append(scopePrefixes, item)
+		}
 	}
 	spec := plan.AnalyzerSpec{
 		Name: *analyzerName, Version: *version, BinarySHA256: *binarySHA256, RuleSetSHA256: *ruleSetSHA256,
@@ -1045,11 +1306,17 @@ func runPlanRepo(args []string) error {
 		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
 	}
 	manifest, err := plan.BuildManifest(*root, []plan.AnalyzerSpec{spec}, *maxConcurrency)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 	data, err := json.MarshalIndent(manifest, "", "  ")
-	if err != nil { return fmt.Errorf("encode analyzer plan manifest: %w", err) }
+	if err != nil {
+		return fmt.Errorf("encode analyzer plan manifest: %w", err)
+	}
 	data = append(data, '\n')
-	if err := writeFile(*output, data); err != nil { return err }
+	if err := writeFile(*output, data); err != nil {
+		return err
+	}
 	fmt.Printf("Plan %s; input %s; tasks %d; concurrency %d; output %s. No analyzer was executed.\n",
 		manifest.ManifestSHA256, manifest.InputSHA256, len(manifest.Tasks), manifest.MaxConcurrency, *output)
 	return nil
@@ -1058,13 +1325,19 @@ func runPlanRepo(args []string) error {
 func readPlanManifest(path string) (plan.Manifest, error) {
 	var manifest plan.Manifest
 	data, err := os.ReadFile(path)
-	if err != nil { return manifest, fmt.Errorf("read plan manifest: %w", err) }
+	if err != nil {
+		return manifest, fmt.Errorf("read plan manifest: %w", err)
+	}
 	decoder := json.NewDecoder(strings.NewReader(string(data)))
 	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&manifest); err != nil { return manifest, fmt.Errorf("decode plan manifest: %w", err) }
+	if err := decoder.Decode(&manifest); err != nil {
+		return manifest, fmt.Errorf("decode plan manifest: %w", err)
+	}
 	var extra any
 	if err := decoder.Decode(&extra); err != io.EOF {
-		if err == nil { return manifest, fmt.Errorf("decode plan manifest: trailing JSON value") }
+		if err == nil {
+			return manifest, fmt.Errorf("decode plan manifest: trailing JSON value")
+		}
 		return manifest, fmt.Errorf("decode plan manifest: trailing content: %w", err)
 	}
 	return manifest, nil
@@ -1074,60 +1347,93 @@ func runVerifyPlan(args []string) error {
 	fs := flag.NewFlagSet("verify-plan", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root")
 	manifestPath := fs.String("manifest", "analyzer-evidence/plan.json", "plan manifest JSON")
-	if err := fs.Parse(args); err != nil { return err }
-	if fs.NArg() != 0 { return fmt.Errorf("verify-plan accepts no positional arguments") }
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("verify-plan accepts no positional arguments")
+	}
 	manifest, err := readPlanManifest(*manifestPath)
-	if err != nil { return err }
-	if err := plan.VerifyManifest(*root, manifest); err != nil { return err }
+	if err != nil {
+		return err
+	}
+	if err := plan.VerifyManifest(*root, manifest); err != nil {
+		return err
+	}
 	fmt.Printf("Plan verified: %s; input %s; tasks %d.\n", manifest.ManifestSHA256, manifest.InputSHA256, len(manifest.Tasks))
 	return nil
 }
 
-
 func runExecutePlan(args []string) error {
-	return runExecutePlanWithRunner(args,nil)
+	return runExecutePlanWithRunner(args, nil)
 }
 
 // runExecutePlanWithRunner supports deterministic CLI integration tests while
 // keeping production runner selection explicit and pinned by the plan manifest.
 func runExecutePlanWithRunner(args []string, injected plan.TaskRunner) error {
-	fs:=flag.NewFlagSet("execute-plan",flag.ContinueOnError)
-	root:=fs.String("root",".","repository root")
-	manifestPath:=fs.String("manifest","analyzer-evidence/plan.json","source-bound plan manifest")
-	binary:=fs.String("binary","opengrep","OpenGrep executable path")
-	cacheDirDefault,cacheErr:=os.UserCacheDir()
-	if cacheErr!=nil{cacheDirDefault=os.TempDir()}
-	cacheDir:=fs.String("cache-dir",filepath.Join(cacheDirDefault,"pathfinder","analyzers"),"private local cache directory (prefer outside repository root)")
-	output:=fs.String("json-out","analyzer-evidence/execution.json","execution result manifest JSON")
-	sarifDir:=fs.String("sarif-dir","analyzer-evidence/raw","directory for per-task raw SARIF artifacts")
-	if err:=fs.Parse(args);err!=nil{return err}
-	if fs.NArg()!=0{return fmt.Errorf("execute-plan accepts no positional arguments")}
-	manifest,err:=readPlanManifest(*manifestPath)
-	if err!=nil{return err}
-	if err:=plan.VerifyManifest(*root,manifest);err!=nil{return fmt.Errorf("verify plan before execution: %w",err)}
-	cache,err:=plan.NewFileCache(*cacheDir)
-	if err!=nil{return err}
-	runner:=injected
-	if runner==nil{runner=plan.DefaultRunnerRegistry(*binary)}
-	result,runErr:=plan.ExecuteManifest(context.Background(),*root,manifest,runner,cache)
-	for i:=range result.Tasks{
-		task:=&result.Tasks[i]
-		if len(task.RawSARIF)==0{continue}
-		path:=filepath.Join(*sarifDir,task.TaskID+".sarif")
-		if err:=writeFile(path,task.RawSARIF);err!=nil{
-			task.Status=plan.TaskStatusError
-			task.Error="write raw SARIF artifact: "+err.Error()
-			result.Status=plan.RunStatusPartial
-			if runErr==nil{runErr=err}
+	fs := flag.NewFlagSet("execute-plan", flag.ContinueOnError)
+	root := fs.String("root", ".", "repository root")
+	manifestPath := fs.String("manifest", "analyzer-evidence/plan.json", "source-bound plan manifest")
+	binary := fs.String("binary", "opengrep", "OpenGrep executable path")
+	cacheDirDefault, cacheErr := os.UserCacheDir()
+	if cacheErr != nil {
+		cacheDirDefault = os.TempDir()
+	}
+	cacheDir := fs.String("cache-dir", filepath.Join(cacheDirDefault, "pathfinder", "analyzers"), "private local cache directory (prefer outside repository root)")
+	output := fs.String("json-out", "analyzer-evidence/execution.json", "execution result manifest JSON")
+	sarifDir := fs.String("sarif-dir", "analyzer-evidence/raw", "directory for per-task raw SARIF artifacts")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("execute-plan accepts no positional arguments")
+	}
+	manifest, err := readPlanManifest(*manifestPath)
+	if err != nil {
+		return err
+	}
+	if err := plan.VerifyManifest(*root, manifest); err != nil {
+		return fmt.Errorf("verify plan before execution: %w", err)
+	}
+	cache, err := plan.NewFileCache(*cacheDir)
+	if err != nil {
+		return err
+	}
+	runner := injected
+	if runner == nil {
+		runner = plan.DefaultRunnerRegistry(*binary)
+	}
+	result, runErr := plan.ExecuteManifest(context.Background(), *root, manifest, runner, cache)
+	for i := range result.Tasks {
+		task := &result.Tasks[i]
+		if len(task.RawSARIF) == 0 {
 			continue
 		}
-		task.RawSARIFPath=path
+		path := filepath.Join(*sarifDir, task.TaskID+".sarif")
+		if err := writeFile(path, task.RawSARIF); err != nil {
+			task.Status = plan.TaskStatusError
+			task.Error = "write raw SARIF artifact: " + err.Error()
+			result.Status = plan.RunStatusPartial
+			if runErr == nil {
+				runErr = err
+			}
+			continue
+		}
+		task.RawSARIFPath = path
 	}
-	data,err:=json.MarshalIndent(result,"","  ")
-	if err!=nil{return fmt.Errorf("encode execution result manifest: %w",err)}
-	if err:=writeFile(*output,append(data,'\n'));err!=nil{return err}
-	fmt.Printf("Execution %s; plan %s; tasks %d; output %s.\n",result.Status,result.PlanManifestSHA256,len(result.Tasks),*output)
-	if runErr!=nil{return runErr}
-	if result.Status!=plan.RunStatusComplete{return fmt.Errorf("execution did not complete successfully; status %s; inspect %s",result.Status,*output)}
+	data, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode execution result manifest: %w", err)
+	}
+	if err := writeFile(*output, append(data, '\n')); err != nil {
+		return err
+	}
+	fmt.Printf("Execution %s; plan %s; tasks %d; output %s.\n", result.Status, result.PlanManifestSHA256, len(result.Tasks), *output)
+	if runErr != nil {
+		return runErr
+	}
+	if result.Status != plan.RunStatusComplete {
+		return fmt.Errorf("execution did not complete successfully; status %s; inspect %s", result.Status, *output)
+	}
 	return nil
 }

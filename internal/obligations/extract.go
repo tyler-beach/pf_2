@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	maxADRSourceBytes = 4 << 20
+	maxADRSourceBytes     = 4 << 20
 	maxCandidateLineBytes = 16 << 10
 )
 
@@ -22,43 +22,43 @@ var sentenceAbbreviations = []string{"e.g.", "i.e.", "vs.", "mr.", "mrs.", "ms."
 
 // Candidate is a source-cited interpretation suggestion, never an approved policy.
 type Candidate struct {
-	ID              string `json:"id"`
-	ADRID           string `json:"adr_id"`
-	ADRTitle        string `json:"adr_title"`
-	ADRStatus       string `json:"adr_status,omitempty"`
-	SectionHeading  string `json:"section_heading"`
-	Statement       string `json:"statement"`
-	Modality        string `json:"modality"`
-	Kind            string `json:"kind"`
-	PatternHint     string `json:"pattern_hint"`
-	SourcePath      string `json:"source_path"`
-	SourceSHA256    string `json:"source_sha256"`
-	SourceLineStart int    `json:"source_line_start"`
-	SourceLineEnd   int    `json:"source_line_end"`
-	ApprovalStatus  string `json:"approval_status"`
-	EnforcementMode string `json:"enforcement_mode"`
-	Executable      bool   `json:"executable"`
+	ID              string   `json:"id"`
+	ADRID           string   `json:"adr_id"`
+	ADRTitle        string   `json:"adr_title"`
+	ADRStatus       string   `json:"adr_status,omitempty"`
+	SectionHeading  string   `json:"section_heading"`
+	Statement       string   `json:"statement"`
+	Modality        string   `json:"modality"`
+	Kind            string   `json:"kind"`
+	PatternHint     string   `json:"pattern_hint"`
+	SourcePath      string   `json:"source_path"`
+	SourceSHA256    string   `json:"source_sha256"`
+	SourceLineStart int      `json:"source_line_start"`
+	SourceLineEnd   int      `json:"source_line_end"`
+	ApprovalStatus  string   `json:"approval_status"`
+	EnforcementMode string   `json:"enforcement_mode"`
+	Executable      bool     `json:"executable"`
 	ReviewHints     []string `json:"review_hints,omitempty"`
 	// Structured extraction aids for reviewers; never auto-enforce.
 	Conditions []string `json:"conditions,omitempty"`
 	Exceptions []string `json:"exceptions,omitempty"`
 	Ambiguity  []string `json:"ambiguity,omitempty"`
 	// Deterministic confidence; never produced by an LLM.
-	Confidence         string   `json:"confidence"`
-	ConfidenceScore    float64  `json:"confidence_score"`
-	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
+	Confidence        string   `json:"confidence"`
+	ConfidenceScore   float64  `json:"confidence_score"`
+	EscalationReasons []string `json:"escalation_reasons,omitempty"`
 }
 
 // Index is a deterministic candidate inventory tied to exact input bytes.
 type Index struct {
-	SchemaVersion          string      `json:"schema_version"`
-	SourceRoot              string      `json:"source_root"`
-	SourceIndexSHA256       string      `json:"source_index_sha256"`
-	DocumentCount           int         `json:"document_count"`
-	DocumentsWithCandidates int         `json:"documents_with_candidates"`
-	CandidateCount          int         `json:"candidate_count"`
+	SchemaVersion           string            `json:"schema_version"`
+	SourceRoot              string            `json:"source_root"`
+	SourceIndexSHA256       string            `json:"source_index_sha256"`
+	DocumentCount           int               `json:"document_count"`
+	DocumentsWithCandidates int               `json:"documents_with_candidates"`
+	CandidateCount          int               `json:"candidate_count"`
 	ConfidenceSummary       ConfidenceSummary `json:"confidence_summary"`
-	Candidates              []Candidate `json:"candidates"`
+	Candidates              []Candidate       `json:"candidates"`
 }
 
 // BuildIndex verifies indexed ADR metadata against current source bytes, then
@@ -72,43 +72,69 @@ func BuildIndex(documents []adringest.Document, sourceRootPath, sourceRootLabel 
 		return zero, fmt.Errorf("source root path is required")
 	}
 	rootAbs, err := filepath.Abs(sourceRootPath)
-	if err != nil { return zero, fmt.Errorf("resolve ADR source root: %w", err) }
+	if err != nil {
+		return zero, fmt.Errorf("resolve ADR source root: %w", err)
+	}
 	rootReal, err := filepath.EvalSymlinks(rootAbs)
-	if err != nil { return zero, fmt.Errorf("resolve ADR source root symlinks: %w", err) }
+	if err != nil {
+		return zero, fmt.Errorf("resolve ADR source root symlinks: %w", err)
+	}
 	info, err := os.Stat(rootReal)
-	if err != nil { return zero, fmt.Errorf("inspect ADR source root: %w", err) }
-	if !info.IsDir() { return zero, fmt.Errorf("ADR source root %q is not a directory", rootReal) }
+	if err != nil {
+		return zero, fmt.Errorf("inspect ADR source root: %w", err)
+	}
+	if !info.IsDir() {
+		return zero, fmt.Errorf("ADR source root %q is not a directory", rootReal)
+	}
 	label, err := normalizeSourceRootLabel(sourceRootLabel)
-	if err != nil { return zero, err }
+	if err != nil {
+		return zero, err
+	}
 
 	docs := append([]adringest.Document(nil), documents...)
-	sort.Slice(docs, func(i, j int) bool { return filepath.ToSlash(docs[i].SourcePath) < filepath.ToSlash(docs[j].SourcePath) })
+	sort.Slice(docs, func(i, j int) bool {
+		return filepath.ToSlash(docs[i].SourcePath) < filepath.ToSlash(docs[j].SourcePath)
+	})
 	sum := sha256.Sum256(sourceIndexRaw)
 	out := Index{
-		SchemaVersion: "1",
-		SourceRoot: label,
+		SchemaVersion:     "1",
+		SourceRoot:        label,
 		SourceIndexSHA256: hex.EncodeToString(sum[:]),
-		DocumentCount: len(docs),
-		Candidates: []Candidate{},
+		DocumentCount:     len(docs),
+		Candidates:        []Candidate{},
 	}
 	seen := make(map[string]string, len(docs))
 	for _, doc := range docs {
-		if strings.TrimSpace(doc.ID) == "" { return zero, fmt.Errorf("ingestion index contains an empty ADR ID") }
+		if strings.TrimSpace(doc.ID) == "" {
+			return zero, fmt.Errorf("ingestion index contains an empty ADR ID")
+		}
 		if previous, exists := seen[doc.ID]; exists {
 			return zero, fmt.Errorf("duplicate ADR ID %q in source paths %q and %q", doc.ID, previous, doc.SourcePath)
 		}
 		seen[doc.ID] = doc.SourcePath
-		if !validSHA256(doc.SourceSHA256) { return zero, fmt.Errorf("ADR %q has invalid source SHA-256 metadata", doc.ID) }
+		if !validSHA256(doc.SourceSHA256) {
+			return zero, fmt.Errorf("ADR %q has invalid source SHA-256 metadata", doc.ID)
+		}
 		source, err := readContainedSource(rootReal, doc.SourcePath)
-		if err != nil { return zero, fmt.Errorf("load source for %s: %w", doc.ID, err) }
+		if err != nil {
+			return zero, fmt.Errorf("load source for %s: %w", doc.ID, err)
+		}
 		candidates, err := ExtractDocument(doc, joinSourcePath(label, doc.SourcePath), source)
-		if err != nil { return zero, fmt.Errorf("extract candidates from %s: %w", doc.SourcePath, err) }
-		if len(candidates) > 0 { out.DocumentsWithCandidates++ }
+		if err != nil {
+			return zero, fmt.Errorf("extract candidates from %s: %w", doc.SourcePath, err)
+		}
+		if len(candidates) > 0 {
+			out.DocumentsWithCandidates++
+		}
 		out.Candidates = append(out.Candidates, candidates...)
 	}
 	sort.Slice(out.Candidates, func(i, j int) bool {
-		if out.Candidates[i].SourcePath != out.Candidates[j].SourcePath { return out.Candidates[i].SourcePath < out.Candidates[j].SourcePath }
-		if out.Candidates[i].SourceLineStart != out.Candidates[j].SourceLineStart { return out.Candidates[i].SourceLineStart < out.Candidates[j].SourceLineStart }
+		if out.Candidates[i].SourcePath != out.Candidates[j].SourcePath {
+			return out.Candidates[i].SourcePath < out.Candidates[j].SourcePath
+		}
+		if out.Candidates[i].SourceLineStart != out.Candidates[j].SourceLineStart {
+			return out.Candidates[i].SourceLineStart < out.Candidates[j].SourceLineStart
+		}
 		return out.Candidates[i].ID < out.Candidates[j].ID
 	})
 	out.CandidateCount = len(out.Candidates)
@@ -152,14 +178,20 @@ func MarkdownCandidateReport(index Index) string {
 // It ignores fenced examples and records an exact original source line for each
 // candidate; natural-language suggestions are deliberately not auto-enforced.
 func ExtractDocument(doc adringest.Document, displayPath string, source []byte) ([]Candidate, error) {
-	if len(source) > maxADRSourceBytes { return nil, fmt.Errorf("ADR source exceeds the %d-byte limit", maxADRSourceBytes) }
+	if len(source) > maxADRSourceBytes {
+		return nil, fmt.Errorf("ADR source exceeds the %d-byte limit", maxADRSourceBytes)
+	}
 	parsed, err := adringest.Parse(doc.SourcePath, source)
-	if err != nil { return nil, fmt.Errorf("reparse source ADR: %w", err) }
+	if err != nil {
+		return nil, fmt.Errorf("reparse source ADR: %w", err)
+	}
 	if parsed.ID != doc.ID || parsed.Title != doc.Title || parsed.SourceSHA256 != doc.SourceSHA256 {
 		return nil, fmt.Errorf("ADR source no longer matches the indexed ID, title, or SHA-256")
 	}
 	cleanDisplayPath, err := cleanRelativePath(displayPath)
-	if err != nil { return nil, fmt.Errorf("candidate display path: %w", err) }
+	if err != nil {
+		return nil, fmt.Errorf("candidate display path: %w", err)
+	}
 	lines := strings.Split(string(source), "\n")
 	result := make([]Candidate, 0)
 	// Normative statements may appear directly below the H1 title, especially in
@@ -172,17 +204,17 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 	}
 	if preambleEnd > 1 {
 		sections = append([]adringest.Section{{
-			Heading: "Preamble",
-			Level: 0,
+			Heading:   "Preamble",
+			Level:     0,
 			StartLine: 1,
-			EndLine: preambleEnd,
+			EndLine:   preambleEnd,
 		}}, sections...)
 	} else if len(parsed.Sections) == 0 && len(lines) > 1 {
 		sections = append([]adringest.Section{{
-			Heading: "Preamble",
-			Level: 0,
+			Heading:   "Preamble",
+			Level:     0,
 			StartLine: 1,
-			EndLine: len(lines),
+			EndLine:   len(lines),
 		}}, sections...)
 	}
 	for _, section := range sections {
@@ -193,8 +225,13 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 		inFence := false
 		for lineIndex := start; lineIndex < end; lineIndex++ {
 			trimmed := strings.TrimSpace(lines[lineIndex])
-			if isFenceLine(trimmed) { inFence = !inFence; continue }
-			if inFence || trimmed == "" || strings.HasPrefix(trimmed, "<!--") { continue }
+			if isFenceLine(trimmed) {
+				inFence = !inFence
+				continue
+			}
+			if inFence || trimmed == "" || strings.HasPrefix(trimmed, "<!--") {
+				continue
+			}
 			lineText := normalizeStatement(trimmed)
 			if lineText == "" {
 				continue
@@ -255,7 +292,7 @@ func detectModality(statement string) (string, bool) {
 	// only when ... requires it" is permission conditioned on a requirement,
 	// not an unconditional MUST. At the same position, prefer the longer phrase
 	// so "must not" is not reduced to "must".
-	type cue struct { phrase, modality string }
+	type cue struct{ phrase, modality string }
 	cues := []cue{
 		{"not required", "not_required"},
 		{"must not", "must_not"}, {"mustn't", "must_not"},
@@ -273,12 +310,16 @@ func detectModality(statement string) (string, bool) {
 	bestIndex, bestLength, bestModality := -1, -1, ""
 	for _, candidate := range cues {
 		index := firstPhraseIndex(statement, candidate.phrase)
-		if index < 0 { continue }
+		if index < 0 {
+			continue
+		}
 		if bestIndex < 0 || index < bestIndex || (index == bestIndex && len(candidate.phrase) > bestLength) {
 			bestIndex, bestLength, bestModality = index, len(candidate.phrase), candidate.modality
 		}
 	}
-	if bestIndex < 0 { return "", false }
+	if bestIndex < 0 {
+		return "", false
+	}
 	return bestModality, true
 }
 
@@ -425,12 +466,16 @@ func firstPhraseIndex(value, phrase string) int {
 	offset := 0
 	for offset <= len(lowerValue)-len(lowerPhrase) {
 		idx := strings.Index(lowerValue[offset:], lowerPhrase)
-		if idx < 0 { return -1 }
+		if idx < 0 {
+			return -1
+		}
 		start := offset + idx
 		end := start + len(lowerPhrase)
 		leftOK := start == 0 || !isWordRune(runeAtEnd(lowerValue[:start]))
 		rightOK := end == len(lowerValue) || !isWordRune(runeAtStart(lowerValue[end:]))
-		if leftOK && rightOK { return start }
+		if leftOK && rightOK {
+			return start
+		}
 		offset = start + 1
 	}
 	return -1
@@ -444,12 +489,16 @@ func anyPhrase(text string, phrases ...string) bool {
 		offset := 0
 		for offset <= len(lowerText)-len(lowerPhrase) {
 			idx := strings.Index(lowerText[offset:], lowerPhrase)
-			if idx < 0 { break }
+			if idx < 0 {
+				break
+			}
 			start := offset + idx
 			end := start + len(lowerPhrase)
 			leftOK := start == 0 || !isWordRune(runeAtEnd(lowerText[:start]))
 			rightOK := end == len(lowerText) || !isWordRune(runeAtStart(lowerText[end:]))
-			if leftOK && rightOK { return true }
+			if leftOK && rightOK {
+				return true
+			}
 			offset = start + 1
 		}
 	}
@@ -457,14 +506,20 @@ func anyPhrase(text string, phrases ...string) bool {
 }
 
 func runeAtEnd(value string) rune {
-	for _, r := range value { _ = r }
+	for _, r := range value {
+		_ = r
+	}
 	runes := []rune(value)
-	if len(runes) == 0 { return 0 }
+	if len(runes) == 0 {
+		return 0
+	}
 	return runes[len(runes)-1]
 }
 
 func runeAtStart(value string) rune {
-	for _, r := range value { return r }
+	for _, r := range value {
+		return r
+	}
 	return 0
 }
 
@@ -475,7 +530,9 @@ func isWordRune(r rune) bool { return unicode.IsLetter(r) || unicode.IsDigit(r) 
 func reviewHints(statement, kind, sectionHeading string) []string {
 	lower := strings.ToLower(statement)
 	hints := make([]string, 0, 5)
-	if isNonDecisionSection(sectionHeading) { hints = append(hints, "non_decision_section") }
+	if isNonDecisionSection(sectionHeading) {
+		hints = append(hints, "non_decision_section")
+	}
 	if kind == "exception_candidate" || anyPhrase(statement, "unless", "except", "only when", "provided that", "waiver", "exception") {
 		hints = append(hints, "condition_or_exception")
 	}
@@ -525,10 +582,16 @@ func normalizeStatement(line string) string {
 	line = strings.TrimSpace(line)
 	line = strings.TrimSpace(strings.TrimPrefix(line, ">"))
 	trimmed := strings.TrimLeft(line, "-*+ ")
-	if trimmed != line { line = strings.TrimSpace(trimmed) } else {
+	if trimmed != line {
+		line = strings.TrimSpace(trimmed)
+	} else {
 		i := 0
-		for i < len(line) && line[i] >= '0' && line[i] <= '9' { i++ }
-		if i > 0 && i+1 < len(line) && (line[i] == '.' || line[i] == ')') && line[i+1] == ' ' { line = strings.TrimSpace(line[i+2:]) }
+		for i < len(line) && line[i] >= '0' && line[i] <= '9' {
+			i++
+		}
+		if i > 0 && i+1 < len(line) && (line[i] == '.' || line[i] == ')') && line[i+1] == ' ' {
+			line = strings.TrimSpace(line[i+2:])
+		}
 	}
 	return strings.TrimSpace(line)
 }
@@ -546,7 +609,9 @@ func candidateID(c Candidate) string {
 
 func normalizeSourceRootLabel(root string) (string, error) {
 	root = strings.TrimSpace(root)
-	if root == "" { return ".", nil }
+	if root == "" {
+		return ".", nil
+	}
 	root = filepath.ToSlash(root)
 	if filepath.IsAbs(filepath.FromSlash(root)) || (len(root) >= 2 && root[1] == ':') {
 		root = filepath.Base(filepath.Clean(filepath.FromSlash(root)))
@@ -561,28 +626,46 @@ func normalizeSourceRootLabel(root string) (string, error) {
 
 func joinSourcePath(rootLabel, sourcePath string) string {
 	clean, _ := cleanRelativePath(sourcePath)
-	if rootLabel == "" || rootLabel == "." { return clean }
+	if rootLabel == "" || rootLabel == "." {
+		return clean
+	}
 	return filepath.ToSlash(filepath.Join(filepath.FromSlash(rootLabel), filepath.FromSlash(clean)))
 }
 
 func readContainedSource(root, sourcePath string) ([]byte, error) {
 	relative, err := cleanRelativePath(sourcePath)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	candidate := filepath.Join(root, filepath.FromSlash(relative))
 	resolved, err := filepath.EvalSymlinks(candidate)
-	if err != nil { return nil, fmt.Errorf("resolve source file %q: %w", relative, err) }
-	if filepath.Clean(candidate) != filepath.Clean(resolved) { return nil, fmt.Errorf("source file %q uses a symlinked path", relative) }
+	if err != nil {
+		return nil, fmt.Errorf("resolve source file %q: %w", relative, err)
+	}
+	if filepath.Clean(candidate) != filepath.Clean(resolved) {
+		return nil, fmt.Errorf("source file %q uses a symlinked path", relative)
+	}
 	rel, err := filepath.Rel(root, resolved)
-	if err != nil { return nil, fmt.Errorf("validate source containment: %w", err) }
+	if err != nil {
+		return nil, fmt.Errorf("validate source containment: %w", err)
+	}
 	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
 		return nil, fmt.Errorf("source path %q escapes the ADR root", relative)
 	}
 	info, err := os.Stat(resolved)
-	if err != nil { return nil, fmt.Errorf("inspect source file %q: %w", relative, err) }
-	if !info.Mode().IsRegular() { return nil, fmt.Errorf("source %q is not a regular file", relative) }
-	if info.Size() > maxADRSourceBytes { return nil, fmt.Errorf("source %q exceeds the %d-byte limit", relative, maxADRSourceBytes) }
+	if err != nil {
+		return nil, fmt.Errorf("inspect source file %q: %w", relative, err)
+	}
+	if !info.Mode().IsRegular() {
+		return nil, fmt.Errorf("source %q is not a regular file", relative)
+	}
+	if info.Size() > maxADRSourceBytes {
+		return nil, fmt.Errorf("source %q exceeds the %d-byte limit", relative, maxADRSourceBytes)
+	}
 	data, err := os.ReadFile(resolved)
-	if err != nil { return nil, fmt.Errorf("read source file %q: %w", relative, err) }
+	if err != nil {
+		return nil, fmt.Errorf("read source file %q: %w", relative, err)
+	}
 	return data, nil
 }
 
@@ -591,12 +674,16 @@ func cleanRelativePath(sourcePath string) (string, error) {
 	clean := filepath.ToSlash(filepath.Clean(filepath.FromSlash(sourcePath)))
 	unsafe := sourcePath == "" || strings.ContainsRune(sourcePath, 0) || filepath.IsAbs(filepath.FromSlash(clean)) ||
 		clean == "." || clean == ".." || strings.HasPrefix(clean, "../") || (len(clean) >= 2 && clean[1] == ':')
-	if unsafe { return "", fmt.Errorf("source path %q must be a safe repository-relative path", sourcePath) }
+	if unsafe {
+		return "", fmt.Errorf("source path %q must be a safe repository-relative path", sourcePath)
+	}
 	return clean, nil
 }
 
 func validSHA256(value string) bool {
-	if len(value) != sha256.Size*2 { return false }
+	if len(value) != sha256.Size*2 {
+		return false
+	}
 	_, err := hex.DecodeString(value)
 	return err == nil
 }

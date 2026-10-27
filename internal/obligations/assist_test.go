@@ -9,7 +9,7 @@ import (
 
 func TestAssistObligationsOfflineNeverExecutable(t *testing.T) {
 	index := Index{
-		SchemaVersion: "1",
+		SchemaVersion:     "1",
 		SourceIndexSHA256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 		Candidates: []Candidate{{
 			ID: "CAND-1", ADRID: "ADR-001", Statement: "Services should prefer async messaging where appropriate.",
@@ -29,8 +29,8 @@ func TestAssistObligationsOfflineNeverExecutable(t *testing.T) {
 	}
 	out, err := AssistObligations(context.Background(), index, AssistOptions{
 		MaxConfidence: ConfidenceLow,
-		Provider: OfflineAssistProvider{ModelID: "offline-test"},
-		Now: func() time.Time { return time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC) },
+		Provider:      OfflineAssistProvider{ModelID: "offline-test"},
+		Now:           func() time.Time { return time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC) },
 	})
 	if err != nil {
 		t.Fatal(err)

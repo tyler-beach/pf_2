@@ -35,17 +35,17 @@ type Metrics struct {
 	HarnessPrecision *float64 `json:"kpi.harness.precision,omitempty"`
 	HarnessRecall    *float64 `json:"kpi.harness.recall,omitempty"`
 
-	ReviewBacklog       *int `json:"kpi.review.backlog,omitempty"`
-	PendingHigh         *int `json:"kpi.review.pending_high,omitempty"`
-	PendingMedium       *int `json:"kpi.review.pending_medium,omitempty"`
-	PendingLow          *int `json:"kpi.review.pending_low,omitempty"`
-	AssistAcceptRate    *float64 `json:"kpi.review.accept_rate,omitempty"`
+	ReviewBacklog    *int     `json:"kpi.review.backlog,omitempty"`
+	PendingHigh      *int     `json:"kpi.review.pending_high,omitempty"`
+	PendingMedium    *int     `json:"kpi.review.pending_medium,omitempty"`
+	PendingLow       *int     `json:"kpi.review.pending_low,omitempty"`
+	AssistAcceptRate *float64 `json:"kpi.review.accept_rate,omitempty"`
 
-	AssessVerdict       string `json:"kpi.assess.verdict,omitempty"`
-	AssessCovered       *int   `json:"kpi.assess.covered,omitempty"`
-	AssessUnbound       *int   `json:"kpi.assess.unbound,omitempty"`
-	AssessStale         *int   `json:"kpi.assess.stale,omitempty"`
-	RuntimeLLMCalls     *int   `json:"kpi.invariant.llm_calls,omitempty"`
+	AssessVerdict   string `json:"kpi.assess.verdict,omitempty"`
+	AssessCovered   *int   `json:"kpi.assess.covered,omitempty"`
+	AssessUnbound   *int   `json:"kpi.assess.unbound,omitempty"`
+	AssessStale     *int   `json:"kpi.assess.stale,omitempty"`
+	RuntimeLLMCalls *int   `json:"kpi.invariant.llm_calls,omitempty"`
 
 	AssistProposalCount *int     `json:"kpi.assist.proposal_count,omitempty"`
 	PromptfooPassRate   *float64 `json:"kpi.promptfoo.pass_rate,omitempty"`
@@ -57,12 +57,12 @@ type Metrics struct {
 
 // Latest is the operational rollup for the workshop home page.
 type Latest struct {
-	SchemaVersion string         `json:"schema_version"`
-	Run           RunIdentity    `json:"run"`
-	Metrics       Metrics        `json:"metrics"`
-	SLO           map[string]any `json:"slo"`
+	SchemaVersion string            `json:"schema_version"`
+	Run           RunIdentity       `json:"run"`
+	Metrics       Metrics           `json:"metrics"`
+	SLO           map[string]any    `json:"slo"`
 	Links         map[string]string `json:"links,omitempty"`
-	Summary       string         `json:"summary"`
+	Summary       string            `json:"summary"`
 }
 
 // EmitOptions configures workshop-emit inputs.
@@ -100,8 +100,8 @@ func Emit(opts EmitOptions) (Latest, error) {
 
 	if opts.CandidatesPath != "" {
 		var payload struct {
-			CandidateCount     int `json:"candidate_count"`
-			ConfidenceSummary  struct {
+			CandidateCount    int `json:"candidate_count"`
+			ConfidenceSummary struct {
 				High   int `json:"high"`
 				Medium int `json:"medium"`
 				Low    int `json:"low"`
@@ -231,7 +231,7 @@ func Emit(opts EmitOptions) (Latest, error) {
 
 	if opts.CorpusLabelsPath != "" {
 		var payload struct {
-			CorpusSize int `json:"corpus_size"`
+			CorpusSize int   `json:"corpus_size"`
 			Expected   []any `json:"expected_candidates"`
 		}
 		if err := readJSON(opts.CorpusLabelsPath, &payload); err != nil {

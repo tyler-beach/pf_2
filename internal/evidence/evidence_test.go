@@ -9,14 +9,14 @@ import (
 func TestFromScanResultIsDeterministic(t *testing.T) {
 	scan := analyzer.ScanResult{
 		SchemaVersion: "1", Status: analyzer.ScanStatusComplete,
-		Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
-		ConfigurationPath: "rules/pathfinder-security.yml",
+		Analyzers:           []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+		ConfigurationPath:   "rules/pathfinder-security.yml",
 		ConfigurationSHA256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-		BinarySHA256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-		RuleSetSHA256: "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-		InputSHA256: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-		RawOutputSHA256: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-		ScannedPaths: []string{"cmd/adrctl/main.go"},
+		BinarySHA256:        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+		RuleSetSHA256:       "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+		InputSHA256:         "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+		RawOutputSHA256:     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+		ScannedPaths:        []string{"cmd/adrctl/main.go"},
 		Findings: []analyzer.Finding{{
 			Analyzer: "opengrep", AnalyzerVersion: "1.30.0",
 			RuleID: "rules.pathfinder.go-shell-command", Message: "shell",
@@ -40,10 +40,10 @@ func TestFromScanResultIsDeterministic(t *testing.T) {
 func TestIncompleteScanNeverObservedOnly(t *testing.T) {
 	scan := analyzer.ScanResult{
 		SchemaVersion: "1", Status: analyzer.ScanStatusPartial,
-		Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
-		InputSHA256: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+		Analyzers:       []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+		InputSHA256:     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
 		RawOutputSHA256: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-		Errors: []string{"timeout"},
+		Errors:          []string{"timeout"},
 		Findings: []analyzer.Finding{{
 			RuleID: "rules.pathfinder.go-shell-command", Message: "shell",
 			Path: "cmd/main.go", StartLine: 1, Fingerprint: "fp-2",

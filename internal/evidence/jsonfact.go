@@ -40,12 +40,12 @@ func (p JSONFactProducer) Collect(root, relativePath, runID string) (Bundle, err
 		bundle := Bundle{
 			SchemaVersion: SchemaVersion, ScanCompleteness: "ERROR",
 			Producers: []analyzer.AnalyzerInfo{{Name: "json-fact", Version: JSONFactAdapterVersion}},
-			Errors: []string{err.Error()},
+			Errors:    []string{err.Error()},
 			Records: []Record{{
 				SchemaVersion: SchemaVersion, EvidenceID: stableID(runID, "parse-error", relativePath),
 				AnalysisRunID: runID, Kind: KindLimitation, Status: StatusParseError,
-				Producer: Producer{Analyzer: "json-fact", Version: JSONFactAdapterVersion, AdapterVersion: JSONFactAdapterVersion},
-				Artifact: Artifact{Path: relativePath, SHA256: hex.EncodeToString(fileHash[:])},
+				Producer:    Producer{Analyzer: "json-fact", Version: JSONFactAdapterVersion, AdapterVersion: JSONFactAdapterVersion},
+				Artifact:    Artifact{Path: relativePath, SHA256: hex.EncodeToString(fileHash[:])},
 				Diagnostics: []string{err.Error()},
 			}},
 		}
@@ -53,9 +53,9 @@ func (p JSONFactProducer) Collect(root, relativePath, runID string) (Bundle, err
 	}
 	bundle := Bundle{
 		SchemaVersion: SchemaVersion, ScanCompleteness: "COMPLETE",
-		Producers: []analyzer.AnalyzerInfo{{Name: "json-fact", Version: JSONFactAdapterVersion}},
+		Producers:    []analyzer.AnalyzerInfo{{Name: "json-fact", Version: JSONFactAdapterVersion}},
 		ScannedPaths: []string{relativePath},
-		Records: make([]Record, 0, len(payload)),
+		Records:      make([]Record, 0, len(payload)),
 	}
 	keys := make([]string, 0, len(payload))
 	for key := range payload {
@@ -78,10 +78,10 @@ func (p JSONFactProducer) Collect(root, relativePath, runID string) (Bundle, err
 		bundle.Records = append(bundle.Records, Record{
 			SchemaVersion: SchemaVersion, EvidenceID: id, AnalysisRunID: runID,
 			Producer: Producer{Analyzer: "json-fact", Version: JSONFactAdapterVersion, AdapterVersion: JSONFactAdapterVersion},
-			Kind: KindConfigValue, Status: StatusObserved,
+			Kind:     KindConfigValue, Status: StatusObserved,
 			Artifact: Artifact{Path: relativePath, SHA256: hex.EncodeToString(fileHash[:])},
 			Metadata: map[string]any{"key": key, "value": value},
-			Scope: Scope{Declared: []string{relativePath}, AnalyzedFiles: 1, ScannedPaths: []string{relativePath}},
+			Scope:    Scope{Declared: []string{relativePath}, AnalyzedFiles: 1, ScannedPaths: []string{relativePath}},
 		})
 	}
 	sort.SliceStable(bundle.Records, func(i, j int) bool {

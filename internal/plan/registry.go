@@ -66,13 +66,13 @@ func (JSONFactTaskRunner) Run(ctx context.Context, root string, task Task) (anal
 	sum := sha256.Sum256(raw)
 	out := analyzer.ScanResult{
 		SchemaVersion: "1", SARIFVersion: analyzer.SARIFVersion,
-		Status: analyzer.ScanStatusComplete,
-		Analyzers: []analyzer.AnalyzerInfo{{Name: "json-fact", Version: version}},
+		Status:            analyzer.ScanStatusComplete,
+		Analyzers:         []analyzer.AnalyzerInfo{{Name: "json-fact", Version: version}},
 		ConfigurationPath: task.ConfigurationPath, ConfigurationSHA256: task.ConfigurationSHA256,
 		BinarySHA256: task.BinarySHA256, RuleSetSHA256: task.RuleSetSHA256,
 		InputSHA256: task.InputSHA256, RawOutputSHA256: hex.EncodeToString(sum[:]),
 		ScannedPaths: append([]string(nil), bundle.ScannedPaths...),
-		Findings: []analyzer.Finding{}, RawSARIF: raw,
+		Findings:     []analyzer.Finding{}, RawSARIF: raw,
 	}
 	if task.BinarySHA256 == "" {
 		out.BinarySHA256 = strings.Repeat("0", 64)
@@ -109,10 +109,10 @@ func minimalJSONFactSARIF(version string, bundle evidence.Bundle) ([]byte, error
 		PhysicalLocation physicalLocation `json:"physicalLocation"`
 	}
 	type result struct {
-		RuleID      string            `json:"ruleId"`
-		Level       string            `json:"level"`
-		Message     message           `json:"message"`
-		Locations   []location        `json:"locations"`
+		RuleID       string            `json:"ruleId"`
+		Level        string            `json:"level"`
+		Message      message           `json:"message"`
+		Locations    []location        `json:"locations"`
 		Fingerprints map[string]string `json:"fingerprints"`
 	}
 	type rule struct {
@@ -143,15 +143,15 @@ func minimalJSONFactSARIF(version string, bundle evidence.Bundle) ([]byte, error
 		key, _ := rec.Metadata["key"].(string)
 		results = append(results, result{
 			RuleID: "json-fact.config-value", Level: "note",
-			Message: message{Text: fmt.Sprintf("observed configuration key %q", key)},
-			Locations: []location{{PhysicalLocation: physicalLocation{ArtifactLocation: artifactLocation{URI: rec.Artifact.Path}}}},
+			Message:      message{Text: fmt.Sprintf("observed configuration key %q", key)},
+			Locations:    []location{{PhysicalLocation: physicalLocation{ArtifactLocation: artifactLocation{URI: rec.Artifact.Path}}}},
 			Fingerprints: map[string]string{"primary": rec.EvidenceID},
 		})
 	}
 	doc := document{
 		Version: analyzer.SARIFVersion,
 		Runs: []run{{
-			Tool: tool{Driver: driver{Name: "json-fact", Version: version, Rules: []rule{{ID: "json-fact.config-value", Name: "config-value"}}}},
+			Tool:    tool{Driver: driver{Name: "json-fact", Version: version, Rules: []rule{{ID: "json-fact.config-value", Name: "config-value"}}}},
 			Results: results,
 		}},
 	}
