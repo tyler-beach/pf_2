@@ -93,11 +93,11 @@ func SARIFReport(r Result) ([]byte, error) {
 				level = "note"
 			}
 			properties := map[string]any{
-				"adr_id": q.ADR,
-				"adr_version": q.ADRVersion,
-				"requirement_id": q.RequirementID,
+				"adr_id":             q.ADR,
+				"adr_version":        q.ADRVersion,
+				"requirement_id":     q.RequirementID,
 				"requirement_status": q.Status,
-				"severity": q.Severity,
+				"severity":           q.Severity,
 			}
 			if f.Analyzer != "" {
 				properties["analyzer"] = f.Analyzer
@@ -134,8 +134,8 @@ func SARIFReport(r Result) ([]byte, error) {
 		"version": "2.1.0",
 		"$schema": "https://json.schemastore.org/sarif-2.1.0.json",
 		"runs": []any{map[string]any{
-			"tool": map[string]any{"driver": map[string]any{"name": "adrctl", "informationUri": "https://github.com/tyler-beach/pf_2", "rules": ruleList}},
-			"results": results,
+			"tool":       map[string]any{"driver": map[string]any{"name": "adrctl", "informationUri": "https://github.com/tyler-beach/pf_2", "rules": ruleList}},
+			"results":    results,
 			"properties": map[string]any{"adrctl": sarifAssessmentMetadata(r)},
 		}},
 	}
@@ -160,14 +160,14 @@ func sarifAssessmentMetadata(r Result) map[string]any {
 	for _, requirement := range r.Requirements {
 		evidence := append([]string(nil), requirement.Evidence...)
 		requirements = append(requirements, map[string]any{
-			"adr_id": requirement.ADR,
-			"adr_version": requirement.ADRVersion,
+			"adr_id":         requirement.ADR,
+			"adr_version":    requirement.ADRVersion,
 			"requirement_id": requirement.RequirementID,
-			"title": requirement.Title,
-			"status": requirement.Status,
-			"severity": requirement.Severity,
-			"reason": requirement.Reason,
-			"evidence": evidence,
+			"title":          requirement.Title,
+			"status":         requirement.Status,
+			"severity":       requirement.Severity,
+			"reason":         requirement.Reason,
+			"evidence":       evidence,
 		})
 	}
 	sort.Slice(requirements, func(i, j int) bool {
@@ -186,7 +186,7 @@ func sarifAssessmentMetadata(r Result) map[string]any {
 		analyzers := make([]map[string]any, 0, len(scan.Analyzers))
 		for _, analyzerInfo := range scan.Analyzers {
 			analyzers = append(analyzers, map[string]any{
-				"name": analyzerInfo.Name,
+				"name":    analyzerInfo.Name,
 				"version": analyzerInfo.Version,
 			})
 		}
@@ -203,16 +203,16 @@ func sarifAssessmentMetadata(r Result) map[string]any {
 		errors := append([]string(nil), scan.Errors...)
 		sort.Strings(errors)
 		analyzerRuns = append(analyzerRuns, map[string]any{
-			"status": scan.Status,
-			"analyzers": analyzers,
-			"finding_count": len(scan.Findings),
-			"input_sha256": scan.InputSHA256,
+			"status":               scan.Status,
+			"analyzers":            analyzers,
+			"finding_count":        len(scan.Findings),
+			"input_sha256":         scan.InputSHA256,
 			"configuration_sha256": scan.ConfigurationSHA256,
-			"binary_sha256": scan.BinarySHA256,
-			"rule_set_sha256": scan.RuleSetSHA256,
-			"raw_output_sha256": scan.RawOutputSHA256,
-			"scanned_paths": scannedPaths,
-			"errors": errors,
+			"binary_sha256":        scan.BinarySHA256,
+			"rule_set_sha256":      scan.RuleSetSHA256,
+			"raw_output_sha256":    scan.RawOutputSHA256,
+			"scanned_paths":        scannedPaths,
+			"errors":               errors,
 		})
 	}
 	sort.Slice(analyzerRuns, func(i, j int) bool {
@@ -227,20 +227,20 @@ func sarifAssessmentMetadata(r Result) map[string]any {
 	})
 
 	return map[string]any{
-		"schema_version": r.SchemaVersion,
-		"engine_version": r.EngineVersion,
-		"verdict": r.Verdict,
-		"coverage_status": r.CoverageStatus,
-		"evidence_mode": r.EvidenceMode,
-		"requirement_count": r.RequirementCount,
+		"schema_version":               r.SchemaVersion,
+		"engine_version":               r.EngineVersion,
+		"verdict":                      r.Verdict,
+		"coverage_status":              r.CoverageStatus,
+		"evidence_mode":                r.EvidenceMode,
+		"requirement_count":            r.RequirementCount,
 		"applicable_requirement_count": r.ApplicableRequirementCount,
-		"status_counts": statusCounts,
-		"source_file_count": r.SourceFileCount,
-		"source_snapshot_sha256": r.SourceSnapshotSHA256,
-		"runtime_llm_calls": r.LLMCalls,
-		"unassessed_source_files": unassessed,
-		"requirement_statuses": requirements,
-		"analyzer_runs": analyzerRuns,
+		"status_counts":                statusCounts,
+		"source_file_count":            r.SourceFileCount,
+		"source_snapshot_sha256":       r.SourceSnapshotSHA256,
+		"runtime_llm_calls":            r.LLMCalls,
+		"unassessed_source_files":      unassessed,
+		"requirement_statuses":         requirements,
+		"analyzer_runs":                analyzerRuns,
 	}
 }
 
