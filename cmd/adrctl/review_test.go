@@ -17,7 +17,7 @@ func reviewCLISetup(t *testing.T) (string, string, string, string) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
 	if err := os.MkdirAll(adrRoot, 0700); err != nil { t.Fatal(err) }
-	source := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not depend on infrastructure adapters.\n"
+	source := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
 	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(source), 0600); err != nil { t.Fatal(err) }
 	doc, err := adringest.Parse("ADR-001.md", []byte(source))
 	if err != nil { t.Fatal(err) }
@@ -157,5 +157,54 @@ func TestReviewCLIValidateReportsStaleBinding(t *testing.T) {
 	if err := json.Unmarshal(data, &coverage); err != nil { t.Fatal(err) }
 	if coverage.StaleCount != 1 || coverage.BlockingBindingCount != 0 {
 		t.Fatalf("stale binding was treated as active: %+v", coverage)
+	}
+}
+
+
+func TestReviewCLIRejectsMalformedProposalJSONWithoutMutation(t *testing.T) {
+	cases := []struct {
+		name string
+		mutate func(t *testing.T, path string)
+	}{
+		{
+			name: "invalid trailing bytes",
+			mutate: func(t *testing.T, path string) {
+				data, err := os.ReadFile(path)
+				if err != nil { t.Fatal(err) }
+				data = append(data, []byte("\\nnot-json")...)
+				if err := os.WriteFile(path, data, 0600); err != nil { t.Fatal(err) }
+			},
+		},
+		{
+			name: "unknown field",
+			mutate: func(t *testing.T, path string) {
+				data, err := os.ReadFile(path)
+				if err != nil { t.Fatal(err) }
+				var object map[string]any
+				if err := json.Unmarshal(data, &object); err != nil { t.Fatal(err) }
+				object["unexpected_field"] = "not allowed"
+				data, err = json.Marshal(object)
+				if err != nil { t.Fatal(err) }
+				if err := os.WriteFile(path, data, 0600); err != nil { t.Fatal(err) }
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, indexPath, catalogPath, registryPath := reviewCLISetup(t)
+			if err := runInitReviewRegistry([]string{"--output", registryPath}); err != nil { t.Fatal(err) }
+			proposalPath := reviewCLIProposal(t, indexPath)
+			tc.mutate(t, proposalPath)
+			before, err := os.ReadFile(registryPath)
+			if err != nil { t.Fatal(err) }
+			err = runRecordObligationReview([]string{
+				"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
+				"--proposal", proposalPath,
+			})
+			if err == nil { t.Fatal("malformed or unrecognized proposal JSON unexpectedly succeeded") }
+			after, err := os.ReadFile(registryPath)
+			if err != nil { t.Fatal(err) }
+			if string(before) != string(after) { t.Fatal("invalid proposal mutated registry") }
+		})
 	}
 }
