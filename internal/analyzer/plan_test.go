@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -285,4 +287,93 @@ func TestPlanDigestAndCacheKeyAreValidSHA256(t *testing.T) {
 	var decoded Plan
 	if err := json.Unmarshal(encoded, &decoded); err != nil { t.Fatal(err) }
 	if err := ValidatePlan(decoded); err != nil { t.Fatalf("serialized plan rejected: %v", err) }
+}
+
+
+type failingResultCache struct { err error }
+
+func (c failingResultCache) Get(context.Context, string) (CacheEntry, bool, error) {
+	return CacheEntry{}, false, c.err
+}
+func (c failingResultCache) Put(context.Context, string, CacheEntry) error { return c.err }
+
+func TestRunPlanTreatsCacheAsBestEffortOptimization(t *testing.T) {
+	snapshot := strings.Repeat("d", 64)
+	spec := planTestSpec("opengrep")
+	plan, err := BuildPlan(snapshot, []AnalyzerSpec{spec})
+	if err != nil { t.Fatal(err) }
+	var calls atomic.Int32
+	cache := failingResultCache{err: errors.New("cache unavailable")}
+	manifest, err := RunPlan(context.Background(), plan, RunOptions{MaxConcurrency:1, MaxAttempts:1, Cache:cache}, func(ctx context.Context, task AnalyzerTask) (ScanResult, error) {
+		calls.Add(1)
+		return planTestResult(task.Spec, snapshot, ScanStatusComplete), nil
+	})
+	if err != nil { t.Fatal(err) }
+	if calls.Load() != 1 { t.Fatalf("cache outage prevented scan execution; executor calls=%d", calls.Load()) }
+	if manifest.Status != ManifestStatusComplete || len(manifest.Tasks) != 1 || manifest.Tasks[0].Status != ManifestTaskComplete {
+		t.Fatalf("cache outage changed valid scan status: %+v", manifest)
+	}
+	if len(manifest.Tasks[0].Warnings) == 0 || len(manifest.Errors) == 0 {
+		t.Fatalf("cache errors should be visible as warnings without changing assessment result: %+v", manifest)
+	}
+}
+
+func TestRunPlanIgnoresInvalidCacheEntryAndReplacesIt(t *testing.T) {
+	snapshot := strings.Repeat("d", 64)
+	spec := planTestSpec("opengrep")
+	plan, err := BuildPlan(snapshot, []AnalyzerSpec{spec})
+	if err != nil { t.Fatal(err) }
+	cache := NewMemoryResultCache()
+	bad := CacheEntry{
+		CacheKey: plan.Tasks[0].CacheKey,
+		Result: ScanResult{SchemaVersion:"1", SARIFVersion:SARIFVersion, Status:ScanStatusComplete, RawOutputSHA256:"stale"},
+		RawSARIF: []byte("stale bytes"),
+	}
+	if err := cache.Put(context.Background(), bad.CacheKey, bad); err != nil { t.Fatal(err) }
+	var calls atomic.Int32
+	manifest, err := RunPlan(context.Background(), plan, RunOptions{MaxConcurrency:1, MaxAttempts:1, Cache:cache}, func(ctx context.Context, task AnalyzerTask) (ScanResult, error) {
+		calls.Add(1)
+		return planTestResult(task.Spec, snapshot, ScanStatusComplete), nil
+	})
+	if err != nil { t.Fatal(err) }
+	if calls.Load() != 1 || manifest.Status != ManifestStatusComplete || manifest.Tasks[0].Cached {
+		t.Fatalf("invalid cache entry was trusted: calls=%d manifest=%+v", calls.Load(), manifest)
+	}
+	if len(manifest.Tasks[0].Warnings) == 0 { t.Fatal("ignored invalid cache entry should leave a diagnostic warning") }
+	entry, ok, err := cache.Get(context.Background(), plan.Tasks[0].CacheKey)
+	if err != nil || !ok { t.Fatalf("cache did not contain repaired entry: ok=%v err=%v", ok, err) }
+	if entry.Result.RawOutputSHA256 != sha256Hex(entry.RawSARIF) || string(entry.RawSARIF) == "stale bytes" {
+		t.Fatalf("invalid cache entry was not replaced with fresh evidence: %+v", entry)
+	}
+}
+
+func TestFileResultCacheRoundTripsRawSARIFAndRestrictsPermissions(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "cache")
+	cache := FileResultCache{Dir: dir}
+	snapshot := strings.Repeat("d", 64)
+	spec := planTestSpec("opengrep")
+	result := planTestResult(spec, snapshot, ScanStatusComplete)
+	key := strings.Repeat("e", 64)
+	entry := CacheEntry{CacheKey:key, Result:result, RawSARIF:append([]byte(nil), result.RawSARIF...)}
+	if err := cache.Put(context.Background(), key, entry); err != nil { t.Fatal(err) }
+	got, ok, err := cache.Get(context.Background(), key)
+	if err != nil || !ok { t.Fatalf("cache read failed: ok=%v err=%v", ok, err) }
+	if string(got.RawSARIF) != string(entry.RawSARIF) || got.Result.RawOutputSHA256 != result.RawOutputSHA256 {
+		t.Fatalf("raw artifact/provenance did not round-trip: %+v", got)
+	}
+	info, err := os.Stat(filepath.Join(dir, key+".json"))
+	if err != nil { t.Fatal(err) }
+	if info.Mode().Perm()&0077 != 0 { t.Fatalf("cache file permissions are too broad: %o", info.Mode().Perm()) }
+}
+
+func TestFileResultCacheRejectsSymlinkEntries(t *testing.T) {
+	dir := t.TempDir()
+	cache := FileResultCache{Dir:dir}
+	key := strings.Repeat("f", 64)
+	outside := filepath.Join(t.TempDir(), "outside.json")
+	if err := os.WriteFile(outside, []byte("{\"cache_key\":\""+key+"\"}"), 0600); err != nil { t.Fatal(err) }
+	if err := os.Symlink(outside, filepath.Join(dir, key+".json")); err != nil { t.Skipf("symlink unavailable: %v", err) }
+	if _, ok, err := cache.Get(context.Background(), key); err == nil || ok {
+		t.Fatalf("symlinked cache entry must be rejected: ok=%v err=%v", ok, err)
+	}
 }
