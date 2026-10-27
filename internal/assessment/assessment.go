@@ -561,6 +561,8 @@ func assessAnalyzerRule(rr *RequirementResult, verifier Verifier, scans []analyz
 	for _, id := range verifier.RuleIDs { ruleIDs[id] = true }
 	for _, finding := range scan.Findings {
 		if !ruleIDs[finding.RuleID] { continue }
+		findingAnalyzer := strings.ToLower(strings.TrimSpace(finding.Analyzer))
+		if findingAnalyzer != want && !strings.Contains(findingAnalyzer, want) { continue }
 		if strings.TrimSpace(finding.Path) == "" {
 			rr.Status = "EVIDENCE_MISSING"
 			rr.Reason = fmt.Sprintf("Analyzer %q returned matching rule %q without a repository path; scope cannot be verified.", verifier.Analyzer, finding.RuleID)

@@ -136,8 +136,9 @@ func TestScannerEnvironmentExcludesAmbientCredentials(t *testing.T) {
 	t.Setenv("GITHUB_TOKEN", "must-not-be-forwarded")
 	t.Setenv("AWS_SECRET_ACCESS_KEY", "must-not-be-forwarded")
 	for _, entry := range scannerEnvironment() {
-		if strings.HasPrefix(entry, "GITHUB_TOKEN=") || strings.HasPrefix(entry, "AWS_SECRET_ACCESS_KEY=") {
-			t.Fatalf("credential was forwarded to analyzer process: %q", entry)
+		if strings.HasPrefix(entry, "GITHUB_TOKEN=") || strings.HasPrefix(entry, "AWS_SECRET_ACCESS_KEY=") ||
+			strings.HasPrefix(entry, "HOME=") || strings.HasPrefix(entry, "USERPROFILE=") {
+			t.Fatalf("ambient credential or home configuration was forwarded to analyzer process: %q", entry)
 		}
 	}
 }
@@ -220,4 +221,21 @@ func TestOpenGrepScannerRejectsPartialAnalysisEvenWhenSARIFExists(t *testing.T) 
 	if len(got.Errors) == 0 || !strings.Contains(got.Errors[0], "Partially scanned") {
 		t.Fatalf("partial scan warning was not preserved: %+v", got.Errors)
 	}
+}
+
+
+func TestExecCommandRunnerBuildsCredentialFreeEnvironment(t *testing.T) {
+	t.Setenv("HOME", filepath.Join(t.TempDir(), "real-home"))
+	t.Setenv("USERPROFILE", filepath.Join(t.TempDir(), "real-profile"))
+	t.Setenv("OPENAI_API_KEY", "do-not-forward")
+	t.Setenv("ANTHROPIC_API_KEY", "do-not-forward")
+	t.Setenv("GITHUB_TOKEN", "do-not-forward")
+	env := scannerEnvironment()
+	joined := strings.Join(env, "\n")
+	for _, forbidden := range []string{"HOME=", "USERPROFILE=", "OPENAI_API_KEY=", "ANTHROPIC_API_KEY=", "GITHUB_TOKEN="} {
+		if strings.Contains(joined, forbidden) { t.Fatalf("scanner environment unexpectedly includes %q", forbidden) }
+	}
+	home := filepath.Join(t.TempDir(), "isolated")
+	runner := ExecCommandRunner{HomeDir: home}
+	if runner.HomeDir != home { t.Fatal("isolated analyzer home was not configured") }
 }

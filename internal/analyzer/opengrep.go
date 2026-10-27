@@ -32,12 +32,17 @@ type CommandRunner interface {
 	Run(ctx context.Context, binary string, args []string, dir string) (CommandResult, error)
 }
 
-type ExecCommandRunner struct{}
+type ExecCommandRunner struct {
+	// HomeDir is an isolated scratch directory for configuration/cache lookups.
+	// OpenGrepScanner creates and removes it around each scan.
+	HomeDir string
+}
 
-func (ExecCommandRunner) Run(ctx context.Context, binary string, args []string, dir string) (CommandResult, error) {
+func (r ExecCommandRunner) Run(ctx context.Context, binary string, args []string, dir string) (CommandResult, error) {
 	cmd := exec.CommandContext(ctx, binary, args...)
 	cmd.Dir = dir
 	cmd.Env = scannerEnvironment()
+	if r.HomeDir != "" { cmd.Env = append(cmd.Env, "HOME="+r.HomeDir) }
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -64,7 +69,7 @@ func (ExecCommandRunner) Run(ctx context.Context, binary string, args []string, 
 // GITHUB_TOKEN, cloud credentials, and API keys from analyzer subprocesses.
 func scannerEnvironment() []string {
 	var env []string
-	for _, name := range []string{"PATH", "HOME", "TMPDIR", "TEMP", "TMP", "SystemRoot", "WINDIR", "USERPROFILE"} {
+	for _, name := range []string{"PATH", "TMPDIR", "TEMP", "TMP", "SystemRoot", "WINDIR"} {
 		if value := os.Getenv(name); value != "" {
 			env = append(env, name+"="+value)
 		}
@@ -121,8 +126,15 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	out.ConfigurationSHA256 = configHash
 	out.InputSHA256 = inputHash
 
+	tempDir, err := os.MkdirTemp("", "pathfinder-opengrep-")
+	if err != nil { return out, fmt.Errorf("create temporary scan directory: %w", err) }
+	defer os.RemoveAll(tempDir)
+	homeDir := filepath.Join(tempDir, "home")
+	if err := os.Mkdir(homeDir, 0700); err != nil {
+		return out, fmt.Errorf("create isolated analyzer home: %w", err)
+	}
 	runner := s.Runner
-	if runner == nil { runner = ExecCommandRunner{} }
+	if runner == nil { runner = ExecCommandRunner{HomeDir: homeDir} }
 	runCtx := ctx
 	cancel := func() {}
 	if s.Timeout > 0 {
@@ -147,9 +159,6 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 		return out, err
 	}
 
-	tempDir, err := os.MkdirTemp("", "pathfinder-opengrep-")
-	if err != nil { return out, fmt.Errorf("create temporary scan directory: %w", err) }
-	defer os.RemoveAll(tempDir)
 	sarifPath := filepath.Join(tempDir, "results.sarif")
 	args := []string{"scan", "--sarif-output=" + sarifPath, "-f", configRel, "."}
 	commandResult, err := runner.Run(runCtx, binary, args, rootAbs)
