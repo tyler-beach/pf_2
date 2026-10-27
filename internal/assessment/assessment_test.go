@@ -484,3 +484,24 @@ func TestAnalyzerRuleCatalogValidatesSourceExtensions(t *testing.T) {
 		t.Fatalf("expected duplicate source extension rejection, got %v", err)
 	}
 }
+
+
+func TestSubmissionModeMissingGoScopeIsEvidenceMissing(t *testing.T) {
+	files := []SourceFile{{
+		Path: "config/service.json",
+		Language: "json",
+		Content: `{"timeout_seconds":30,"retry_limit":3}`,
+	}}
+	result := AssessWithOptions(fixtureCatalog(), files, AssessmentOptions{EvidenceMode: EvidenceModeSubmission})
+	if result.Verdict != "INDETERMINATE" {
+		t.Fatalf("incomplete issue snippets must not pass, got verdict=%s", result.Verdict)
+	}
+	for _, requirement := range result.Requirements {
+		if requirement.Status != "EVIDENCE_MISSING" {
+			t.Errorf("%s status = %s, want EVIDENCE_MISSING when submission contains no Go file in required scope", requirement.RequirementID, requirement.Status)
+		}
+	}
+	if result.Counts["EVIDENCE_MISSING"] != len(result.Requirements) {
+		t.Fatalf("every Go boundary check should report missing evidence, got counts=%v", result.Counts)
+	}
+}
