@@ -193,7 +193,7 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	normalized.ConfigurationPath = configRel
 	normalized.ConfigurationSHA256 = configHash
 	normalized.InputSHA256 = inputHash
-	normalized.ScannedPaths, err = discoverScannedPaths(rootAbs)
+	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
 	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
 	if normalized.Status != ScanStatusComplete {
 		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
@@ -272,6 +272,11 @@ func truncate(value string, max int) string {
 // discoverScannedPaths records a deterministic inventory of source/config files
 // that can inform whether a policy's declared repository path scope is present.
 func discoverScannedPaths(root string) ([]string, error) {
+	return discoverScannedPathsExcluding(root, "")
+}
+
+func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) {
+	excludedPath = filepath.ToSlash(filepath.Clean(excludedPath))
 	extensions := map[string]bool{
 		".go": true, ".py": true, ".js": true, ".jsx": true, ".ts": true, ".tsx": true,
 		".java": true, ".cs": true, ".php": true, ".rb": true, ".json": true, ".yaml": true,
@@ -292,7 +297,9 @@ func discoverScannedPaths(root string) ([]string, error) {
 		if !extensions[strings.ToLower(filepath.Ext(entry.Name()))] { return nil }
 		rel, err := filepath.Rel(root, current)
 		if err != nil { return err }
-		paths = append(paths, filepath.ToSlash(rel))
+		rel = filepath.ToSlash(rel)
+		if excludedPath != "" && rel == excludedPath { return nil }
+		paths = append(paths, rel)
 		return nil
 	})
 	if err != nil { return nil, err }

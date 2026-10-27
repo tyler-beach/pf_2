@@ -76,7 +76,7 @@ func VerifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte) (Scan
 	if envelope.InputSHA256 == "" || inputHash != envelope.InputSHA256 {
 		return fail("input tree SHA-256 does not match the current repository snapshot")
 	}
-	paths, err := discoverScannedPaths(root)
+	paths, err := discoverScannedPathsExcluding(root, envelope.ConfigurationPath)
 	if err != nil {
 		return fail(fmt.Sprintf("rebuild repository scan inventory: %v", err))
 	}
