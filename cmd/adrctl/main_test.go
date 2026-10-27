@@ -47,6 +47,95 @@ func TestBlockingGateDoesNotPromoteAdvisoryOrReviewRequiredBindings(t *testing.T
 	}
 }
 
+func TestRunSpecificationCheckRejectsAnalyzerInputOutputCollisions(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		evidence string
+		sarif    string
+	}{
+		{name: "normalized evidence aliases assessment output", evidence: "assessment.json", sarif: "input.sarif"},
+		{name: "raw SARIF aliases SARIF output", evidence: "input.json", sarif: "results.sarif"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			if err := os.MkdirAll(filepath.Join(root, "adrs"), 0o700); err != nil {
+				t.Fatal(err)
+			}
+			err := runSpecificationCheck([]string{
+				"--root", root, "--adr-root", "adrs",
+				"--analyzer-evidence", tc.evidence, "--analyzer-sarif", tc.sarif,
+			})
+			if err == nil || !strings.Contains(err.Error(), "collides with generated output") {
+				t.Fatalf("expected analyzer input/output collision to fail before writing artifacts, got %v", err)
+			}
+		})
+	}
+}
+
+func TestRunSpecificationCheckRejectsSymlinkedAnalyzerOutputCollision(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, "adrs"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	assessmentPath := filepath.Join(root, "assessment.json")
+	if err := os.WriteFile(assessmentPath, []byte("{}"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	aliasPath := filepath.Join(root, "evidence-alias.json")
+	if err := os.Symlink(assessmentPath, aliasPath); err != nil {
+		t.Fatal(err)
+	}
+	err := runSpecificationCheck([]string{
+		"--root", root, "--adr-root", "adrs",
+		"--analyzer-evidence", "evidence-alias.json", "--analyzer-sarif", "input.sarif",
+	})
+	if err == nil || !strings.Contains(err.Error(), "collides with generated output") {
+		t.Fatalf("expected symlinked analyzer input/output collision to fail, got %v", err)
+	}
+}
+
+func TestRunSpecificationCheckRequiresAnalyzerEvidencePair(t *testing.T) {
+	if err := runSpecificationCheck([]string{"--analyzer-evidence", "scan.json"}); err == nil || !strings.Contains(err.Error(), "must be provided together") {
+		t.Fatalf("specification-check should require normalized evidence and raw SARIF together, got %v", err)
+	}
+}
+
+func TestRunSpecificationCheckOrchestratesLifecycleAndEnforcesReview(t *testing.T) {
+	root := t.TempDir()
+	adrRoot := filepath.Join(root, "adrs")
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
+	adrSource := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(filepath.Join(root, "internal", "domain"), 0o700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, "internal", "domain", "customer.go"), []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil { t.Fatal(err) }
+
+	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
+		ID: "ADR-001", Title: "Preserve domain boundaries", Version: 1, Status: "accepted",
+		Requirements: []assessment.Requirement{{
+			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
+			Description: "Domain source files must not import internal infrastructure packages.", Severity: "error",
+			Verifier: assessment.Verifier{Type: "go-import-boundary", SourcePathPrefixes: []string{"internal/domain/"}, ForbiddenImportPrefixes: []string{"internal/infrastructure/"}},
+		}},
+	}}}
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(filepath.Join(root, "adr"), 0o700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(root, "adr", "requirements.json"), catalogBytes, 0o600); err != nil { t.Fatal(err) }
+	if err := obligations.SaveRegistry(filepath.Join(root, "adr", "obligation-reviews.json"), obligations.NewRegistry()); err != nil { t.Fatal(err) }
+
+	if err := runSpecificationCheck([]string{"--root", root, "--adr-root", "adrs", "--report-only"}); err != nil { t.Fatalf("report-only orchestration failed: %v", err) }
+	data, err := os.ReadFile(filepath.Join(root, "obligation-assessment.json"))
+	if err != nil { t.Fatal(err) }
+	var report obligations.AssessmentReport
+	if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
+	if report.CandidateCount != 1 || report.Candidates[0].Status != "INDETERMINATE" || report.ObligationVerdict != "INDETERMINATE" {
+		t.Fatalf("specification check did not preserve pending review state: %+v", report)
+	}
+	if err := runSpecificationCheck([]string{"--root", root, "--adr-root", "adrs"}); err == nil || !strings.Contains(err.Error(), "pending review") {
+		t.Fatalf("enforcing orchestration should fail on unreviewed candidates, got %v", err)
+	}
+}
+
 func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
