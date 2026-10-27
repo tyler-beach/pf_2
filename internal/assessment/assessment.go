@@ -91,6 +91,18 @@ func ValidateCatalog(c Catalog) error {
 			if reqs[r.ID] { return fmt.Errorf("duplicate requirement ID %q", r.ID) }; reqs[r.ID] = true
 			if r.Severity != "error" && r.Severity != "warning" && r.Severity != "info" { return fmt.Errorf("requirement %s has invalid Severity %q", r.ID, r.Severity) }
 			if r.Verifier.Type == "" { return fmt.Errorf("requirement %s has no verifier Type", r.ID) }
+			switch r.Verifier.Type {
+			case "go-import-boundary":
+				if len(r.Verifier.SourcePathPrefixes) == 0 { return fmt.Errorf("requirement %s: go-import-boundary requires source_path_prefixes", r.ID) }
+				if len(r.Verifier.ForbiddenImportPrefixes) == 0 { return fmt.Errorf("requirement %s: go-import-boundary requires forbidden_import_prefixes", r.ID) }
+			case "json-required-keys":
+				p := filepath.Clean(filepath.FromSlash(strings.TrimSpace(r.Verifier.FilePath)))
+				if r.Verifier.FilePath == "" || filepath.IsAbs(p) || p == ".." || strings.HasPrefix(p, ".."+string(filepath.Separator)) {
+					return fmt.Errorf("requirement %s: json-required-keys requires a repository-relative file_path", r.ID)
+				}
+				if len(r.Verifier.RequiredJSONKeys) == 0 { return fmt.Errorf("requirement %s: json-required-keys requires required_json_keys", r.ID) }
+				for _, key := range r.Verifier.RequiredJSONKeys { if strings.TrimSpace(key) == "" { return fmt.Errorf("requirement %s: required_json_keys cannot contain empty keys", r.ID) } }
+			}
 		}
 	}
 	return nil
