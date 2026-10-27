@@ -20,6 +20,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Check gofmt on changed Go files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE_SHA:-}" ] || [[ "$BASE_SHA" =~ ^0+$ ]]; then
+            changed_files="$(git ls-files '*.go')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            changed_files="$(git diff --name-only --diff-filter=ACMRT "$BASE_SHA" "$GITHUB_SHA" -- '*.go')"
+          fi
+
+          if [ -z "$changed_files" ]; then
+            echo "No changed Go files to format-check."
+            exit 0
+          fi
+
+          failed=0
+          while IFS= read -r file; do
+            [ -f "$file" ] || continue
+            unformatted="$(gofmt -l "$file")"
+            if [ -n "$unformatted" ]; then
+              printf 'Unformatted Go file: %s\n' "$unformatted"
+              failed=1
+            fi
+          done <<< "$changed_files"
+
+          if [ "$failed" -ne 0 ]; then
+            echo "Run gofmt -w on the listed files and commit the result."
+            exit 1
+          fi
+
       - name: Test and validate catalog
         run: |
           go test -race -coverprofile=coverage.out ./...
