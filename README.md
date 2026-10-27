@@ -76,7 +76,7 @@ Pathfinder is being evolved incrementally: the existing Go assessment engine, de
 
 The current `adr/requirements.json` remains supported while this ingestion path matures. Runtime assessment continues to make zero LLM calls; any optional assisted interpretation belongs in a separate batch-time workflow and requires review before enforcement.
 
-See [docs/scaling-adr-design.md](docs/scaling-adr-design.md) for the migration plan and analyzer choices, and [docs/architecture.md](docs/architecture.md) for the current runtime architecture.
+See [docs/scaling-adr-design.md](docs/scaling-adr-design.md) for the migration plan and analyzer choices, [docs/tool-adoption-decisions.md](docs/tool-adoption-decisions.md) for tool-specific adoption gates and benchmark status, and [docs/architecture.md](docs/architecture.md) for the current runtime architecture.
 
 
 ## ADR Markdown ingestion (initial implementation)
