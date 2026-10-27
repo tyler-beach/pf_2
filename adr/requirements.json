@@ -70,7 +70,156 @@
             "type": "json-number-range",
             "file_path": "config/service.json",
             "numeric_json_bounds": [
-              { "key": "timeout_seconds", "min": 1, "max": 120 }
+              {
+                "key": "timeout_seconds",
+                "min": 1,
+                "max": 120
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-003",
+      "title": "Avoid dynamically composed shell commands",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-003-01",
+          "title": "Application code must not invoke shells with dynamic command strings",
+          "description": "Code under cmd/ and internal/ must not compose shell commands using the shell execution pattern covered by Pathfinder's reviewed OpenGrep rule.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.go-shell-command"
+            ],
+            "source_path_prefixes": [
+              "cmd/",
+              "internal/"
+            ],
+            "source_extensions": [
+              ".go"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-004",
+      "title": "Avoid dynamic evaluation of data as code",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-004-01",
+          "title": "Application code must not dynamically evaluate untrusted JavaScript, TypeScript, or PHP input",
+          "description": "Source files using JavaScript, TypeScript, or PHP must not evaluate dynamic expressions using the configured OpenGrep eval rule.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.no-dynamic-eval"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".js",
+              ".jsx",
+              ".mjs",
+              ".cjs",
+              ".ts",
+              ".tsx",
+              ".php"
+            ]
+          }
+        },
+        {
+          "id": "REQ-004-02",
+          "title": "Python code must not dynamically evaluate input as code",
+          "description": "Python source files must not call eval on potentially attacker-controlled input.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.python-dynamic-eval"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py"
+            ]
+          }
+        },
+        {
+          "id": "REQ-004-03",
+          "title": "Ruby code must not dynamically evaluate input as code",
+          "description": "Ruby source files must not call eval on potentially attacker-controlled input.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.ruby-dynamic-eval"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".rb"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-005",
+      "title": "Avoid unsafe process creation",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-005-01",
+          "title": "Java code must not use Runtime.exec with dynamically supplied commands",
+          "description": "Java source files must not pass potentially untrusted strings to Runtime.getRuntime().exec.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.java-runtime-exec"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".java"
+            ]
+          }
+        },
+        {
+          "id": "REQ-005-02",
+          "title": "C# code must review dynamic Process.Start invocation",
+          "description": "C# source files must not launch processes with dynamically supplied commands unless a reviewed safe-wrapper pattern is used.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.csharp-process-start"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".cs"
             ]
           }
         }

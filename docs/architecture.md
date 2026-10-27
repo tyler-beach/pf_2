@@ -11,7 +11,7 @@ The existing engine is the foundation, not something to replace. Pathfinder evol
 1. A GitHub Issue Form collects assessment mode, context, and source snippets.
 2. The issue workflow passes the issue body as data to `adrctl`; submitted code is never executed.
 3. `adr/requirements.json` is validated and accepted ADR requirements are selected.
-4. Typed verifier/analyzer adapters evaluate supported, in-scope evidence.
+4. Typed verifier/analyzer adapters evaluate supported, in-scope evidence. The OpenGrep adapter validates a pinned binary version, runs without a shell in a credential-restricted environment, and normalizes SARIF 2.1.0 into repository-relative findings.
 5. The engine emits requirement-level results, an overall verdict, explicit coverage status (`COMPLETE`, `PARTIAL`, or `NONE`), Markdown, JSON evidence, and SARIF.
 6. The workflow posts Markdown to the issue and retains machine-readable artifacts for 14 days.
 7. Repository CI runs the same engine against tracked source and invokes configured analyzers once per repository snapshot; normalized findings are then mapped to all applicable obligations.
@@ -47,6 +47,7 @@ See [Scaling ADR Compliance to Thousands of Decisions](scaling-adr-design.md) fo
 - `go-import-boundary`: parses Go with the standard-library parser, scopes files by path prefix, and flags exact or child-package import matches.
 - `json-required-keys`: parses a declared JSON configuration file and checks required top-level keys; missing keys produce line-addressable findings (line 1 for the document-level check).
 - `json-number-range`: checks configured top-level numeric values against inclusive bounds.
+- `analyzer-rule`: maps normalized analyzer rule IDs to a reviewed repository-relative path scope and optional `source_extensions`. It requires a completed scan plus input/configuration/raw-output SHA-256 provenance; incomplete evidence never passes. If the verified inventory has no matching extension/scope, the result is `NOT_APPLICABLE`, not a false PASS; missing inventory is `EVIDENCE_MISSING`.
 
 ## Analyzer integration strategy
 
@@ -60,6 +61,7 @@ Use thin, version-pinned adapters to run established tools and normalize results
 - **ast-grep:** alternative for tree-sitter-based syntax-pattern checks when it is simpler or has better fit for a particular pattern family.
 - **Joern:** defer to requirements needing code-property-graph or deeper data-flow evidence unavailable from simpler analyzers; pilot language support and evidence quality before adoption.
 - **gosec, Bandit, SpotBugs/Find Security Bugs:** add only when the relevant language and ADR coverage justifies those analyzers.
+- **OpenGrep adapter (implemented):** version-pinned CLI, timeout/cancellation, restricted environment, symlink-safe repository-local configuration, SARIF 2.1.0 normalization, stable finding fingerprints, path containment checks, input/config/output hashes, and clean/vulnerable multilingual CI fixtures. Assessment re-parses raw SARIF and rejects evidence whose hashes no longer match the current source/config snapshot.
 - **reviewdog:** retain as a PR annotation consumer, not as an analyzer or coverage oracle.
 
 License is evaluated per engine, adapter, dependency, plugin, and ruleset. Pin versions/digests, preserve original tool outputs, and track an SBOM/license inventory. Do not assume a rule pack shares its engine's license. Analyzer selection and ruleset licensing must be reviewed before adoption or redistribution.
@@ -83,7 +85,7 @@ Current behavior:
 - `PASS`: every evaluated applicable mandatory requirement passed.
 - `FAIL`: at least one requirement has reproducible violating evidence.
 - `INDETERMINATE`: required evidence is absent, parsing failed, a verifier errored, or no requirement was applicable.
-- Requirement-level `NOT_APPLICABLE`: current implementation uses this for an evidence item that doesn't match an explicit scope; do not extend that meaning to missing required repository files.
+- Requirement-level `NOT_APPLICABLE`: used only when a complete, verified repository inventory confirms that an explicitly declared path/extension scope has no applicable files, or when a repository-only analyzer is not run against issue snippets; absent required evidence remains `EVIDENCE_MISSING`.
 - Requirement-level `ERROR`: unsupported verifier type or analysis failure.
 
 A missing file is never evidence of compliance. During the next schema iteration, make applicability independent from evidence availability and distinguish at least `EVIDENCE_MISSING`, `UNSUPPORTED`, and `REVIEW_REQUIRED` from `NOT_APPLICABLE`, `PASS`, and `FAIL`. Preserve compatibility and define merge-blocking versus warning behavior before those states enter CI policy.

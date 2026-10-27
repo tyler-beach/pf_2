@@ -1,0 +1,60 @@
+rules:
+  - id: pathfinder.no-dynamic-eval
+    languages: [javascript, typescript, php]
+    message: Avoid dynamic evaluation of data that may be attacker-controlled.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern: eval(...)
+
+  - id: pathfinder.java-runtime-exec
+    languages: [java]
+    message: Avoid passing potentially untrusted input to Runtime.exec.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Runtime.getRuntime().exec(...)
+
+  - id: pathfinder.csharp-process-start
+    languages: [csharp]
+    message: Review process creation that uses dynamically supplied input.
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Process.Start(...)
+
+  - id: pathfinder.go-shell-command
+    languages: [go]
+    message: Avoid invoking a shell with a dynamically supplied command.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: exec.Command("sh", "-c", ...)
+
+  - id: pathfinder.python-dynamic-eval
+    languages: [python]
+    message: Avoid dynamic evaluation of data that may be attacker-controlled.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern-regex: '\beval\s*\('
+
+  - id: pathfinder.ruby-dynamic-eval
+    languages: [ruby]
+    message: Avoid dynamic evaluation of data that may be attacker-controlled.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern-regex: '\beval\s*\('

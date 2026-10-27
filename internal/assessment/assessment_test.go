@@ -1,8 +1,12 @@
 package assessment
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/tyler-beach/pf_2/internal/analyzer"
 )
 
 func fixtureCatalog() Catalog {
@@ -28,10 +32,10 @@ func TestAssessmentFindsMultipleDeviations(t *testing.T) {
 	if result.Counts["FAIL"]!=2 { t.Fatalf("expected two failed requirements, counts=%v",result.Counts) }
 	for _,r:=range result.Requirements { if len(r.Findings)!=1 { t.Errorf("%s expected one finding, got %+v",r.RequirementID,r.Findings) } }
 }
-func TestNoEvidenceIsIndeterminate(t *testing.T) {
+func TestNoEvidenceIsMissing(t *testing.T) {
 	result:=Assess(fixtureCatalog(),nil)
 	if result.Verdict!="INDETERMINATE" { t.Fatalf("expected INDETERMINATE, got %s",result.Verdict) }
-	for _,r:=range result.Requirements { if r.Status!="INDETERMINATE" { t.Errorf("%s expected INDETERMINATE, got %s",r.RequirementID,r.Status) } }
+	for _,r:=range result.Requirements { if r.Status!="EVIDENCE_MISSING" { t.Errorf("%s expected EVIDENCE_MISSING, got %s",r.RequirementID,r.Status) } }
 }
 func TestCatalogRejectsDuplicateRequirementIDs(t *testing.T) {
 	c:=fixtureCatalog(); c.ADRs[0].Requirements[1].ID=c.ADRs[0].Requirements[0].ID
@@ -76,10 +80,11 @@ func TestJSONRequiredKeysMalformedInputIsError(t *testing.T) {
 	if result.Requirements[0].Status!="ERROR" { t.Fatalf("expected ERROR, got %+v", result.Requirements[0]) }
 }
 
-func TestJSONRequiredKeysMissingFileIsNotApplicable(t *testing.T) {
+func TestJSONRequiredKeysMissingFileIsEvidenceMissing(t *testing.T) {
 	files := []SourceFile{{Path:"config/other.json", Language:"json", Content:"{}"}}
 	result := Assess(jsonRequirementCatalog(), files)
-	if result.Requirements[0].Status!="NOT_APPLICABLE" { t.Fatalf("expected NOT_APPLICABLE, got %+v", result.Requirements[0]) }
+	if result.Requirements[0].Status!="EVIDENCE_MISSING" { t.Fatalf("expected EVIDENCE_MISSING, got %+v", result.Requirements[0]) }
+	if result.Verdict != "INDETERMINATE" { t.Fatalf("missing required file must not pass, got %s", result.Verdict) }
 }
 
 func TestCatalogRejectsUnsafeJSONVerifierPath(t *testing.T) {
@@ -142,9 +147,339 @@ func TestCoverageIsPartialWhenAcceptedRequirementsHaveNoMatchingEvidence(t *test
 	if result.CoverageStatus != "PARTIAL" { t.Fatalf("expected PARTIAL coverage, got %s", result.CoverageStatus) }
 	if result.ApplicableRequirementCount != 1 || result.RequirementCount != 3 { t.Fatalf("unexpected coverage counts: applicable=%d total=%d", result.ApplicableRequirementCount, result.RequirementCount) }
 }
+func TestRepositoryAssessmentDistinguishesAbsentScopeFromMissingRepositoryEvidence(t *testing.T) {
+	c := fixtureCatalog()
+	nonGo := []SourceFile{{Path:"README.md", Language:"markdown", Content:"# Docs"}}
+	result := AssessWithOptions(c, nonGo, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	for _, requirement := range result.Requirements {
+		if requirement.Status != "NOT_APPLICABLE" {
+			t.Errorf("%s status = %s, want NOT_APPLICABLE for confirmed empty Go scope", requirement.RequirementID, requirement.Status)
+		}
+	}
+	empty := AssessWithOptions(c, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	for _, requirement := range empty.Requirements {
+		if requirement.Status != "EVIDENCE_MISSING" {
+			t.Errorf("%s status = %s, want EVIDENCE_MISSING when no evidence was discovered", requirement.RequirementID, requirement.Status)
+		}
+	}
+	if empty.Verdict != "INDETERMINATE" {
+		t.Fatalf("empty repository evidence must be INDETERMINATE, got %s", empty.Verdict)
+	}
+}
+
 func TestCoverageIsCompleteWhenAllAcceptedRequirementsAreEvaluated(t *testing.T) {
 	c := fixtureCatalog()
 	files := []SourceFile{{Path:"internal/domain/customer.go", Language:"go", Content:"package domain\nimport \"strings\"\n"}}
 	result := Assess(c, files)
 	if result.CoverageStatus != "COMPLETE" || result.ApplicableRequirementCount != result.RequirementCount { t.Fatalf("expected complete coverage, got %+v", result) }
+}
+
+
+func analyzerRuleCatalog() Catalog {
+	return Catalog{SchemaVersion: "1", ADRs: []ADR{{
+		ID: "ADR-003", Title: "Avoid dynamic shell execution", Version: 1, Status: "accepted",
+		Requirements: []Requirement{{
+			ID: "REQ-003-01", Title: "Do not invoke shell with dynamic command strings", Severity: "error",
+			Verifier: Verifier{Type: "analyzer-rule", Analyzer: "opengrep", RuleIDs: []string{"pathfinder.go-shell-command"}, SourcePathPrefixes: []string{"cmd/", "internal/"}, SourceExtensions: []string{".go"}},
+		}},
+	}}}
+}
+
+func completeAnalyzerEvidence(findings []analyzer.Finding) analyzer.ScanResult {
+	return analyzer.ScanResult{
+		SchemaVersion: "1", SARIFVersion: "2.1.0", Status: analyzer.ScanStatusComplete,
+		Analyzers: []analyzer.AnalyzerInfo{{Name: "Opengrep OSS Version", Version: "1.30.0"}},
+		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
+		RawOutputSHA256: strings.Repeat("r", 64),
+		ScannedPaths: []string{"cmd/adrctl/main.go", "internal/analyzer/opengrep.go", "internal/app/runner.go", "testdata/analyzer-fixtures/vulnerable/shell_command.go"},
+		Findings: findings,
+	}
+}
+
+func TestAnalyzerRulePassesOnlyWithCompleteScopedEvidence(t *testing.T) {
+	result := AssessWithOptions(analyzerRuleCatalog(), []SourceFile{{Path: "cmd/adrctl/main.go", Language: "go"}}, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence(nil)},
+	})
+	if result.Verdict != "PASS" { t.Fatalf("expected PASS, got %+v", result) }
+	requirement := result.Requirements[0]
+	if requirement.Status != "PASS" || len(requirement.Evidence) == 0 { t.Fatalf("missing analyzer evidence: %+v", requirement) }
+	if !strings.Contains(requirement.Evidence[0], strings.Repeat("i", 64)) || !strings.Contains(requirement.Evidence[0], strings.Repeat("c", 64)) {
+		t.Fatalf("input/config provenance not surfaced: %+v", requirement.Evidence)
+	}
+	if result.AnalyzerResults[0].Status != analyzer.ScanStatusComplete { t.Fatal("normalized analyzer run not retained in result") }
+}
+
+func TestAnalyzerRuleFailsAndPreservesFindingProvenance(t *testing.T) {
+	finding := analyzer.Finding{Analyzer: "Opengrep OSS Version", AnalyzerVersion: "1.30.0", RuleID: "pathfinder.go-shell-command",
+		Message: "Avoid dynamically composed shell command", Path: "internal/app/runner.go",
+		StartLine: 17, StartColumn: 3, Level: "error", Fingerprint: "fingerprint-123",
+		Properties: map[string]any{"cwe": "CWE-78"}}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "FAIL" || result.Requirements[0].Status != "FAIL" { t.Fatalf("expected FAIL, got %+v", result) }
+	got := result.Requirements[0].Findings[0]
+	if got.Path != finding.Path || got.Line != 17 || got.Column != 3 || got.Fingerprint != "fingerprint-123" || got.AnalyzerVersion != "1.30.0" {
+		t.Fatalf("finding provenance was lost: %+v", got)
+	}
+}
+
+func TestAnalyzerRuleFiltersFindingsOutsideDeclaredScope(t *testing.T) {
+	finding := analyzer.Finding{Analyzer: "opengrep", RuleID: "pathfinder.go-shell-command", Message: "fixture violation", Path: "testdata/analyzer-fixtures/vulnerable/shell_command.go", StartLine: 4}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "PASS" || result.Requirements[0].Status != "PASS" { t.Fatalf("out-of-scope fixture should not fail the policy: %+v", result) }
+}
+
+func TestAnalyzerRuleMissingOrPartialEvidenceIsIndeterminate(t *testing.T) {
+	partial := completeAnalyzerEvidence(nil); partial.Status = analyzer.ScanStatusPartial; partial.Errors = []string{"timeout"}
+	missingHash := completeAnalyzerEvidence(nil); missingHash.RawOutputSHA256 = ""
+	incompleteInventory := completeAnalyzerEvidence(nil); incompleteInventory.ScannedPaths = nil
+	cases := map[string][]analyzer.ScanResult{"missing": nil, "partial": {partial}, "missing hashes": {missingHash}, "empty inventory": {incompleteInventory}}
+	for name, evidence := range cases {
+		t.Run(name, func(t *testing.T) {
+			result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository, AnalyzerResults: evidence})
+			if result.Verdict != "INDETERMINATE" || result.Requirements[0].Status != "EVIDENCE_MISSING" {
+				t.Fatalf("incomplete evidence must not pass: %+v", result)
+			}
+		})
+	}
+}
+
+func TestAnalyzerRuleRequiresPathForMatchingFinding(t *testing.T) {
+	finding := analyzer.Finding{Analyzer: "opengrep", RuleID: "pathfinder.go-shell-command", Message: "unlocated finding"}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository, AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "INDETERMINATE" || result.Requirements[0].Status != "EVIDENCE_MISSING" {
+		t.Fatalf("matching finding without path must fail closed: %+v", result)
+	}
+}
+
+func TestAnalyzerRuleCatalogValidation(t *testing.T) {
+	c := analyzerRuleCatalog()
+	if err := ValidateCatalog(c); err != nil { t.Fatalf("valid analyzer rule rejected: %v", err) }
+	c.ADRs[0].Requirements[0].Verifier.RuleIDs = nil
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "rule_ids") { t.Fatalf("expected rule id validation error, got %v", err) }
+	c = analyzerRuleCatalog()
+	c.ADRs[0].Requirements[0].Verifier.SourcePathPrefixes = []string{"../outside"}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "repository-relative") { t.Fatalf("expected scope path validation error, got %v", err) }
+}
+
+func TestSubmissionModeDoesNotClaimRepositoryAnalyzerWasEvaluated(t *testing.T) {
+	result := Assess(analyzerRuleCatalog(), []SourceFile{{Path: "cmd/adrctl/main.go", Language: "go"}})
+	if result.Requirements[0].Status != "NOT_APPLICABLE" { t.Fatalf("submission mode should not pretend to run scanner: %+v", result.Requirements[0]) }
+	if result.Verdict != "INDETERMINATE" { t.Fatalf("without any passing/failed submitted-scope check, verdict should remain INDETERMINATE, got %s", result.Verdict) }
+}
+
+
+func TestIssueSnippetPathsAreSanitized(t *testing.T) {
+	cases := []struct{ input, want string }{
+		{"src/app.go", "src/app.go"},
+		{"src/app|unsafe.go", "src/app_unsafe.go"},
+		{"../../outside.go", "issue-snippet-1.go"},
+		{"C:\\outside.go", "issue-snippet-1.go"},
+		{"src/`bad`.go", "src/_bad_.go"},
+	}
+	for _, tc := range cases {
+		md := "### File: " + tc.input + "\n```go\npackage fixture\n```\n"
+		files := ParseIssueMarkdown(md)
+		if len(files) != 1 { t.Fatalf("input %q produced %d files", tc.input, len(files)) }
+		if files[0].Path != tc.want { t.Errorf("input %q path = %q, want %q", tc.input, files[0].Path, tc.want) }
+		if filepath.IsAbs(files[0].Path) || strings.HasPrefix(files[0].Path, "../") || strings.ContainsAny(files[0].Path, "\r\n|`") {
+			t.Errorf("unsafe path retained for %q: %q", tc.input, files[0].Path)
+		}
+	}
+}
+
+func FuzzParseIssueMarkdown(f *testing.F) {
+	f.Add("### File: internal/domain/example.go\n```go\npackage domain\n```\n")
+	f.Add("### File: ../../outside.json\n```json\n{}\n```\n")
+	f.Add("### File: src/app|bad.go\n```go\npackage src\n```\n")
+	f.Add("arbitrary ``` fenced text")
+	f.Fuzz(func(t *testing.T, markdown string) {
+		if len(markdown) > 1<<20 { t.Skip() }
+		for _, file := range ParseIssueMarkdown(markdown) {
+			if filepath.IsAbs(file.Path) || strings.HasPrefix(file.Path, "../") || strings.ContainsAny(file.Path, "\r\n|`") {
+				t.Fatalf("unsafe issue source path: %q", file.Path)
+			}
+		}
+	})
+}
+
+func TestLoadSourceFilesExcludesGeneratedEvidenceAndCaches(t *testing.T) {
+	root := t.TempDir()
+	files := map[string]string{
+		"cmd/main.go": "package main\\n",
+		"config/service.json": "{}\\n",
+		"analyzer-evidence/opengrep.json": "{}\\n",
+		"analyzer-evidence/untrusted.go": "package ignored\\n",
+		".opengrep-cache/generated.go": "package ignored\\n",
+		"assessment.json": "{}\\n",
+		"adr/ingested-adrs.json": "{}\\n",
+		"testdata/fixture.go": "package ignored\\n",
+	}
+	for path, body := range files {
+		full := filepath.Join(root, filepath.FromSlash(path))
+		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil { t.Fatal(err) }
+		if err := os.WriteFile(full, []byte(body), 0600); err != nil { t.Fatal(err) }
+	}
+	got, err := LoadSourceFiles(root)
+	if err != nil { t.Fatal(err) }
+	var paths []string
+	for _, file := range got { paths = append(paths, file.Path) }
+	if strings.Join(paths, ",") != "cmd/main.go,config/service.json" {
+		t.Fatalf("source loader included generated artifacts or skipped source files: %v", paths)
+	}
+}
+
+
+func TestPathMatchesRespectsPathSegmentBoundaries(t *testing.T) {
+	cases := []struct{ path, prefix string; want bool }{
+		{"cmd/runner.go", "cmd/", true},
+		{"cmd", "cmd/", true},
+		{"cmdx/runner.go", "cmd/", false},
+		{"internal/domainx/file.go", "internal/domain/", false},
+		{"internal/domain/file.go", "internal/domain/", true},
+		{"internal/domain/file.go", "internal/domain", true},
+		{"../outside.go", ".", false},
+		{"internal/domain/file.go", ".", true},
+	}
+	for _, tc := range cases {
+		if got := pathMatches(tc.path, []string{tc.prefix}); got != tc.want {
+			t.Errorf("pathMatches(%q, %q) = %v, want %v", tc.path, tc.prefix, got, tc.want)
+		}
+	}
+}
+
+func TestLoadSourceFilesSkipsSymlinkedFiles(t *testing.T) {
+	root := t.TempDir()
+	outside := filepath.Join(t.TempDir(), "secret.go")
+	if err := os.WriteFile(outside, []byte("package secret\n"), 0600); err != nil { t.Fatal(err) }
+	inside := filepath.Join(root, "inside.go")
+	if err := os.WriteFile(inside, []byte("package inside\n"), 0600); err != nil { t.Fatal(err) }
+	linkPath := filepath.Join(root, "linked.go")
+	if err := os.Symlink(outside, linkPath); err != nil { t.Skipf("symlink not available: %v", err) }
+	files, err := LoadSourceFiles(root)
+	if err != nil { t.Fatal(err) }
+	if len(files) != 1 || files[0].Path != "inside.go" { t.Fatalf("symlink should not be followed: %+v", files) }
+}
+
+func TestLoadSourceFilesRejectsOversizedEvidence(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "large.go")
+	if err := os.WriteFile(path, []byte(strings.Repeat("x", int(maxSourceFileBytes+1))), 0600); err != nil { t.Fatal(err) }
+	_, err := LoadSourceFiles(root)
+	if err == nil || !strings.Contains(err.Error(), "exceeds the") { t.Fatalf("expected evidence size limit error, got %v", err) }
+}
+
+func TestLoadSourceFilesRequiresDirectory(t *testing.T) {
+	file := filepath.Join(t.TempDir(), "not-dir")
+	if err := os.WriteFile(file, []byte("x"), 0600); err != nil { t.Fatal(err) }
+	_, err := LoadSourceFiles(file)
+	if err == nil || !strings.Contains(err.Error(), "not a directory") { t.Fatalf("expected root directory validation error, got %v", err) }
+}
+
+
+func TestParseIssueMarkdownRecognizesMultipleLanguages(t *testing.T) {
+	fence := strings.Repeat(string(rune(96)), 3)
+	markdown := strings.Join([]string{
+		"### File: src/service.py", fence + "python", "value = eval(input())", fence,
+		"### File: src/client.ts", fence + "typescript", "const x: string = 'safe';", fence,
+		"### File: src/Runner.java", fence + "java", "class Runner {}", fence,
+		"### File: src/Program.cs", fence + "csharp", "class Program {}", fence,
+		"### File: src/worker.rb", fence + "ruby", "puts 'safe'", fence,
+		"### File: config/service.json", fence + "json", "{}", fence,
+	}, "\n")
+	files := ParseIssueMarkdown(markdown)
+	if len(files) != 6 { t.Fatalf("parsed %d files, want 6: %+v", len(files), files) }
+	want := map[string]string{
+		"src/service.py": "python", "src/client.ts": "typescript", "src/Runner.java": "java",
+		"src/Program.cs": "csharp", "src/worker.rb": "ruby", "config/service.json": "json",
+	}
+	for _, file := range files {
+		if got := want[file.Path]; got == "" || got != file.Language {
+			t.Errorf("unexpected parsed source %q language=%q want=%q", file.Path, file.Language, got)
+		}
+	}
+}
+
+func TestUnknownLanguageSubmissionIsExplicitlyIndeterminate(t *testing.T) {
+	fence := strings.Repeat(string(rune(96)), 3)
+	markdown := strings.Join([]string{
+		"### File: src/record.cobol", fence + "cobol", "DISPLAY 'HELLO'.", fence,
+		"### File: config/service.json", fence + "json", "{\"timeout_seconds\":30,\"retry_limit\":3}", fence,
+	}, "\n")
+	files := ParseIssueMarkdown(markdown)
+	if len(files) != 2 { t.Fatalf("unknown-language file was silently dropped: %+v", files) }
+	if files[0].Language != "unsupported:cobol" { t.Fatalf("unknown language not preserved: %+v", files) }
+	result := Assess(jsonRequirementCatalog(), files)
+	if result.Verdict != "INDETERMINATE" || result.CoverageStatus != "PARTIAL" {
+		t.Fatalf("unassessed snippets must prevent PASS, got verdict=%s coverage=%s", result.Verdict, result.CoverageStatus)
+	}
+	if len(result.UnassessedSourceFiles) != 1 || !strings.Contains(result.UnassessedSourceFiles[0], "src/record.cobol") {
+		t.Fatalf("unassessed evidence not identified: %+v", result.UnassessedSourceFiles)
+	}
+}
+
+func TestNonGoSubmissionCannotPassOnlyBecauseNonGoCodeWasIgnored(t *testing.T) {
+	fence := strings.Repeat(string(rune(96)), 3)
+	markdown := strings.Join([]string{"### File: src/service.py", fence + "python", "value = eval(input())", fence}, "\n")
+	result := Assess(fixtureCatalog(), ParseIssueMarkdown(markdown))
+	if result.Verdict != "INDETERMINATE" || len(result.UnassessedSourceFiles) != 1 {
+		t.Fatalf("non-Go issue evidence must not be ignored or pass, got %+v", result)
+	}
+}
+
+
+func TestAnalyzerRuleRejectsFindingsAbsentFromScanInventory(t *testing.T) {
+	finding := analyzer.Finding{Analyzer:"opengrep", RuleID:"pathfinder.go-shell-command", Message:"phantom finding", Path:"internal/phantom.go", StartLine:10}
+	result := AssessWithOptions(analyzerRuleCatalog(), nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository,
+		AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence([]analyzer.Finding{finding})},
+	})
+	if result.Verdict != "INDETERMINATE" || result.Requirements[0].Status != "EVIDENCE_MISSING" {
+		t.Fatalf("finding missing from scan inventory must not be trusted: %+v", result)
+	}
+}
+
+
+func TestSafeSubmissionPathSanitizesFallbackExtension(t *testing.T) {
+	unsafeExtension := filepath.Ext("../../outside." + string(rune(96)))
+	got := safeSubmissionPath("../../outside."+string(rune(96)), 1, unsafeExtension)
+	if got != "issue-snippet-1.txt" {
+		t.Fatalf("unsafe extension escaped fallback path: %q", got)
+	}
+}
+
+
+func TestAnalyzerRuleIsNotApplicableWhenCompletedInventoryHasNoMatchingExtension(t *testing.T) {
+	c := analyzerRuleCatalog()
+	c.ADRs[0].Requirements[0].Verifier.SourceExtensions = []string{".py"}
+	result := AssessWithOptions(c, nil, AssessmentOptions{
+		EvidenceMode: EvidenceModeRepository,
+		AnalyzerResults: []analyzer.ScanResult{completeAnalyzerEvidence(nil)},
+	})
+	if result.Requirements[0].Status != "NOT_APPLICABLE" {
+		t.Fatalf("no Python files in a complete inventory should be NOT_APPLICABLE, got %+v", result.Requirements[0])
+	}
+	if result.Verdict != "INDETERMINATE" || result.CoverageStatus != "NONE" {
+		t.Fatalf("non-applicable-only assessment must not claim PASS, got verdict=%s coverage=%s", result.Verdict, result.CoverageStatus)
+	}
+	if len(result.Requirements[0].Evidence) == 0 { t.Fatal("non-applicability should cite verified inventory evidence") }
+}
+
+func TestAnalyzerRuleCatalogValidatesSourceExtensions(t *testing.T) {
+	c := analyzerRuleCatalog()
+	if err := ValidateCatalog(c); err != nil { t.Fatalf("valid analyzer rule rejected: %v", err) }
+	c.ADRs[0].Requirements[0].Verifier.SourceExtensions = []string{"../outside"}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "invalid source extension") {
+		t.Fatalf("expected invalid source extension rejection, got %v", err)
+	}
+	c = analyzerRuleCatalog()
+	c.ADRs[0].Requirements[0].Verifier.SourceExtensions = []string{".go", ".GO"}
+	if err := ValidateCatalog(c); err == nil || !strings.Contains(err.Error(), "duplicate source extension") {
+		t.Fatalf("expected duplicate source extension rejection, got %v", err)
+	}
 }
