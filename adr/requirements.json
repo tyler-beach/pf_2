@@ -60,6 +60,19 @@
               "retry_limit"
             ]
           }
+        },
+        {
+          "id": "REQ-002-02",
+          "title": "Service timeout must remain within supported bounds",
+          "description": "The service timeout must be a numeric value from 1 through 120 seconds, inclusive.",
+          "severity": "error",
+          "verifier": {
+            "type": "json-number-range",
+            "file_path": "config/service.json",
+            "numeric_json_bounds": [
+              { "key": "timeout_seconds", "min": 1, "max": 120 }
+            ]
+          }
         }
       ]
     }
