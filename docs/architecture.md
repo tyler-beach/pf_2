@@ -19,7 +19,7 @@ Evaluate accepted Architectural Decision Records through independently addressab
 Each requirement has a stable ID, title, severity, verifier type, and verifier parameters. ADR version is included in each result. Add requirements by extending the catalog when an existing verifier is sufficient; add Go code only for a genuinely new verifier type.
 
 Current verifier:
-- `go-import-boundary`: parses Go with the standard-library Go parser, scopes files by path prefix, and flags exact or child-package import matches.
+- `go-import-boundary`: parses Go with the standard-library Go parser, scopes files by path prefix, and flags exact or child-package import matches.\n- `json-required-keys`: parses a declared JSON configuration file and checks that required top-level keys are present; missing keys produce line-addressable findings (line 1 for the document-level check).
 
 Verdicts:
 - `PASS`: every applicable mandatory requirement passed.
