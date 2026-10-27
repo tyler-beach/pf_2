@@ -74,6 +74,7 @@ func runAssess(args []string, repoMode bool) error {
 	jsonPath := fs.String("json-out", "assessment.json", "JSON evidence output")
 	sarifPath := fs.String("sarif-out", "results.sarif", "SARIF output")
 	analyzerEvidencePath := fs.String("analyzer-evidence", "", "normalized analyzer scan evidence JSON (repository assessment only)")
+	analyzerSARIFPath := fs.String("analyzer-sarif", "", "raw SARIF paired with normalized analyzer evidence")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -103,11 +104,19 @@ func runAssess(args []string, repoMode bool) error {
 	}
 	var analyzerResults []analyzer.ScanResult
 	if *analyzerEvidencePath != "" {
+		if !repoMode { return fmt.Errorf("--analyzer-evidence is supported only for repository assessments") }
+		if *analyzerSARIFPath == "" { return fmt.Errorf("--analyzer-sarif is required when --analyzer-evidence is provided") }
 		data, readErr := os.ReadFile(*analyzerEvidencePath)
 		if readErr != nil { return fmt.Errorf("read analyzer evidence: %w", readErr) }
 		var evidence analyzer.ScanResult
 		if decodeErr := json.Unmarshal(data, &evidence); decodeErr != nil { return fmt.Errorf("decode analyzer evidence: %w", decodeErr) }
-		analyzerResults = append(analyzerResults, evidence)
+		rawSARIF, readErr := os.ReadFile(*analyzerSARIFPath)
+		if readErr != nil { return fmt.Errorf("read raw analyzer SARIF: %w", readErr) }
+		verified, verifyErr := analyzer.VerifyScanEvidence(*root, evidence, rawSARIF)
+		if verifyErr != nil { return fmt.Errorf("verify analyzer evidence: %w", verifyErr) }
+		analyzerResults = append(analyzerResults, verified)
+	} else if *analyzerSARIFPath != "" {
+		return fmt.Errorf("--analyzer-sarif requires --analyzer-evidence")
 	}
 	result := assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{EvidenceMode: mode, AnalyzerResults: analyzerResults})
 	if err := writeFile(*reportPath, []byte(assessment.MarkdownReport(result))); err != nil {

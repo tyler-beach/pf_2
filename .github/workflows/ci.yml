@@ -106,6 +106,7 @@ jobs:
             --root . \
             --requirements adr/requirements.json \
             --analyzer-evidence analyzer-evidence/opengrep.json \
+            --analyzer-sarif analyzer-evidence/opengrep.sarif \
             --report report.md \
             --json-out assessment.json \
             --sarif-out results.sarif
