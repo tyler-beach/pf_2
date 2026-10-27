@@ -117,7 +117,7 @@ rules:
       category: security
       confidence: MEDIUM
       cwe: "CWE-78"
-    pattern: Runtime.getRuntime.exec(...)
+    pattern: Runtime.getRuntime().exec(...)
 
   - id: pathfinder.elixir-dynamic-eval
     languages: [elixir]
