@@ -45,9 +45,12 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	registryPath := filepath.Join(root, "reviews.json")
 	if err := obligations.SaveRegistry(registryPath, obligations.NewRegistry()); err != nil { t.Fatal(err) }
 	assessmentPath := filepath.Join(root, "assessment.json")
+	sourceFiles, err := assessment.LoadSourceFiles(root)
+	if err != nil { t.Fatal(err) }
 	evidenceBytes, err := json.Marshal(assessment.Result{
 		SchemaVersion: "1", EvidenceMode: string(assessment.EvidenceModeRepository),
 		Verdict: "PASS", Requirements: []assessment.RequirementResult{},
+		SourceSnapshotSHA256: assessment.HashSourceFiles(sourceFiles),
 	})
 	if err != nil { t.Fatal(err) }
 	if err := os.WriteFile(assessmentPath, evidenceBytes, 0o600); err != nil { t.Fatal(err) }
@@ -56,7 +59,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	markdownPath := filepath.Join(root, "obligation-assessment.md")
 	if err := runAssessObligations([]string{
 		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
-		"--assessment", assessmentPath, "--json-out", jsonPath, "--report", markdownPath,
+		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
 	}); err != nil { t.Fatal(err) }
 	data, err := os.ReadFile(jsonPath)
 	if err != nil { t.Fatal(err) }
@@ -65,6 +68,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if report.CandidateCount != 1 || report.Counts["INDETERMINATE"] != 1 || report.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
 	}
+	if !report.EvidenceFresh { t.Fatalf("matching source snapshot was incorrectly marked stale: %+v", report) }
 	if len(report.Candidates[0].ReviewHints) != 1 || report.Candidates[0].ReviewHints[0] != "compound_or_conjoined" {
 		t.Fatalf("candidate interpretation hints were lost: %+v", report.Candidates[0])
 	}
@@ -80,6 +84,21 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	if err != nil { t.Fatal(err) }
 	if !strings.Contains(string(markdown), "INDETERMINATE") || !strings.Contains(string(markdown), candidates[0].ID) || !strings.Contains(string(markdown), "compound_or_conjoined") {
 		t.Fatalf("Markdown report is missing obligation status or identity: %s", markdown)
+	}
+
+	// Change an input without changing its decoded meaning. The original
+	// assessment artifact must be treated as stale against the current tree.
+	if err := os.WriteFile(indexPath, append(indexBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := runAssessObligations([]string{
+		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
+		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
+	}); err != nil { t.Fatal(err) }
+	staleBytes, err := os.ReadFile(jsonPath)
+	if err != nil { t.Fatal(err) }
+	var stale obligations.AssessmentReport
+	if err := json.Unmarshal(staleBytes, &stale); err != nil { t.Fatal(err) }
+	if stale.EvidenceFresh || stale.RepositoryVerdict != "INDETERMINATE" || stale.Candidates[0].Status != "INDETERMINATE" {
+		t.Fatalf("assessment was not downgraded after its source snapshot changed: %+v", stale)
 	}
 }
 

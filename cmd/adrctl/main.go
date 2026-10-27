@@ -544,6 +544,7 @@ func runAssessObligations(args []string) error {
 	catalogPath := fs.String("requirements", "adr/requirements.json", "approved requirements catalog")
 	registryPath := fs.String("registry", "adr/obligation-reviews.json", "append-only review registry")
 	assessmentPath := fs.String("assessment", "assessment.json", "JSON result from assess-repo")
+	root := fs.String("root", ".", "current repository root for stale-evidence validation")
 	jsonPath := fs.String("json-out", "obligation-assessment.json", "per-obligation JSON report output")
 	markdownPath := fs.String("report", "obligation-assessment.md", "per-obligation Markdown report output")
 	if err := fs.Parse(args); err != nil { return err }
@@ -573,7 +574,12 @@ func runAssessObligations(args []string) error {
 	if err != nil { return fmt.Errorf("read repository assessment: %w", err) }
 	var evidence assessment.Result
 	if err := json.Unmarshal(data, &evidence); err != nil { return fmt.Errorf("decode repository assessment: %w", err) }
-	report, err := obligations.AssessCandidates(index, catalog, registry, evidence)
+	currentFiles, err := assessment.LoadSourceFiles(*root)
+	if err != nil { return fmt.Errorf("load current repository source inventory: %w", err) }
+	currentSourceSnapshot := assessment.HashSourceFiles(currentFiles)
+	currentRepositorySnapshot, err := analyzer.HashInputTree(*root)
+	if err != nil { return fmt.Errorf("hash current repository snapshot: %w", err) }
+	report, err := obligations.AssessCandidates(index, catalog, registry, evidence, currentSourceSnapshot, currentRepositorySnapshot)
 	if err != nil { return fmt.Errorf("assess obligation candidates: %w", err) }
 	indexBytes, err := os.ReadFile(*indexPath)
 	if err != nil { return fmt.Errorf("read candidate index for provenance: %w", err) }

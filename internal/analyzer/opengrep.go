@@ -304,7 +304,7 @@ func resolveConfig(root, config string) (absolute, relative string, err error) {
 func hashInputTree(root string) (string, error) {
 	h := sha256.New()
 	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
-	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true, "obligation-candidates.json": true}
+	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true, "obligation-candidates.json": true, "obligation-assessment.json": true, "obligation-assessment.md": true}
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
 		if walkErr != nil { return walkErr }
 		if entry.IsDir() {
