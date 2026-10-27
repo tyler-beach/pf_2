@@ -73,6 +73,7 @@ func runAssess(args []string, repoMode bool) error {
 	reportPath := fs.String("report", "report.md", "Markdown report output")
 	jsonPath := fs.String("json-out", "assessment.json", "JSON evidence output")
 	sarifPath := fs.String("sarif-out", "results.sarif", "SARIF output")
+	analyzerEvidencePath := fs.String("analyzer-evidence", "", "normalized analyzer scan evidence JSON (repository assessment only)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -100,7 +101,15 @@ func runAssess(args []string, repoMode bool) error {
 	if repoMode {
 		mode = assessment.EvidenceModeRepository
 	}
-	result := assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{EvidenceMode: mode})
+	var analyzerResults []analyzer.ScanResult
+	if *analyzerEvidencePath != "" {
+		data, readErr := os.ReadFile(*analyzerEvidencePath)
+		if readErr != nil { return fmt.Errorf("read analyzer evidence: %w", readErr) }
+		var evidence analyzer.ScanResult
+		if decodeErr := json.Unmarshal(data, &evidence); decodeErr != nil { return fmt.Errorf("decode analyzer evidence: %w", decodeErr) }
+		analyzerResults = append(analyzerResults, evidence)
+	}
+	result := assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{EvidenceMode: mode, AnalyzerResults: analyzerResults})
 	if err := writeFile(*reportPath, []byte(assessment.MarkdownReport(result))); err != nil {
 		return err
 	}
@@ -131,6 +140,7 @@ func runOpenGrepScan(args []string) error {
 	version := fs.String("version", "1.30.0", "expected pinned OpenGrep version")
 	timeout := fs.Duration("timeout", 5*time.Minute, "scan timeout (for example 90s or 5m)")
 	jsonPath := fs.String("json-out", "analyzer-evidence/opengrep.json", "normalized analyzer evidence output")
+	sarifPath := fs.String("sarif-out", "analyzer-evidence/opengrep.sarif", "raw SARIF output for audit and troubleshooting")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -148,11 +158,14 @@ func runOpenGrepScan(args []string) error {
 	if err := writeFile(*jsonPath, data); err != nil {
 		return err
 	}
+	if len(result.RawSARIF) > 0 {
+		if err := writeFile(*sarifPath, result.RawSARIF); err != nil { return err }
+	}
 	if scanErr != nil {
 		return fmt.Errorf("OpenGrep assessment failed; evidence written to %s: %w", *jsonPath, scanErr)
 	}
-	fmt.Printf("OpenGrep %s: %d finding(s); evidence: %s; configuration SHA-256: %s; input SHA-256: %s\\n",
-		*version, len(result.Findings), *jsonPath, result.ConfigurationSHA256, result.InputSHA256)
+	fmt.Printf("OpenGrep %s: %d finding(s); evidence: %s; SARIF: %s; configuration SHA-256: %s; input SHA-256: %s\n",
+		*version, len(result.Findings), *jsonPath, *sarifPath, result.ConfigurationSHA256, result.InputSHA256)
 	return nil
 }
 

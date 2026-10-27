@@ -70,7 +70,36 @@
             "type": "json-number-range",
             "file_path": "config/service.json",
             "numeric_json_bounds": [
-              { "key": "timeout_seconds", "min": 1, "max": 120 }
+              {
+                "key": "timeout_seconds",
+                "min": 1,
+                "max": 120
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-003",
+      "title": "Avoid dynamically composed shell commands",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-003-01",
+          "title": "Application code must not invoke shells with dynamic command strings",
+          "description": "Code under cmd/ and internal/ must not compose shell commands using the shell execution pattern covered by Pathfinder's reviewed OpenGrep rule.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "pathfinder.go-shell-command"
+            ],
+            "source_path_prefixes": [
+              "cmd/",
+              "internal/"
             ]
           }
         }
