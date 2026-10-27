@@ -605,25 +605,25 @@ func TestManualReviewVerifierIsSupportedButCannotEstablishCompliance(t *testing.
 	catalog := Catalog{
 		SchemaVersion: "1",
 		ADRs: []ADR{{
-			ID: "ADR-REVIEW",
-			Title: "Runtime suitability",
-			Version: 1,
-			Status: "accepted",
+			ID:           "ADR-REVIEW",
+			Title:        "Runtime suitability",
+			Version:      1,
+			Status:       "accepted",
 			Requirements: []Requirement{
 				{
-					ID: "REQ-REVIEW-01",
-					Title: "The timeout must suit the service's business latency budget",
+					ID:       "REQ-REVIEW-01",
+					Title:    "The timeout must suit the service's business latency budget",
 					Severity: "warning",
 					Verifier: Verifier{Type: "manual-review"},
 				},
 				{
-					ID: "REQ-REVIEW-02",
-					Title: "Domain code must not depend on infrastructure adapters",
+					ID:       "REQ-REVIEW-02",
+					Title:    "Domain code must not depend on infrastructure adapters",
 					Severity: "error",
 					Verifier: Verifier{
-						Type: "go-import-boundary",
-						SourcePathPrefixes: []string{"internal/domain/"},
-						ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+						Type:                      "go-import-boundary",
+						SourcePathPrefixes:        []string{"internal/domain/"},
+						ForbiddenImportPrefixes:   []string{"internal/infrastructure/"},
 					},
 				},
 			},
@@ -634,9 +634,9 @@ func TestManualReviewVerifierIsSupportedButCannotEstablishCompliance(t *testing.
 	}
 
 	files := []SourceFile{{
-		Path: "internal/domain/customer.go",
+		Path:     "internal/domain/customer.go",
 		Language: "go",
-		Content: "package domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n",
+		Content:  "package domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n",
 	}}
 	result := AssessWithOptions(catalog, files, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
 	if len(result.Requirements) != 2 {
@@ -670,13 +670,13 @@ func TestManualReviewOnlyCatalogIsIndeterminateNotUnsupported(t *testing.T) {
 	catalog := Catalog{
 		SchemaVersion: "1",
 		ADRs: []ADR{{
-			ID: "ADR-REVIEW-ONLY",
-			Title: "Business semantic constraint",
+			ID:      "ADR-REVIEW-ONLY",
+			Title:   "Business semantic constraint",
 			Version: 1,
-			Status: "accepted",
+			Status:  "accepted",
 			Requirements: []Requirement{{
-				ID: "REQ-REVIEW-ONLY-01",
-				Title: "A reviewer must confirm the exception is justified",
+				ID:       "REQ-REVIEW-ONLY-01",
+				Title:    "A reviewer must confirm the exception is justified",
 				Severity: "warning",
 				Verifier: Verifier{Type: "manual-review"},
 			}},
