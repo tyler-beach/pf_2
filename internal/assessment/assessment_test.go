@@ -142,6 +142,26 @@ func TestCoverageIsPartialWhenAcceptedRequirementsHaveNoMatchingEvidence(t *test
 	if result.CoverageStatus != "PARTIAL" { t.Fatalf("expected PARTIAL coverage, got %s", result.CoverageStatus) }
 	if result.ApplicableRequirementCount != 1 || result.RequirementCount != 3 { t.Fatalf("unexpected coverage counts: applicable=%d total=%d", result.ApplicableRequirementCount, result.RequirementCount) }
 }
+func TestRepositoryAssessmentDistinguishesAbsentScopeFromMissingRepositoryEvidence(t *testing.T) {
+	c := fixtureCatalog()
+	nonGo := []SourceFile{{Path:"README.md", Language:"markdown", Content:"# Docs"}}
+	result := AssessWithOptions(c, nonGo, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	for _, requirement := range result.Requirements {
+		if requirement.Status != "NOT_APPLICABLE" {
+			t.Errorf("%s status = %s, want NOT_APPLICABLE for confirmed empty Go scope", requirement.RequirementID, requirement.Status)
+		}
+	}
+	empty := AssessWithOptions(c, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	for _, requirement := range empty.Requirements {
+		if requirement.Status != "EVIDENCE_MISSING" {
+			t.Errorf("%s status = %s, want EVIDENCE_MISSING when no evidence was discovered", requirement.RequirementID, requirement.Status)
+		}
+	}
+	if empty.Verdict != "INDETERMINATE" {
+		t.Fatalf("empty repository evidence must be INDETERMINATE, got %s", empty.Verdict)
+	}
+}
+
 func TestCoverageIsCompleteWhenAllAcceptedRequirementsAreEvaluated(t *testing.T) {
 	c := fixtureCatalog()
 	files := []SourceFile{{Path:"internal/domain/customer.go", Language:"go", Content:"package domain\nimport \"strings\"\n"}}
