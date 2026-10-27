@@ -143,6 +143,13 @@ func TestSpecificationFixtureRemainsReviewOnly(t *testing.T) {
 		if candidate.SourceLineStart != candidate.SourceLineEnd || candidate.SourceLineStart < 1 {
 			t.Errorf("candidate must preserve an exact source line: %+v", candidate)
 		}
+		for _, hint := range candidate.ReviewHints {
+			switch hint {
+			case "condition_or_exception", "compound_or_conjoined", "conditional_scope", "subjective_or_underspecified":
+			default:
+				t.Errorf("unexpected review hint %q", hint)
+			}
+		}
 		if strings.Contains(candidate.Statement, "this is not evidence") {
 			t.Errorf("fenced illustrative code was extracted as an obligation: %+v", candidate)
 		}
