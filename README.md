@@ -95,7 +95,7 @@ The input directory should contain ADR documents (MADR-style or legacy Markdown)
 
 The repository-scan adapter has rule-level, vulnerable/clean fixture coverage for Go, Python, JavaScript, TypeScript, Java, C#, PHP, Ruby, Bash, C, C++, Rust, Kotlin, Scala, Elixir, Dart, Swift, Lua, Visual Basic, and OCaml. The fixtures assert that the expected rule families match intentionally vulnerable examples and that the corresponding clean examples produce no findings.
 
-See [docs/language-support.md](docs/language-support.md) for the explicit rule/extension matrix and limitations. This is tested rule-family coverage, not a claim that every possible vulnerability or every language feature is covered.
+See [docs/language-support.md](docs/language-support.md) for the explicit rule/extension matrix and limitations. The [tool adoption decisions](docs/tool-adoption-decisions.md) document the Arch-Go benchmark and the adoption gates for ADG/ADE, reviewdog, and Promptfoo. This is tested rule-family coverage, not a claim that every possible vulnerability or every language feature is covered.
 
 ## Multi-language analyzer (implemented)
 
