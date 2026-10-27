@@ -58,3 +58,123 @@ rules:
       confidence: MEDIUM
       cwe: "CWE-95"
     pattern-regex: '\beval\s*\('
+
+  - id: pathfinder.bash-dynamic-eval
+    languages: [bash]
+    message: Avoid evaluating data as shell code.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern: eval $ARG
+
+  - id: pathfinder.c-shell-command
+    languages: [c]
+    message: Avoid passing dynamic input to a shell command.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: system(...)
+
+  - id: pathfinder.cpp-shell-command
+    languages: [cpp]
+    message: Avoid passing dynamic input to a shell command.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: std::system(...)
+
+  - id: pathfinder.rust-shell-command
+    languages: [rust]
+    message: Avoid invoking a shell with a dynamically supplied command.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Command::new("sh").arg("-c").arg(...)
+
+  - id: pathfinder.kotlin-runtime-exec
+    languages: [kotlin]
+    message: Review process execution that uses dynamically supplied input.
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Runtime.getRuntime().exec(...)
+
+  - id: pathfinder.scala-runtime-exec
+    languages: [scala]
+    message: Review process execution that uses dynamically supplied input.
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Runtime.getRuntime().exec(...)
+
+  - id: pathfinder.elixir-dynamic-eval
+    languages: [elixir]
+    message: Avoid evaluating dynamically supplied Elixir source.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern: Code.eval_string(...)
+
+  - id: pathfinder.dart-process-run
+    languages: [dart]
+    message: Avoid running a shell with dynamically supplied command arguments.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Process.run("/bin/sh", ["-c", ...])
+
+  - id: pathfinder.swift-shell-command
+    languages: [swift]
+    message: Review process arguments that invoke a shell command string.
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: $PROCESS.arguments = ["-c", ...]
+
+  - id: pathfinder.lua-dynamic-eval
+    languages: [lua]
+    message: Avoid compiling or executing dynamically supplied Lua source.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-95"
+    pattern: loadstring(...)
+
+  - id: pathfinder.visualbasic-process-start
+    languages: [vb]
+    message: Review process creation that uses dynamically supplied input.
+    severity: WARNING
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Process.Start(...)
+
+  - id: pathfinder.ocaml-system-command
+    languages: [ocaml]
+    message: Avoid passing dynamic input to system command execution.
+    severity: ERROR
+    metadata:
+      category: security
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: Sys.command $COMMAND
