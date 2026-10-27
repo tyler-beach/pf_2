@@ -91,6 +91,12 @@ The input directory should contain ADR documents (MADR-style or legacy Markdown)
 
 **Important:** this is source ingestion, not automatic approval or obligation generation. The generated index does not overwrite `adr/requirements.json`, and no natural-language statement becomes an enforceable compliance rule without an explicit reviewed requirement/verifier mapping. Runtime assessment remains deterministic and makes zero LLM calls.
 
+## Validated analyzer language coverage
+
+The repository-scan adapter has rule-level, vulnerable/clean fixture coverage for Go, Python, JavaScript, TypeScript, Java, C#, PHP, Ruby, Bash, C, C++, Rust, Kotlin, Scala, Elixir, Dart, Swift, Lua, Visual Basic, and OCaml. The fixtures assert that the expected rule families match intentionally vulnerable examples and that the corresponding clean examples produce no findings.
+
+See [docs/language-support.md](docs/language-support.md) for the explicit rule/extension matrix and limitations. This is tested rule-family coverage, not a claim that every possible vulnerability or every language feature is covered.
+
 ## Multi-language analyzer (implemented)
 
 Repository CI downloads OpenGrep v1.30.0 from the upstream release and verifies the binary SHA-256 before execution. Checked-in rules in `rules/pathfinder-security.yml` are exercised against vulnerable and clean fixtures in Go, Python, JavaScript, TypeScript, Java, C#, PHP, and Ruby. The CI gate requires the expected rule families to produce findings in vulnerable fixtures and no findings for clean fixtures.
