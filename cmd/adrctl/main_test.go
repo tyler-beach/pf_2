@@ -105,6 +105,8 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	if err != nil { t.Fatal(err) }
 	evidence.ConfigurationPath = "rules/security.yml"
 	evidence.ConfigurationSHA256 = configHash
+	evidence.BinarySHA256 = strings.Repeat("a", 64)
+	evidence.RuleSetSHA256 = configHash
 	evidence.InputSHA256 = inputHash
 	evidence.ScannedPaths = []string{"cmd/main.go"}
 	evidenceRoot := t.TempDir()
