@@ -10,7 +10,7 @@ Evaluate accepted Architectural Decision Records through independently addressab
 2. The issue workflow passes the issue body as data to `adrctl`; submitted code is never executed.
 3. `adr/requirements.json` is validated and accepted ADR requirements are selected.
 4. Typed verifier adapters evaluate supported, in-scope evidence.
-5. The engine emits requirement-level results, an overall verdict, Markdown, JSON evidence, and SARIF.
+5. The engine emits requirement-level results, an overall verdict, explicit coverage status (`COMPLETE`, `PARTIAL`, or `NONE`), Markdown, JSON evidence, and SARIF.
 6. The workflow posts Markdown to the issue and retains machine-readable artifacts for 14 days.
 7. Repository CI runs the same engine against tracked Go source and uses reviewdog to annotate PR findings.
 
@@ -28,7 +28,7 @@ Verdicts:
 - Requirement-level `NOT_APPLICABLE`: no submitted/discovered file matched the requirement's explicit scope.
 - Requirement-level `ERROR`: unsupported verifier type or analysis failure.
 
-A missing file is never evidence of compliance. Results include source-file count, per-requirement status, evidence, findings, ADR version, and a runtime LLM call count of zero.
+A missing file is never evidence of compliance. `PASS` describes only requirements with applicable evidence; coverage is tracked separately. `COMPLETE` means every accepted requirement produced a PASS or FAIL result, `PARTIAL` means only some did, and `NONE` means no requirement produced an applicable PASS/FAIL result. Results include source-file count, per-requirement status, evidence, findings, ADR version, coverage counts, and a runtime LLM call count of zero.
 
 ## Open-source integration strategy
 
