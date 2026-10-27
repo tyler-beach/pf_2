@@ -23,7 +23,7 @@ func MarkdownReport(r Result) string {
 	for _, q := range r.Requirements {
 		for _, f := range q.Findings { count++; fmt.Fprintf(&b, "- **%s** — `%s:%d`: %s\n", f.RuleID, f.Path, f.Line, f.Message) }
 	}
-	if count==0 { b.WriteString("No deterministic violations were identified. This is not a pass if any required check was indeterminate or errored.\n") }
+	if count==0 { b.WriteString("No deterministic violations were identified among checks that produced findings. Review coverage and requirement statuses before treating this as a complete assessment.\n") }
 	b.WriteString("\n## Evidence and limitations\n\n")
 	for _, q := range r.Requirements {
 		fmt.Fprintf(&b, "- **%s (%s):** ", q.RequirementID, q.Status)
