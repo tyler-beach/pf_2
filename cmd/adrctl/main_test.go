@@ -45,9 +45,12 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	registryPath := filepath.Join(root, "reviews.json")
 	if err := obligations.SaveRegistry(registryPath, obligations.NewRegistry()); err != nil { t.Fatal(err) }
 	assessmentPath := filepath.Join(root, "assessment.json")
+	sourceFiles, err := assessment.LoadSourceFiles(root)
+	if err != nil { t.Fatal(err) }
 	evidenceBytes, err := json.Marshal(assessment.Result{
 		SchemaVersion: "1", EvidenceMode: string(assessment.EvidenceModeRepository),
 		Verdict: "PASS", Requirements: []assessment.RequirementResult{},
+		SourceSnapshotSHA256: assessment.HashSourceFiles(sourceFiles),
 	})
 	if err != nil { t.Fatal(err) }
 	if err := os.WriteFile(assessmentPath, evidenceBytes, 0o600); err != nil { t.Fatal(err) }
@@ -56,7 +59,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	markdownPath := filepath.Join(root, "obligation-assessment.md")
 	if err := runAssessObligations([]string{
 		"--index", indexPath, "--requirements", catalogPath, "--registry", registryPath,
-		"--assessment", assessmentPath, "--json-out", jsonPath, "--report", markdownPath,
+		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
 	}); err != nil { t.Fatal(err) }
 	data, err := os.ReadFile(jsonPath)
 	if err != nil { t.Fatal(err) }
