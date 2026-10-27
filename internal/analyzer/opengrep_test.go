@@ -75,7 +75,7 @@ func TestOpenGrepScannerRunsPinnedCLIAndNormalizesEvidence(t *testing.T) {
 	if runner.calls[0].args[0] != "--version" { t.Fatalf("version was not probed first: %+v", runner.calls) }
 	scan := runner.calls[1]
 	if scan.binary != "/opt/opengrep" || scan.dir != root { t.Fatalf("unexpected execution target: %+v", scan) }
-	wantArgs := []string{"scan", "-f", "rules/security.yml", "."}
+	wantArgs := []string{"scan", "-f", "rules/security.yml", "--exclude", analyzerFixtureDirectory, "."}
 	for _, want := range wantArgs {
 		found := false
 		for _, arg := range scan.args { if arg == want || (strings.HasPrefix(want, "scan") && arg == "scan") { found = true } }
@@ -186,7 +186,7 @@ func TestHashInputTreeIgnoresGeneratedAssessmentArtifacts(t *testing.T) {
 
 func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) {
 	root := t.TempDir()
-	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules"} {
+	for _, directory := range []string{"src", ".git", "analyzer-evidence", "node_modules", "testdata/analyzer-fixtures/vulnerable"} {
 		if err := os.MkdirAll(filepath.Join(root, directory), 0700); err != nil { t.Fatal(err) }
 	}
 	for file, body := range map[string]string{
@@ -195,6 +195,8 @@ func TestDiscoverScannedPathsIsSortedAndSkipsGeneratedDirectories(t *testing.T) 
 		".git/ignored.go": "package ignored",
 		"analyzer-evidence/ignored.ts": "const ignored = true",
 		"node_modules/ignored.js": "ignored",
+		"testdata/analyzer-fixtures/vulnerable/RuntimeExec.java": "class RuntimeExec {}",
+		"testdata/analyzer-fixtures/vulnerable/eval.py": "eval(input())",
 		"README.md": "docs",
 	} {
 		if err := os.WriteFile(filepath.Join(root, filepath.FromSlash(file)), []byte(body), 0600); err != nil { t.Fatal(err) }

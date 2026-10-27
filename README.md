@@ -130,3 +130,7 @@ Issue submissions retain common source and configuration snippets with explicit 
 ### Repository rule bindings
 
 The accepted example catalog maps each OpenGrep rule family to a reusable requirement. Analyzer requirements may declare `source_extensions` in addition to repository path prefixes. A completed, integrity-verified inventory with no matching extension/scope is explicitly `NOT_APPLICABLE`; a missing or incomplete inventory remains `EVIDENCE_MISSING` and cannot pass. The current sample bindings cover Go shell execution, dynamic evaluation in JavaScript/TypeScript/PHP/Python/Ruby, and process invocation in Java/C#.
+
+### Analyzer fixture isolation
+
+The intentionally vulnerable samples under `testdata/analyzer-fixtures/` are scanned separately by the CI fixture test. The repository compliance scan excludes that directory from both the OpenGrep invocation and the verified scanned-path inventory. This keeps known-positive test fixtures from being mistaken for production-source violations while still requiring the fixture job to detect them. No other test or repository directory is excluded by this fixture-specific rule.

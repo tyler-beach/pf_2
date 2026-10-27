@@ -83,6 +83,8 @@ func scannerEnvironment() []string {
 // OpenGrepScanner runs a version-pinned OpenGrep CLI and normalizes SARIF 2.1.0.
 // ConfigPath must point to a rule file inside Root; the scanner is run without a
 // shell and receives only a small, credential-free environment.
+const analyzerFixtureDirectory = "testdata/analyzer-fixtures"
+
 type OpenGrepScanner struct {
 	Binary     string
 	Version    string
@@ -161,7 +163,7 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 
 	sarifPath := filepath.Join(tempDir, "results.sarif")
-	args := []string{"scan", "--sarif-output=" + sarifPath, "-f", configRel, "."}
+	args := []string{"scan", "--sarif-output=" + sarifPath, "--exclude", analyzerFixtureDirectory, "-f", configRel, "."}
 	commandResult, err := runner.Run(runCtx, binary, args, rootAbs)
 	if err != nil {
 		out.Errors = append(out.Errors, err.Error())
@@ -305,6 +307,9 @@ func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) 
 		if walkErr != nil { return walkErr }
 		if entry.IsDir() {
 			if current != root && skipDir[entry.Name()] { return filepath.SkipDir }
+			rel, err := filepath.Rel(root, current)
+			if err != nil { return err }
+			if filepath.ToSlash(rel) == analyzerFixtureDirectory { return filepath.SkipDir }
 			return nil
 		}
 		if entry.Type()&os.ModeSymlink != 0 { return nil }
