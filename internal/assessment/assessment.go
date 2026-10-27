@@ -13,59 +13,59 @@ import (
 )
 
 type Catalog struct {
-	SchemaVersion string
-	ADRs []ADR
+	SchemaVersion string `json:"schema_version"`
+	ADRs []ADR `json:"adrs"`
 }
 type ADR struct {
-	ID string
-	Title string
-	Version int
-	Status string
-	Requirements []Requirement
+	ID string `json:"id"`
+	Title string `json:"title"`
+	Version int `json:"version"`
+	Status string `json:"status"`
+	Requirements []Requirement `json:"requirements"`
 }
 type Requirement struct {
-	ID string
-	Title string
-	Description string
-	Severity string
-	Verifier Verifier
+	ID string `json:"id"`
+	Title string `json:"title"`
+	Description string `json:"description"`
+	Severity string `json:"severity"`
+	Verifier Verifier `json:"verifier"`
 }
 type Verifier struct {
-	Type string
-	SourcePathPrefixes []string
-	ForbiddenImportPrefixes []string
+	Type string `json:"type"`
+	SourcePathPrefixes []string `json:"source_path_prefixes"`
+	ForbiddenImportPrefixes []string `json:"forbidden_import_prefixes"`
 }
 type SourceFile struct {
-	Path string
-	Language string
-	Content string
+	Path string `json:"path"`
+	Language string `json:"language"`
+	Content string `json:"-"`
 }
 type Finding struct {
-	RuleID string
-	Path string
-	Line int
-	Message string
+	RuleID string `json:"rule_id"`
+	Path string `json:"path"`
+	Line int `json:"line"`
+	Message string `json:"message"`
 }
 type RequirementResult struct {
-	ADR string
-	ADRVersion int
-	RequirementID string
-	Title string
-	Status string
-	Severity string
-	Evidence []string
-	Findings []Finding
-	Reason string
+	ADR string `json:"adr_id"`
+	ADRVersion int `json:"adr_version"`
+	RequirementID string `json:"requirement_id"`
+	Title string `json:"title"`
+	Status string `json:"status"`
+	Severity string `json:"severity"`
+	Evidence []string `json:"evidence"`
+	Findings []Finding `json:"findings"`
+	Reason string `json:"reason,omitempty"`
 }
 type Result struct {
-	SchemaVersion string
-	EngineVersion string
-	Verdict string
-	SourceFileCount int
-	RequirementCount int
-	Counts map[string]int
-	LLMCalls int
-	Requirements []RequirementResult
+	SchemaVersion string `json:"schema_version"`
+	EngineVersion string `json:"engine_version"`
+	Verdict string `json:"verdict"`
+	SourceFileCount int `json:"source_file_count"`
+	RequirementCount int `json:"requirement_count"`
+	Counts map[string]int `json:"counts"`
+	LLMCalls int `json:"runtime_llm_calls"`
+	Requirements []RequirementResult `json:"requirements"`
 }
 
 func LoadCatalog(path string) (Catalog, error) {
