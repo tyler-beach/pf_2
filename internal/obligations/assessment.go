@@ -129,6 +129,13 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 			}
 			item.EvidenceStatus = requirementResult.Status
 			item.Evidence = append([]string(nil), requirementResult.Evidence...)
+			if (requirementResult.Status == "PASS" || requirementResult.Status == "FAIL") &&
+				len(requirementResult.Evidence) == 0 && len(requirementResult.Findings) == 0 {
+				item.Status = "INDETERMINATE"
+				item.EvidenceStatus = "MISSING"
+				item.Reason = "requirement result has no evidence supporting its compliance status"
+				break
+			}
 			if requirementResult.Reason != "" {
 				item.Reason = requirementResult.Reason
 			} else {
