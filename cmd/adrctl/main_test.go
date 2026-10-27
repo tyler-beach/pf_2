@@ -168,6 +168,74 @@ func TestRunSpecificationCheckRejectsOutputSymlinkEscapingRepository(t *testing.
 	}
 }
 
+func TestRunSpecificationCheckAcceptsSourceRootForPlainEnglishSpecification(t *testing.T) {
+	root := t.TempDir()
+	sourceRoot := filepath.Join(root, "specifications")
+	if err := os.MkdirAll(sourceRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	specification := "# Runtime requirements\n\n## Requirements\n\nEvery service must expose a health endpoint. Automatic retries must be limited to three attempts.\n"
+	if err := os.WriteFile(filepath.Join(sourceRoot, "runtime.md"), []byte(specification), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	sourcePath := filepath.Join(root, "internal", "domain", "customer.go")
+	if err := os.MkdirAll(filepath.Dir(sourcePath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	catalogPath := filepath.Join(root, "adr", "requirements.json")
+	if err := os.MkdirAll(filepath.Dir(catalogPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
+		ID: "ADR-001", Title: "Preserve domain boundaries", Version: 1, Status: "accepted",
+		Requirements: []assessment.Requirement{{
+			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
+			Description: "Domain source files must not import internal infrastructure packages.",
+			Severity: "error",
+			Verifier: assessment.Verifier{
+				Type: "go-import-boundary",
+				SourcePathPrefixes: []string{"internal/domain/"},
+				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
+			},
+		}},
+	}}}
+	catalogBytes, err := json.Marshal(catalog)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	registryPath := filepath.Join(root, "adr", "obligation-reviews.json")
+	if err := runInitReviewRegistry([]string{"--output", registryPath}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := runSpecificationCheck([]string{
+		"--root", root, "--source-root", "specifications",
+		"--requirements", catalogPath, "--registry", registryPath,
+		"--report-only",
+	}); err != nil {
+		t.Fatalf("plain-English specification was rejected by the orchestrator: %v", err)
+	}
+	index, err := readObligationIndex(filepath.Join(root, "adr", "obligation-candidates.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if index.DocumentCount != 1 || index.CandidateCount != 2 || index.Candidates[0].ADRID != "runtime" {
+		t.Fatalf("plain-English spec was not ingested and split into review candidates: %+v", index)
+	}
+	for _, candidate := range index.Candidates {
+		if candidate.ApprovalStatus != "pending_review" || candidate.Executable {
+			t.Errorf("source-root ingestion auto-approved a candidate: %+v", candidate)
+		}
+	}
+}
+
 func TestRunSpecificationCheckRequiresAnalyzerEvidencePair(t *testing.T) {
 	if err := runSpecificationCheck([]string{"--analyzer-evidence", "scan.json"}); err == nil || !strings.Contains(err.Error(), "must be provided together") {
 		t.Fatalf("specification-check should require normalized evidence and raw SARIF together, got %v", err)
