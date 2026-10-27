@@ -70,11 +70,12 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	}); err != nil { t.Fatal(err) }
 
 	assessmentPath := filepath.Join(root, "assessment.json")
-	if err := runAssess([]string{
+	repoAssessmentArgs := []string{
 		"--root", root, "--requirements", catalogPath,
 		"--report", filepath.Join(root, "report.md"), "--json-out", assessmentPath,
 		"--sarif-out", filepath.Join(root, "results.sarif"),
-	}, true); err != nil { t.Fatal(err) }
+	}
+	if err := runAssess(repoAssessmentArgs, true); err != nil { t.Fatal(err) }
 	jsonReport := filepath.Join(root, "obligation-assessment.json")
 	markdownReport := filepath.Join(root, "obligation-assessment.md")
 	args := []string{
@@ -97,8 +98,17 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 		t.Fatalf("reviewed obligation did not complete the end-to-end pass path: %+v", passed)
 	}
 
-	// Mutating source after the assessment must not preserve the earlier PASS.
+	// A fresh repository scan with a real boundary violation should fail.
 	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"internal/infrastructure/storage\"\n"), 0o600); err != nil { t.Fatal(err) }
+	if err := runAssess(repoAssessmentArgs, true); err != nil { t.Fatal(err) }
+	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
+	failed := readReport()
+	if !failed.EvidenceFresh || failed.Candidates[0].Status != "FAIL" || failed.Candidates[0].EvidenceStatus != "FAIL" {
+		t.Fatalf("fresh failing repository evidence was not reported as FAIL: %+v", failed)
+	}
+
+	// Mutating source again without rerunning assessment must not preserve FAIL.
+	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil { t.Fatal(err) }
 	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
 	stale := readReport()
 	if stale.EvidenceFresh || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
