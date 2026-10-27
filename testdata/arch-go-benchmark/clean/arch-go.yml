@@ -1,0 +1,9 @@
+version: 1
+threshold:
+  compliance: 100
+  coverage: 100
+dependenciesRules:
+  - package: "**.internal.domain.**"
+    shouldNotDependsOn:
+      internal:
+        - "**.internal.infrastructure.**"
