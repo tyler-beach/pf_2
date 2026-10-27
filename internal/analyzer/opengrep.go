@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -204,13 +205,10 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	normalized.InputSHA256 = inputHash
 	normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
 	if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
-	stderrLower := strings.ToLower(string(commandResult.Stderr))
-	for _, partialMarker := range []string{"partially scanned:", "only partially analyzed", "some files were skipped or only partially scanned", "rule parse error"} {
-		if strings.Contains(stderrLower, partialMarker) {
-			normalized.Status = ScanStatusPartial
-			normalized.Errors = append(normalized.Errors, "OpenGrep reported incomplete analysis: "+truncate(string(commandResult.Stderr), 4096))
-			return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
-		}
+	if incompleteAnalysisDiagnostic(string(commandResult.Stderr)) {
+		normalized.Status = ScanStatusPartial
+		normalized.Errors = append(normalized.Errors, "OpenGrep reported incomplete analysis: "+truncate(string(commandResult.Stderr), 4096))
+		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
 	}
 	if normalized.Status != ScanStatusComplete {
 		return normalized, fmt.Errorf("OpenGrep scan was incomplete; refusing to treat partial evidence as complete")
@@ -334,4 +332,28 @@ func HashInputTree(root string) (string, error) {
 	rootAbs, err = filepath.EvalSymlinks(rootAbs)
 	if err != nil { return "", fmt.Errorf("resolve repository root symlinks: %w", err) }
 	return hashInputTree(rootAbs)
+}
+
+
+// incompleteAnalysisDiagnostic distinguishes a concrete partial parse/analyzer
+// failure from OpenGrep's generic notice that it skipped irrelevant files. That
+// summary is common for mixed repositories and is not, by itself, proof that a
+// required rule failed to analyze an applicable source.
+func incompleteAnalysisDiagnostic(stderr string) bool {
+	lower := strings.ToLower(stderr)
+	for _, marker := range []string{"rule parse error", "internal opengrep errors", "failed to analyze"} {
+		if strings.Contains(lower, marker) { return true }
+	}
+	const prefix = "partially scanned:"
+	if idx := strings.Index(lower, prefix); idx >= 0 {
+		remaining := strings.TrimSpace(lower[idx+len(prefix):])
+		fields := strings.Fields(remaining)
+		if len(fields) == 0 { return true }
+		count, err := strconv.Atoi(strings.Trim(fields[0], ":,.;"))
+		if err != nil { return true }
+		if count > 0 { return true }
+	}
+	// Do not fail on the broad summary alone. A concrete positive partial-file
+	// count, rule parse error, or SARIF invocation error is handled above.
+	return false
 }

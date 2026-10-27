@@ -239,3 +239,32 @@ func TestExecCommandRunnerBuildsCredentialFreeEnvironment(t *testing.T) {
 	runner := ExecCommandRunner{HomeDir: home}
 	if runner.HomeDir != home { t.Fatal("isolated analyzer home was not configured") }
 }
+
+
+func TestOpenGrepScannerAcceptsGenericSkippedFileSummary(t *testing.T) {
+	root := prepareOpenGrepFixture(t)
+	runner := &fakeRunner{
+		sarif: []byte(fixtureSARIF),
+		scanExitCode: 1,
+		scanStderr: []byte("Some files were skipped or only partially analyzed."),
+	}
+	got, err := (OpenGrepScanner{Version:"1.30.0", ConfigPath:"rules/security.yml", Runner:runner}).Scan(context.Background(), root)
+	if err != nil || got.Status != ScanStatusComplete {
+		t.Fatalf("generic skipped-file summary should not make a successful rule scan partial: result=%+v err=%v", got, err)
+	}
+}
+
+func TestIncompleteAnalysisDiagnosticIsSpecific(t *testing.T) {
+	cases := []struct{ message string; want bool }{
+		{"Some files were skipped or only partially analyzed.", false},
+		{"Partially scanned: 1 files only partially analyzed due to parsing or internal OpenGrep errors", true},
+		{"Partially scanned: 0 files only partially analyzed", false},
+		{"[ERROR] Rule parse error in rule rule.bad", true},
+		{"", false},
+	}
+	for _, tc := range cases {
+		if got := incompleteAnalysisDiagnostic(tc.message); got != tc.want {
+			t.Errorf("incompleteAnalysisDiagnostic(%q) = %v, want %v", tc.message, got, tc.want)
+		}
+	}
+}
