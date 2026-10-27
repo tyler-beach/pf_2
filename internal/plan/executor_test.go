@@ -143,7 +143,7 @@ func TestExecuteManifestEmptyScopeIsMissingEvidence(t *testing.T) {
 	root,original:=executionFixture(t,1)
 	task:=original.Tasks[0]
 	manifest,err:=BuildManifest(root,[]AnalyzerSpec{{
-		Name:task.Analyzer, Version:task.Version, ConfigurationPath:task.ConfigurationPath,
+		Name:task.Analyzer, Version:task.Version, BinarySHA256:task.BinarySHA256, RuleSetSHA256:task.RuleSetSHA256, ConfigurationPath:task.ConfigurationPath,
 		ScopePrefixes:[]string{"internal/missing"}, TimeoutMillis:task.TimeoutMillis, MaxRetries:task.MaxAttempts-1,
 		MaxOutputBytes:task.MaxOutputBytes, RetryBackoffMillis:task.RetryBackoffMillis,
 		MaxRetryBackoffMillis:task.MaxRetryBackoffMillis, RetryableFailureKinds:task.RetryableFailureKinds,
