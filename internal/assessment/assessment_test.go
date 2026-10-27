@@ -76,10 +76,10 @@ func TestJSONRequiredKeysMalformedInputIsError(t *testing.T) {
 	if result.Requirements[0].Status!="ERROR" { t.Fatalf("expected ERROR, got %+v", result.Requirements[0]) }
 }
 
-func TestJSONRequiredKeysMissingFileIsNotApplicable(t *testing.T) {
+func TestJSONRequiredKeysMissingFileIsEvidenceMissing(t *testing.T) {
 	files := []SourceFile{{Path:"config/other.json", Language:"json", Content:"{}"}}
 	result := Assess(jsonRequirementCatalog(), files)
-	if result.Requirements[0].Status!="NOT_APPLICABLE" { t.Fatalf("expected NOT_APPLICABLE, got %+v", result.Requirements[0]) }
+	if result.Requirements[0].Status!="EVIDENCE_MISSING" { t.Fatalf("expected EVIDENCE_MISSING, got %+v", result.Requirements[0]) }\n\tif result.Verdict != "INDETERMINATE" { t.Fatalf("missing required file must not pass, got %s", result.Verdict) }
 }
 
 func TestCatalogRejectsUnsafeJSONVerifierPath(t *testing.T) {
@@ -147,4 +147,24 @@ func TestCoverageIsCompleteWhenAllAcceptedRequirementsAreEvaluated(t *testing.T)
 	files := []SourceFile{{Path:"internal/domain/customer.go", Language:"go", Content:"package domain\nimport \"strings\"\n"}}
 	result := Assess(c, files)
 	if result.CoverageStatus != "COMPLETE" || result.ApplicableRequirementCount != result.RequirementCount { t.Fatalf("expected complete coverage, got %+v", result) }
+}
+
+func TestRepositoryAssessmentDistinguishesAbsentScopeFromMissingRepositoryEvidence(t *testing.T) {
+	c := fixtureCatalog()
+	nonGo := []SourceFile{{Path:"README.md", Language:"markdown", Content:"# Docs"}}
+	result := AssessWithOptions(c, nonGo, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	for _, requirement := range result.Requirements {
+		if requirement.Status != "NOT_APPLICABLE" {
+			t.Errorf("%s status = %s, want NOT_APPLICABLE for confirmed empty Go scope", requirement.RequirementID, requirement.Status)
+		}
+	}
+	empty := AssessWithOptions(c, nil, AssessmentOptions{EvidenceMode: EvidenceModeRepository})
+	for _, requirement := range empty.Requirements {
+		if requirement.Status != "EVIDENCE_MISSING" {
+			t.Errorf("%s status = %s, want EVIDENCE_MISSING when no evidence was discovered", requirement.RequirementID, requirement.Status)
+		}
+	}
+	if empty.Verdict != "INDETERMINATE" {
+		t.Fatalf("empty repository evidence must be INDETERMINATE, got %s", empty.Verdict)
+	}
 }
