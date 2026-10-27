@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "adrs": [
+    {
+      "id": "ADR-901",
+      "title": "Validate service runtime configuration",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-901-01",
+          "title": "Service config declares timeout and retry limits",
+          "description": "The service config must contain timeout_seconds and retry_limit.",
+          "severity": "error",
+          "verifier": {
+            "type": "json-required-keys",
+            "file_path": "config/service.json",
+            "required_json_keys": [
+              "timeout_seconds",
+              "retry_limit"
+            ]
+          }
+        },
+        {
+          "id": "REQ-901-02",
+          "title": "Service timeout is between 1 and 120 seconds",
+          "description": "The timeout is a numeric value in the inclusive range 1 through 120.",
+          "severity": "error",
+          "verifier": {
+            "type": "json-number-range",
+            "file_path": "config/service.json",
+            "numeric_json_bounds": [
+              {
+                "key": "timeout_seconds",
+                "min": 1,
+                "max": 120
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
