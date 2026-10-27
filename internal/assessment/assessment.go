@@ -179,7 +179,7 @@ func Assess(c Catalog, files []SourceFile) Result {
 		for _, r := range a.Requirements {
 			rr := RequirementResult{ADR:a.ID, ADRVersion:a.Version, RequirementID:r.ID, Title:r.Title, Severity:r.Severity, Evidence:[]string{}, Findings:[]Finding{}}
 			switch r.Verifier.Type {
-			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files)
+			case "go-import-boundary": assessImportBoundary(&rr, r.Verifier, files, options.EvidenceMode)
 			case "json-required-keys": assessJSONRequiredKeys(&rr, r.Verifier, files)
 			case "json-number-range": assessJSONNumberRange(&rr, r.Verifier, files)
 			default: rr.Status="ERROR"; rr.Reason="Unsupported verifier type: "+r.Verifier.Type
@@ -329,7 +329,7 @@ func importMatches(p, forbidden string) bool {
 func rollup(rs []RequirementResult) string {
 	if len(rs)==0 { return "INDETERMINATE" }
 	passed:=0
-	for _, r := range rs { switch r.Status { case "FAIL": return "FAIL"; case "ERROR","INDETERMINATE": return "INDETERMINATE"; case "PASS": passed++ } }
+	for _, r := range rs { switch r.Status { case "FAIL": return "FAIL"; case "ERROR","INDETERMINATE","EVIDENCE_MISSING": return "INDETERMINATE"; case "PASS": passed++ } }
 	if passed==0 { return "INDETERMINATE" }
 	return "PASS"
 }
