@@ -10,14 +10,14 @@ import (
 
 func TestSARIFReportIsDeterministicAndPreservesFingerprint(t *testing.T) {
 	result := Result{
-		SchemaVersion: "1",
-		Verdict: "FAIL",
-		CoverageStatus: "COMPLETE",
-		EvidenceMode: string(EvidenceModeRepository),
-		EngineVersion: "0.3.0",
-		RequirementCount: 1,
+		SchemaVersion:              "1",
+		Verdict:                    "FAIL",
+		CoverageStatus:             "COMPLETE",
+		EvidenceMode:               string(EvidenceModeRepository),
+		EngineVersion:              "0.3.0",
+		RequirementCount:           1,
 		ApplicableRequirementCount: 1,
-		Counts: map[string]int{"FAIL": 1},
+		Counts:                     map[string]int{"FAIL": 1},
 		Requirements: []RequirementResult{{
 			ADR: "ADR-003", ADRVersion: 1, RequirementID: "REQ-003-01",
 			Title: "No dynamic shell", Status: "FAIL", Severity: "error",
@@ -68,36 +68,36 @@ func TestSARIFReportIsDeterministicAndPreservesFingerprint(t *testing.T) {
 
 func TestSARIFReportPreservesCoverageAndUnsupportedStates(t *testing.T) {
 	result := Result{
-		SchemaVersion: "1",
-		Verdict: "INDETERMINATE",
-		CoverageStatus: "PARTIAL",
-		EvidenceMode: string(EvidenceModeRepository),
-		EngineVersion: "0.3.0",
-		SourceFileCount: 2,
-		RequirementCount: 4,
+		SchemaVersion:              "1",
+		Verdict:                    "INDETERMINATE",
+		CoverageStatus:             "PARTIAL",
+		EvidenceMode:               string(EvidenceModeRepository),
+		EngineVersion:              "0.3.0",
+		SourceFileCount:            2,
+		RequirementCount:           4,
 		ApplicableRequirementCount: 1,
 		Counts: map[string]int{
-			"PASS": 1,
-			"UNSUPPORTED": 1,
+			"PASS":             1,
+			"UNSUPPORTED":      1,
 			"EVIDENCE_MISSING": 1,
-			"REVIEW_REQUIRED": 1,
+			"REVIEW_REQUIRED":  1,
 		},
-		SourceSnapshotSHA256: strings.Repeat("s", 64),
+		SourceSnapshotSHA256:  strings.Repeat("s", 64),
 		UnassessedSourceFiles: []string{"scripts/evaluate.py (python)"},
 		AnalyzerResults: []analyzer.ScanResult{{
-			Status: analyzer.ScanStatusPartial,
-			Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
-			InputSHA256: strings.Repeat("i", 64),
+			Status:              analyzer.ScanStatusPartial,
+			Analyzers:           []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+			InputSHA256:         strings.Repeat("i", 64),
 			ConfigurationSHA256: strings.Repeat("c", 64),
-			RawOutputSHA256: strings.Repeat("r", 64),
-			ScannedPaths: []string{"internal/domain/customer.go"},
-			Errors: []string{"scanner timed out"},
+			RawOutputSHA256:     strings.Repeat("r", 64),
+			ScannedPaths:        []string{"internal/domain/customer.go"},
+			Errors:              []string{"scanner timed out"},
 		}},
 		Requirements: []RequirementResult{
 			{
 				ADR: "ADR-001", ADRVersion: 1, RequirementID: "REQ-PASS",
 				Title: "Compliant requirement", Status: "PASS", Severity: "error",
-				Reason: "The deterministic verifier passed.",
+				Reason:   "The deterministic verifier passed.",
 				Evidence: []string{"internal/domain/customer.go parsed."},
 			},
 			{
@@ -141,10 +141,10 @@ func TestSARIFReportPreservesCoverageAndUnsupportedStates(t *testing.T) {
 
 	counts := metadata["status_counts"].(map[string]any)
 	for status, want := range map[string]float64{
-		"PASS": 1,
-		"UNSUPPORTED": 1,
+		"PASS":             1,
+		"UNSUPPORTED":      1,
 		"EVIDENCE_MISSING": 1,
-		"REVIEW_REQUIRED": 1,
+		"REVIEW_REQUIRED":  1,
 	} {
 		if counts[status] != want {
 			t.Errorf("SARIF count for %s = %v, want %v", status, counts[status], want)
@@ -158,10 +158,10 @@ func TestSARIFReportPreservesCoverageAndUnsupportedStates(t *testing.T) {
 		gotStatuses[entry["requirement_id"].(string)] = entry["status"].(string)
 	}
 	for id, want := range map[string]string{
-		"REQ-PASS": "PASS",
+		"REQ-PASS":        "PASS",
 		"REQ-UNSUPPORTED": "UNSUPPORTED",
-		"REQ-MISSING": "EVIDENCE_MISSING",
-		"REQ-REVIEW": "REVIEW_REQUIRED",
+		"REQ-MISSING":     "EVIDENCE_MISSING",
+		"REQ-REVIEW":      "REVIEW_REQUIRED",
 	} {
 		if gotStatuses[id] != want {
 			t.Errorf("SARIF status for %s = %q, want %q", id, gotStatuses[id], want)
