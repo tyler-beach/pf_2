@@ -235,11 +235,11 @@ func ParseSARIF(data []byte, repoRoot string) (ScanResult, error) {
 			out.Findings = append(out.Findings, f)
 		}
 	}
-	var err error
-	out.Findings, err = deduplicateAndSortFindings(out.Findings)
-	if err != nil {
-		return out, err
+	deduplicatedFindings, dedupErr := deduplicateAndSortFindings(out.Findings)
+	if dedupErr != nil {
+		return out, dedupErr
 	}
+	out.Findings = deduplicatedFindings
 
 	sort.Slice(out.Analyzers, func(i, j int) bool {
 		if out.Analyzers[i].Name == out.Analyzers[j].Name {
@@ -250,7 +250,6 @@ func ParseSARIF(data []byte, repoRoot string) (ScanResult, error) {
 	sort.Strings(out.Errors)
 	return out, nil
 }
-
 
 // deduplicateAndSortFindings removes byte-for-byte equivalent normalized finding
 // records and applies a deterministic total order. It deliberately includes the
