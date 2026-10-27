@@ -659,6 +659,12 @@ func runAssessObligations(args []string) error {
 		report.Counts["NOT_APPLICABLE"], *jsonPath, *markdownPath)
 	if *enforceBlocking {
 		for _, candidate := range report.Candidates {
+			// An unreviewed or source-stale candidate may represent a newly
+			// introduced blocking obligation. Do not let absence of an approval
+			// silently bypass the enforcement gate.
+			if candidate.Decision == obligations.DecisionPending {
+				return fmt.Errorf("obligation candidate %s remains pending review (status=%s); review or explicitly reject it before enforcing blocking obligations; see %s", candidate.CandidateID, candidate.Status, *markdownPath)
+			}
 			if candidate.Decision == obligations.DecisionApproved && candidate.EnforcementMode == obligations.EnforcementBlocking && candidate.Status != "PASS" {
 				return fmt.Errorf("blocking obligation %s did not pass (status=%s, evidence=%s); see %s", candidate.CandidateID, candidate.Status, candidate.EvidenceStatus, *markdownPath)
 			}
