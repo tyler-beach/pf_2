@@ -1,0 +1,64 @@
+# Example consumer workflow — GitHub App installation token (preferred over PAT).
+# Copy into YOUR_REPO/.github/workflows/pathfinder-app.yml
+#
+# Prerequisites:
+# 1. Create/install the Pathfinder App (see docs/github-app-design.md).
+# 2. Repo secrets: APP_ID (required) + APP_PRIVATE_KEY (required).
+#    Optional: APP_CLIENT_ID — if set, prefer the client-id mint path
+#    (mirror .github/workflows/pathfinder-app-pr-scan.yml).
+# 3. App installed on THIS repository with checks/PR/contents/security_events perms.
+name: Pathfinder (GitHub App)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_url:
+        description: Override PR URL (defaults to the triggering pull_request)
+        required: false
+        type: string
+      upload_sarif:
+        description: Upload Security SARIF
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  mint-app-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      token: ${{ steps.app-token.outputs.token }}
+    steps:
+      - name: Mint installation token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          # Least privilege on the minted token (App install must grant these).
+          permission-checks: write
+          permission-pull-requests: write
+          permission-contents: read
+          permission-security-events: write
+
+  pathfinder:
+    needs: mint-app-token
+    uses: tyler-beach/pf_2/.github/workflows/pathfinder-pr-scan-reusable.yml@main
+    with:
+      pr_url: ${{ inputs.pr_url || github.event.pull_request.html_url }}
+      pathfinder_ref: main
+      reporters: github-pr-review,github-pr-check
+      upload_sarif: ${{ inputs.upload_sarif || false }}
+      filter_mode: added
+      catalog: corpus
+      fail_level: none
+    secrets:
+      review_token: ${{ needs.mint-app-token.outputs.token }}
+      sarif_token: ${{ needs.mint-app-token.outputs.token }}

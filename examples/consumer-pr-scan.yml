@@ -4,6 +4,10 @@
 # Requires (cross-repo / fork-safe): repository secret PATHFINDER_REVIEW_TOKEN
 # with contents:read, pull_requests:write, checks:write on this repo.
 # Optional: PATHFINDER_SARIF_TOKEN for Security uploads.
+#
+# Prefer the GitHub App token path when possible:
+#   examples/consumer-pr-scan-app.yml  (APP_ID + APP_PRIVATE_KEY)
+#   docs/github-app-design.md
 name: Pathfinder
 
 on:

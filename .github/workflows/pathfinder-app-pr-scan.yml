@@ -1,0 +1,158 @@
+# Pathfinder GitHub App → installation token → reusable PR scan.
+# Actions-native MVP: no custom webhook server. The App is installed for
+# short-lived tokens; this workflow triggers on pull_request / dispatch.
+#
+# Secrets (repo or org): APP_ID (or APP_CLIENT_ID), APP_PRIVATE_KEY
+# See docs/github-app-design.md for UI create/install checklist.
+name: Pathfinder App PR Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_url:
+        description: Full GitHub PR URL (defaults to triggering pull_request when event is pull_request)
+        required: false
+        type: string
+      upload_sarif:
+        description: Upload Security SARIF to the target repo
+        required: false
+        type: boolean
+        default: false
+      catalog:
+        description: Requirement catalog
+        required: false
+        type: choice
+        options: [corpus, live]
+        default: live
+      reporters:
+        description: Comma-separated reviewdog reporters
+        required: false
+        type: string
+        default: github-pr-review,github-pr-check
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pathfinder-app-pr-scan-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  mint-app-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+      token: ${{ steps.app-token.outputs.token }}
+      pr_url: ${{ steps.prurl.outputs.pr_url }}
+    steps:
+      - name: Resolve PR URL
+        id: prurl
+        env:
+          DISPATCH_PR_URL: ${{ inputs.pr_url }}
+          EVENT_PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          set -euo pipefail
+          pr_url="${DISPATCH_PR_URL:-}"
+          if [[ -z "$pr_url" ]]; then
+            pr_url="${EVENT_PR_URL:-}"
+          fi
+          if [[ -z "$pr_url" ]]; then
+            echo "::error::pr_url is required for workflow_dispatch without a pull_request event"
+            exit 1
+          fi
+          {
+            echo "pr_url<<PF_EOF"
+            printf '%s\n' "$pr_url"
+            echo "PF_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Check App secrets
+        id: check
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          # Do not put secrets in job `if:` — GitHub blanks them for existence probes.
+          if [[ -z "${APP_PRIVATE_KEY:-}" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "auth_mode=none" >> "$GITHUB_OUTPUT"
+            echo "::notice::APP_PRIVATE_KEY not set — skipping Pathfinder App PR scan. Create the App and paste secrets (docs/github-app-design.md)."
+            exit 0
+          fi
+          if [[ -z "${APP_ID:-}" && -z "${APP_CLIENT_ID:-}" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "auth_mode=none" >> "$GITHUB_OUTPUT"
+            echo "::notice::Set secrets.APP_ID and/or secrets.APP_CLIENT_ID — skipping App PR scan."
+            exit 0
+          fi
+          if [[ -n "${APP_CLIENT_ID:-}" ]]; then
+            echo "auth_mode=client_id" >> "$GITHUB_OUTPUT"
+          else
+            echo "auth_mode=app_id" >> "$GITHUB_OUTPUT"
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Mint installation token (client-id)
+        id: app-token-client
+        if: steps.check.outputs.skip != 'true' && steps.check.outputs.auth_mode == 'client_id'
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-checks: write
+          permission-pull-requests: write
+          permission-contents: read
+          permission-security-events: write
+
+      - name: Mint installation token (app-id)
+        id: app-token-appid
+        if: steps.check.outputs.skip != 'true' && steps.check.outputs.auth_mode == 'app_id'
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-checks: write
+          permission-pull-requests: write
+          permission-contents: read
+          permission-security-events: write
+
+      - name: Export token output
+        id: app-token
+        if: steps.check.outputs.skip != 'true'
+        env:
+          TOKEN_CLIENT: ${{ steps.app-token-client.outputs.token }}
+          TOKEN_APPID: ${{ steps.app-token-appid.outputs.token }}
+        run: |
+          set -euo pipefail
+          token="${TOKEN_CLIENT:-${TOKEN_APPID:-}}"
+          if [[ -z "$token" ]]; then
+            echo "::error::Failed to mint GitHub App installation token"
+            exit 1
+          fi
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+  scan:
+    needs: mint-app-token
+    if: needs.mint-app-token.outputs.skip != 'true'
+    uses: ./.github/workflows/pathfinder-pr-scan-reusable.yml
+    with:
+      pr_url: ${{ needs.mint-app-token.outputs.pr_url }}
+      pathfinder_ref: ${{ github.sha }}
+      reporters: ${{ inputs.reporters || 'github-pr-review,github-pr-check' }}
+      upload_sarif: ${{ inputs.upload_sarif || false }}
+      filter_mode: added
+      catalog: ${{ inputs.catalog || 'live' }}
+      fail_level: none
+    secrets:
+      review_token: ${{ needs.mint-app-token.outputs.token }}
+      sarif_token: ${{ needs.mint-app-token.outputs.token }}

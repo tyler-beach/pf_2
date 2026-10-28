@@ -50,8 +50,18 @@ N/A and PASS requirements are **never** inlined or uploaded. Inline comments are
 | Mode | Token | Notes |
 |---|---|---|
 | Same repository | Default `GITHUB_TOKEN` | Workflow already grants `pull-requests: write`, `checks: write`, `security-events: write`. |
-| Other public/private repo | `PATHFINDER_REVIEW_TOKEN` (PAT or GitHub App install token) | Must reach head clone URL + Checks/PR APIs on **base** repo. |
+| Other public/private repo | `PATHFINDER_REVIEW_TOKEN` (PAT) **or** GitHub App install token (`APP_ID` + `APP_PRIVATE_KEY` via [Pathfinder App PR Scan](github-app-design.md)) | Must reach head clone URL + Checks/PR APIs on **base** repo. |
 | Fork PR | Token with write on **base** | Head may live on a fork; workflow clones `head.repo`. |
+
+### GitHub App secrets (preferred for consumers / multi-repo)
+
+| Secret | Required | Notes |
+|---|---|---|
+| `APP_ID` | Yes\* | Numeric App ID |
+| `APP_PRIVATE_KEY` | Yes | PEM private key |
+| `APP_CLIENT_ID` | Optional | Preferred by `create-github-app-token` v3 when set |
+
+\*At least one of `APP_ID` / `APP_CLIENT_ID`. Full UI checklist: [github-app-design.md](github-app-design.md). Host workflow: [pathfinder-app-pr-scan.yml](../.github/workflows/pathfinder-app-pr-scan.yml).
 
 ## Status check name (branch protection)
 
@@ -148,5 +158,5 @@ go run ./cmd/adrctl assessment-to-rdjson \
 - **ADR Assessment** (`[ADR Assessment]`) — issue sandbox / corpus assess; unchanged.
 - **CI reviewdog** — same-repo SARIF annotations on Pathfinder PRs; unchanged.
 - **PR scan** — external or same-repo PR URL via issue template or `workflow_dispatch`; additive.
-- **Reusable workflow** — [pathfinder-pr-scan-reusable.yml](../.github/workflows/pathfinder-pr-scan-reusable.yml) + [examples/consumer-pr-scan.yml](../examples/consumer-pr-scan.yml).
-- **GitHub App** — design only: [github-app-design.md](github-app-design.md) (implement when install UX beats PAT).
+- **Reusable workflow** — [pathfinder-pr-scan-reusable.yml](../.github/workflows/pathfinder-pr-scan-reusable.yml) + [examples/consumer-pr-scan.yml](../examples/consumer-pr-scan.yml) (PAT) / [examples/consumer-pr-scan-app.yml](../examples/consumer-pr-scan-app.yml) (App token).
+- **GitHub App** — Actions-native MVP: [github-app-design.md](github-app-design.md) + [pathfinder-app-pr-scan.yml](../.github/workflows/pathfinder-app-pr-scan.yml).

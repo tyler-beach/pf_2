@@ -1,0 +1,22 @@
+{
+  "name": "Pathfinder PR Scan",
+  "url": "https://github.com/tyler-beach/pf_2",
+  "description": "Least-privilege Pathfinder PR scan: reviewdog checks/comments + optional Security SARIF. Never executes PR code.",
+  "public": false,
+  "default_events": [
+    "pull_request",
+    "installation",
+    "installation_repositories"
+  ],
+  "default_permissions": {
+    "checks": "write",
+    "contents": "read",
+    "metadata": "read",
+    "pull_requests": "write",
+    "security_events": "write"
+  },
+  "hook_attributes": {
+    "url": "https://example.com/pathfinder-app-webhook-unused",
+    "active": false
+  }
+}
