@@ -41,6 +41,32 @@ class WorkshopPublishDataTest(unittest.TestCase):
                 [{"run_id": "fixture-001", "path": "snapshots/fixture-001"}],
             )
 
+    def test_upsert_replaces_same_run_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            snap = ROOT / "testdata" / "workshop-fixtures"
+            cmd = [
+                "python3",
+                str(ROOT / "scripts" / "workshop_publish_data.py"),
+                "--snapshot",
+                str(snap),
+                "--data-dir",
+                str(data),
+                "--retain-snapshots",
+                "10",
+            ]
+            subprocess.check_call(cmd)
+            subprocess.check_call(cmd)
+            lines = [
+                ln
+                for ln in (data / "metrics" / "runs.jsonl").read_text(encoding="utf-8").splitlines()
+                if ln.strip()
+            ]
+            self.assertEqual(len(lines), 1)
+            row = json.loads(lines[0])
+            self.assertEqual(row["run"]["run_id"], "fixture-001")
+            self.assertEqual(row["metrics"].get("kpi.confidence.method"), "platt_conformal")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,55 +1,128 @@
 {
-  "schema_version": "1",
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
   "candidate_count": 4,
-  "confidence_summary": { "high": 2, "medium": 1, "low": 1 },
   "candidates": [
     {
       "id": "CAND-1",
       "adr_id": "ADR-2001",
       "confidence": "high",
       "modality": "must",
+      "kind": "obligation",
       "pattern_hint": "configuration.bounds_or_required_values",
       "statement": "All public HTTP traffic must terminate TLS at the edge proxy with certificates managed by the platform.",
       "source_path": "ADR-2001.md",
       "source_line_start": 8,
       "source_line_end": 8,
-      "escalation_reasons": []
+      "escalation_reasons": [
+        "conformal_set_vacuous_point_band"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "",
+      "confidence_p": 0.6651,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ]
     },
     {
       "id": "CAND-2",
       "adr_id": "ADR-2002",
       "confidence": "high",
       "modality": "must",
+      "kind": "obligation",
       "pattern_hint": "configuration.bounds_or_required_values",
       "statement": "Security audit logs must be retained for at least 365 days in immutable storage.",
       "source_path": "ADR-2002.md",
       "source_line_start": 6,
       "source_line_end": 6,
-      "escalation_reasons": []
+      "escalation_reasons": [
+        "conformal_set_vacuous_point_band"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "",
+      "confidence_p": 0.6651,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ]
     },
     {
       "id": "CAND-3",
       "adr_id": "ADR-2003",
-      "confidence": "medium",
+      "confidence": "high",
       "modality": "should",
+      "kind": "obligation",
       "pattern_hint": "manual_review",
       "statement": "Service-to-service calls should use mesh-provided mTLS.",
       "source_path": "ADR-2003.md",
       "source_line_start": 6,
       "source_line_end": 6,
-      "escalation_reasons": ["should_modality"]
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
     },
     {
       "id": "CAND-4",
       "adr_id": "ADR-2001",
       "confidence": "low",
       "modality": "must",
+      "kind": "obligation",
       "pattern_hint": "manual_review",
       "statement": "Edge certificate lifecycle must remain platform-managed without per-team exceptions.",
       "source_path": "ADR-2001.md",
       "source_line_start": 12,
       "source_line_end": 14,
-      "escalation_reasons": ["weak_pattern_match", "broad_scope"]
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ]
     }
-  ]
+  ],
+  "confidence_summary": {
+    "high": 3,
+    "low": 1,
+    "medium": 0
+  },
+  "schema_version": "1"
 }

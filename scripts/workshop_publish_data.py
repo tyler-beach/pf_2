@@ -58,33 +58,51 @@ def main() -> int:
     row = {"run": run, "metrics": metrics}
     runs_path = data_dir / "metrics" / "runs.jsonl"
     runs_path.parent.mkdir(parents=True, exist_ok=True)
-    with runs_path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(row, sort_keys=True) + "\n")
+    # Upsert by run_id so republishes replace prior rows (avoids duplicate
+    # pre-calib / wrong-KPI history for the same snapshot id).
+    existing: list[dict] = []
+    if runs_path.exists():
+        for line in runs_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            item = json.loads(line)
+            if str(item.get("run", {}).get("run_id", "")) == run_id:
+                continue
+            existing.append(item)
+    existing.append(row)
+    runs_path.write_text(
+        "".join(json.dumps(item, sort_keys=True) + "\n" for item in existing),
+        encoding="utf-8",
+    )
 
-    # Daily rollup from jsonl
-    day = (run.get("timestamp") or datetime.now(timezone.utc).isoformat())[:10]
-    daily = {
-        "date": day,
-        "runs": 0,
-        "candidate_total": 0,
-        "confidence_high": 0,
-        "confidence_medium": 0,
-        "confidence_low": 0,
-    }
-    for line in runs_path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        item = json.loads(line)
+    # Daily rollups from full jsonl (rewrite touched days)
+    days: set[str] = set()
+    for item in existing:
         ts = str(item.get("run", {}).get("timestamp", ""))
-        if not ts.startswith(day):
-            continue
-        m = item.get("metrics", {})
-        daily["runs"] += 1
-        daily["candidate_total"] += int(m.get("candidate_total") or 0)
-        daily["confidence_high"] += int(m.get("confidence_high") or 0)
-        daily["confidence_medium"] += int(m.get("confidence_medium") or 0)
-        daily["confidence_low"] += int(m.get("confidence_low") or 0)
-    write_json(data_dir / "metrics" / "daily" / f"{day}.json", daily)
+        if len(ts) >= 10:
+            days.add(ts[:10])
+    day = (run.get("timestamp") or datetime.now(timezone.utc).isoformat())[:10]
+    days.add(day)
+    for d in sorted(days):
+        daily = {
+            "date": d,
+            "runs": 0,
+            "candidate_total": 0,
+            "confidence_high": 0,
+            "confidence_medium": 0,
+            "confidence_low": 0,
+        }
+        for item in existing:
+            ts = str(item.get("run", {}).get("timestamp", ""))
+            if not ts.startswith(d):
+                continue
+            m = item.get("metrics", {})
+            daily["runs"] += 1
+            daily["candidate_total"] += int(m.get("candidate_total") or 0)
+            daily["confidence_high"] += int(m.get("confidence_high") or 0)
+            daily["confidence_medium"] += int(m.get("confidence_medium") or 0)
+            daily["confidence_low"] += int(m.get("confidence_low") or 0)
+        write_json(data_dir / "metrics" / "daily" / f"{d}.json", daily)
 
     # Retention
     snap_root = data_dir / "snapshots"

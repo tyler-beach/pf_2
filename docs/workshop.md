@@ -56,6 +56,10 @@ go run ./cmd/adrctl workshop-emit \
   --candidates path/to/candidates.json
 ```
 
+## Calibrated-only run history
+
+`metrics/runs.jsonl` and published snapshots keep **only** runs with calibrated confidence fields (`kpi.confidence.method` / `confidence_p` / `platt_conformal`). Pre-calibration batch `workshop-submissions-20261028T015800Z` and incomplete fixture stubs without `confidence_p` are excluded. Republishing the same `run_id` upserts the metrics row instead of appending a duplicate.
+
 ## Interpreting metrics
 
 See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance verdicts.** Assess paths must keep `runtime_llm_calls == 0`.
