@@ -207,7 +207,12 @@ jobs:
           for f in "${files[@]+"${files[@]}"}"; do
             [[ -z "$f" ]] && continue
             dir="$(dirname "$f")"
-            if [[ "$dir" == "." ]]; then dirs["."]=1; else dirs["${dir%%/*}"]=1; fi
+            if [[ "$dir" == "." ]]; then
+              dirs["."]=1
+            else
+              IFS=/ read -r seg1 seg2 _ <<<"$dir"
+              if [[ -n "${seg2:-}" ]]; then dirs["${seg1}/${seg2}"]=1; else dirs["$seg1"]=1; fi
+            fi
           done
           scope="."
           if [[ ${#dirs[@]} -gt 0 && -z "${dirs[.]+x}" ]]; then

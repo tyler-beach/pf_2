@@ -304,8 +304,14 @@ jobs:
             if [[ "$dir" == "." ]]; then
               dirs["."]=1
             else
-              # Keep first path segment as a stable, coarse scope prefix.
-              top="${dir%%/*}"
+              # Two-segment prefixes when possible (avoids testdata/* fixture bleed
+              # into analyzer-fixtures while still bounding OpenGrep/Checkov).
+              IFS=/ read -r seg1 seg2 _ <<<"$dir"
+              if [[ -n "${seg2:-}" ]]; then
+                top="${seg1}/${seg2}"
+              else
+                top="$seg1"
+              fi
               dirs["$top"]=1
             fi
           done

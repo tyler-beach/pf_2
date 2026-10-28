@@ -3,6 +3,7 @@
 # short-lived tokens; this workflow triggers on pull_request / dispatch.
 #
 # Secrets (repo or org): APP_ID (or APP_CLIENT_ID), APP_PRIVATE_KEY
+# Without App secrets, same-repo scans fall back to GITHUB_TOKEN (notice logged).
 # See docs/github-app-design.md for UI create/install checklist.
 name: Pathfinder App PR Scan
 
@@ -43,16 +44,25 @@ jobs:
   mint-app-token:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     outputs:
-      skip: ${{ steps.check.outputs.skip }}
-      token: ${{ steps.app-token.outputs.token }}
-      pr_url: ${{ steps.prurl.outputs.pr_url }}
+      token: ${{ steps.export.outputs.token }}
+      pr_url: ${{ steps.params.outputs.pr_url }}
+      upload_sarif: ${{ steps.params.outputs.upload_sarif }}
+      catalog: ${{ steps.params.outputs.catalog }}
+      reporters: ${{ steps.params.outputs.reporters }}
+      auth: ${{ steps.export.outputs.auth }}
     steps:
-      - name: Resolve PR URL
-        id: prurl
+      - name: Resolve PR URL + reusable inputs
+        id: params
         env:
           DISPATCH_PR_URL: ${{ inputs.pr_url }}
           EVENT_PR_URL: ${{ github.event.pull_request.html_url }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_UPLOAD: ${{ inputs.upload_sarif }}
+          DISPATCH_CATALOG: ${{ inputs.catalog }}
+          DISPATCH_REPORTERS: ${{ inputs.reporters }}
         run: |
           set -euo pipefail
           pr_url="${DISPATCH_PR_URL:-}"
@@ -69,7 +79,28 @@ jobs:
             echo "PF_EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Check App secrets
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            upload="${DISPATCH_UPLOAD:-false}"
+            catalog="${DISPATCH_CATALOG:-live}"
+            reporters="${DISPATCH_REPORTERS:-github-pr-review,github-pr-check}"
+          else
+            upload="false"
+            catalog="live"
+            reporters="github-pr-review,github-pr-check"
+          fi
+          case "$upload" in
+            true|True|TRUE) upload="true" ;;
+            *) upload="false" ;;
+          esac
+          echo "upload_sarif=$upload" >> "$GITHUB_OUTPUT"
+          echo "catalog=$catalog" >> "$GITHUB_OUTPUT"
+          {
+            echo "reporters<<PF_EOF"
+            printf '%s\n' "$reporters"
+            echo "PF_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Detect App secrets
         id: check
         env:
           APP_ID: ${{ secrets.APP_ID }}
@@ -77,29 +108,22 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          # Do not put secrets in job `if:` — GitHub blanks them for existence probes.
-          if [[ -z "${APP_PRIVATE_KEY:-}" ]]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "auth_mode=none" >> "$GITHUB_OUTPUT"
-            echo "::notice::APP_PRIVATE_KEY not set — skipping Pathfinder App PR scan. Create the App and paste secrets (docs/github-app-design.md)."
-            exit 0
-          fi
-          if [[ -z "${APP_ID:-}" && -z "${APP_CLIENT_ID:-}" ]]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "auth_mode=none" >> "$GITHUB_OUTPUT"
-            echo "::notice::Set secrets.APP_ID and/or secrets.APP_CLIENT_ID — skipping App PR scan."
-            exit 0
-          fi
-          if [[ -n "${APP_CLIENT_ID:-}" ]]; then
-            echo "auth_mode=client_id" >> "$GITHUB_OUTPUT"
+          if [[ -n "${APP_PRIVATE_KEY:-}" && ( -n "${APP_ID:-}" || -n "${APP_CLIENT_ID:-}" ) ]]; then
+            if [[ -n "${APP_CLIENT_ID:-}" ]]; then
+              echo "auth_mode=client_id" >> "$GITHUB_OUTPUT"
+            else
+              echo "auth_mode=app_id" >> "$GITHUB_OUTPUT"
+            fi
+            echo "has_app=true" >> "$GITHUB_OUTPUT"
           else
-            echo "auth_mode=app_id" >> "$GITHUB_OUTPUT"
+            echo "auth_mode=github_token" >> "$GITHUB_OUTPUT"
+            echo "has_app=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::App secrets not set — using GITHUB_TOKEN for same-repo scan. Add APP_ID + APP_PRIVATE_KEY (docs/github-app-design.md) for install-token auth."
           fi
-          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Mint installation token (client-id)
         id: app-token-client
-        if: steps.check.outputs.skip != 'true' && steps.check.outputs.auth_mode == 'client_id'
+        if: steps.check.outputs.has_app == 'true' && steps.check.outputs.auth_mode == 'client_id'
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           client-id: ${{ secrets.APP_CLIENT_ID }}
@@ -113,7 +137,7 @@ jobs:
 
       - name: Mint installation token (app-id)
         id: app-token-appid
-        if: steps.check.outputs.skip != 'true' && steps.check.outputs.auth_mode == 'app_id'
+        if: steps.check.outputs.has_app == 'true' && steps.check.outputs.auth_mode == 'app_id'
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.APP_ID }}
@@ -125,33 +149,40 @@ jobs:
           permission-contents: read
           permission-security-events: write
 
-      - name: Export token output
-        id: app-token
-        if: steps.check.outputs.skip != 'true'
+      - name: Export review token
+        id: export
         env:
           TOKEN_CLIENT: ${{ steps.app-token-client.outputs.token }}
           TOKEN_APPID: ${{ steps.app-token-appid.outputs.token }}
+          FALLBACK: ${{ github.token }}
+          HAS_APP: ${{ steps.check.outputs.has_app }}
         run: |
           set -euo pipefail
-          token="${TOKEN_CLIENT:-${TOKEN_APPID:-}}"
-          if [[ -z "$token" ]]; then
-            echo "::error::Failed to mint GitHub App installation token"
-            exit 1
+          if [[ "$HAS_APP" == "true" ]]; then
+            token="${TOKEN_CLIENT:-${TOKEN_APPID:-}}"
+            auth="app"
+            if [[ -z "$token" ]]; then
+              echo "::error::Failed to mint GitHub App installation token"
+              exit 1
+            fi
+          else
+            token="$FALLBACK"
+            auth="github_token"
           fi
           echo "::add-mask::$token"
           echo "token=$token" >> "$GITHUB_OUTPUT"
+          echo "auth=$auth" >> "$GITHUB_OUTPUT"
 
   scan:
     needs: mint-app-token
-    if: needs.mint-app-token.outputs.skip != 'true'
     uses: ./.github/workflows/pathfinder-pr-scan-reusable.yml
     with:
       pr_url: ${{ needs.mint-app-token.outputs.pr_url }}
-      pathfinder_ref: ${{ github.sha }}
-      reporters: ${{ inputs.reporters || 'github-pr-review,github-pr-check' }}
-      upload_sarif: ${{ inputs.upload_sarif || false }}
+      pathfinder_ref: main
+      reporters: ${{ needs.mint-app-token.outputs.reporters }}
+      upload_sarif: ${{ fromJSON(needs.mint-app-token.outputs.upload_sarif) }}
       filter_mode: added
-      catalog: ${{ inputs.catalog || 'live' }}
+      catalog: ${{ needs.mint-app-token.outputs.catalog }}
       fail_level: none
     secrets:
       review_token: ${{ needs.mint-app-token.outputs.token }}
