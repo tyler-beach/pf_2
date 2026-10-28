@@ -3,12 +3,9 @@ package analyzer
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"hash"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -43,7 +40,9 @@ func (r ExecCommandRunner) Run(ctx context.Context, binary string, args []string
 	cmd := exec.CommandContext(ctx, binary, args...)
 	cmd.Dir = dir
 	cmd.Env = scannerEnvironment()
-	if r.HomeDir != "" { cmd.Env = append(cmd.Env, "HOME="+r.HomeDir) }
+	if r.HomeDir != "" {
+		cmd.Env = append(cmd.Env, "HOME="+r.HomeDir)
+	}
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -93,36 +92,52 @@ type OpenGrepScanner struct {
 	RuleSetSHA256    string
 	SourceExtensions []string
 	ScanPaths        []string
-	MaxFileBytes     int64
-	Timeout          time.Duration
-	Runner           CommandRunner
+	// PrecomputedInputSHA256, when set, skips a redundant full-tree hash. Callers
+	// that already verified the repository snapshot (for example plan execution)
+	// should supply the planned digest; direct scans leave it empty.
+	PrecomputedInputSHA256 string
+	MaxFileBytes           int64
+	Timeout                time.Duration
+	Runner                 CommandRunner
 }
 
 // ResolveExecutable finds an executable through PATH when necessary and
 // resolves symlinks to the immutable file whose bytes will be hashed/executed.
 func ResolveExecutable(binary string) (string, error) {
 	binary = strings.TrimSpace(binary)
-	if binary == "" { return "", fmt.Errorf("analyzer executable path is required") }
+	if binary == "" {
+		return "", fmt.Errorf("analyzer executable path is required")
+	}
 	resolved, err := exec.LookPath(binary)
-	if err != nil { return "", fmt.Errorf("resolve analyzer executable: %w", err) }
+	if err != nil {
+		return "", fmt.Errorf("resolve analyzer executable: %w", err)
+	}
 	resolved, err = filepath.Abs(resolved)
-	if err != nil { return "", fmt.Errorf("resolve analyzer executable path: %w", err) }
+	if err != nil {
+		return "", fmt.Errorf("resolve analyzer executable path: %w", err)
+	}
 	resolved, err = filepath.EvalSymlinks(resolved)
-	if err != nil { return "", fmt.Errorf("resolve analyzer executable symlinks: %w", err) }
+	if err != nil {
+		return "", fmt.Errorf("resolve analyzer executable symlinks: %w", err)
+	}
 	info, err := os.Stat(resolved)
-	if err != nil { return "", fmt.Errorf("inspect analyzer executable: %w", err) }
-	if !info.Mode().IsRegular() { return "", fmt.Errorf("analyzer executable is not a regular file") }
+	if err != nil {
+		return "", fmt.Errorf("inspect analyzer executable: %w", err)
+	}
+	if !info.Mode().IsRegular() {
+		return "", fmt.Errorf("analyzer executable is not a regular file")
+	}
 	return resolved, nil
 }
 
 func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, error) {
 	out := ScanResult{
 		SchemaVersion: "1",
-		SARIFVersion: SARIFVersion,
-		Status: ScanStatusError,
-		Analyzers: []AnalyzerInfo{{Name: "opengrep", Version: s.Version}},
-		Findings: []Finding{},
-		Errors: []string{},
+		SARIFVersion:  SARIFVersion,
+		Status:        ScanStatusError,
+		Analyzers:     []AnalyzerInfo{{Name: "opengrep", Version: s.Version}},
+		Findings:      []Finding{},
+		Errors:        []string{},
 	}
 	if strings.TrimSpace(s.Version) == "" {
 		return out, fmt.Errorf("OpenGrep version must be explicitly pinned")
@@ -131,58 +146,101 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 		return out, fmt.Errorf("OpenGrep ConfigPath is required")
 	}
 	binary := strings.TrimSpace(s.Binary)
-	if binary == "" { binary = "opengrep" }
-	if root == "" { root = "." }
+	if binary == "" {
+		binary = "opengrep"
+	}
+	if root == "" {
+		root = "."
+	}
 	rootAbs, err := filepath.Abs(root)
-	if err != nil { return out, fmt.Errorf("resolve repository root: %w", err) }
+	if err != nil {
+		return out, fmt.Errorf("resolve repository root: %w", err)
+	}
 	rootAbs, err = filepath.EvalSymlinks(rootAbs)
-	if err != nil { return out, fmt.Errorf("resolve repository root symlinks: %w", err) }
+	if err != nil {
+		return out, fmt.Errorf("resolve repository root symlinks: %w", err)
+	}
 	rootInfo, err := os.Stat(rootAbs)
-	if err != nil { return out, fmt.Errorf("inspect repository root: %w", err) }
-	if !rootInfo.IsDir() { return out, fmt.Errorf("repository root %q is not a directory", rootAbs) }
+	if err != nil {
+		return out, fmt.Errorf("inspect repository root: %w", err)
+	}
+	if !rootInfo.IsDir() {
+		return out, fmt.Errorf("repository root %q is not a directory", rootAbs)
+	}
 
 	binarySHA256 := ""
+	binaryDigestVerified := false
 	if strings.TrimSpace(s.BinarySHA256) != "" {
 		expected := strings.ToLower(strings.TrimSpace(s.BinarySHA256))
-		if !validPlanSHA256(expected) { return out, fmt.Errorf("expected OpenGrep binary SHA-256 is invalid") }
+		if !validPlanSHA256(expected) {
+			return out, fmt.Errorf("expected OpenGrep binary SHA-256 is invalid")
+		}
 		resolvedBinary, resolveErr := ResolveExecutable(binary)
-		if resolveErr != nil { return out, resolveErr }
-		actual, hashErr := HashFile(resolvedBinary)
-		if hashErr != nil { return out, fmt.Errorf("hash OpenGrep executable: %w", hashErr) }
+		if resolveErr != nil {
+			return out, resolveErr
+		}
+		actual, hashErr := HashFileCached(resolvedBinary)
+		if hashErr != nil {
+			return out, fmt.Errorf("hash OpenGrep executable: %w", hashErr)
+		}
 		if actual != expected {
 			return out, fmt.Errorf("OpenGrep binary SHA-256 mismatch: expected %s but found %s", expected, actual)
 		}
 		binary, binarySHA256 = resolvedBinary, actual
+		binaryDigestVerified = true
 		out.BinarySHA256 = actual
 	}
 
 	configAbs, configRel, err := resolveConfig(rootAbs, s.ConfigPath)
-	if err != nil { return out, err }
+	if err != nil {
+		return out, err
+	}
 	configHash, err := HashFile(configAbs)
-	if err != nil { return out, err }
+	if err != nil {
+		return out, err
+	}
 	ruleSetHash := strings.ToLower(strings.TrimSpace(s.RuleSetSHA256))
-	if ruleSetHash == "" { ruleSetHash = configHash }
-	if !validPlanSHA256(ruleSetHash) { return out, fmt.Errorf("OpenGrep rule-set SHA-256 is invalid") }
+	if ruleSetHash == "" {
+		ruleSetHash = configHash
+	}
+	if !validPlanSHA256(ruleSetHash) {
+		return out, fmt.Errorf("OpenGrep rule-set SHA-256 is invalid")
+	}
 	if s.MaxFileBytes > 0 {
-		if err := validateScanFileSizes(rootAbs, s.MaxFileBytes, s.SourceExtensions); err != nil { return out, err }
+		if err := validateScanFileSizes(rootAbs, s.MaxFileBytes, s.SourceExtensions); err != nil {
+			return out, err
+		}
 	}
 	out.ConfigurationPath = configRel
 	out.ConfigurationSHA256 = configHash
 	out.BinarySHA256 = binarySHA256
 	out.RuleSetSHA256 = ruleSetHash
-	inputHash, err := hashInputTree(rootAbs)
-	if err != nil { return out, err }
+	inputHash := strings.ToLower(strings.TrimSpace(s.PrecomputedInputSHA256))
+	if inputHash != "" {
+		if !validPlanSHA256(inputHash) {
+			return out, fmt.Errorf("precomputed OpenGrep input SHA-256 is invalid")
+		}
+	} else {
+		inputHash, err = hashInputTree(rootAbs)
+		if err != nil {
+			return out, err
+		}
+	}
 	out.InputSHA256 = inputHash
 
 	tempDir, err := os.MkdirTemp("", "pathfinder-opengrep-")
-	if err != nil { return out, fmt.Errorf("create temporary scan directory: %w", err) }
+	if err != nil {
+		return out, fmt.Errorf("create temporary scan directory: %w", err)
+	}
 	defer os.RemoveAll(tempDir)
 	homeDir := filepath.Join(tempDir, "home")
 	if err := os.Mkdir(homeDir, 0700); err != nil {
 		return out, fmt.Errorf("create isolated analyzer home: %w", err)
 	}
 	runner := s.Runner
-	if runner == nil { runner = ExecCommandRunner{HomeDir: homeDir} }
+	if runner == nil {
+		runner = ExecCommandRunner{HomeDir: homeDir}
+	}
 	runCtx := ctx
 	cancel := func() {}
 	if s.Timeout > 0 {
@@ -190,31 +248,39 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	}
 	defer cancel()
 
-	versionResult, err := runner.Run(runCtx, binary, []string{"--version"}, rootAbs)
-	if err != nil {
-		out.Errors = append(out.Errors, err.Error())
-		return out, err
-	}
-	if versionResult.ExitCode != 0 {
-		err := fmt.Errorf("OpenGrep version probe exited %d: %s", versionResult.ExitCode, truncate(string(versionResult.Stderr), 4096))
-		out.Errors = append(out.Errors, err.Error())
-		return out, err
-	}
-	versionOutput := strings.TrimSpace(string(versionResult.Stdout) + " " + string(versionResult.Stderr))
-	if !strings.Contains(versionOutput, s.Version) {
-		err := fmt.Errorf("OpenGrep version mismatch: expected %q, command reported %q", s.Version, truncate(versionOutput, 512))
-		out.Errors = append(out.Errors, err.Error())
-		return out, err
+	// A verified binary digest already pins the exact executable bytes for the
+	// release we expect; skip the extra --version process spawn in that case.
+	if !binaryDigestVerified {
+		versionResult, err := runner.Run(runCtx, binary, []string{"--version"}, rootAbs)
+		if err != nil {
+			out.Errors = append(out.Errors, err.Error())
+			return out, err
+		}
+		if versionResult.ExitCode != 0 {
+			err := fmt.Errorf("OpenGrep version probe exited %d: %s", versionResult.ExitCode, truncate(string(versionResult.Stderr), 4096))
+			out.Errors = append(out.Errors, err.Error())
+			return out, err
+		}
+		versionOutput := strings.TrimSpace(string(versionResult.Stdout) + " " + string(versionResult.Stderr))
+		if !strings.Contains(versionOutput, s.Version) {
+			err := fmt.Errorf("OpenGrep version mismatch: expected %q, command reported %q", s.Version, truncate(versionOutput, 512))
+			out.Errors = append(out.Errors, err.Error())
+			return out, err
+		}
 	}
 
 	sarifPath := filepath.Join(tempDir, "results.sarif")
 	selectedPaths, err := normalizeScanPaths(rootAbs, s.ScanPaths, configRel)
-	if err != nil { return out, fmt.Errorf("validate requested scan paths: %w", err) }
+	if err != nil {
+		return out, fmt.Errorf("validate requested scan paths: %w", err)
+	}
 	args := []string{"scan", "--sarif-output=" + sarifPath, "--exclude", analyzerFixtureDirectory, "-f", configRel}
 	if len(selectedPaths) == 0 {
 		args = append(args, ".")
 	} else {
-		for _, selected := range selectedPaths { args = append(args, "./"+filepath.FromSlash(selected)) }
+		for _, selected := range selectedPaths {
+			args = append(args, "./"+filepath.FromSlash(selected))
+		}
 	}
 	commandResult, err := runner.Run(runCtx, binary, args, rootAbs)
 	if err != nil {
@@ -263,7 +329,9 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 		normalized.ScannedPaths = append([]string(nil), selectedPaths...)
 	} else {
 		normalized.ScannedPaths, err = discoverScannedPathsExcluding(rootAbs, configRel)
-		if err != nil { return out, fmt.Errorf("discover scanner scope: %w", err) }
+		if err != nil {
+			return out, fmt.Errorf("discover scanner scope: %w", err)
+		}
 	}
 	if incompleteAnalysisDiagnostic(string(commandResult.Stderr)) {
 		normalized.Status = ScanStatusPartial
@@ -283,53 +351,42 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 
 func resolveConfig(root, config string) (absolute, relative string, err error) {
 	candidate := config
-	if !filepath.IsAbs(candidate) { candidate = filepath.Join(root, candidate) }
+	if !filepath.IsAbs(candidate) {
+		candidate = filepath.Join(root, candidate)
+	}
 	candidate, err = filepath.Abs(candidate)
-	if err != nil { return "", "", fmt.Errorf("resolve OpenGrep configuration path: %w", err) }
+	if err != nil {
+		return "", "", fmt.Errorf("resolve OpenGrep configuration path: %w", err)
+	}
 	candidate, err = filepath.EvalSymlinks(candidate)
-	if err != nil { return "", "", fmt.Errorf("resolve OpenGrep configuration symlinks: %w", err) }
+	if err != nil {
+		return "", "", fmt.Errorf("resolve OpenGrep configuration symlinks: %w", err)
+	}
 	rel, err := filepath.Rel(root, candidate)
-	if err != nil { return "", "", fmt.Errorf("make OpenGrep config repository-relative: %w", err) }
+	if err != nil {
+		return "", "", fmt.Errorf("make OpenGrep config repository-relative: %w", err)
+	}
 	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
 		return "", "", fmt.Errorf("OpenGrep config path must remain inside repository root")
 	}
 	info, err := os.Stat(candidate)
-	if err != nil { return "", "", fmt.Errorf("inspect OpenGrep configuration: %w", err) }
-	if !info.Mode().IsRegular() { return "", "", fmt.Errorf("OpenGrep ConfigPath must be a regular file") }
+	if err != nil {
+		return "", "", fmt.Errorf("inspect OpenGrep configuration: %w", err)
+	}
+	if !info.Mode().IsRegular() {
+		return "", "", fmt.Errorf("OpenGrep ConfigPath must be a regular file")
+	}
 	return candidate, filepath.ToSlash(rel), nil
 }
 
 // hashInputTree hashes relative paths and contents in stable lexical order. Git
 // internals and dependency/vendor trees are excluded; symlinks are not followed.
 func hashInputTree(root string) (string, error) {
-	h := sha256.New()
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
-	skipFile := map[string]bool{"assessment.json": true, "results.sarif": true, "report.md": true, "coverage.out": true, "ingested-adrs.json": true, "obligation-candidates.json": true, "obligation-assessment.json": true, "obligation-assessment.md": true, "obligation-candidates.md": true}
-	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
-		if walkErr != nil { return walkErr }
-		if entry.IsDir() {
-			if current != root && skipDir[entry.Name()] { return filepath.SkipDir }
-			return nil
-		}
-		if entry.Type()&os.ModeSymlink != 0 { return nil }
-		if skipFile[entry.Name()] { return nil }
-		info, err := entry.Info()
-		if err != nil { return err }
-		if !info.Mode().IsRegular() { return nil }
-		relative, err := filepath.Rel(root, current)
-		if err != nil { return err }
-		if _, err := io.WriteString(h, filepath.ToSlash(relative)+"\x00"); err != nil { return err }
-		file, err := os.Open(current)
-		if err != nil { return err }
-		_, copyErr := io.Copy(h, file)
-		closeErr := file.Close()
-		if copyErr != nil { return copyErr }
-		if closeErr != nil { return closeErr }
-		if _, err := io.WriteString(h, "\x00"); err != nil { return err }
-		return nil
-	})
-	if err != nil { return "", fmt.Errorf("hash repository input tree: %w", err) }
-	return hex.EncodeToString(h.Sum(nil)), nil
+	snap, err := SnapshotInputTree(root)
+	if err != nil {
+		return "", err
+	}
+	return snap.InputSHA256, nil
 }
 
 func writeHashPart(h hash.Hash, data []byte) error {
@@ -339,10 +396,11 @@ func writeHashPart(h hash.Hash, data []byte) error {
 
 func truncate(value string, max int) string {
 	value = strings.TrimSpace(value)
-	if len(value) <= max { return value }
+	if len(value) <= max {
+		return value
+	}
 	return value[:max] + "…"
 }
-
 
 // discoverScannedPaths records a deterministic inventory of source/config files
 // that can inform whether a policy's declared repository path scope is present.
@@ -358,63 +416,65 @@ func DiscoverScannedPaths(root string) ([]string, error) {
 
 func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) {
 	excludedPath = filepath.ToSlash(filepath.Clean(excludedPath))
-	extensions := map[string]bool{
-		".go": true, ".py": true, ".js": true, ".jsx": true, ".mjs": true, ".cjs": true, ".ts": true, ".tsx": true,
-		".java": true, ".cs": true, ".php": true, ".rb": true, ".json": true, ".yaml": true,
-		".yml": true, ".tf": true, ".tfvars": true, ".hcl": true, ".sh": true, ".bash": true, ".zsh": true, ".fish": true,
-		".kt": true, ".kts": true, ".scala": true, ".rs": true, ".c": true, ".h": true, ".cc": true,
-		".cpp": true, ".hpp": true, ".dart": true, ".swift": true, ".lua": true, ".vb": true,
-		".vbs": true, ".ml": true, ".mli": true, ".vue": true, ".html": true, ".xml": true,
-		".sql": true, ".ex": true, ".exs": true, ".template": true, ".mod": true, ".toml": true,
+	if excludedPath == "." {
+		excludedPath = ""
 	}
-	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
 	var paths []string
 	err := filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
-		if walkErr != nil { return walkErr }
+		if walkErr != nil {
+			return walkErr
+		}
 		if entry.IsDir() {
-			if current != root && skipDir[entry.Name()] { return filepath.SkipDir }
+			if current != root && inputTreeSkipDirs[entry.Name()] {
+				return filepath.SkipDir
+			}
 			rel, err := filepath.Rel(root, current)
-			if err != nil { return err }
-			if filepath.ToSlash(rel) == analyzerFixtureDirectory { return filepath.SkipDir }
+			if err != nil {
+				return err
+			}
+			if filepath.ToSlash(rel) == analyzerFixtureDirectory {
+				return filepath.SkipDir
+			}
 			return nil
 		}
-		if entry.Type()&os.ModeSymlink != 0 { return nil }
-		if !entry.Type().IsRegular() && entry.Type() != 0 { return nil }
-		name := entry.Name()
-		ext := strings.ToLower(filepath.Ext(name))
-		base := strings.ToLower(name)
-		eligible := extensions[ext] ||
-			base == "dockerfile" ||
-			strings.HasPrefix(base, "dockerfile.") ||
-			base == "containerfile"
-		if !eligible {
+		if entry.Type()&os.ModeSymlink != 0 {
+			return nil
+		}
+		if !entry.Type().IsRegular() && entry.Type() != 0 {
 			return nil
 		}
 		rel, err := filepath.Rel(root, current)
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 		rel = filepath.ToSlash(rel)
-		if excludedPath != "" && rel == excludedPath { return nil }
-		if rel == "adr/obligation-candidates.json" || rel == "adr/ingested-adrs.json" { return nil }
+		if !isEligibleAnalyzerSource(rel, excludedPath) {
+			return nil
+		}
 		paths = append(paths, rel)
 		return nil
 	})
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	sort.Strings(paths)
 	return paths, nil
 }
-
 
 // HashInputTree exposes the deterministic source/configuration tree digest for
 // evidence verification. Generated reports and analyzer-evidence outputs are
 // excluded so a scan can be verified after its reports are written.
 func HashInputTree(root string) (string, error) {
 	rootAbs, err := filepath.Abs(root)
-	if err != nil { return "", fmt.Errorf("resolve repository root: %w", err) }
+	if err != nil {
+		return "", fmt.Errorf("resolve repository root: %w", err)
+	}
 	rootAbs, err = filepath.EvalSymlinks(rootAbs)
-	if err != nil { return "", fmt.Errorf("resolve repository root symlinks: %w", err) }
+	if err != nil {
+		return "", fmt.Errorf("resolve repository root symlinks: %w", err)
+	}
 	return hashInputTree(rootAbs)
 }
-
 
 // incompleteAnalysisDiagnostic distinguishes a concrete partial parse/analyzer
 // failure from OpenGrep's generic notice that it skipped irrelevant files. That
@@ -423,42 +483,61 @@ func HashInputTree(root string) (string, error) {
 func incompleteAnalysisDiagnostic(stderr string) bool {
 	lower := strings.ToLower(stderr)
 	for _, marker := range []string{"rule parse error", "internal opengrep errors", "failed to analyze"} {
-		if strings.Contains(lower, marker) { return true }
+		if strings.Contains(lower, marker) {
+			return true
+		}
 	}
 	const prefix = "partially scanned:"
 	if idx := strings.Index(lower, prefix); idx >= 0 {
 		remaining := strings.TrimSpace(lower[idx+len(prefix):])
 		fields := strings.Fields(remaining)
-		if len(fields) == 0 { return true }
+		if len(fields) == 0 {
+			return true
+		}
 		count, err := strconv.Atoi(strings.Trim(fields[0], ":,.;"))
-		if err != nil { return true }
-		if count > 0 { return true }
+		if err != nil {
+			return true
+		}
+		if count > 0 {
+			return true
+		}
 	}
 	// Do not fail on the broad summary alone. A concrete positive partial-file
 	// count, rule parse error, or SARIF invocation error is handled above.
 	return false
 }
 
-
 // validateScanFileSizes fails closed when supported source files exceed the
 // configured per-file bound; symlinks and generated analyzer artifacts are
 // excluded so scans do not traverse outside the repository or scan their own output.
 func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []string) error {
-	if maxBytes <= 0 { return nil }
+	if maxBytes <= 0 {
+		return nil
+	}
 	allowed := make(map[string]bool, len(sourceExtensions))
-	for _, ext := range sourceExtensions { allowed[strings.ToLower(strings.TrimSpace(ext))] = true }
-	if len(allowed) == 0 { return nil }
+	for _, ext := range sourceExtensions {
+		allowed[strings.ToLower(strings.TrimSpace(ext))] = true
+	}
+	if len(allowed) == 0 {
+		return nil
+	}
 	skipDirs := map[string]bool{
 		".git": true, "vendor": true, "node_modules": true,
 		".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true,
 	}
 	return filepath.WalkDir(root, func(current string, entry os.DirEntry, walkErr error) error {
-		if walkErr != nil { return walkErr }
-		if entry.Type()&os.ModeSymlink != 0 { return nil }
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.Type()&os.ModeSymlink != 0 {
+			return nil
+		}
 		if entry.IsDir() {
 			if current != root {
 				rel, err := filepath.Rel(root, current)
-				if err != nil { return err }
+				if err != nil {
+					return err
+				}
 				rel = filepath.ToSlash(rel)
 				if skipDirs[entry.Name()] || rel == analyzerFixtureDirectory || strings.HasPrefix(rel, analyzerFixtureDirectory+"/") {
 					return filepath.SkipDir
@@ -466,13 +545,21 @@ func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []strin
 			}
 			return nil
 		}
-		if !allowed[strings.ToLower(filepath.Ext(entry.Name()))] { return nil }
+		if !allowed[strings.ToLower(filepath.Ext(entry.Name()))] {
+			return nil
+		}
 		info, err := entry.Info()
-		if err != nil { return fmt.Errorf("inspect source file size: %w", err) }
-		if !info.Mode().IsRegular() { return nil }
+		if err != nil {
+			return fmt.Errorf("inspect source file size: %w", err)
+		}
+		if !info.Mode().IsRegular() {
+			return nil
+		}
 		if info.Size() > maxBytes {
 			rel, relErr := filepath.Rel(root, current)
-			if relErr != nil { return relErr }
+			if relErr != nil {
+				return relErr
+			}
 			return fmt.Errorf("source file %s is %d bytes and exceeds the configured %d-byte per-file limit", filepath.ToSlash(rel), info.Size(), maxBytes)
 		}
 		return nil
@@ -482,12 +569,12 @@ func validateScanFileSizes(root string, maxBytes int64, sourceExtensions []strin
 // normalizeScanPaths validates the explicit file inventory used by a scoped
 // plan. Paths are repository-relative regular files; symlinks, traversal,
 // duplicate entries, and the analyzer configuration itself are rejected.
+// Eligibility is checked per path so scoped plans do not pay for a full-tree
+// inventory walk on every analyzer invocation.
 func normalizeScanPaths(root string, requested []string, configRel string) ([]string, error) {
-	if len(requested) == 0 { return nil, nil }
-	eligiblePaths, err := discoverScannedPathsExcluding(root, configRel)
-	if err != nil { return nil, fmt.Errorf("build eligible source inventory: %w", err) }
-	eligible := make(map[string]bool, len(eligiblePaths))
-	for _, path := range eligiblePaths { eligible[path] = true }
+	if len(requested) == 0 {
+		return nil, nil
+	}
 	seen := make(map[string]bool, len(requested))
 	out := make([]string, 0, len(requested))
 	for _, raw := range requested {
@@ -499,23 +586,40 @@ func normalizeScanPaths(root string, requested []string, configRel string) ([]st
 		}
 		absolute := filepath.Join(root, filepath.FromSlash(clean))
 		resolved, err := filepath.EvalSymlinks(absolute)
-		if err != nil { return nil, fmt.Errorf("resolve scan path %q: %w", clean, err) }
+		if err != nil {
+			return nil, fmt.Errorf("resolve scan path %q: %w", clean, err)
+		}
 		if filepath.Clean(resolved) != filepath.Clean(absolute) {
 			return nil, fmt.Errorf("scan path %q traverses a symlink", clean)
 		}
 		info, err := os.Lstat(absolute)
-		if err != nil { return nil, fmt.Errorf("inspect scan path %q: %w", clean, err) }
+		if err != nil {
+			return nil, fmt.Errorf("inspect scan path %q: %w", clean, err)
+		}
 		if info.Mode()&os.ModeSymlink != 0 || !info.Mode().IsRegular() {
 			return nil, fmt.Errorf("scan path %q must be a regular non-symlink file", clean)
 		}
 		rel, err := filepath.Rel(root, resolved)
-		if err != nil { return nil, fmt.Errorf("make scan path repository-relative: %w", err) }
+		if err != nil {
+			return nil, fmt.Errorf("make scan path repository-relative: %w", err)
+		}
 		if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
 			return nil, fmt.Errorf("scan path %q escapes repository root", clean)
 		}
 		relative := filepath.ToSlash(rel)
-		if !eligible[relative] { return nil, fmt.Errorf("scan path %q is not in the eligible analyzer source inventory", relative) }
-		if seen[relative] { return nil, fmt.Errorf("duplicate scan path %q", relative) }
+		if !isEligibleAnalyzerSource(relative, configRel) {
+			return nil, fmt.Errorf("scan path %q is not in the eligible analyzer source inventory", relative)
+		}
+		// Reject paths under skipped inventory directories even if the file exists
+		// (for example a file materialised under node_modules after planning).
+		for _, part := range strings.Split(relative, "/") {
+			if inputTreeSkipDirs[part] {
+				return nil, fmt.Errorf("scan path %q is not in the eligible analyzer source inventory", relative)
+			}
+		}
+		if seen[relative] {
+			return nil, fmt.Errorf("duplicate scan path %q", relative)
+		}
 		seen[relative] = true
 		out = append(out, relative)
 	}

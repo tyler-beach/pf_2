@@ -245,6 +245,10 @@ func splitCSV(value string) []string {
 	return out
 }
 
+func splitScopePrefixes(value string) []string {
+	return splitCSV(value)
+}
+
 // resolveOpenGrepBinary resolves the exact executable file and records its digest.
 // If an expected digest is supplied, a mismatch fails before the analyzer starts.
 func resolveOpenGrepBinary(binary, expectedSHA256 string) (string, string, error) {
@@ -256,7 +260,7 @@ func resolvePinnedBinary(binary, expectedSHA256, label string) (string, string, 
 	if err != nil {
 		return "", "", err
 	}
-	actual, err := analyzer.HashFile(resolved)
+	actual, err := analyzer.HashFileCached(resolved)
 	if err != nil {
 		return "", "", fmt.Errorf("hash %s executable: %w", label, err)
 	}
@@ -279,6 +283,7 @@ func runOpenGrepScan(args []string) error {
 	fs := flag.NewFlagSet("scan-opengrep", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root to scan")
 	config := fs.String("config", "rules/pathfinder-security.yml", "repository-relative OpenGrep rule file")
+	scope := fs.String("scope", ".", "comma-separated repository-relative scope prefixes (narrow for PR diffs)")
 	binary := fs.String("binary", "opengrep", "OpenGrep executable path")
 	binarySHA256 := fs.String("binary-sha256", "", "expected OpenGrep executable SHA-256 (computed and recorded if omitted)")
 	version := fs.String("version", "1.30.0", "expected pinned OpenGrep version")
@@ -296,6 +301,10 @@ func runOpenGrepScan(args []string) error {
 	}
 	if fs.NArg() != 0 {
 		return fmt.Errorf("scan-opengrep accepts no positional arguments")
+	}
+	scopePrefixes := splitScopePrefixes(*scope)
+	if len(scopePrefixes) == 0 {
+		return fmt.Errorf("--scope must declare at least one repository-relative prefix")
 	}
 	if *timeout <= 0 {
 		return fmt.Errorf("--timeout must be positive")
@@ -332,7 +341,7 @@ func runOpenGrepScan(args []string) error {
 	maxRetries := *maxAttempts - 1
 	spec := plan.AnalyzerSpec{
 		Name: "opengrep", Version: *version, BinarySHA256: binaryHash, RuleSetSHA256: "",
-		ConfigurationPath: configRel, ScopePrefixes: []string{"."},
+		ConfigurationPath: configRel, ScopePrefixes: scopePrefixes,
 		TimeoutMillis: timeout.Milliseconds(), MaxRetries: maxRetries,
 		MaxOutputBytes: 64 << 20, RetryBackoffMillis: 500, MaxRetryBackoffMillis: 10_000,
 		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
@@ -416,6 +425,7 @@ func runCheckovScan(args []string) error {
 	fs := flag.NewFlagSet("scan-checkov", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root to scan")
 	config := fs.String("config", "rules/checkov.yml", "repository-relative Checkov configuration file")
+	scope := fs.String("scope", ".", "comma-separated repository-relative scope prefixes (narrow for PR diffs)")
 	binary := fs.String("binary", "checkov", "Checkov executable path")
 	binarySHA256 := fs.String("binary-sha256", "", "expected Checkov executable SHA-256 (computed and recorded if omitted)")
 	version := fs.String("version", "3.2.484", "expected pinned Checkov version")
@@ -431,6 +441,10 @@ func runCheckovScan(args []string) error {
 	}
 	if fs.NArg() != 0 {
 		return fmt.Errorf("scan-checkov accepts no positional arguments")
+	}
+	scopePrefixes := splitScopePrefixes(*scope)
+	if len(scopePrefixes) == 0 {
+		return fmt.Errorf("--scope must declare at least one repository-relative prefix")
 	}
 	if *timeout <= 0 {
 		return fmt.Errorf("--timeout must be positive")
@@ -461,7 +475,7 @@ func runCheckovScan(args []string) error {
 	maxRetries := *maxAttempts - 1
 	spec := plan.AnalyzerSpec{
 		Name: "checkov", Version: *version, BinarySHA256: binaryHash, RuleSetSHA256: "",
-		ConfigurationPath: configRel, ScopePrefixes: []string{"."},
+		ConfigurationPath: configRel, ScopePrefixes: scopePrefixes,
 		TimeoutMillis: timeout.Milliseconds(), MaxRetries: maxRetries,
 		MaxOutputBytes: 64 << 20, RetryBackoffMillis: 500, MaxRetryBackoffMillis: 10_000,
 		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},

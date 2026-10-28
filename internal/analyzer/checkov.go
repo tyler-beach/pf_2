@@ -12,15 +12,16 @@ import (
 // CheckovScanner runs a version-pinned Checkov CLI and normalizes SARIF 2.1.0.
 // ConfigPath must be repository-relative (typically rules/checkov.yml).
 type CheckovScanner struct {
-	Binary        string
-	BinarySHA256  string
-	Version       string
-	ConfigPath    string
-	RuleSetSHA256 string
-	Frameworks    []string
-	ScanPaths     []string
-	Timeout       time.Duration
-	Runner        CommandRunner
+	Binary                 string
+	BinarySHA256           string
+	Version                string
+	ConfigPath             string
+	RuleSetSHA256          string
+	Frameworks             []string
+	ScanPaths              []string
+	PrecomputedInputSHA256 string
+	Timeout                time.Duration
+	Runner                 CommandRunner
 }
 
 func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, error) {
@@ -62,6 +63,7 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 	}
 
 	binarySHA256 := ""
+	binaryDigestVerified := false
 	if strings.TrimSpace(s.BinarySHA256) != "" {
 		expected := strings.ToLower(strings.TrimSpace(s.BinarySHA256))
 		if !validPlanSHA256(expected) {
@@ -71,7 +73,7 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 		if resolveErr != nil {
 			return out, resolveErr
 		}
-		actual, hashErr := HashFile(resolvedBinary)
+		actual, hashErr := HashFileCached(resolvedBinary)
 		if hashErr != nil {
 			return out, fmt.Errorf("hash Checkov executable: %w", hashErr)
 		}
@@ -79,6 +81,7 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 			return out, fmt.Errorf("Checkov binary SHA-256 mismatch: expected %s but found %s", expected, actual)
 		}
 		binary, binarySHA256 = resolvedBinary, actual
+		binaryDigestVerified = true
 		out.BinarySHA256 = actual
 	}
 
@@ -103,10 +106,17 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 	out.ConfigurationSHA256 = configHash
 	out.RuleSetSHA256 = ruleSetHash
 
-	inputHash, err := hashInputTree(rootAbs)
-	if err != nil {
-		out.Errors = append(out.Errors, err.Error())
-		return out, err
+	inputHash := strings.ToLower(strings.TrimSpace(s.PrecomputedInputSHA256))
+	if inputHash != "" {
+		if !validPlanSHA256(inputHash) {
+			return out, fmt.Errorf("precomputed Checkov input SHA-256 is invalid")
+		}
+	} else {
+		inputHash, err = hashInputTree(rootAbs)
+		if err != nil {
+			out.Errors = append(out.Errors, err.Error())
+			return out, err
+		}
 	}
 	out.InputSHA256 = inputHash
 
@@ -139,21 +149,23 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 		runner = ExecCommandRunner{HomeDir: home}
 	}
 
-	versionResult, err := runner.Run(runCtx, binary, []string{"--version"}, rootAbs)
-	if err != nil {
-		out.Errors = append(out.Errors, err.Error())
-		return out, err
-	}
-	if versionResult.ExitCode != 0 {
-		msg := fmt.Sprintf("Checkov version probe exited %d: %s", versionResult.ExitCode, truncate(string(versionResult.Stderr), 4096))
-		out.Errors = append(out.Errors, msg)
-		return out, fmt.Errorf("%s", msg)
-	}
-	versionOutput := strings.TrimSpace(string(versionResult.Stdout) + " " + string(versionResult.Stderr))
-	if !strings.Contains(versionOutput, s.Version) {
-		err := fmt.Errorf("Checkov version mismatch: expected %q, command reported %q", s.Version, truncate(versionOutput, 512))
-		out.Errors = append(out.Errors, err.Error())
-		return out, err
+	if !binaryDigestVerified {
+		versionResult, err := runner.Run(runCtx, binary, []string{"--version"}, rootAbs)
+		if err != nil {
+			out.Errors = append(out.Errors, err.Error())
+			return out, err
+		}
+		if versionResult.ExitCode != 0 {
+			msg := fmt.Sprintf("Checkov version probe exited %d: %s", versionResult.ExitCode, truncate(string(versionResult.Stderr), 4096))
+			out.Errors = append(out.Errors, msg)
+			return out, fmt.Errorf("%s", msg)
+		}
+		versionOutput := strings.TrimSpace(string(versionResult.Stdout) + " " + string(versionResult.Stderr))
+		if !strings.Contains(versionOutput, s.Version) {
+			err := fmt.Errorf("Checkov version mismatch: expected %q, command reported %q", s.Version, truncate(versionOutput, 512))
+			out.Errors = append(out.Errors, err.Error())
+			return out, err
+		}
 	}
 
 	frameworks := s.Frameworks

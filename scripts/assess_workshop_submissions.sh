@@ -12,6 +12,15 @@ export MANIFEST="$PACK/manifest.json"
 test -f "$MANIFEST"
 mkdir -p "$OUT" "$SNAP" /tmp/ws-adr-extract
 
+# Build once; per-submission `go run` dominated batch wall time without changing verdicts.
+ADRCTL_BIN="${ADRCTL_BIN:-}"
+if [[ -z "$ADRCTL_BIN" ]]; then
+  ADRCTL_BIN="$(mktemp -t adrctl.XXXXXX)"
+  go build -o "$ADRCTL_BIN" ./cmd/adrctl
+  trap 'rm -f "$ADRCTL_BIN"' EXIT
+fi
+export ADRCTL_BIN
+
 python3 <<'PY'
 import json, os, shutil, subprocess
 from pathlib import Path
@@ -21,6 +30,7 @@ manifest_path = Path(os.environ["MANIFEST"])
 out_dir = Path(os.environ["OUT"])
 req = Path(os.environ["REQ"])
 run_id = os.environ["RUN_ID"]
+adrctl = os.environ["ADRCTL_BIN"]
 pack = manifest_path.parent
 manifest = json.loads(manifest_path.read_text())
 out_dir.mkdir(parents=True, exist_ok=True)
@@ -39,7 +49,7 @@ for sub in manifest["submissions"]:
     shutil.copy2(src, dest / "issue.md")
     (dest / "meta.json").write_text(json.dumps(sub, indent=2) + "\n")
     cmd = [
-        "go", "run", "./cmd/adrctl", "assess",
+        adrctl, "assess",
         "--input", str(dest / "issue.md"),
         "--requirements", str(req),
         "--issue-surface",
@@ -92,8 +102,8 @@ for sub in manifest["submissions"]:
 print(f"wrote {out_dir / 'index.json'}", flush=True)
 PY
 
-go run ./cmd/adrctl ingest-adrs --root /tmp/ws-adr-extract/adrs --json-out "$OUT/ingested-tech-specs.json"
-go run ./cmd/adrctl extract-obligations \
+"$ADRCTL_BIN" ingest-adrs --root /tmp/ws-adr-extract/adrs --json-out "$OUT/ingested-tech-specs.json"
+"$ADRCTL_BIN" extract-obligations \
   --index "$OUT/ingested-tech-specs.json" \
   --root /tmp/ws-adr-extract/adrs \
   --json-out "$OUT/candidates-tech-specs.json" \

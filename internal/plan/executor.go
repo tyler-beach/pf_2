@@ -106,7 +106,11 @@ func (r OpenGrepTaskRunner) Run(ctx context.Context, root string, task Task) (an
 	if task.RuleSetSHA256 == "" || !validDigest(task.RuleSetSHA256) {
 		return analyzer.ScanResult{}, &RunFailure{Kind: FailureAnalyzer, Err: fmt.Errorf("OpenGrep plan must pin ruleset_sha256")}
 	}
-	scanner := analyzer.OpenGrepScanner{Binary: r.Binary, BinarySHA256: task.BinarySHA256, RuleSetSHA256: task.RuleSetSHA256, Version: task.Version, ConfigPath: task.ConfigurationPath, ScanPaths: append([]string(nil), task.SourcePaths...)}
+	scanner := analyzer.OpenGrepScanner{
+		Binary: r.Binary, BinarySHA256: task.BinarySHA256, RuleSetSHA256: task.RuleSetSHA256,
+		Version: task.Version, ConfigPath: task.ConfigurationPath,
+		ScanPaths: append([]string(nil), task.SourcePaths...), PrecomputedInputSHA256: task.InputSHA256,
+	}
 	result, err := scanner.Scan(ctx, root)
 	if err == nil {
 		return result, nil
@@ -135,7 +139,8 @@ func (r CheckovTaskRunner) Run(ctx context.Context, root string, task Task) (ana
 	}
 	scanner := analyzer.CheckovScanner{
 		Binary: r.Binary, BinarySHA256: task.BinarySHA256, RuleSetSHA256: task.RuleSetSHA256,
-		Version: task.Version, ConfigPath: task.ConfigurationPath, ScanPaths: append([]string(nil), task.SourcePaths...),
+		Version: task.Version, ConfigPath: task.ConfigurationPath,
+		ScanPaths: append([]string(nil), task.SourcePaths...), PrecomputedInputSHA256: task.InputSHA256,
 	}
 	result, err := scanner.Scan(ctx, root)
 	if err == nil {
@@ -196,9 +201,17 @@ func ExecuteManifest(ctx context.Context, root string, manifest Manifest, runner
 		}(i, task)
 	}
 	wg.Wait()
-	if err := VerifyManifest(root, manifest); err != nil {
+	// Post-execution drift check only needs the input-tree digest: a full
+	// VerifyManifest rebuild would re-walk and re-hash the tree again after the
+	// mandatory pre-dispatch verification already sealed task identity.
+	currentInput, err := analyzer.HashInputTree(root)
+	if err != nil {
+		out.Status = RunStatusFailed
+		return out, fmt.Errorf("rehash repository input after execution: %w", err)
+	}
+	if currentInput != manifest.InputSHA256 {
 		out.Status = RunStatusStaleInput
-		return out, fmt.Errorf("repository source changed during execution or plan became stale: %w", err)
+		return out, fmt.Errorf("repository source changed during execution or plan became stale: input digest moved from %s to %s", manifest.InputSHA256, currentInput)
 	}
 	out.Status = aggregateRunStatus(out.Tasks)
 	if ctx.Err() != nil {

@@ -155,29 +155,74 @@ jobs:
           go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
+      - name: Resolve PR changed-path scope
+        id: scope
+        env:
+          GH_TOKEN: ${{ secrets.PATHFINDER_REVIEW_TOKEN || github.token }}
+          OWNER: ${{ steps.parse.outputs.owner }}
+          REPO: ${{ steps.parse.outputs.repo }}
+          NUMBER: ${{ steps.parse.outputs.number }}
+        run: |
+          set -euo pipefail
+          # Prefer directory prefixes of changed files so OpenGrep/Checkov plans
+          # skip unrelated trees. Fall back to repo root when the file list is empty.
+          mapfile -t files < <(gh api "repos/${OWNER}/${REPO}/pulls/${NUMBER}/files" --paginate \
+            --jq '.[].filename' | head -n 500)
+          declare -A dirs=()
+          for f in "${files[@]+"${files[@]}"}"; do
+            [[ -z "$f" ]] && continue
+            dir="$(dirname "$f")"
+            if [[ "$dir" == "." ]]; then
+              dirs["."]=1
+            else
+              # Keep first path segment as a stable, coarse scope prefix.
+              top="${dir%%/*}"
+              dirs["$top"]=1
+            fi
+          done
+          scope="."
+          if [[ ${#dirs[@]} -gt 0 && -z "${dirs[.]+x}" ]]; then
+            scope="$(printf '%s\n' "${!dirs[@]}" | sort | paste -sd, -)"
+          fi
+          echo "scope=$scope" >> "$GITHUB_OUTPUT"
+          echo "PR analyzer scope: $scope (from ${#files[@]} changed file(s))"
+
       - name: Assess PR head (Pathfinder host binaries only)
         run: |
           set -euo pipefail
           requirements="${{ steps.parse.outputs.requirements }}"
+          scope="${{ steps.scope.outputs.scope }}"
           mkdir -p analyzer-evidence
+          go build -o "$RUNNER_TEMP/adrctl" ./cmd/adrctl
+          ADRCTL="$RUNNER_TEMP/adrctl"
+          echo "ADRCTL=$ADRCTL" >> "$GITHUB_ENV"
+
           # Analyzers treat the PR tree as input data; Pathfinder binaries stay on the host checkout.
-          go run ./cmd/adrctl scan-opengrep \
+          # OpenGrep and Checkov are independent — run them concurrently.
+          set +e
+          "$ADRCTL" scan-opengrep \
             --root "$PR_ROOT" \
             --config rules/pathfinder-security.yml \
+            --scope "$scope" \
             --binary "$OPENGREP_BIN" \
             --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
             --json-out analyzer-evidence/opengrep.json \
-            --sarif-out analyzer-evidence/opengrep.sarif || true
-
-          go run ./cmd/adrctl scan-checkov \
+            --sarif-out analyzer-evidence/opengrep.sarif &
+          og_pid=$!
+          "$ADRCTL" scan-checkov \
             --root "$PR_ROOT" \
             --config rules/checkov.yml \
+            --scope "$scope" \
             --binary "$CHECKOV_BIN" \
             --binary-sha256 "$CHECKOV_SHA" \
             --version 3.2.484 \
             --json-out analyzer-evidence/checkov.json \
-            --sarif-out analyzer-evidence/checkov.sarif || true
+            --sarif-out analyzer-evidence/checkov.sarif &
+          ck_pid=$!
+          wait "$og_pid" || true
+          wait "$ck_pid" || true
+          set -e
 
           evidence_flags=()
           if [[ -f analyzer-evidence/opengrep.json && -f analyzer-evidence/checkov.json ]]; then
@@ -197,7 +242,7 @@ jobs:
             )
           fi
 
-          go run ./cmd/adrctl assess-repo \
+          "$ADRCTL" assess-repo \
             --root "$PR_ROOT" \
             --requirements "$requirements" \
             --issue-surface \
@@ -215,7 +260,7 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
           set -euo pipefail
-          go run ./cmd/adrctl assessment-to-rdjson \
+          "$ADRCTL" assessment-to-rdjson \
             --assessment assessment.json \
             --rdjson-out pathfinder.rdjson \
             --sarif-out pathfinder-security.sarif \
