@@ -1,0 +1,3212 @@
+{
+  "schema_version": "obligation-candidates-v1",
+  "candidates": [
+    {
+      "id": "CAND-7731de409cb94c2e",
+      "adr_id": "WS-TS-001",
+      "adr_title": "MADR: Use Markdown ADRs [tech_spec]",
+      "section_heading": "Context and Problem Statement",
+      "statement": "Which format and structure should these records follow?",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-001.md",
+      "source_sha256": "e89f0df6e7c95b3733364ec8f16ee03b9ccf77e68e37c6d47cc5bc1048d8b67c",
+      "source_line_start": 29,
+      "source_line_end": 29,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-2e76e2ca992e849c",
+      "adr_id": "WS-TS-001",
+      "adr_title": "MADR: Use Markdown ADRs [tech_spec]",
+      "section_heading": "Decision Outcome",
+      "statement": "Implicit assumptions should be made explicit.",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-001.md",
+      "source_sha256": "e89f0df6e7c95b3733364ec8f16ee03b9ccf77e68e37c6d47cc5bc1048d8b67c",
+      "source_line_start": 43,
+      "source_line_end": 43,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-685232342eb02f51",
+      "adr_id": "WS-TS-002",
+      "adr_title": "MADR: CC0 or MIT license [tech_spec]",
+      "section_heading": "Context and Problem Statement",
+      "statement": "For instance, in Germany that means users may not alter anything without explicitly asking for permission.",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "architecture.dependency_or_boundary",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_sha256": "c895ffd6447b521673d06e3251f7012d1b3fbe231376bb0930d51e5e070d88ac",
+      "source_line_start": 29,
+      "source_line_end": 29,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0069,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "non_decision_section",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-8870747f16e5fbfe",
+      "adr_id": "WS-TS-002",
+      "adr_title": "MADR: CC0 or MIT license [tech_spec]",
+      "section_heading": "CC0",
+      "statement": "Bad, because it does not contain attribution - and [attribution is important](https://opensource.stackexchange.com/a/9126/5671).",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_sha256": "c895ffd6447b521673d06e3251f7012d1b3fbe231376bb0930d51e5e070d88ac",
+      "source_line_start": 52,
+      "source_line_end": 52,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-acc545bd7410de1b",
+      "adr_id": "WS-TS-002",
+      "adr_title": "MADR: CC0 or MIT license [tech_spec]",
+      "section_heading": "Pros and Cons of the Options",
+      "statement": "Bad, because it does not contain attribution - and [attribution is important](https://opensource.stackexchange.com/a/9126/5671).",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_sha256": "c895ffd6447b521673d06e3251f7012d1b3fbe231376bb0930d51e5e070d88ac",
+      "source_line_start": 52,
+      "source_line_end": 52,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-3b93a0cb6d45e868",
+      "adr_id": "WS-TS-002",
+      "adr_title": "MADR: CC0 or MIT license [tech_spec]",
+      "section_heading": "Pros and Cons of the Options",
+      "statement": "Good, because it [explicitly may be used for documentation](https://opensource.stackexchange.com/a/9545/5671)",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_sha256": "c895ffd6447b521673d06e3251f7012d1b3fbe231376bb0930d51e5e070d88ac",
+      "source_line_start": 60,
+      "source_line_end": 60,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-7d66d191905feb2c",
+      "adr_id": "WS-TS-002",
+      "adr_title": "MADR: CC0 or MIT license [tech_spec]",
+      "section_heading": "MIT",
+      "statement": "Good, because it [explicitly may be used for documentation](https://opensource.stackexchange.com/a/9545/5671)",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_sha256": "c895ffd6447b521673d06e3251f7012d1b3fbe231376bb0930d51e5e070d88ac",
+      "source_line_start": 60,
+      "source_line_end": 60,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-6bdbab520ebe00ad",
+      "adr_id": "WS-TS-003",
+      "adr_title": "MADR: Add status field [tech_spec]",
+      "section_heading": "Context and Problem Statement",
+      "statement": "And if it should, how should we track it?",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "source_line_start": 30,
+      "source_line_end": 30,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "conditional_scope",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "conditions": [
+        "conditional_applicability"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3632,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "conditional_scope",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-c572a6bdefded577",
+      "adr_id": "WS-TS-003",
+      "adr_title": "MADR: Add status field [tech_spec]",
+      "section_heading": "Context and Problem Statement",
+      "statement": "Should this be tracked?",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "source_line_start": 30,
+      "source_line_end": 30,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-60740b768aaa781e",
+      "adr_id": "WS-TS-003",
+      "adr_title": "MADR: Add status field [tech_spec]",
+      "section_heading": "Considered Options",
+      "statement": "Do not add status",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "source_line_start": 39,
+      "source_line_end": 39,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "low",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-97b9c677e03cd072",
+      "adr_id": "WS-TS-003",
+      "adr_title": "MADR: Add status field [tech_spec]",
+      "section_heading": "Examples",
+      "statement": "Bad, because relies on the online service <https://shields.io> or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "source_line_start": 74,
+      "source_line_end": 74,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-ad99f26747d3b0c9",
+      "adr_id": "WS-TS-003",
+      "adr_title": "MADR: Add status field [tech_spec]",
+      "section_heading": "Use badge",
+      "statement": "Bad, because relies on the online service <https://shields.io> or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "source_line_start": 74,
+      "source_line_end": 74,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-be0ef2d9c8991069",
+      "adr_id": "WS-TS-003",
+      "adr_title": "MADR: Add status field [tech_spec]",
+      "section_heading": "Pros and Cons of the Options",
+      "statement": "Bad, because relies on the online service <https://shields.io> or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "source_line_start": 74,
+      "source_line_end": 74,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-c0d627e8ff659793",
+      "adr_id": "WS-TS-004",
+      "adr_title": "MADR: YAML front matter metadata [tech_spec]",
+      "section_heading": "Context and Problem Statement",
+      "statement": "Should this data be included in the ADR directly, or should it be separated somehow?",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-004.md",
+      "source_sha256": "3ed0c937bafa8da90fb388f5aef5227440990dbcc1a50f7fb9f99d4201b3d1b3",
+      "source_line_start": 30,
+      "source_line_end": 30,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-6a29b915ce776b9e",
+      "adr_id": "WS-TS-006",
+      "adr_title": "Backstage: Default catalog file format [tech_spec]",
+      "section_heading": "Core Concepts",
+      "statement": "Entities have distinct names, and they may reference each other by those names.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_sha256": "d25dfbae1a876b0e45208edc850a65e61ec16e6d1b2308f9b2078ff69d006344",
+      "source_line_start": 61,
+      "source_line_end": 61,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-80bee6d9511aee1e",
+      "adr_id": "WS-TS-006",
+      "adr_title": "Backstage: Default catalog file format [tech_spec]",
+      "section_heading": "Background",
+      "statement": "Entities have distinct names, and they may reference each other by those names.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_sha256": "d25dfbae1a876b0e45208edc850a65e61ec16e6d1b2308f9b2078ff69d006344",
+      "source_line_start": 61,
+      "source_line_end": 61,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.1355,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-4ca4116d1fde5536",
+      "adr_id": "WS-TS-006",
+      "adr_title": "Backstage: Default catalog file format [tech_spec]",
+      "section_heading": "Format",
+      "statement": "Each file may",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_sha256": "d25dfbae1a876b0e45208edc850a65e61ec16e6d1b2308f9b2078ff69d006344",
+      "source_line_start": 66,
+      "source_line_end": 66,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-57df937d8c5e8b99",
+      "adr_id": "WS-TS-006",
+      "adr_title": "Backstage: Default catalog file format [tech_spec]",
+      "section_heading": "Format",
+      "statement": "They may be written by hand or created using automated tools.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_sha256": "d25dfbae1a876b0e45208edc850a65e61ec16e6d1b2308f9b2078ff69d006344",
+      "source_line_start": 66,
+      "source_line_end": 66,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-24f3b5c1bf184c55",
+      "adr_id": "WS-TS-007",
+      "adr_title": "Backstage: Catalog core entities [tech_spec]",
+      "section_heading": "Decision",
+      "statement": "Backstage should eventually support the following core entities:",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-007.md",
+      "source_sha256": "daa88dd0d499459952d6b9e148f095eacf4d081f7639b2d4e91e3039e95b1438",
+      "source_line_start": 33,
+      "source_line_end": 33,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-64f636461b0cbd24",
+      "adr_id": "WS-TS-008",
+      "adr_title": "Backstage: Entity references [tech_spec]",
+      "section_heading": "Entity References in YAML files",
+      "statement": "Optionality of `kind` and `namespace` are contextual, and they may or may not",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_sha256": "bcaff1d6545a007191b3f98f547ecd9b6ac3833f82b9b3a6e9e0bae5b44023b2",
+      "source_line_start": 49,
+      "source_line_end": 49,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-80fc0bcc53f2facd",
+      "adr_id": "WS-TS-008",
+      "adr_title": "Backstage: Entity references [tech_spec]",
+      "section_heading": "Entity References in YAML files",
+      "statement": "Of these, only `name` is always required.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_sha256": "bcaff1d6545a007191b3f98f547ecd9b6ac3833f82b9b3a6e9e0bae5b44023b2",
+      "source_line_start": 62,
+      "source_line_end": 62,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-23e8330db8f4f7e5",
+      "adr_id": "WS-TS-008",
+      "adr_title": "Backstage: Entity references [tech_spec]",
+      "section_heading": "Entity References in YAML files",
+      "statement": "are contextual, and they may or may not have default contextual fallback values.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_sha256": "bcaff1d6545a007191b3f98f547ecd9b6ac3833f82b9b3a6e9e0bae5b44023b2",
+      "source_line_start": 63,
+      "source_line_end": 63,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-98cf866bada0ce47",
+      "adr_id": "WS-TS-008",
+      "adr_title": "Backstage: Entity references [tech_spec]",
+      "section_heading": "Entity References in YAML files",
+      "statement": "shall supply the entire triplet, whether using the string form or the compound",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_sha256": "bcaff1d6545a007191b3f98f547ecd9b6ac3833f82b9b3a6e9e0bae5b44023b2",
+      "source_line_start": 67,
+      "source_line_end": 67,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-6388802706075bfa",
+      "adr_id": "WS-TS-010",
+      "adr_title": "Backstage: Use fetch [tech_spec]",
+      "section_heading": "Decision",
+      "statement": "All code that is executed in Node.js (including backend and CLIs) should use the",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_sha256": "a57f40385d3beaa2c9109eb32bffc9f85cb66f393b6d86860ce5440f6a9c6757",
+      "source_line_start": 38,
+      "source_line_end": 38,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9997,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-374de4a34f1eb287",
+      "adr_id": "WS-TS-010",
+      "adr_title": "Backstage: Use fetch [tech_spec]",
+      "section_heading": "Decision",
+      "statement": "Frontend plugins and packages should prefer to use the",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_sha256": "a57f40385d3beaa2c9109eb32bffc9f85cb66f393b6d86860ce5440f6a9c6757",
+      "source_line_start": 54,
+      "source_line_end": 54,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "ambiguous_interpretation"
+      ],
+      "ambiguity": [
+        "subjective_or_preference_language"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.2448,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "ambiguity_flags",
+        "subjective_or_underspecified",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-78a1c1d852af7dac",
+      "adr_id": "WS-TS-010",
+      "adr_title": "Backstage: Use fetch [tech_spec]",
+      "section_heading": "Decision",
+      "statement": "Isomorphic packages should have a dependency on the `cross-fetch` package for",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "architecture.dependency_or_boundary",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_sha256": "a57f40385d3beaa2c9109eb32bffc9f85cb66f393b6d86860ce5440f6a9c6757",
+      "source_line_start": 70,
+      "source_line_end": 70,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9999,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality"
+      ]
+    },
+    {
+      "id": "CAND-61b64049723cfea0",
+      "adr_id": "WS-TS-010",
+      "adr_title": "Backstage: Use fetch [tech_spec]",
+      "section_heading": "Decision",
+      "statement": "packages should accept an argument of type `typeof fetch` to let callers supply",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_sha256": "a57f40385d3beaa2c9109eb32bffc9f85cb66f393b6d86860ce5440f6a9c6757",
+      "source_line_start": 72,
+      "source_line_end": 72,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-6e8f46010d9ed26e",
+      "adr_id": "WS-TS-011",
+      "adr_title": "Prometheus storage architecture [tech_spec]",
+      "section_heading": "On-disk layout",
+      "statement": "High-traffic servers may retain more than three WAL files in order to keep at",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-011.md",
+      "source_sha256": "62db541b220c7b54590a428af7cc40dddbc2f4ba62798aa39159adf0d5a62089",
+      "source_line_start": 47,
+      "source_line_end": 47,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-7bf1260c4d8a6d8b",
+      "adr_id": "WS-TS-011",
+      "adr_title": "Prometheus storage architecture [tech_spec]",
+      "section_heading": "Local storage",
+      "statement": "High-traffic servers may retain more than three WAL files in order to keep at",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-011.md",
+      "source_sha256": "62db541b220c7b54590a428af7cc40dddbc2f4ba62798aa39159adf0d5a62089",
+      "source_line_start": 47,
+      "source_line_end": 47,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-024bb10daa2f08a1",
+      "adr_id": "WS-TS-012",
+      "adr_title": "Kubernetes SIG Architecture charter [tech_spec]",
+      "section_heading": "Technical specification / ADR (excerpt)",
+      "statement": "Please do not edit this file directly, but instead make changes to the",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-012.md",
+      "source_sha256": "597441e140de399ababf7cf4e6d43e5550d157688b22cb6f723ad4ab368223d0",
+      "source_line_start": 23,
+      "source_line_end": 23,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "low",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-5aa8c8cf9b5137c8",
+      "adr_id": "WS-TS-015",
+      "adr_title": "Flux RFC-0001 authorization [tech_spec]",
+      "section_heading": "Summary",
+      "statement": "operations are allowed to proceed, and how this interacts with Kubernetes' access control.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-015.md",
+      "source_sha256": "18073e9b5d5247f7fae87125d4b78b92250d278d3ed4bb8c05b96d0f41535e04",
+      "source_line_start": 25,
+      "source_line_end": 25,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-7c6d063ab48f7a5c",
+      "adr_id": "WS-TS-015",
+      "adr_title": "Flux RFC-0001 authorization [tech_spec]",
+      "section_heading": "Motivation",
+      "statement": "Further work on support for multi-tenancy, among other things, requires a full account",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-015.md",
+      "source_sha256": "18073e9b5d5247f7fae87125d4b78b92250d278d3ed4bb8c05b96d0f41535e04",
+      "source_line_start": 32,
+      "source_line_end": 32,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-2caf02435294b8bf",
+      "adr_id": "WS-TS-016",
+      "adr_title": "Flux RFC-0007 passwordless Git auth [tech_spec]",
+      "section_heading": "Summary",
+      "statement": "Flux should provide a mechanism to authenticate against Git repositories without",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-016.md",
+      "source_sha256": "3f3e6902ccff433182c3d49ba86cedcf68b0fca6128f98fbc3a1dc002a175961",
+      "source_line_start": 29,
+      "source_line_end": 29,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-68aa6676df6e1467",
+      "adr_id": "WS-TS-016",
+      "adr_title": "Flux RFC-0007 passwordless Git auth [tech_spec]",
+      "section_heading": "Motivation",
+      "statement": "required to create a Secret containing the username and the password/bearer",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "security.source_pattern",
+      "source_path": "adrs/WS-TS-016.md",
+      "source_sha256": "3f3e6902ccff433182c3d49ba86cedcf68b0fca6128f98fbc3a1dc002a175961",
+      "source_line_start": 37,
+      "source_line_end": 37,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0043,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-b789420559aebe54",
+      "adr_id": "WS-TS-016",
+      "adr_title": "Flux RFC-0007 passwordless Git auth [tech_spec]",
+      "section_heading": "Motivation",
+      "statement": "teams have to decide whose credentials should Flux use for authentication.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-016.md",
+      "source_sha256": "3f3e6902ccff433182c3d49ba86cedcf68b0fca6128f98fbc3a1dc002a175961",
+      "source_line_start": 47,
+      "source_line_end": 47,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0035,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-95aaf01c4243517a",
+      "adr_id": "WS-TS-017",
+      "adr_title": "Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "section_heading": "Summary",
+      "statement": "permissions must be used for interacting with the respective cloud provider",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_sha256": "a2d1547ab53dd47782260748534062eda0fbaa7b17c6feb1fd830a4ecffafb2a",
+      "source_line_start": 32,
+      "source_line_end": 32,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "low",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-2dbf58b6f1c4a53f",
+      "adr_id": "WS-TS-017",
+      "adr_title": "Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "section_heading": "Summary",
+      "statement": "this feature must not involve the use",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_sha256": "a2d1547ab53dd47782260748534062eda0fbaa7b17c6feb1fd830a4ecffafb2a",
+      "source_line_start": 34,
+      "source_line_end": 34,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-a1ec7447335c80c8",
+      "adr_id": "WS-TS-017",
+      "adr_title": "Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "section_heading": "Summary",
+      "statement": "must be obtained automatically, i.e",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_sha256": "a2d1547ab53dd47782260748534062eda0fbaa7b17c6feb1fd830a4ecffafb2a",
+      "source_line_start": 34,
+      "source_line_end": 34,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-e091f5049e800fda",
+      "adr_id": "WS-TS-017",
+      "adr_title": "Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "section_heading": "Motivation",
+      "statement": "specific subset of resources they should be allowed to use.",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_sha256": "a2d1547ab53dd47782260748534062eda0fbaa7b17c6feb1fd830a4ecffafb2a",
+      "source_line_start": 57,
+      "source_line_end": 57,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9496,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section"
+      ]
+    },
+    {
+      "id": "CAND-4a86b22286955826",
+      "adr_id": "WS-TS-017",
+      "adr_title": "Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "section_heading": "Motivation",
+      "statement": "operational burden, as they must be managed and rotated.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_sha256": "a2d1547ab53dd47782260748534062eda0fbaa7b17c6feb1fd830a4ecffafb2a",
+      "source_line_start": 68,
+      "source_line_end": 68,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-1165e66181755f47",
+      "adr_id": "WS-TS-019",
+      "adr_title": "containerd garbage collection [tech_spec]",
+      "section_heading": "What is a lease?",
+      "statement": "Leases may be",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-019.md",
+      "source_sha256": "3c49d60b746c48608e0a89e0a127e9471657188c0596eb2438b144801de48237",
+      "source_line_start": 34,
+      "source_line_end": 34,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-4cbc592c2ab67965",
+      "adr_id": "WS-TS-019",
+      "adr_title": "containerd garbage collection [tech_spec]",
+      "section_heading": "What is a lease?",
+      "statement": "may be used in the future after the client completes an operation, even though",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-019.md",
+      "source_sha256": "3c49d60b746c48608e0a89e0a127e9471657188c0596eb2438b144801de48237",
+      "source_line_start": 37,
+      "source_line_end": 37,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-4fe425adceb5679a",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Image Verifier Binary API",
+      "statement": "`-name`: The given reference to the image that may be pulled.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 40,
+      "source_line_end": 40,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-5767b96ec9c25973",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "CLI Arguments",
+      "statement": "`-name`: The given reference to the image that may be pulled.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 40,
+      "source_line_end": 40,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-03bc495790a1c7fc",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "CLI Arguments",
+      "statement": "`-digest`: The resolved digest of the image that may be pulled.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 41,
+      "source_line_end": 41,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-99154bff94f2d325",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Image Verifier Binary API",
+      "statement": "`-digest`: The resolved digest of the image that may be pulled.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 41,
+      "source_line_end": 41,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-8403fbcb05d57ec7",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Standard Input",
+      "statement": "argument, and may change in future versions of containerd.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 48,
+      "source_line_end": 48,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-9edb82aee39672aa",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Image Verifier Binary API",
+      "statement": "argument, and may change in future versions of containerd.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 48,
+      "source_line_end": 48,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-7a545b28bc89e883",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Standard Input",
+      "statement": "represents the OCI Content Descriptor of the image that may be pulled.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 50,
+      "source_line_end": 50,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-ff39e9879110a3e7",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Image Verifier Binary API",
+      "statement": "represents the OCI Content Descriptor of the image that may be pulled.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 50,
+      "source_line_end": 50,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-cb4d712016a0716e",
+      "adr_id": "WS-TS-020",
+      "adr_title": "containerd image verification [tech_spec]",
+      "section_heading": "Image Verifier Caller Contract",
+      "statement": "If `bin_dir` does not exist or contains no files, the image verifier does not block image pulls.",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "source_line_start": 62,
+      "source_line_end": 62,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "conditional_scope"
+      ],
+      "conditions": [
+        "conditional_applicability"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0292,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "conditional_scope",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-5e96871066fcff9e",
+      "adr_id": "WS-TS-022",
+      "adr_title": "Helm HIP-0001 process [tech_spec]",
+      "adr_status": "\"accepted\"",
+      "section_heading": "Abstract",
+      "statement": "The proposal should provide a concise",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-022.md",
+      "source_sha256": "7303d146a4b2b4c667f326ff996ff48bbc6889fa823c701ee2974334a9600fc9",
+      "source_line_start": 33,
+      "source_line_end": 33,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9997,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-7ff34b55e33c2547",
+      "adr_id": "WS-TS-022",
+      "adr_title": "Helm HIP-0001 process [tech_spec]",
+      "adr_status": "\"accepted\"",
+      "section_heading": "Audience",
+      "statement": "However, other parts of the Helm community may also choose to use the process",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-022.md",
+      "source_sha256": "7303d146a4b2b4c667f326ff996ff48bbc6889fa823c701ee2974334a9600fc9",
+      "source_line_start": 55,
+      "source_line_end": 55,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "high",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ]
+    },
+    {
+      "id": "CAND-3ce243ecb36b6064",
+      "adr_id": "WS-TS-022",
+      "adr_title": "Helm HIP-0001 process [tech_spec]",
+      "adr_status": "\"accepted\"",
+      "section_heading": "HIP types",
+      "statement": "It may also describe an interoperability standard that will be",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-022.md",
+      "source_sha256": "7303d146a4b2b4c667f326ff996ff48bbc6889fa823c701ee2974334a9600fc9",
+      "source_line_start": 65,
+      "source_line_end": 65,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-b6006abff81367f4",
+      "adr_id": "WS-TS-022",
+      "adr_title": "Helm HIP-0001 process [tech_spec]",
+      "adr_status": "\"accepted\"",
+      "section_heading": "HIP types",
+      "statement": "general guidelines or information to the Helm community, but does not propose",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-022.md",
+      "source_sha256": "7303d146a4b2b4c667f326ff996ff48bbc6889fa823c701ee2974334a9600fc9",
+      "source_line_start": 68,
+      "source_line_end": 68,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-e5dcc826c7c48886",
+      "adr_id": "WS-TS-022",
+      "adr_title": "Helm HIP-0001 process [tech_spec]",
+      "adr_status": "\"accepted\"",
+      "section_heading": "HIP types",
+      "statement": "Informational proposals do not necessarily represent a Helm",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-022.md",
+      "source_sha256": "7303d146a4b2b4c667f326ff996ff48bbc6889fa823c701ee2974334a9600fc9",
+      "source_line_start": 69,
+      "source_line_end": 69,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-492cd21dd30de2e1",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "Abstract",
+      "statement": "As we move to a more evolved security stance, we must offer better tools to both teams so they can play an active role in building secure, distributed applications.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 30,
+      "source_line_end": 30,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "subjective_or_underspecified",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.0038,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "subjective_or_underspecified",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-a6b84fac82a9b559",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "1. Introduction",
+      "statement": "verified, and another which specifies an API through which identity may be retrieved and/or issued.",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 43,
+      "source_line_end": 43,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-b02d08082f1db3b2",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "1. Introduction",
+      "statement": "The SPIFFE standard comprises three major components - one which standardizes an identity namespace, one which dictates the manner in which an issued identity may be presented",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 43,
+      "source_line_end": 43,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "high",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ]
+    },
+    {
+      "id": "CAND-72ca12aee5bc9e13",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "3. The SPIFFE Verifiable Identity Document",
+      "statement": "it must be obvious that the document belongs to the presenter.",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 51,
+      "source_line_end": 51,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-fb0339d19911608d",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "3. The SPIFFE Verifiable Identity Document",
+      "statement": "Of course, similar to passports, they must be resistant to forgery,",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 51,
+      "source_line_end": 51,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-cbf5f5f4a7053b2a",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "3. The SPIFFE Verifiable Identity Document",
+      "statement": "the properties required of an SVID",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 58,
+      "source_line_end": 58,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "confidence": "low",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "CAND-bb6553fb56d29e4c",
+      "adr_id": "WS-TS-024",
+      "adr_title": "SPIFFE identity standard excerpt [tech_spec]",
+      "section_heading": "4. The Workload API",
+      "statement": "via a Unix domain socket), and explicitly does not include an authentication handshake or authenticating token from the workload.",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "manual_review",
+      "source_path": "adrs/WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "source_line_start": 66,
+      "source_line_end": 66,
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "confidence": "low",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-001",
+      "adr_id": "WS-TS-001",
+      "statement": "[ADR Assessment] MADR: Use Markdown ADRs [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-001.md",
+      "domains": [
+        "architecture",
+        "process"
+      ],
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0000-use-markdown-architectural-decision-records.md"
+    },
+    {
+      "id": "sub-WS-TS-002",
+      "adr_id": "WS-TS-002",
+      "statement": "[ADR Assessment] MADR: CC0 or MIT license [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-002.md",
+      "domains": [
+        "compliance",
+        "licensing"
+      ],
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0001-use-CC0-or-MIT-as-license.md"
+    },
+    {
+      "id": "sub-WS-TS-003",
+      "adr_id": "WS-TS-003",
+      "statement": "[ADR Assessment] MADR: Add status field [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-003.md",
+      "domains": [
+        "architecture",
+        "process"
+      ],
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0008-add-status-field.md"
+    },
+    {
+      "id": "sub-WS-TS-004",
+      "adr_id": "WS-TS-004",
+      "statement": "[ADR Assessment] MADR: YAML front matter metadata [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-004.md",
+      "domains": [
+        "architecture",
+        "metadata"
+      ],
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0013-use-yaml-front-matter-for-meta-data.md"
+    },
+    {
+      "id": "sub-WS-TS-005",
+      "adr_id": "WS-TS-005",
+      "statement": "[ADR Assessment] Backstage: Add ADR log [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-005.md",
+      "domains": [
+        "platform",
+        "process"
+      ],
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr001-add-adr-log.md"
+    },
+    {
+      "id": "sub-WS-TS-006",
+      "adr_id": "WS-TS-006",
+      "statement": "[ADR Assessment] Backstage: Default catalog file format [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-006.md",
+      "domains": [
+        "platform",
+        "data"
+      ],
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md"
+    },
+    {
+      "id": "sub-WS-TS-007",
+      "adr_id": "WS-TS-007",
+      "statement": "[ADR Assessment] Backstage: Catalog core entities [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-007.md",
+      "domains": [
+        "platform",
+        "data"
+      ],
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr005-catalog-core-entities.md"
+    },
+    {
+      "id": "sub-WS-TS-008",
+      "adr_id": "WS-TS-008",
+      "statement": "[ADR Assessment] Backstage: Entity references [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-008.md",
+      "domains": [
+        "platform",
+        "apis"
+      ],
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr009-entity-references.md"
+    },
+    {
+      "id": "sub-WS-TS-009",
+      "adr_id": "WS-TS-009",
+      "statement": "[ADR Assessment] Backstage: Plugin package structure [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-009.md",
+      "domains": [
+        "platform",
+        "modularity"
+      ],
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr011-plugin-package-structure.md"
+    },
+    {
+      "id": "sub-WS-TS-010",
+      "adr_id": "WS-TS-010",
+      "statement": "[ADR Assessment] Backstage: Use fetch [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-010.md",
+      "domains": [
+        "networking",
+        "apis"
+      ],
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr014-use-fetch.md"
+    },
+    {
+      "id": "sub-WS-TS-011",
+      "adr_id": "WS-TS-011",
+      "statement": "[ADR Assessment] Prometheus storage architecture [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-011.md",
+      "domains": [
+        "reliability",
+        "data",
+        "observability"
+      ],
+      "source_url": "https://github.com/prometheus/prometheus/blob/main/docs/storage.md"
+    },
+    {
+      "id": "sub-WS-TS-012",
+      "adr_id": "WS-TS-012",
+      "statement": "[ADR Assessment] Kubernetes SIG Architecture charter [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-012.md",
+      "domains": [
+        "architecture",
+        "governance"
+      ],
+      "source_url": "https://github.com/kubernetes/community/blob/master/sig-architecture/README.md"
+    },
+    {
+      "id": "sub-WS-TS-013",
+      "adr_id": "WS-TS-013",
+      "statement": "[ADR Assessment] Argo CD operator architecture [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-013.md",
+      "domains": [
+        "gitops",
+        "reliability"
+      ],
+      "source_url": "https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/architecture.md"
+    },
+    {
+      "id": "sub-WS-TS-014",
+      "adr_id": "WS-TS-014",
+      "statement": "[ADR Assessment] Envoy security architecture overview [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-014.md",
+      "domains": [
+        "networking",
+        "security",
+        "auth"
+      ],
+      "source_url": "https://github.com/envoyproxy/envoy/blob/main/docs/root/intro/arch_overview/security/security.rst"
+    },
+    {
+      "id": "sub-WS-TS-015",
+      "adr_id": "WS-TS-015",
+      "statement": "[ADR Assessment] Flux RFC-0001 authorization [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-015.md",
+      "domains": [
+        "gitops",
+        "auth",
+        "rbac"
+      ],
+      "source_url": "https://github.com/fluxcd/flux2/blob/main/rfcs/0001-authorization/README.md"
+    },
+    {
+      "id": "sub-WS-TS-016",
+      "adr_id": "WS-TS-016",
+      "statement": "[ADR Assessment] Flux RFC-0007 passwordless Git auth [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-016.md",
+      "domains": [
+        "gitops",
+        "auth"
+      ],
+      "source_url": "https://github.com/fluxcd/flux2/blob/main/rfcs/0007-git-repo-passwordless-auth/README.md"
+    },
+    {
+      "id": "sub-WS-TS-017",
+      "adr_id": "WS-TS-017",
+      "statement": "[ADR Assessment] Flux RFC-0010 multi-tenant workload identity [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-017.md",
+      "domains": [
+        "gitops",
+        "auth",
+        "aws"
+      ],
+      "source_url": "https://github.com/fluxcd/flux2/blob/main/rfcs/0010-multi-tenant-workload-identity/README.md"
+    },
+    {
+      "id": "sub-WS-TS-018",
+      "adr_id": "WS-TS-018",
+      "statement": "[ADR Assessment] Grafana k8s-inspired backend architecture [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-018.md",
+      "domains": [
+        "platform",
+        "apis"
+      ],
+      "source_url": "https://github.com/grafana/grafana/blob/main/contribute/architecture/k8s-inspired-backend-arch.md"
+    },
+    {
+      "id": "sub-WS-TS-019",
+      "adr_id": "WS-TS-019",
+      "statement": "[ADR Assessment] containerd garbage collection [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-019.md",
+      "domains": [
+        "reliability",
+        "runtime"
+      ],
+      "source_url": "https://github.com/containerd/containerd/blob/main/docs/garbage-collection.md"
+    },
+    {
+      "id": "sub-WS-TS-020",
+      "adr_id": "WS-TS-020",
+      "statement": "[ADR Assessment] containerd image verification [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-020.md",
+      "domains": [
+        "security",
+        "supply-chain"
+      ],
+      "source_url": "https://github.com/containerd/containerd/blob/main/docs/image-verification.md"
+    },
+    {
+      "id": "sub-WS-TS-021",
+      "adr_id": "WS-TS-021",
+      "statement": "[ADR Assessment] OPA project introduction / philosophy [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-021.md",
+      "domains": [
+        "policy",
+        "auth"
+      ],
+      "source_url": "https://github.com/open-policy-agent/opa/blob/main/README.md"
+    },
+    {
+      "id": "sub-WS-TS-022",
+      "adr_id": "WS-TS-022",
+      "statement": "[ADR Assessment] Helm HIP-0001 process [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-022.md",
+      "domains": [
+        "process",
+        "iac"
+      ],
+      "source_url": "https://github.com/helm/community/blob/main/hips/hip-0001.md"
+    },
+    {
+      "id": "sub-WS-TS-023",
+      "adr_id": "WS-TS-023",
+      "statement": "[ADR Assessment] Istio security README [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-023.md",
+      "domains": [
+        "security",
+        "networking",
+        "auth"
+      ],
+      "source_url": "https://github.com/istio/istio/blob/master/security/README.md"
+    },
+    {
+      "id": "sub-WS-TS-024",
+      "adr_id": "WS-TS-024",
+      "statement": "[ADR Assessment] SPIFFE identity standard excerpt [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-024.md",
+      "domains": [
+        "auth",
+        "identity"
+      ],
+      "source_url": "https://github.com/spiffe/spiffe/blob/main/standards/SPIFFE.md"
+    },
+    {
+      "id": "sub-WS-TS-025",
+      "adr_id": "WS-TS-025",
+      "statement": "[ADR Assessment] Tekton pipeline auth documentation [tech_spec] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "tech_spec",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "tech_spec/WS-TS-025.md",
+      "domains": [
+        "ci",
+        "auth"
+      ],
+      "source_url": "https://github.com/tektoncd/pipeline/blob/main/docs/auth.md"
+    },
+    {
+      "id": "sub-WS-CS-001",
+      "adr_id": "WS-CS-001",
+      "statement": "[ADR Assessment] Terraform AWS security group example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-001.md",
+      "domains": [
+        "iac",
+        "aws",
+        "networking"
+      ],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/examples/complete/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-002",
+      "adr_id": "WS-CS-002",
+      "statement": "[ADR Assessment] Terraform IAM policy module [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-002.md",
+      "domains": [
+        "iac",
+        "aws",
+        "auth",
+        "iam"
+      ],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/modules/iam-policy/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-003",
+      "adr_id": "WS-CS-003",
+      "statement": "[ADR Assessment] Terraform S3 bucket module fragment [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-003.md",
+      "domains": [
+        "iac",
+        "aws",
+        "data"
+      ],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-s3-bucket/blob/master/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-004",
+      "adr_id": "WS-CS-004",
+      "statement": "[ADR Assessment] Official Node.js Docker image Dockerfile [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-004.md",
+      "domains": [
+        "docker",
+        "runtime"
+      ],
+      "source_url": "https://github.com/nodejs/docker-node/blob/main/22/bookworm/Dockerfile"
+    },
+    {
+      "id": "sub-WS-CS-005",
+      "adr_id": "WS-CS-005",
+      "statement": "[ADR Assessment] GitHub Actions Go CI starter workflow [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-005.md",
+      "domains": [
+        "ci",
+        "go"
+      ],
+      "source_url": "https://github.com/actions/starter-workflows/blob/main/ci/go.yml"
+    },
+    {
+      "id": "sub-WS-CS-006",
+      "adr_id": "WS-CS-006",
+      "statement": "[ADR Assessment] golang-jwt parser fragment [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-006.md",
+      "domains": [
+        "auth",
+        "go",
+        "apis"
+      ],
+      "source_url": "https://github.com/golang-jwt/jwt/blob/main/parser.go"
+    },
+    {
+      "id": "sub-WS-CS-007",
+      "adr_id": "WS-CS-007",
+      "statement": "[ADR Assessment] Django REST framework authentication [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-007.md",
+      "domains": [
+        "auth",
+        "python",
+        "apis"
+      ],
+      "source_url": "https://github.com/encode/django-rest-framework/blob/master/rest_framework/authentication.py"
+    },
+    {
+      "id": "sub-WS-CS-008",
+      "adr_id": "WS-CS-008",
+      "statement": "[ADR Assessment] Helmet CSP middleware [code_snippet] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-008.md",
+      "domains": [
+        "security",
+        "javascript",
+        "apis"
+      ],
+      "source_url": "https://github.com/helmetjs/helmet/blob/main/middlewares/content-security-policy/index.ts"
+    },
+    {
+      "id": "sub-WS-CS-009",
+      "adr_id": "WS-CS-009",
+      "statement": "[ADR Assessment] chi jwtauth middleware [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-009.md",
+      "domains": [
+        "auth",
+        "go",
+        "apis"
+      ],
+      "source_url": "https://github.com/go-chi/jwtauth/blob/master/jwtauth.go"
+    },
+    {
+      "id": "sub-WS-CS-010",
+      "adr_id": "WS-CS-010",
+      "statement": "[ADR Assessment] Falco default rules excerpt [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-010.md",
+      "domains": [
+        "security",
+        "logging",
+        "runtime"
+      ],
+      "source_url": "https://github.com/falcosecurity/rules/blob/main/rules/falco_rules.yaml"
+    },
+    {
+      "id": "sub-WS-CS-011",
+      "adr_id": "WS-CS-011",
+      "statement": "[ADR Assessment] Docker Compose nginx-golang-mysql [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-011.md",
+      "domains": [
+        "docker",
+        "networking"
+      ],
+      "source_url": "https://github.com/docker/awesome-compose/blob/master/nginx-golang-mysql/compose.yaml"
+    },
+    {
+      "id": "sub-WS-CS-012",
+      "adr_id": "WS-CS-012",
+      "statement": "[ADR Assessment] golang.org/x/oauth2 client fragment [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-012.md",
+      "domains": [
+        "auth",
+        "go",
+        "apis"
+      ],
+      "source_url": "https://github.com/golang/oauth2/blob/master/oauth2.go"
+    },
+    {
+      "id": "sub-WS-CS-013",
+      "adr_id": "WS-CS-013",
+      "statement": "[ADR Assessment] Prometheus example scrape config [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-013.md",
+      "domains": [
+        "observability",
+        "logging",
+        "networking"
+      ],
+      "source_url": "https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus.yml"
+    },
+    {
+      "id": "sub-WS-CS-014",
+      "adr_id": "WS-CS-014",
+      "statement": "[ADR Assessment] OPA Gatekeeper required-labels template [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-014.md",
+      "domains": [
+        "policy",
+        "k8s"
+      ],
+      "source_url": "https://github.com/open-policy-agent/gatekeeper/blob/master/demo/basic/templates/k8srequiredlabels_template.yaml"
+    },
+    {
+      "id": "sub-WS-CS-015",
+      "adr_id": "WS-CS-015",
+      "statement": "[ADR Assessment] Flask tutorial auth blueprint [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-015.md",
+      "domains": [
+        "auth",
+        "python",
+        "apis"
+      ],
+      "source_url": "https://github.com/pallets/flask/blob/main/examples/tutorial/flaskr/auth.py"
+    },
+    {
+      "id": "sub-WS-CS-016",
+      "adr_id": "WS-CS-016",
+      "statement": "[ADR Assessment] Kubernetes nginx Deployment example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-016.md",
+      "domains": [
+        "k8s",
+        "reliability"
+      ],
+      "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/controllers/nginx-deployment.yaml"
+    },
+    {
+      "id": "sub-WS-CS-017",
+      "adr_id": "WS-CS-017",
+      "statement": "[ADR Assessment] Kubernetes Ingress example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-017.md",
+      "domains": [
+        "k8s",
+        "networking"
+      ],
+      "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/service/networking/example-ingress.yaml"
+    },
+    {
+      "id": "sub-WS-CS-018",
+      "adr_id": "WS-CS-018",
+      "statement": "[ADR Assessment] ZooKeeper YAML (incl. PDB patterns) [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-018.md",
+      "domains": [
+        "k8s",
+        "reliability"
+      ],
+      "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/application/zookeeper/zookeeper.yaml"
+    },
+    {
+      "id": "sub-WS-CS-019",
+      "adr_id": "WS-CS-019",
+      "statement": "[ADR Assessment] Terraform AWS VPC simple example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-019.md",
+      "domains": [
+        "iac",
+        "aws",
+        "networking"
+      ],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-vpc/blob/master/examples/simple/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-020",
+      "adr_id": "WS-CS-020",
+      "statement": "[ADR Assessment] Checkov SG unrestricted ingress22 fixture [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-020.md",
+      "domains": [
+        "iac",
+        "aws",
+        "security"
+      ],
+      "source_url": "https://github.com/bridgecrewio/checkov/blob/main/tests/terraform/checks/resource/aws/example_SecurityGroupUnrestrictedIngress22/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-021",
+      "adr_id": "WS-CS-021",
+      "statement": "[ADR Assessment] Traefik BasicAuth middleware docs/config [code_snippet] \u2014 assessed verdict INDETERMINATE (coverage NONE)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "medium",
+      "confidence_score": 0.55,
+      "confidence_p": 0.55,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-021.md",
+      "domains": [
+        "auth",
+        "networking",
+        "apis"
+      ],
+      "source_url": "https://github.com/traefik/traefik/blob/v3.1/docs/content/middlewares/http/basicauth.md"
+    },
+    {
+      "id": "sub-WS-CS-022",
+      "adr_id": "WS-CS-022",
+      "statement": "[ADR Assessment] ZAP baseline scanner script [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-022.md",
+      "domains": [
+        "security",
+        "ci"
+      ],
+      "source_url": "https://github.com/zaproxy/zaproxy/blob/main/docker/zap-baseline.py"
+    },
+    {
+      "id": "sub-WS-CS-023",
+      "adr_id": "WS-CS-023",
+      "statement": "[ADR Assessment] Terraform EKS auto-mode example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-023.md",
+      "domains": [
+        "iac",
+        "aws",
+        "k8s"
+      ],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/eks-auto-mode/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-024",
+      "adr_id": "WS-CS-024",
+      "statement": "[ADR Assessment] Terraform RDS Postgres complete example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-024.md",
+      "domains": [
+        "iac",
+        "aws",
+        "data"
+      ],
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-rds/blob/master/examples/complete-postgres/main.tf"
+    },
+    {
+      "id": "sub-WS-CS-025",
+      "adr_id": "WS-CS-025",
+      "statement": "[ADR Assessment] Express.js auth example [code_snippet] \u2014 assessed verdict PASS (coverage PARTIAL)",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "submission_kind": "code_snippet",
+      "pattern_hint": "workshop.submission",
+      "confidence": "high",
+      "confidence_score": 0.85,
+      "confidence_p": 0.85,
+      "confidence_method": "heuristic",
+      "approval_status": "pending_review",
+      "enforcement_mode": "review_required",
+      "executable": false,
+      "source_path": "code_snippet/WS-CS-025.md",
+      "domains": [
+        "auth",
+        "javascript",
+        "apis"
+      ],
+      "source_url": "https://github.com/expressjs/express/blob/master/examples/auth/index.js"
+    }
+  ],
+  "candidate_count": 113,
+  "confidence_summary": {
+    "high": 58,
+    "medium": 27,
+    "low": 28
+  }
+}

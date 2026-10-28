@@ -1,0 +1,223 @@
+{
+  "verdict": "INDETERMINATE",
+  "coverage_status": "PARTIAL",
+  "requirement_count": 200,
+  "applicable_requirement_count": 1262,
+  "runtime_llm_calls": 0,
+  "submission_kind": "",
+  "workshop_batch": {
+    "run_id": "workshop-submissions-20261028T123446Z",
+    "tech_spec_count": 25,
+    "code_snippet_count": 25,
+    "total": 50,
+    "verdicts": {
+      "PASS": 23,
+      "FAIL": 0,
+      "INDETERMINATE": 27
+    },
+    "with_analyzer_evidence": 23,
+    "assess_only_applicability": 27,
+    "applicable_gt_zero": 23,
+    "scanner": {
+      "scanners_ready": true,
+      "with_analyzer_evidence": 23,
+      "assess_only_applicability": 27,
+      "sandbox_snippets_total": 29,
+      "notes": [
+        {
+          "id": "WS-TS-001",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-002",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-003",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-004",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-005",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-006",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-007",
+          "mode": "assess_only",
+          "why": [
+            "tech_spec_analyzer_na"
+          ]
+        },
+        {
+          "id": "WS-TS-008",
+          "mode": "assess_only",
+          "why": [
+            "tech_spec_analyzer_na"
+          ]
+        },
+        {
+          "id": "WS-TS-009",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-010",
+          "mode": "assess_only",
+          "why": [
+            "tech_spec_analyzer_na"
+          ]
+        },
+        {
+          "id": "WS-TS-011",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-012",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-013",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-014",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-015",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-016",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-017",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-018",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-019",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-020",
+          "mode": "assess_only",
+          "why": [
+            "tech_spec_analyzer_na"
+          ]
+        },
+        {
+          "id": "WS-TS-021",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-022",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-023",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-024",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-TS-025",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "id": "WS-CS-008",
+          "mode": "assess_only",
+          "why": [
+            "opengrep_incomplete"
+          ]
+        },
+        {
+          "id": "WS-CS-021",
+          "mode": "assess_only",
+          "why": [
+            "no_sandbox_snippets"
+          ]
+        },
+        {
+          "global": "Submissions without extractable fences (typical tech_spec prose) stay assess-only; analyzer rules for missing extensions remain NOT_APPLICABLE by applicability."
+        }
+      ]
+    }
+  },
+  "requirements": []
+}

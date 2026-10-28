@@ -1,16 +1,16 @@
 {
   "schema_version": "workshop-submission-results-v1",
   "run_id": "WS-CS-014",
-  "timestamp": "2026-10-28T03:28:37.345271+00:00",
+  "timestamp": "2026-10-28T12:42:57.912042+00:00",
   "counts": {
     "total": 1,
     "tech_spec": 0,
     "code_snippet": 1
   },
   "verdicts": {
-    "PASS": 0,
+    "PASS": 1,
     "FAIL": 0,
-    "INDETERMINATE": 1
+    "INDETERMINATE": 0
   },
   "submissions": [
     {
@@ -25,8 +25,8 @@
       "source_url": "https://github.com/open-policy-agent/gatekeeper/blob/master/demo/basic/templates/k8srequiredlabels_template.yaml",
       "repo": "open-policy-agent/gatekeeper",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
       "runtime_llm_calls": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-014/assessment.json"

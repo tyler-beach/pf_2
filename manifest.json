@@ -1,6 +1,6 @@
 {
-  "data_sha": "64ae30dfa008d8f0f6e0e57712bc578ebea5a8896804dc18fd3ef6a7c2d03506",
-  "latest_run_id": "WS-CS-025",
+  "data_sha": "5f6a8adc9d3b51b3e6ecf07c4117aea41b4ad3a39dccf8c43c98fb42403947f4",
+  "latest_run_id": "workshop-submissions-20261028T123446Z",
   "snapshots": [
     {
       "path": "snapshots/WS-CS-001",
@@ -201,7 +201,11 @@
     {
       "path": "snapshots/WS-TS-025",
       "run_id": "WS-TS-025"
+    },
+    {
+      "path": "snapshots/workshop-submissions-20261028T123446Z",
+      "run_id": "workshop-submissions-20261028T123446Z"
     }
   ],
-  "updated_at": "2026-10-28T03:29:54.354551+00:00"
+  "updated_at": "2026-10-28T12:43:10.158186+00:00"
 }
