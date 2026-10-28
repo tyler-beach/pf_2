@@ -29,9 +29,12 @@ export async function renderChrome() {
 
   if (ageEl) {
     const age = dataAge(ctx.manifest?.updated_at || ctx.latest?.run.timestamp);
-    ageEl.textContent = `Data ${age.label}`;
+    ageEl.textContent = age.stale ? `Stale · ${age.label}` : `Data ${age.label}`;
     ageEl.classList.toggle('stale', age.stale);
-    ageEl.title = ctx.manifest?.updated_at || 'No publish timestamp';
+    ageEl.title = age.stale
+      ? `Last publish ${ctx.manifest?.updated_at || 'unknown'} — refresh via Workshop Publish`
+      : ctx.manifest?.updated_at || 'No publish timestamp';
+    ageEl.setAttribute('role', age.stale ? 'status' : 'note');
   }
 
   if (publish) publish.href = workflowDispatchURL('workshop-publish.yml');

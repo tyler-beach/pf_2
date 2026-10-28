@@ -1,7 +1,7 @@
 import 'uplot/dist/uPlot.min.css';
 import 'diff2html/bundles/css/diff2html.min.css';
 import { renderChrome } from './chrome';
-import { bindCopyButtons } from './ui';
+import { bindCopyButtons, closeDrawer, loadingState } from './ui';
 import {
   renderADRs,
   renderAssess,
@@ -76,10 +76,17 @@ function nav() {
     .join('');
 }
 
+let renderGen = 0;
+
 async function render() {
+  const gen = ++renderGen;
+  closeDrawer();
   nav();
-  await renderChrome();
   const app = document.getElementById('app')!;
+  document.body.classList.add('is-loading');
+  app.innerHTML = loadingState();
+  await renderChrome();
+  if (gen !== renderGen) return;
   const { path, rest } = routeParts();
   switch (path) {
     case '/':
@@ -119,14 +126,17 @@ async function render() {
       await renderCorpus(app);
       break;
     case '/docs':
-      await renderDocs(app);
+      await renderDocs(app, rest[0]);
       break;
     case '/kpis':
+      document.body.classList.remove('is-loading');
       location.hash = '#/metrics';
       return;
     default:
       app.innerHTML = `<div class="empty"><h1>Not found</h1><p class="muted" style="margin-top:0.5rem"><a href="#/">Back to overview</a></p></div>`;
   }
+  if (gen !== renderGen) return;
+  document.body.classList.remove('is-loading');
   bindCopyButtons(app);
 }
 
