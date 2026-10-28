@@ -84,7 +84,7 @@ func ParseIssueBody(body string) (IssueScanRequest, error) {
 
 	fail := firstNonEmptyLine(sections["Fail level"])
 	if fail == "" {
-		fail = "none"
+		fail = "any"
 	}
 	fail = strings.ToLower(strings.TrimSpace(fail))
 	switch fail {

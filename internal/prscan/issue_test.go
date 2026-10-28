@@ -29,7 +29,7 @@ Corpus pack (testdata/corpus/requirements.json)
 
 ### Fail level
 
-none
+any
 `
 	got, err := ParseIssueBody(body)
 	if err != nil {
@@ -42,8 +42,31 @@ none
 	if strings.Join(got.Reporters, ",") != strings.Join(wantReporters, ",") {
 		t.Fatalf("reporters: %v", got.Reporters)
 	}
-	if got.FilterMode != "added" || got.Catalog != "corpus" || got.FailLevel != "none" {
+	if got.FilterMode != "added" || got.Catalog != "corpus" || got.FailLevel != "any" {
 		t.Fatalf("opts: %+v", got)
+	}
+}
+
+func TestParseIssueBodyDefaultFailLevelAny(t *testing.T) {
+	body := `
+### Pull request URL
+https://github.com/acme/widgets/pull/3
+
+### Feedback modes (reviewdog)
+- [x] ` + "`github-pr-review`" + `
+
+### Diff filter mode
+added
+
+### Requirement catalog
+Corpus pack (testdata/corpus/requirements.json)
+`
+	got, err := ParseIssueBody(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.FailLevel != "any" {
+		t.Fatalf("default FailLevel: %q", got.FailLevel)
 	}
 }
 

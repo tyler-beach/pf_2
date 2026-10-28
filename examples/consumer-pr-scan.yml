@@ -35,7 +35,7 @@ jobs:
       upload_sarif: false
       filter_mode: added
       catalog: corpus
-      fail_level: none
+      fail_level: any
     secrets:
       review_token: ${{ secrets.PATHFINDER_REVIEW_TOKEN }}
       sarif_token: ${{ secrets.PATHFINDER_SARIF_TOKEN }}

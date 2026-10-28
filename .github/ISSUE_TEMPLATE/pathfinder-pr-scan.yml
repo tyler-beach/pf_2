@@ -71,10 +71,10 @@ body:
     id: fail_level
     attributes:
       label: Fail level
-      description: reviewdog `-fail-level` (does not change Pathfinder verdict).
+      description: reviewdog `-fail-level` for the `pathfinder-pr-scan` check (branch protection). Default `any` fails the check when Pathfinder deviations exist; `none` reports only. Does not change Pathfinder verdict.
       options:
-        - none
         - any
+        - none
         - warning
         - error
       default: 0

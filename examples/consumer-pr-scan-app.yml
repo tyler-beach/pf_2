@@ -62,7 +62,7 @@ jobs:
       upload_sarif: ${{ inputs.upload_sarif || false }}
       filter_mode: added
       catalog: corpus
-      fail_level: none
+      fail_level: any
     secrets:
       review_token: ${{ needs.mint-app-token.outputs.token }}
       sarif_token: ${{ needs.mint-app-token.outputs.token }}

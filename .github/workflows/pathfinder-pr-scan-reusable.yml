@@ -38,10 +38,10 @@ on:
         type: string
         default: corpus
       fail_level:
-        description: reviewdog fail-level
+        description: reviewdog fail-level (any = fail pathfinder-pr-scan check when deviations exist)
         required: false
         type: string
-        default: none
+        default: any
       docs_base:
         description: Docs / Next-line base URL
         required: false

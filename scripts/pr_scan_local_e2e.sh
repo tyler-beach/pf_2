@@ -26,7 +26,7 @@ assert req["PR"]["Repo"] == "pf_2", req
 assert req["UploadSARIF"] is True
 assert "github-pr-review" in req["Reporters"]
 assert req["Catalog"] == "live"
-assert req["FailLevel"] == "error"
+assert req["FailLevel"] == "any"
 print("issue parse OK")
 PY
 
@@ -42,7 +42,7 @@ dispatch = {
     "UploadSARIF": True,
     "FilterMode": "added",
     "Catalog": "live",
-    "FailLevel": "error",
+    "FailLevel": "any",
 }
 Path("testdata/pr-scan/known-fail/out/dispatch-request.json").write_text(
     json.dumps(dispatch, indent=2) + "\n"

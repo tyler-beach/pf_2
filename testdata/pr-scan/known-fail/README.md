@@ -23,4 +23,4 @@ Intentional OpenGrep hit (`internal/bad/shell.go`) for Pathfinder PR-scan dry-ru
    - `catalog`: `live`
 3. **App path**: **Actions → Pathfinder App PR Scan → Run workflow** with the same `pr_url`. Without App secrets the workflow falls back to `GITHUB_TOKEN` (same-repo). After App install + `APP_ID` / `APP_PRIVATE_KEY`, it mints an installation token (see [docs/github-app-design.md](../../../docs/github-app-design.md)).
 4. Or **Issues → Pathfinder PR scan** with the same URL (author must be OWNER/MEMBER/COLLABORATOR).
-5. Expect reviewdog check name **`pathfinder-pr-scan`**, deviation-only comments, optional Security tab alert.
+5. Expect reviewdog check name **`pathfinder-pr-scan`** with conclusion **failure** when deviations exist (`fail_level=any`, the default), deviation-only comments, optional Security tab alert. Clean PRs should conclude **success**.

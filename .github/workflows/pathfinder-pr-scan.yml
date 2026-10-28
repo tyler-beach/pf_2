@@ -52,11 +52,11 @@ on:
         options: [corpus, live]
         default: corpus
       fail_level:
-        description: reviewdog fail-level
+        description: reviewdog fail-level (any = fail check on Pathfinder deviations; none = report only)
         required: false
         type: choice
-        options: [none, any, info, warning, error]
-        default: none
+        options: [any, none, info, warning, error]
+        default: any
 
 permissions:
   contents: read

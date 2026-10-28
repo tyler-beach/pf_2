@@ -106,7 +106,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li>Or skip the issue: <strong>Actions → Pathfinder PR Scan → Run workflow</strong> with <code>pr_url</code> + reporter flags.</li>
   <li>Workflow shallow-fetches the PR head as data only (never runs untrusted PR code), assesses with pinned OpenGrep/Checkov + <code>assess-repo --issue-surface</code>.</li>
   <li>Shared finding model → rdjson (reviewdog) and SARIF 2.1.0 (Security). Bodies are short: severity, ADR, why, evidence, next/docs.</li>
-  <li>N/A floods are omitted; inline comments capped; one PR summary with counts. Stable check name: <code>pathfinder-pr-scan</code>.</li>
+  <li>N/A floods are omitted; inline comments capped; one PR summary with counts. Stable check name: <code>pathfinder-pr-scan</code> (default <code>fail_level=any</code>: <strong>failure</strong> when deviations exist, <strong>success</strong> when clean — require in branch protection).</li>
 </ol>
 <p><strong>Auth:</strong> same-repo uses <code>GITHUB_TOKEN</code>. Cross-repo: prefer the <a href="#/docs/github-app">GitHub App</a> (<code>APP_ID</code> + <code>APP_PRIVATE_KEY</code>) or legacy PAT <code>PATHFINDER_REVIEW_TOKEN</code> / optional <code>PATHFINDER_SARIF_TOKEN</code>. Full operator doc: <code>docs/pr-scan.md</code> · setup map: <a href="#/docs/integrations">Integrations</a>.</p>`,
   },
@@ -172,7 +172,7 @@ export const DOC_SECTIONS: DocSection[] = [
 <ol class="docs-steps">
   <li><strong>App (preferred):</strong> copy <code>examples/consumer-pr-scan-app.yml</code> → mint token with <code>create-github-app-token</code> → <code>uses: tyler-beach/pf_2/.github/workflows/pathfinder-pr-scan-reusable.yml@main</code>.</li>
   <li><strong>PAT (legacy):</strong> copy <code>examples/consumer-pr-scan.yml</code> → secret <code>PATHFINDER_REVIEW_TOKEN</code> (optional <code>PATHFINDER_SARIF_TOKEN</code>).</li>
-  <li>Pin <code>pathfinder_ref</code> to a tag/SHA when ready. Inputs: <code>reporters</code>, <code>upload_sarif</code>, <code>filter_mode</code>, <code>catalog</code>, <code>fail_level</code>.</li>
+  <li>Pin <code>pathfinder_ref</code> to a tag/SHA when ready. Inputs: <code>reporters</code>, <code>upload_sarif</code>, <code>filter_mode</code>, <code>catalog</code>, <code>fail_level</code> (default <code>any</code>).</li>
 </ol>
 <h3>reviewdog reporters + Security SARIF</h3>
 <ul>
@@ -181,7 +181,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><code>github-pr-annotations</code> — job annotations · <code>local</code> — artifact only</li>
   <li><strong>Upload SARIF</strong> / <code>upload_sarif=true</code> → Security tab via code-scanning API (<code>pathfinder/pr-scan</code> automation id). Target needs code scanning available (GHAS on private).</li>
 </ul>
-<p>Filter modes: <code>added</code> (default), <code>diff_context</code>, <code>file</code>, <code>nofilter</code>. Findings = deviations only (never N/A/PASS).</p>
+<p>Filter modes: <code>added</code> (default), <code>diff_context</code>, <code>file</code>, <code>nofilter</code>. Findings = deviations only (never N/A/PASS). Default <code>fail_level=any</code> makes <code>pathfinder-pr-scan</code> <strong>fail</strong> when deviations exist and <strong>succeed</strong> when clean (<code>none</code> = report-only / neutral).</p>
 <h3>Issue templates</h3>
 <ul>
   <li><strong>Pathfinder PR scan</strong> — paste PR URL; checkboxes for reporters + Security; title prefix <code>[Pathfinder PR Scan]</code> or label <code>pathfinder-pr-scan</code>.</li>

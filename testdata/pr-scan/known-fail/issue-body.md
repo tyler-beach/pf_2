@@ -24,4 +24,4 @@ live (adr/requirements.json)
 
 ### Fail level
 
-error
+any

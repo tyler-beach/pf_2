@@ -187,7 +187,7 @@ jobs:
       upload_sarif: ${{ needs.mint-app-token.outputs.upload_sarif == 'true' }}
       filter_mode: added
       catalog: ${{ needs.mint-app-token.outputs.catalog }}
-      fail_level: none
+      fail_level: any
     secrets:
       review_token: ${{ needs.mint-app-token.outputs.token }}
       sarif_token: ${{ needs.mint-app-token.outputs.token }}

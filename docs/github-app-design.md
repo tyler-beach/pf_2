@@ -124,7 +124,7 @@ Until secrets exist, the host workflow logs a notice and **falls back to `GITHUB
 1. Install App on `tyler-beach/pf_2` and set `APP_ID` + `APP_PRIVATE_KEY`.
 2. Open (or reuse) a PR that touches `testdata/pr-scan/known-fail/internal/bad/shell.go`.
 3. **Actions → Pathfinder App PR Scan → Run workflow** with that `pr_url` (or push to the PR), `catalog=live`.
-4. Confirm check **`pathfinder-pr-scan`**, sticky summary marker `pathfinder-pr-scan:<sha>`, optional Security upload.
+4. Confirm check **`pathfinder-pr-scan`** (default `fail_level=any` → **failure** when deviations exist), sticky summary marker `pathfinder-pr-scan:<sha>`, optional Security upload.
 
 Without App secrets yet, use the production dispatch path (same pipeline, `GITHUB_TOKEN`): **Actions → Pathfinder PR Scan → Run workflow** — see [pr-scan.md](pr-scan.md).
 

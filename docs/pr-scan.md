@@ -67,6 +67,8 @@ N/A and PASS requirements are **never** inlined or uploaded. Inline comments are
 
 reviewdog posts under the stable name **`pathfinder-pr-scan`**. Require this check in branch protection when using `github-pr-check` / `github-check` reporters. Do not rename without a coordinated docs + workflow bump.
 
+Default **`fail_level=any`** (`-fail-level=any`): the check concludes **failure** when any Pathfinder deviation is reported, and **success** when the filtered finding set is empty. Use `none` only when you want annotations without a failing required check (GitHub shows that as neutral / skipping). Severity thresholds (`warning` / `error`) are available but usually unnecessary—deviations already carry requirement severity.
+
 ## Known-FAIL fixture + dry-run
 
 Fixture pack: [`testdata/pr-scan/known-fail/`](../testdata/pr-scan/known-fail/) (`internal/bad/shell.go` intentional shell composition, golden `assessment-fail.json`, golden issue body).
@@ -82,8 +84,8 @@ Proves issue parse, `workflow_dispatch` request shape, converter (rdjson + Secur
 ### Manual Actions click-path (same-repo FAIL PR)
 
 1. Open (or reuse) a PR that includes `testdata/pr-scan/known-fail/internal/bad/shell.go`.
-2. **Actions → Pathfinder PR Scan → Run workflow** with that `pr_url`, `catalog=live`, `github_pr_review=true`, optionally `upload_sarif=true`.
-3. Confirm: check **`pathfinder-pr-scan`**, deviation-only inline comments, PR sticky summary with marker `pathfinder-pr-scan:<sha>`, optional Security tab finding.
+2. **Actions → Pathfinder PR Scan → Run workflow** with that `pr_url`, `catalog=live`, `github_pr_review=true`, `github_pr_check=true`, `fail_level=any` (default), optionally `upload_sarif=true`.
+3. Confirm: check **`pathfinder-pr-scan`** concludes **failure** (not neutral/skipping) when deviations exist; deviation-only inline comments; PR sticky summary with marker `pathfinder-pr-scan:<sha>`; optional Security tab finding.
 4. Record the Actions run URL in the PR/issue for the dry-run checklist.
 
 Cross-repo dry-run: point `pr_url` at another repo PR with `PATHFINDER_REVIEW_TOKEN` set; expect 403/clone failures when the token cannot reach the target (fail closed).
@@ -98,7 +100,7 @@ Cross-repo dry-run: point `pr_url` at another repo PR with `PATHFINDER_REVIEW_TO
 | `github-pr-annotations` | Actions job annotations |
 | `local` | Artifact-only (`reviewdog -reporter=local`) |
 
-Filter modes: `added` (default), `diff_context`, `file`, `nofilter`. Fail level uses reviewdog `-fail-level` (`none`/`any`/`warning`/`error`).
+Filter modes: `added` (default), `diff_context`, `file`, `nofilter`. Fail level uses reviewdog `-fail-level` — default **`any`** (fail check on any finding); also `none` / `info` / `warning` / `error`.
 
 ## Security tab (SARIF)
 
