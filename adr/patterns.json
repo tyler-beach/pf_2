@@ -58,11 +58,11 @@
     {
       "id": "configuration.supply_chain",
       "title": "Supply-chain and dependency configuration",
-      "verifier_types": ["json-required-keys", "manual-review"],
-      "inputs": ["lockfiles", "SBOM artifacts", "allow-lists"],
-      "applicability": "Allow-lists, CVE SLAs, SBOM emission requirements",
+      "verifier_types": ["analyzer-rule", "json-required-keys", "manual-review"],
+      "inputs": ["lockfiles", "SBOM artifacts", "allow-lists", "OpenGrep evidence"],
+      "applicability": "Allow-lists, CVE SLAs, SBOM emission, direct Git dependencies",
       "blind_spots": ["Transitive vulnerability exploitability"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "fixture_refs": ["rules/owasp-misc-promote.yml"]
     },
     {
       "id": "configuration.authentication",
@@ -103,38 +103,38 @@
     {
       "id": "configuration.aws_iam",
       "title": "AWS IAM configuration baselines",
-      "verifier_types": ["manual-review", "analyzer-rule"],
-      "inputs": ["IAM policy documents", "account baselines"],
-      "applicability": "Access Analyzer and related IAM guardrails",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "IAM policy documents"],
+      "applicability": "Wildcard admin policies and related IAM guardrails",
       "blind_spots": ["Effective permission simulation"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.aws_encryption",
       "title": "AWS encryption configuration baselines",
-      "verifier_types": ["manual-review", "json-required-keys"],
-      "inputs": ["account/service configuration"],
-      "applicability": "KMS CMK, TLS-in-transit, EBS default encryption",
+      "verifier_types": ["analyzer-rule", "manual-review", "json-required-keys"],
+      "inputs": ["Checkov SARIF", "account/service configuration"],
+      "applicability": "KMS CMK, TLS-in-transit, EBS/RDS/S3 encryption",
       "blind_spots": ["Console-only toggles without IaC"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.aws_network",
       "title": "AWS network configuration baselines",
-      "verifier_types": ["manual-review"],
-      "inputs": ["VPC and flow-log configuration"],
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "VPC and flow-log configuration"],
       "applicability": "Flow logs and related network baselines",
       "blind_spots": ["Effective SG/NACL evaluation"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.aws_logging",
       "title": "AWS logging and detection configuration",
-      "verifier_types": ["manual-review"],
-      "inputs": ["CloudTrail/Config baselines"],
-      "applicability": "Org trails, validation, Config recorders",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "CloudTrail/Config baselines"],
+      "applicability": "Org trails, validation, Config recorders, log retention",
       "blind_spots": ["Detection tuning quality"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.aws_secrets",
@@ -175,11 +175,11 @@
     {
       "id": "configuration.aws_backup",
       "title": "AWS backup configuration baselines",
-      "verifier_types": ["manual-review", "json-required-keys"],
-      "inputs": ["backup plan configuration"],
-      "applicability": "Backup plans, cross-region copy, RDS retention",
+      "verifier_types": ["analyzer-rule", "manual-review", "json-required-keys"],
+      "inputs": ["Checkov SARIF", "backup plan configuration"],
+      "applicability": "Backup vault lock/encryption and RDS retention",
       "blind_spots": ["Restore test effectiveness"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.aws_tagging",
@@ -274,11 +274,11 @@
     {
       "id": "security.supply_chain",
       "title": "Supply-chain source and packaging signals",
-      "verifier_types": ["manual-review", "analyzer-rule"],
-      "inputs": ["dependency manifests", "review"],
-      "applicability": "EOL packages and unsafe install patterns",
-      "blind_spots": ["Advisory quality varies by ecosystem"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "dependency manifests", "review"],
+      "applicability": "Direct Git dependencies and unpinned module replaces",
+      "blind_spots": ["EOL advisory quality varies by ecosystem"],
+      "fixture_refs": ["rules/owasp-misc-promote.yml"]
     },
     {
       "id": "security.authentication",
@@ -301,11 +301,11 @@
     {
       "id": "security.logging",
       "title": "Logging security source signals",
-      "verifier_types": ["manual-review", "analyzer-rule"],
-      "inputs": ["review", "optional OpenGrep evidence"],
-      "applicability": "Silent failure paths and over-logging of secrets",
-      "blind_spots": ["Detection content quality"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "review"],
+      "applicability": "Secret/PII logging and CloudTrail stop-logging misuse",
+      "blind_spots": ["Detection content quality", "silent-failure absences"],
+      "fixture_refs": ["rules/owasp-misc-promote.yml"]
     },
     {
       "id": "security.aws_iam",
@@ -328,11 +328,11 @@
     {
       "id": "security.aws_network",
       "title": "AWS network exposure signals",
-      "verifier_types": ["manual-review"],
-      "inputs": ["IaC/policy review"],
-      "applicability": "Open SSH and related network exposure (IaC deferred)",
-      "blind_spots": ["Needs Checkov/cfn-nag for strong evidence"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "IaC/policy review"],
+      "applicability": "Open SSH, missing VPC flow logs, and public subnet defaults",
+      "blind_spots": ["Effective path analysis across peered VPCs"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "security.aws_logging",
@@ -364,11 +364,11 @@
     {
       "id": "security.aws_sg",
       "title": "AWS security group exposure signals",
-      "verifier_types": ["manual-review"],
-      "inputs": ["IaC review"],
-      "applicability": "World-open SG rules (IaC deferred)",
-      "blind_spots": ["Needs Checkov for strong evidence"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "IaC review"],
+      "applicability": "World-open SSH/RDP and undescribed SG rules",
+      "blind_spots": ["Effective path analysis across chained SGs"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "security.aws_root",
@@ -445,29 +445,29 @@
     {
       "id": "architecture.aws_iam",
       "title": "AWS IAM architectural constraints",
-      "verifier_types": ["manual-review"],
-      "inputs": ["IAM policy review"],
-      "applicability": "Wildcard actions/resources and trust design",
-      "blind_spots": ["Needs policy analyzer for strong evidence"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "IAM policy review"],
+      "applicability": "Wildcard actions/resources and overbroad admin policies",
+      "blind_spots": ["Effective permission simulation across SCPs"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "architecture.aws_network",
       "title": "AWS network architectural constraints",
-      "verifier_types": ["manual-review"],
-      "inputs": ["VPC design review"],
-      "applicability": "Public subnet placement and peering routes",
-      "blind_spots": ["Needs IaC analyzers"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "VPC design review"],
+      "applicability": "Public subnet defaults and missing flow logs",
+      "blind_spots": ["Peering route nuance beyond static checks"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "architecture.aws_sg",
       "title": "AWS security group architectural constraints",
-      "verifier_types": ["manual-review"],
-      "inputs": ["SG design review"],
-      "applicability": "Database SG public attachment and tiering",
-      "blind_spots": ["Needs IaC analyzers"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "SG design review"],
+      "applicability": "World-open SG attachment patterns",
+      "blind_spots": ["Cross-tier reference cycles"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "architecture.aws_compute",
@@ -489,12 +489,12 @@
     },
     {
       "id": "infra.policy",
-      "title": "Infrastructure policy (deferred Checkov/cfn-nag)",
-      "verifier_types": ["manual-review"],
-      "inputs": ["IaC templates"],
-      "applicability": "Placeholder until Checkov/cfn-nag adapter lands for ≥10 accepted infra ADRs",
-      "blind_spots": ["No automated IaC evidence yet"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "title": "Infrastructure policy (Checkov)",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["Checkov SARIF", "IaC templates"],
+      "applicability": "Terraform/CloudFormation/Kubernetes/Dockerfile policy checks via pinned Checkov",
+      "blind_spots": ["Runtime drift outside declared IaC", "Account-level console toggles"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     }
   ]
 }

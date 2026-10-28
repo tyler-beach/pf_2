@@ -27,10 +27,22 @@ func (r RunnerRegistry) Run(ctx context.Context, root string, task Task) (analyz
 	return runner.Run(ctx, root, task)
 }
 
-// DefaultRunnerRegistry registers OpenGrep and the native JSON-fact producer.
+// DefaultRunnerRegistry registers OpenGrep, Checkov, and the native JSON-fact producer.
 func DefaultRunnerRegistry(opengrepBinary string) RunnerRegistry {
+	return DefaultRunnerRegistryWithBinaries(opengrepBinary, "checkov")
+}
+
+// DefaultRunnerRegistryWithBinaries registers analyzers with explicit CLI paths.
+func DefaultRunnerRegistryWithBinaries(opengrepBinary, checkovBinary string) RunnerRegistry {
+	if strings.TrimSpace(opengrepBinary) == "" {
+		opengrepBinary = "opengrep"
+	}
+	if strings.TrimSpace(checkovBinary) == "" {
+		checkovBinary = "checkov"
+	}
 	return RunnerRegistry{Runners: map[string]TaskRunner{
 		"opengrep":  OpenGrepTaskRunner{Binary: opengrepBinary},
+		"checkov":   CheckovTaskRunner{Binary: checkovBinary},
 		"json-fact": JSONFactTaskRunner{},
 	}}
 }

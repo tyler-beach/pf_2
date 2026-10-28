@@ -21,6 +21,7 @@ PACKS = [
     RULES / "owasp-ssrf.yml",
     RULES / "owasp-secrets.yml",
     RULES / "aws-sdk-misuse.yml",
+    RULES / "owasp-misc-promote.yml",
 ]
 
 

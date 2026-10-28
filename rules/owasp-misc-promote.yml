@@ -1,0 +1,70 @@
+rules:
+  - id: pathfinder.owasp-debug-mode-python
+    message: "Debug/development mode enabled in application configuration"
+    languages: [python]
+    severity: WARNING
+    pattern-either:
+      - pattern: DEBUG = True
+      - pattern: debug = True
+
+  - id: pathfinder.owasp-debug-mode-javascript
+    message: "Debug mode enabled in JavaScript/TypeScript configuration"
+    languages: [javascript, typescript]
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern: "{..., debug: true, ...}"
+          - pattern: "{..., DEBUG: true, ...}"
+
+  - id: pathfinder.owasp-git-dependency-npm
+    message: "Direct Git dependency URL in package manifest"
+    languages: [json]
+    severity: ERROR
+    pattern-regex: '"(git\+|github:|gitlab:|bitbucket:|git://|https?://[^"]+\.git[#@])'
+
+  - id: pathfinder.owasp-git-dependency-gomod
+    message: "Unpinned or replace-based Git module dependency"
+    languages: [generic]
+    severity: ERROR
+    pattern-regex: '(?m)^(replace\s+\S+|require\s+\S+)\s+.*(github\.com|gitlab\.com)/[^\s]+\s+v0\.0\.0-[0-9a-f]+'
+
+  - id: pathfinder.owasp-log-secret-python
+    message: "Potential secret or credential written to logs"
+    languages: [python]
+    severity: WARNING
+    pattern-either:
+      - pattern: logging.$METHOD($MSG, password)
+      - pattern: logging.$METHOD($MSG, secret)
+      - pattern: logging.$METHOD($MSG, token)
+      - pattern: logging.$METHOD(password)
+      - pattern: logger.$METHOD(password)
+      - pattern: logger.$METHOD(secret)
+      - pattern: print(password)
+      - pattern: print(secret)
+
+  - id: pathfinder.owasp-log-secret-javascript
+    message: "Potential secret written to logs"
+    languages: [javascript, typescript]
+    severity: WARNING
+    pattern-either:
+      - pattern: console.log(password)
+      - pattern: console.log(secret)
+      - pattern: console.log(token)
+      - pattern: console.log(..., password, ...)
+      - pattern: console.log(..., secret, ...)
+      - pattern: logger.info(password)
+      - pattern: logger.debug(secret)
+
+  - id: pathfinder.aws-iam-create-access-key
+    message: "Creating long-term IAM user access keys in application code"
+    languages: [python]
+    severity: ERROR
+    pattern-either:
+      - pattern: $CLIENT.create_access_key(...)
+      - pattern: $CLIENT.create_access_key_pair(...)
+
+  - id: pathfinder.aws-cloudtrail-stop-logging
+    message: "Stopping CloudTrail logging from application code"
+    languages: [python]
+    severity: ERROR
+    pattern: $CLIENT.stop_logging(...)

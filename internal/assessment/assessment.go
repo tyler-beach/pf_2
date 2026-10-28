@@ -93,6 +93,11 @@ type AssessmentOptions struct {
 	// EvidenceBundles is the vendor-neutral envelope. When empty, AssessWithOptions
 	// derives bundles from AnalyzerResults so evaluators can consume one contract.
 	EvidenceBundles []evidence.Bundle
+	// IssueSurface marks GitHub-issue / sandbox assessments. Manual-review
+	// obligations that cannot be decided automatically are NOT_APPLICABLE here
+	// (instead of REVIEW_REQUIRED) so they do not force an indeterminate verdict.
+	// Full repository CI keeps IssueSurface=false and preserves REVIEW_REQUIRED.
+	IssueSurface bool
 }
 
 // CorpusCoverage reports interpretation/binding/evidence progress beyond the
@@ -548,13 +553,21 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 				if options.EvidenceMode == EvidenceModeSubmission && len(options.AnalyzerResults) == 0 && len(options.EvidenceBundles) == 0 {
 					rr.Status = "NOT_APPLICABLE"
 					rr.Reason = "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+				} else if options.IssueSurface && !analyzerEvidencePresent(r.Verifier.Analyzer, options.AnalyzerResults, options.EvidenceBundles) {
+					rr.Status = "NOT_APPLICABLE"
+					rr.Reason = fmt.Sprintf("Issue/sandbox assessment did not collect evidence from analyzer %q for this obligation.", r.Verifier.Analyzer)
 				} else {
 					assessAnalyzerRule(&rr, r.Verifier, options.AnalyzerResults, options.EvidenceBundles)
 				}
 			case "manual-review":
 				out.CorpusCoverage.BoundRequirements++
-				rr.Status = "REVIEW_REQUIRED"
-				rr.Reason = "This requirement needs human judgment and cannot be established by an automatic verifier."
+				if options.IssueSurface {
+					rr.Status = "NOT_APPLICABLE"
+					rr.Reason = "Issue/sandbox assessment cannot satisfy manual-review obligations; they remain catalogued for repository review workflows and do not affect this automated verdict."
+				} else {
+					rr.Status = "REVIEW_REQUIRED"
+					rr.Reason = "This requirement needs human judgment and cannot be established by an automatic verifier."
+				}
 			default:
 				rr.Status = "UNSUPPORTED"
 				rr.Reason = "No approved verifier is registered for type: " + r.Verifier.Type
@@ -940,6 +953,27 @@ func bundleMatchesAnalyzer(bundle evidence.Bundle, want string) bool {
 	for _, rec := range bundle.Records {
 		name := strings.ToLower(strings.TrimSpace(rec.Producer.Analyzer))
 		if name == want || strings.Contains(name, want) {
+			return true
+		}
+	}
+	return false
+}
+
+func analyzerEvidencePresent(analyzerName string, scans []analyzer.ScanResult, bundles []evidence.Bundle) bool {
+	want := strings.ToLower(strings.TrimSpace(analyzerName))
+	if want == "" {
+		return false
+	}
+	for _, scan := range scans {
+		for _, info := range scan.Analyzers {
+			name := strings.ToLower(strings.TrimSpace(info.Name))
+			if name == want || strings.Contains(name, want) {
+				return true
+			}
+		}
+	}
+	for _, bundle := range bundles {
+		if bundleMatchesAnalyzer(bundle, want) {
 			return true
 		}
 	}

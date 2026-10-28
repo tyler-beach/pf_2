@@ -187,6 +187,52 @@ jobs:
 
           jq -e '.status == "COMPLETE" and (.findings | length) == 0' "$RUNNER_TEMP/opengrep-clean.json"
 
+      - name: Prove Checkov adapter on IaC fixtures
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
+          checkov_bin="$(command -v checkov)"
+          checkov_sha="$(sha256sum "$checkov_bin" | awk '{print $1}')"
+          "$checkov_bin" --version | tee "$RUNNER_TEMP/checkov-version.txt"
+          grep -F "3.2.484" "$RUNNER_TEMP/checkov-version.txt"
+
+          fixture_root="$RUNNER_TEMP/pathfinder-checkov-fixtures"
+          mkdir -p "$fixture_root/vulnerable/rules" "$fixture_root/clean/rules"
+          cp testdata/analyzer-fixtures/vulnerable/iac/* "$fixture_root/vulnerable/"
+          cp testdata/analyzer-fixtures/clean/iac/* "$fixture_root/clean/"
+          cp rules/checkov.yml "$fixture_root/vulnerable/rules/checkov.yml"
+          cp rules/checkov.yml "$fixture_root/clean/rules/checkov.yml"
+
+          go run ./cmd/adrctl scan-checkov \
+            --root "$fixture_root/vulnerable" \
+            --config rules/checkov.yml \
+            --binary "$checkov_bin" \
+            --binary-sha256 "$checkov_sha" \
+            --version 3.2.484 \
+            --json-out "$RUNNER_TEMP/checkov-vulnerable.json" \
+            --sarif-out "$RUNNER_TEMP/checkov-vulnerable.sarif"
+
+          go run ./cmd/adrctl scan-checkov \
+            --root "$fixture_root/clean" \
+            --config rules/checkov.yml \
+            --binary "$checkov_bin" \
+            --binary-sha256 "$checkov_sha" \
+            --version 3.2.484 \
+            --json-out "$RUNNER_TEMP/checkov-clean.json" \
+            --sarif-out "$RUNNER_TEMP/checkov-clean.sarif"
+
+          jq -e '
+            .status == "COMPLETE"
+            and ([.findings[].rule_id] | index("CKV_AWS_24") != null)
+            and ([.findings[].rule_id] | index("CKV_AWS_25") != null)
+          ' "$RUNNER_TEMP/checkov-vulnerable.json"
+
+          jq -e '
+            .status == "COMPLETE"
+            and ([.findings[].rule_id] | index("CKV_AWS_24") == null)
+            and ([.findings[].rule_id] | index("CKV_AWS_25") == null)
+          ' "$RUNNER_TEMP/checkov-clean.json"
+
       - name: Verify deterministic analyzer plan and cache invalidation
         run: |
           set -euo pipefail

@@ -89,7 +89,7 @@ jobs:
           echo "requirements=${requirements}" >> "$GITHUB_STEP_SUMMARY"
 
           if [[ "$snippet_count" -gt 0 && "$requirements" == "testdata/corpus/requirements.json" ]]; then
-            # Materialize fences and run OpenGrep — never execute submitted code.
+            # Materialize fences and run OpenGrep + Checkov — never execute submitted code.
             install_dir="$RUNNER_TEMP/opengrep"
             mkdir -p "$install_dir"
             curl --fail --location --silent --show-error \
@@ -98,8 +98,14 @@ jobs:
             echo "35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c  $install_dir/opengrep" | sha256sum --check
             chmod 0755 "$install_dir/opengrep"
 
+            python3 -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
+            checkov_bin="$(command -v checkov)"
+            checkov_sha="$(sha256sum "$checkov_bin" | awk '{print $1}')"
+
             mkdir -p "$sandbox/rules" analyzer-evidence
             cp rules/pathfinder-security.yml "$sandbox/rules/pathfinder-security.yml"
+            cp rules/checkov.yml "$sandbox/rules/checkov.yml"
+
             go run ./cmd/adrctl scan-opengrep \
               --root "$sandbox" \
               --config rules/pathfinder-security.yml \
@@ -109,19 +115,30 @@ jobs:
               --json-out analyzer-evidence/opengrep.json \
               --sarif-out analyzer-evidence/opengrep.sarif
 
+            go run ./cmd/adrctl scan-checkov \
+              --root "$sandbox" \
+              --config rules/checkov.yml \
+              --binary "$checkov_bin" \
+              --binary-sha256 "$checkov_sha" \
+              --version 3.2.484 \
+              --json-out analyzer-evidence/checkov.json \
+              --sarif-out analyzer-evidence/checkov.sarif
+
             go run ./cmd/adrctl assess-repo \
               --root "$sandbox" \
               --requirements "$requirements" \
-              --analyzer-evidence analyzer-evidence/opengrep.json \
-              --analyzer-sarif analyzer-evidence/opengrep.sarif \
+              --issue-surface \
+              --analyzer-evidence analyzer-evidence/opengrep.json,analyzer-evidence/checkov.json \
+              --analyzer-sarif analyzer-evidence/opengrep.sarif,analyzer-evidence/checkov.sarif \
               --report report.md \
               --json-out assessment.json \
               --sarif-out results.sarif
           else
-            # Prose-only or smoke catalog: snippet/native assess (no OpenGrep on body).
+            # Prose-only or smoke catalog: snippet/native assess (no scanners on body).
             go run ./cmd/adrctl assess \
               --input issue.md \
               --requirements "$requirements" \
+              --issue-surface \
               --report report.md \
               --json-out assessment.json \
               --sarif-out results.sarif
@@ -280,13 +297,16 @@ jobs:
         if: always() && success() && contains(github.event.issue.title, '[manual-review-smoke]')
         run: |
           set -euo pipefail
+          # Issue/sandbox surface: manual-review is NOT_APPLICABLE so it does not
+          # force an indeterminate verdict; live catalog requirements still PASS.
           jq -e '
-            .verdict == "INDETERMINATE"
+            .verdict == "PASS"
             and .runtime_llm_calls == 0
-            and .counts["REVIEW_REQUIRED"] == 1
+            and .counts["NOT_APPLICABLE"] >= 1
+            and (.counts["REVIEW_REQUIRED"] // 0) == 0
             and any(.requirements[];
               .requirement_id == "REQ-E2E-MANUAL-REVIEW-01"
-              and .status == "REVIEW_REQUIRED")
+              and .status == "NOT_APPLICABLE")
             and any(.requirements[];
               .requirement_id == "REQ-001-01" and .status == "PASS")
             and any(.requirements[];

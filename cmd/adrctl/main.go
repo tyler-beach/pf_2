@@ -49,6 +49,8 @@ func main() {
 		err = runLowConfidenceChecklist(os.Args[2:])
 	case "scan-opengrep":
 		err = runOpenGrepScan(os.Args[2:])
+	case "scan-checkov":
+		err = runCheckovScan(os.Args[2:])
 	case "plan-repo":
 		err = runPlanRepo(os.Args[2:])
 	case "verify-plan":
@@ -82,7 +84,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|assist-obligations|proposal-to-review|accept-assist-proposal|low-confidence-checklist|scan-opengrep|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|workshop-emit|specification-check|version> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: adrctl <validate|assess|assess-repo|ingest-adrs|extract-obligations|assist-obligations|proposal-to-review|accept-assist-proposal|low-confidence-checklist|scan-opengrep|scan-checkov|plan-repo|verify-plan|execute-plan|assert-issue-verdict|review-init|record-obligation-review|validate-obligation-reviews|assess-obligations|workshop-emit|specification-check|version> [flags]")
 }
 
 func runValidate(args []string) error {
@@ -111,8 +113,9 @@ func runAssess(args []string, repoMode bool) error {
 	reportPath := fs.String("report", "report.md", "Markdown report output")
 	jsonPath := fs.String("json-out", "assessment.json", "JSON evidence output")
 	sarifPath := fs.String("sarif-out", "results.sarif", "SARIF output")
-	analyzerEvidencePath := fs.String("analyzer-evidence", "", "normalized analyzer scan evidence JSON (repository assessment only)")
-	analyzerSARIFPath := fs.String("analyzer-sarif", "", "raw SARIF paired with normalized analyzer evidence")
+	analyzerEvidencePath := fs.String("analyzer-evidence", "", "comma-separated normalized analyzer evidence JSON paths (repository assessment only)")
+	analyzerSARIFPath := fs.String("analyzer-sarif", "", "comma-separated raw SARIF paths paired 1:1 with --analyzer-evidence")
+	issueSurface := fs.Bool("issue-surface", false, "GitHub-issue/sandbox semantics: manual-review and missing analyzer evidence become NOT_APPLICABLE")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -140,35 +143,15 @@ func runAssess(args []string, repoMode bool) error {
 	if repoMode {
 		mode = assessment.EvidenceModeRepository
 	}
-	var analyzerResults []analyzer.ScanResult
-	if *analyzerEvidencePath != "" {
-		if !repoMode {
-			return fmt.Errorf("--analyzer-evidence is supported only for repository assessments")
-		}
-		if *analyzerSARIFPath == "" {
-			return fmt.Errorf("--analyzer-sarif is required when --analyzer-evidence is provided")
-		}
-		data, readErr := os.ReadFile(*analyzerEvidencePath)
-		if readErr != nil {
-			return fmt.Errorf("read analyzer evidence: %w", readErr)
-		}
-		var evidence analyzer.ScanResult
-		if decodeErr := json.Unmarshal(data, &evidence); decodeErr != nil {
-			return fmt.Errorf("decode analyzer evidence: %w", decodeErr)
-		}
-		rawSARIF, readErr := os.ReadFile(*analyzerSARIFPath)
-		if readErr != nil {
-			return fmt.Errorf("read raw analyzer SARIF: %w", readErr)
-		}
-		verified, verifyErr := analyzer.VerifyScanEvidence(*root, evidence, rawSARIF)
-		if verifyErr != nil {
-			return fmt.Errorf("verify analyzer evidence: %w", verifyErr)
-		}
-		analyzerResults = append(analyzerResults, verified)
-	} else if *analyzerSARIFPath != "" {
-		return fmt.Errorf("--analyzer-sarif requires --analyzer-evidence")
+	analyzerResults, err := loadVerifiedAnalyzerEvidence(*root, repoMode, *analyzerEvidencePath, *analyzerSARIFPath)
+	if err != nil {
+		return err
 	}
-	result := assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{EvidenceMode: mode, AnalyzerResults: analyzerResults})
+	result := assessment.AssessWithOptions(c, files, assessment.AssessmentOptions{
+		EvidenceMode:    mode,
+		AnalyzerResults: analyzerResults,
+		IssueSurface:    *issueSurface,
+	})
 	if err := writeFile(*reportPath, []byte(assessment.MarkdownReport(result))); err != nil {
 		return err
 	}
@@ -191,16 +174,72 @@ func runAssess(args []string, repoMode bool) error {
 	return nil
 }
 
+func loadVerifiedAnalyzerEvidence(root string, repoMode bool, evidenceCSV, sarifCSV string) ([]analyzer.ScanResult, error) {
+	evidencePaths := splitCSV(evidenceCSV)
+	sarifPaths := splitCSV(sarifCSV)
+	if len(evidencePaths) == 0 && len(sarifPaths) == 0 {
+		return nil, nil
+	}
+	if !repoMode {
+		return nil, fmt.Errorf("--analyzer-evidence is supported only for repository assessments")
+	}
+	if len(evidencePaths) > 0 && len(sarifPaths) == 0 {
+		return nil, fmt.Errorf("--analyzer-sarif is required when --analyzer-evidence is provided")
+	}
+	if len(sarifPaths) > 0 && len(evidencePaths) == 0 {
+		return nil, fmt.Errorf("--analyzer-sarif requires --analyzer-evidence")
+	}
+	if len(evidencePaths) != len(sarifPaths) {
+		return nil, fmt.Errorf("--analyzer-evidence and --analyzer-sarif must list the same number of paths (got %d evidence, %d sarif)", len(evidencePaths), len(sarifPaths))
+	}
+	out := make([]analyzer.ScanResult, 0, len(evidencePaths))
+	for i := range evidencePaths {
+		data, err := os.ReadFile(evidencePaths[i])
+		if err != nil {
+			return nil, fmt.Errorf("read analyzer evidence %q: %w", evidencePaths[i], err)
+		}
+		var evidence analyzer.ScanResult
+		if err := json.Unmarshal(data, &evidence); err != nil {
+			return nil, fmt.Errorf("decode analyzer evidence %q: %w", evidencePaths[i], err)
+		}
+		rawSARIF, err := os.ReadFile(sarifPaths[i])
+		if err != nil {
+			return nil, fmt.Errorf("read raw analyzer SARIF %q: %w", sarifPaths[i], err)
+		}
+		verified, err := analyzer.VerifyScanEvidence(root, evidence, rawSARIF)
+		if err != nil {
+			return nil, fmt.Errorf("verify analyzer evidence %q: %w", evidencePaths[i], err)
+		}
+		out = append(out, verified)
+	}
+	return out, nil
+}
+
+func splitCSV(value string) []string {
+	var out []string
+	for _, part := range strings.Split(value, ",") {
+		part = strings.TrimSpace(part)
+		if part != "" {
+			out = append(out, part)
+		}
+	}
+	return out
+}
+
 // resolveOpenGrepBinary resolves the exact executable file and records its digest.
 // If an expected digest is supplied, a mismatch fails before the analyzer starts.
 func resolveOpenGrepBinary(binary, expectedSHA256 string) (string, string, error) {
+	return resolvePinnedBinary(binary, expectedSHA256, "OpenGrep")
+}
+
+func resolvePinnedBinary(binary, expectedSHA256, label string) (string, string, error) {
 	resolved, err := analyzer.ResolveExecutable(binary)
 	if err != nil {
 		return "", "", err
 	}
 	actual, err := analyzer.HashFile(resolved)
 	if err != nil {
-		return "", "", fmt.Errorf("hash OpenGrep executable: %w", err)
+		return "", "", fmt.Errorf("hash %s executable: %w", label, err)
 	}
 	expected := strings.ToLower(strings.TrimSpace(expectedSHA256))
 	if expected != "" {
@@ -211,7 +250,7 @@ func resolveOpenGrepBinary(binary, expectedSHA256 string) (string, string, error
 			return "", "", fmt.Errorf("expected binary SHA-256 is invalid: %w", err)
 		}
 		if actual != expected {
-			return "", "", fmt.Errorf("OpenGrep binary SHA-256 mismatch: expected %s but found %s", expected, actual)
+			return "", "", fmt.Errorf("%s binary SHA-256 mismatch: expected %s but found %s", label, expected, actual)
 		}
 	}
 	return resolved, actual, nil
@@ -349,6 +388,133 @@ func runOpenGrepScan(args []string) error {
 			run.Status, *manifestPath, *jsonPath, *sarifPath, reason)
 	}
 	fmt.Printf("OpenGrep %s: %d finding(s); cache hit: %t; manifest: %s; evidence: %s; SARIF: %s; configuration SHA-256: %s; rule-set SHA-256: %s; input SHA-256: %s\n",
+		*version, len(result.Findings), task.CacheHit, *manifestPath, *jsonPath, *sarifPath,
+		result.ConfigurationSHA256, result.RuleSetSHA256, result.InputSHA256)
+	return nil
+}
+
+func runCheckovScan(args []string) error {
+	fs := flag.NewFlagSet("scan-checkov", flag.ContinueOnError)
+	root := fs.String("root", ".", "repository root to scan")
+	config := fs.String("config", "rules/checkov.yml", "repository-relative Checkov configuration file")
+	binary := fs.String("binary", "checkov", "Checkov executable path")
+	binarySHA256 := fs.String("binary-sha256", "", "expected Checkov executable SHA-256 (computed and recorded if omitted)")
+	version := fs.String("version", "3.2.484", "expected pinned Checkov version")
+	timeout := fs.Duration("timeout", 5*time.Minute, "scan timeout (for example 90s or 5m)")
+	jsonPath := fs.String("json-out", "analyzer-evidence/checkov.json", "normalized analyzer evidence output")
+	sarifPath := fs.String("sarif-out", "analyzer-evidence/checkov.sarif", "raw SARIF output for audit and troubleshooting")
+	manifestPath := fs.String("manifest-out", "analyzer-evidence/checkov-run-manifest.json", "deterministic run manifest output")
+	cacheDir := fs.String("cache-dir", defaultAnalyzerCacheDirectory(), "optional persistent cache directory (empty disables caching)")
+	maxConcurrency := fs.Int("max-concurrency", 1, "maximum concurrent analyzer tasks")
+	maxAttempts := fs.Int("max-attempts", 2, "attempts per task, including the first")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("scan-checkov accepts no positional arguments")
+	}
+	if *timeout <= 0 {
+		return fmt.Errorf("--timeout must be positive")
+	}
+	if *maxConcurrency < 1 || *maxConcurrency > plan.MaxConcurrency {
+		return fmt.Errorf("--max-concurrency must be between 1 and %d", plan.MaxConcurrency)
+	}
+	if *maxAttempts < 1 || *maxAttempts > plan.MaxRetryCount+1 {
+		return fmt.Errorf("--max-attempts must be between 1 and %d", plan.MaxRetryCount+1)
+	}
+
+	rootAbs, err := filepath.Abs(*root)
+	if err != nil {
+		return fmt.Errorf("resolve repository root: %w", err)
+	}
+	rootAbs, err = filepath.EvalSymlinks(rootAbs)
+	if err != nil {
+		return fmt.Errorf("resolve repository root symlinks: %w", err)
+	}
+	binaryPath, binaryHash, err := resolvePinnedBinary(*binary, *binarySHA256, "Checkov")
+	if err != nil {
+		return err
+	}
+	_, configRel, err := resolveRepositoryConfig(rootAbs, *config)
+	if err != nil {
+		return err
+	}
+	maxRetries := *maxAttempts - 1
+	spec := plan.AnalyzerSpec{
+		Name: "checkov", Version: *version, BinarySHA256: binaryHash, RuleSetSHA256: "",
+		ConfigurationPath: configRel, ScopePrefixes: []string{"."},
+		TimeoutMillis: timeout.Milliseconds(), MaxRetries: maxRetries,
+		MaxOutputBytes: 64 << 20, RetryBackoffMillis: 500, MaxRetryBackoffMillis: 10_000,
+		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
+	}
+	manifest, err := plan.BuildManifest(rootAbs, []plan.AnalyzerSpec{spec}, *maxConcurrency)
+	if err != nil {
+		return fmt.Errorf("build deterministic analyzer plan: %w", err)
+	}
+	var cache plan.ResultCache
+	if strings.TrimSpace(*cacheDir) != "" {
+		fileCache, cacheErr := plan.NewFileCache(*cacheDir)
+		if cacheErr != nil {
+			return fmt.Errorf("open analyzer cache: %w", cacheErr)
+		}
+		cache = fileCache
+	}
+	run, err := plan.ExecuteManifest(context.Background(), rootAbs, manifest, plan.CheckovTaskRunner{Binary: binaryPath}, cache)
+	if err != nil && run.Status == "" {
+		return fmt.Errorf("run deterministic analyzer plan: %w", err)
+	}
+	if len(run.Tasks) != 1 {
+		return fmt.Errorf("Checkov scan plan returned %d tasks; expected exactly one", len(run.Tasks))
+	}
+	task := run.Tasks[0]
+	var result analyzer.ScanResult
+	if task.Evidence != nil {
+		result = *task.Evidence
+		result.RawSARIF = append([]byte(nil), task.RawSARIF...)
+	}
+	compat := scanRunManifest{
+		SchemaVersion:  "1",
+		ManifestID:     run.PlanManifestSHA256,
+		SnapshotSHA256: run.InputSHA256,
+		PlanSHA256:     run.PlanManifestSHA256,
+		Status:         run.Status,
+		Tasks: []scanRunTask{{
+			TaskID: task.TaskID, CacheKey: task.CacheKey, Analyzer: task.Analyzer,
+			Status: task.Status, Attempts: task.Attempts, Cached: task.CacheHit,
+			Result: result, Error: task.Error,
+		}},
+	}
+	if err != nil {
+		compat.Errors = []string{err.Error()}
+	}
+	manifestBytes, encodeErr := json.MarshalIndent(compat, "", "  ")
+	if encodeErr != nil {
+		return fmt.Errorf("encode run manifest: %w", encodeErr)
+	}
+	if writeErr := writeFile(*manifestPath, append(manifestBytes, '\n')); writeErr != nil {
+		return writeErr
+	}
+	data, encodeErr := analyzer.WriteJSON(result)
+	if encodeErr != nil {
+		return encodeErr
+	}
+	if err := writeFile(*jsonPath, data); err != nil {
+		return err
+	}
+	if len(result.RawSARIF) > 0 {
+		if err := writeFile(*sarifPath, result.RawSARIF); err != nil {
+			return err
+		}
+	}
+	if run.Status != plan.RunStatusComplete || task.Status != plan.TaskStatusComplete {
+		reason := task.Error
+		if reason == "" {
+			reason = "one or more planned scan tasks did not complete"
+		}
+		return fmt.Errorf("Checkov assessment %s; manifest: %s; normalized evidence: %s; raw SARIF: %s: %s",
+			run.Status, *manifestPath, *jsonPath, *sarifPath, reason)
+	}
+	fmt.Printf("Checkov %s: %d finding(s); cache hit: %t; manifest: %s; evidence: %s; SARIF: %s; configuration SHA-256: %s; rule-set SHA-256: %s; input SHA-256: %s\n",
 		*version, len(result.Findings), task.CacheHit, *manifestPath, *jsonPath, *sarifPath,
 		result.ConfigurationSHA256, result.RuleSetSHA256, result.InputSHA256)
 	return nil
@@ -1556,6 +1722,7 @@ func runExecutePlanWithRunner(args []string, injected plan.TaskRunner) error {
 	root := fs.String("root", ".", "repository root")
 	manifestPath := fs.String("manifest", "analyzer-evidence/plan.json", "source-bound plan manifest")
 	binary := fs.String("binary", "opengrep", "OpenGrep executable path")
+	checkovBinary := fs.String("checkov-binary", "checkov", "Checkov executable path")
 	cacheDirDefault, cacheErr := os.UserCacheDir()
 	if cacheErr != nil {
 		cacheDirDefault = os.TempDir()
@@ -1582,7 +1749,7 @@ func runExecutePlanWithRunner(args []string, injected plan.TaskRunner) error {
 	}
 	runner := injected
 	if runner == nil {
-		runner = plan.DefaultRunnerRegistry(*binary)
+		runner = plan.DefaultRunnerRegistryWithBinaries(*binary, *checkovBinary)
 	}
 	result, runErr := plan.ExecuteManifest(context.Background(), *root, manifest, runner, cache)
 	for i := range result.Tasks {

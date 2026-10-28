@@ -361,11 +361,11 @@ func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) 
 	extensions := map[string]bool{
 		".go": true, ".py": true, ".js": true, ".jsx": true, ".mjs": true, ".cjs": true, ".ts": true, ".tsx": true,
 		".java": true, ".cs": true, ".php": true, ".rb": true, ".json": true, ".yaml": true,
-		".yml": true, ".tf": true, ".hcl": true, ".sh": true, ".bash": true, ".zsh": true, ".fish": true,
+		".yml": true, ".tf": true, ".tfvars": true, ".hcl": true, ".sh": true, ".bash": true, ".zsh": true, ".fish": true,
 		".kt": true, ".kts": true, ".scala": true, ".rs": true, ".c": true, ".h": true, ".cc": true,
 		".cpp": true, ".hpp": true, ".dart": true, ".swift": true, ".lua": true, ".vb": true,
 		".vbs": true, ".ml": true, ".mli": true, ".vue": true, ".html": true, ".xml": true,
-		".sql": true, ".ex": true, ".exs": true,
+		".sql": true, ".ex": true, ".exs": true, ".template": true, ".mod": true, ".toml": true,
 	}
 	skipDir := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".opengrep-cache": true, "analyzer-evidence": true, ".arch-go": true}
 	var paths []string
@@ -380,7 +380,16 @@ func discoverScannedPathsExcluding(root, excludedPath string) ([]string, error) 
 		}
 		if entry.Type()&os.ModeSymlink != 0 { return nil }
 		if !entry.Type().IsRegular() && entry.Type() != 0 { return nil }
-		if !extensions[strings.ToLower(filepath.Ext(entry.Name()))] { return nil }
+		name := entry.Name()
+		ext := strings.ToLower(filepath.Ext(name))
+		base := strings.ToLower(name)
+		eligible := extensions[ext] ||
+			base == "dockerfile" ||
+			strings.HasPrefix(base, "dockerfile.") ||
+			base == "containerfile"
+		if !eligible {
+			return nil
+		}
 		rel, err := filepath.Rel(root, current)
 		if err != nil { return err }
 		rel = filepath.ToSlash(rel)

@@ -50,6 +50,17 @@ LANG_EXT = {
     "lua": ".lua",
     "dart": ".dart",
     "json": ".json",
+    "yaml": ".yml",
+    "yml": ".yml",
+    "hcl": ".tf",
+    "terraform": ".tf",
+    "tf": ".tf",
+    "cloudformation": ".yaml",
+    "cfn": ".yaml",
+    "dockerfile": ".Dockerfile",
+    "docker": ".Dockerfile",
+    "gomod": ".mod",
+    "go.mod": ".mod",
 }
 
 
@@ -78,11 +89,17 @@ def extract(markdown: str, out_dir: Path) -> list[Path]:
             if ext is None:
                 continue
         idx += 1
-        path = out_dir / f"snippet_{idx:02d}{ext}"
         # Cap individual snippet size (256 KiB).
         data = body.encode("utf-8")
         if len(data) > 256 * 1024:
             data = data[: 256 * 1024]
+        # Dockerfile and go.mod need canonical basenames for IaC/module scanners.
+        if lang in {"dockerfile", "docker"}:
+            path = out_dir / (f"Dockerfile" if idx == 1 else f"Dockerfile.snippet_{idx:02d}")
+        elif lang in {"gomod", "go.mod"}:
+            path = out_dir / (f"go.mod" if idx == 1 else f"snippet_{idx:02d}.mod")
+        else:
+            path = out_dir / f"snippet_{idx:02d}{ext}"
         path.write_bytes(data)
         written.append(path)
     # Marker file so empty sandboxes are detectable.

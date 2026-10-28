@@ -1,0 +1,14 @@
+# Pathfinder Checkov configuration.
+# Frameworks exercised for the OWASP/AWS corpus IaC bindings.
+# Keep this file stable: its SHA-256 is recorded in scan evidence provenance.
+branch: main
+compact: true
+download-external-modules: false
+evaluate-variables: true
+framework:
+  - terraform
+  - cloudformation
+  - kubernetes
+  - dockerfile
+quiet: true
+soft-fail: false

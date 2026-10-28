@@ -72,19 +72,31 @@ func verifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte, expec
 		return fail("analyzer metadata does not match raw SARIF runs")
 	}
 	for i := range parsed.Analyzers {
-		if !strings.EqualFold(parsed.Analyzers[i].Name, envelope.Analyzers[i].Name) {
+		rawName := strings.ToLower(strings.TrimSpace(parsed.Analyzers[i].Name))
+		envName := strings.ToLower(strings.TrimSpace(envelope.Analyzers[i].Name))
+		if !analyzerNamesCompatible(rawName, envName) {
 			return fail(fmt.Sprintf("analyzer metadata mismatch: raw SARIF reports %q but normalized metadata reports %q", parsed.Analyzers[i].Name, envelope.Analyzers[i].Name))
 		}
-		if !strings.Contains(strings.ToLower(parsed.Analyzers[i].Name), "opengrep") {
-			return fail(fmt.Sprintf("unsupported analyzer in OpenGrep evidence: %q", parsed.Analyzers[i].Name))
+		family := supportedAnalyzerFamily(rawName)
+		if family == "" {
+			family = supportedAnalyzerFamily(envName)
+		}
+		if family == "" {
+			return fail(fmt.Sprintf("unsupported analyzer in verified evidence: %q", parsed.Analyzers[i].Name))
 		}
 		if strings.TrimSpace(envelope.Analyzers[i].Version) == "" {
 			return fail(fmt.Sprintf("verified version is missing for analyzer %q", parsed.Analyzers[i].Name))
 		}
+		parsed.Analyzers[i].Name = family
 		parsed.Analyzers[i].Version = envelope.Analyzers[i].Version
 		for fi := range parsed.Findings {
-			if strings.EqualFold(parsed.Findings[fi].Analyzer, parsed.Analyzers[i].Name) {
+			findingAnalyzer := strings.ToLower(strings.TrimSpace(parsed.Findings[fi].Analyzer))
+			if analyzerNamesCompatible(findingAnalyzer, rawName) || analyzerNamesCompatible(findingAnalyzer, envName) || findingAnalyzer == "" {
+				parsed.Findings[fi].Analyzer = family
 				parsed.Findings[fi].AnalyzerVersion = envelope.Analyzers[i].Version
+			}
+			if family == "checkov" {
+				parsed.Findings[fi].RuleID = normalizeCheckovRuleID(parsed.Findings[fi].RuleID)
 			}
 		}
 	}
@@ -112,7 +124,9 @@ func verifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte, expec
 	var paths []string
 	if expectedPaths != nil {
 		paths, err = normalizeScanPaths(rootAbs, expectedPaths, envelope.ConfigurationPath)
-		if err != nil { return fail(fmt.Sprintf("validate planned scan inventory: %v", err)) }
+		if err != nil {
+			return fail(fmt.Sprintf("validate planned scan inventory: %v", err))
+		}
 		if len(envelope.ScannedPaths) != len(paths) {
 			return fail("scanned path inventory does not match planned scope")
 		}
@@ -134,7 +148,9 @@ func verifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte, expec
 	parsed.InputSHA256 = inputHash
 	parsed.ScannedPaths = paths
 	inventory := make(map[string]bool, len(paths))
-	for _, p := range paths { inventory[filepath.ToSlash(p)] = true }
+	for _, p := range paths {
+		inventory[filepath.ToSlash(p)] = true
+	}
 	for _, finding := range parsed.Findings {
 		if finding.Path != "" && !inventory[filepath.ToSlash(finding.Path)] {
 			return fail(fmt.Sprintf("SARIF finding path %q is absent from the verified source inventory", finding.Path))
@@ -148,4 +164,29 @@ func verifyScanEvidence(root string, envelope ScanResult, rawSARIF []byte, expec
 		return fail("raw SARIF changed while verifying analyzer evidence")
 	}
 	return parsed, nil
+}
+
+func supportedAnalyzerFamily(name string) string {
+	name = strings.ToLower(strings.TrimSpace(name))
+	switch {
+	case strings.Contains(name, "opengrep"):
+		return "opengrep"
+	case strings.Contains(name, "checkov"):
+		return "checkov"
+	default:
+		return ""
+	}
+}
+
+func analyzerNamesCompatible(a, b string) bool {
+	a = strings.ToLower(strings.TrimSpace(a))
+	b = strings.ToLower(strings.TrimSpace(b))
+	if a == "" || b == "" {
+		return false
+	}
+	if a == b {
+		return true
+	}
+	fa, fb := supportedAnalyzerFamily(a), supportedAnalyzerFamily(b)
+	return fa != "" && fa == fb
 }

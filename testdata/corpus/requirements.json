@@ -1340,10 +1340,26 @@
         {
           "id": "REQ-3049-01",
           "title": "A05: Debug mode configuration flag for environment 1",
-          "description": "Corpus obligation from ADR-3049: debug mode configuration flag for environment 1 (A05-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3049: debug mode configuration flag for environment 1 (A05-1). Checked via OpenGrep rules for pattern configuration.hardening.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-debug-mode-python",
+              "rules.pathfinder.owasp-debug-mode-javascript",
+              "rules.pathfinder.owasp-hardcoded-password-assign-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx"
+            ]
           }
         }
       ]
@@ -1357,10 +1373,26 @@
         {
           "id": "REQ-3050-01",
           "title": "A05: Default admin password setting for appliance 2",
-          "description": "Corpus obligation from ADR-3050: default admin password setting for appliance 2 (A05-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3050: default admin password setting for appliance 2 (A05-2). Checked via OpenGrep rules for pattern configuration.hardening.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-debug-mode-python",
+              "rules.pathfinder.owasp-debug-mode-javascript",
+              "rules.pathfinder.owasp-hardcoded-password-assign-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx"
+            ]
           }
         }
       ]
@@ -1374,10 +1406,26 @@
         {
           "id": "REQ-3051-01",
           "title": "A05: Unnecessary feature toggle for service profile 3",
-          "description": "Corpus obligation from ADR-3051: unnecessary feature toggle for service profile 3 (A05-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3051: unnecessary feature toggle for service profile 3 (A05-3). Checked via OpenGrep rules for pattern configuration.hardening.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-debug-mode-python",
+              "rules.pathfinder.owasp-debug-mode-javascript",
+              "rules.pathfinder.owasp-hardcoded-password-assign-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx"
+            ]
           }
         }
       ]
@@ -1391,10 +1439,26 @@
         {
           "id": "REQ-3052-01",
           "title": "A05: Security header required key for HTTP profile 4",
-          "description": "Corpus obligation from ADR-3052: security header required key for HTTP profile 4 (A05-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3052: security header required key for HTTP profile 4 (A05-4). Checked via OpenGrep rules for pattern configuration.hardening.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-debug-mode-python",
+              "rules.pathfinder.owasp-debug-mode-javascript",
+              "rules.pathfinder.owasp-hardcoded-password-assign-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx"
+            ]
           }
         }
       ]
@@ -1408,10 +1472,26 @@
         {
           "id": "REQ-3053-01",
           "title": "A05: Error verbosity configuration for API family 5",
-          "description": "Corpus obligation from ADR-3053: error verbosity configuration for API family 5 (A05-5). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3053: error verbosity configuration for API family 5 (A05-5). Checked via OpenGrep rules for pattern configuration.hardening.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-debug-mode-python",
+              "rules.pathfinder.owasp-debug-mode-javascript",
+              "rules.pathfinder.owasp-hardcoded-password-assign-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx"
+            ]
           }
         }
       ]
@@ -1583,10 +1663,24 @@
         {
           "id": "REQ-3061-01",
           "title": "A06: Dependency allow-list configuration for runtime 1",
-          "description": "Corpus obligation from ADR-3061: dependency allow-list configuration for runtime 1 (A06-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3061: dependency allow-list configuration for runtime 1 (A06-1). Checked via OpenGrep rules for pattern configuration.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1600,10 +1694,24 @@
         {
           "id": "REQ-3062-01",
           "title": "A06: Unpinned transitive import for module set 2",
-          "description": "Corpus obligation from ADR-3062: unpinned transitive import for module set 2 (A06-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3062: unpinned transitive import for module set 2 (A06-2). Checked via OpenGrep rules for pattern architecture.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1617,10 +1725,24 @@
         {
           "id": "REQ-3063-01",
           "title": "A06: CVE remediation SLA setting for severity 3",
-          "description": "Corpus obligation from ADR-3063: CVE remediation SLA setting for severity 3 (A06-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3063: CVE remediation SLA setting for severity 3 (A06-3). Checked via OpenGrep rules for pattern configuration.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1634,10 +1756,24 @@
         {
           "id": "REQ-3064-01",
           "title": "A06: End-of-life runtime package for service 4",
-          "description": "Corpus obligation from ADR-3064: end-of-life runtime package for service 4 (A06-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3064: end-of-life runtime package for service 4 (A06-4). Checked via OpenGrep rules for pattern security.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1651,10 +1787,24 @@
         {
           "id": "REQ-3065-01",
           "title": "A06: SBOM required key for release artifact 5",
-          "description": "Corpus obligation from ADR-3065: SBOM required key for release artifact 5 (A06-5). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3065: SBOM required key for release artifact 5 (A06-5). Checked via OpenGrep rules for pattern configuration.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1668,10 +1818,24 @@
         {
           "id": "REQ-3066-01",
           "title": "A06: Unmaintained library retention for legacy app 6",
-          "description": "Corpus obligation from ADR-3066: unmaintained library retention for legacy app 6 (A06-6). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3066: unmaintained library retention for legacy app 6 (A06-6). Checked via OpenGrep rules for pattern security.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1685,10 +1849,24 @@
         {
           "id": "REQ-3067-01",
           "title": "A06: Direct Git dependency URL for build 7",
-          "description": "Corpus obligation from ADR-3067: direct Git dependency URL for build 7 (A06-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3067: direct Git dependency URL for build 7 (A06-7). Checked via OpenGrep rules for pattern security.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -1702,10 +1880,24 @@
         {
           "id": "REQ-3068-01",
           "title": "A06: Unsigned package install for agent 8",
-          "description": "Corpus obligation from ADR-3068: unsigned package install for agent 8 (A06-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3068: unsigned package install for agent 8 (A06-8). Checked via OpenGrep rules for pattern security.supply_chain.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -2385,10 +2577,24 @@
         {
           "id": "REQ-3099-01",
           "title": "A09: Silent auth failure path for login family 3",
-          "description": "Corpus obligation from ADR-3099: silent auth failure path for login family 3 (A09-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3099: silent auth failure path for login family 3 (A09-3). Checked via OpenGrep rules for pattern security.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-log-secret-python",
+              "rules.pathfinder.owasp-log-secret-javascript",
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -2436,10 +2642,24 @@
         {
           "id": "REQ-3102-01",
           "title": "A09: PII-rich debug logging for request 6",
-          "description": "Corpus obligation from ADR-3102: PII-rich debug logging for request 6 (A09-6). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3102: PII-rich debug logging for request 6 (A09-6). Checked via OpenGrep rules for pattern security.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-log-secret-python",
+              "rules.pathfinder.owasp-log-secret-javascript",
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -2453,10 +2673,24 @@
         {
           "id": "REQ-3103-01",
           "title": "A09: Log shipping disablement for node pool 7",
-          "description": "Corpus obligation from ADR-3103: log shipping disablement for node pool 7 (A09-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3103: log shipping disablement for node pool 7 (A09-7). Checked via OpenGrep rules for pattern security.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-log-secret-python",
+              "rules.pathfinder.owasp-log-secret-javascript",
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -2470,10 +2704,24 @@
         {
           "id": "REQ-3104-01",
           "title": "A09: Clock skew ignore for audit stamp 8",
-          "description": "Corpus obligation from ADR-3104: clock skew ignore for audit stamp 8 (A09-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3104: clock skew ignore for audit stamp 8 (A09-8). Checked via OpenGrep rules for pattern security.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-log-secret-python",
+              "rules.pathfinder.owasp-log-secret-javascript",
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -2914,10 +3162,28 @@
         {
           "id": "REQ-3201-01",
           "title": "AWS iam: Wildcard IAM action star for role 1",
-          "description": "Corpus obligation from ADR-3201: wildcard IAM action star for role 1 (AWS-iam-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3201: wildcard IAM action star for role 1 (AWS-iam-1). Checked via Checkov rules for pattern architecture.aws_iam.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_40",
+              "CKV_AWS_1",
+              "CKV_AWS_49",
+              "CKV_AWS_63"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2931,10 +3197,28 @@
         {
           "id": "REQ-3202-01",
           "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
-          "description": "Corpus obligation from ADR-3202: Resource star on sensitive IAM policy for role 2 (AWS-iam-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3202: Resource star on sensitive IAM policy for role 2 (AWS-iam-2). Checked via Checkov rules for pattern architecture.aws_iam.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_40",
+              "CKV_AWS_1",
+              "CKV_AWS_49",
+              "CKV_AWS_63"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2948,10 +3232,27 @@
         {
           "id": "REQ-3203-01",
           "title": "AWS iam: IAM Access Analyzer required key for account 3",
-          "description": "Corpus obligation from ADR-3203: IAM Access Analyzer required key for account 3 (AWS-iam-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3203: IAM Access Analyzer required key for account 3 (AWS-iam-3). Checked via Checkov rules for pattern configuration.aws_iam.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_40",
+              "CKV_AWS_1",
+              "CKV_AWS_63"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2965,10 +3266,24 @@
         {
           "id": "REQ-3204-01",
           "title": "AWS iam: Inline IAM policy sprawl for role 4",
-          "description": "Corpus obligation from ADR-3204: inline IAM policy sprawl for role 4 (AWS-iam-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3204: inline IAM policy sprawl for role 4 (AWS-iam-4). Checked via OpenGrep rules for pattern security.aws_iam.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.aws-iam-create-access-key",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -3016,10 +3331,24 @@
         {
           "id": "REQ-3207-01",
           "title": "AWS iam: Long-term IAM user access key for workload 7",
-          "description": "Corpus obligation from ADR-3207: long-term IAM user access key for workload 7 (AWS-iam-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3207: long-term IAM user access key for workload 7 (AWS-iam-7). Checked via OpenGrep rules for pattern security.aws_iam.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.aws-iam-create-access-key",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -3033,10 +3362,24 @@
         {
           "id": "REQ-3208-01",
           "title": "AWS iam: Sts assume-role without external ID for partner 8",
-          "description": "Corpus obligation from ADR-3208: sts assume-role without external ID for partner 8 (AWS-iam-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3208: sts assume-role without external ID for partner 8 (AWS-iam-8). Checked via OpenGrep rules for pattern security.aws_iam.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.aws-iam-create-access-key",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts"
+            ]
           }
         }
       ]
@@ -3050,10 +3393,29 @@
         {
           "id": "REQ-3209-01",
           "title": "AWS encryption: KMS CMK required key for data class 1",
-          "description": "Corpus obligation from ADR-3209: KMS CMK required key for data class 1 (AWS-encryption-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3209: KMS CMK required key for data class 1 (AWS-encryption-1). Checked via Checkov rules for pattern configuration.aws_encryption.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_3",
+              "CKV_AWS_8",
+              "CKV_AWS_16",
+              "CKV_AWS_145",
+              "CKV_AWS_35"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3067,10 +3429,29 @@
         {
           "id": "REQ-3210-01",
           "title": "AWS encryption: TLS in transit required key for service link 2",
-          "description": "Corpus obligation from ADR-3210: TLS in transit required key for service link 2 (AWS-encryption-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3210: TLS in transit required key for service link 2 (AWS-encryption-2). Checked via Checkov rules for pattern configuration.aws_encryption.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_3",
+              "CKV_AWS_8",
+              "CKV_AWS_16",
+              "CKV_AWS_145",
+              "CKV_AWS_35"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3178,10 +3559,29 @@
         {
           "id": "REQ-3215-01",
           "title": "AWS encryption: EBS encryption by default setting for account 7",
-          "description": "Corpus obligation from ADR-3215: EBS encryption by default setting for account 7 (AWS-encryption-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3215: EBS encryption by default setting for account 7 (AWS-encryption-7). Checked via Checkov rules for pattern configuration.aws_encryption.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_3",
+              "CKV_AWS_8",
+              "CKV_AWS_16",
+              "CKV_AWS_145",
+              "CKV_AWS_35"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3225,10 +3625,27 @@
         {
           "id": "REQ-3217-01",
           "title": "AWS network: Public subnet placement for data store 1",
-          "description": "Corpus obligation from ADR-3217: public subnet placement for data store 1 (AWS-network-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3217: public subnet placement for data store 1 (AWS-network-1). Checked via Checkov rules for pattern architecture.aws_network.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_130",
+              "CKV2_AWS_11",
+              "CKV_AWS_24"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3242,10 +3659,27 @@
         {
           "id": "REQ-3218-01",
           "title": "AWS network: VPC flow logs required key for VPC 2",
-          "description": "Corpus obligation from ADR-3218: VPC flow logs required key for VPC 2 (AWS-network-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3218: VPC flow logs required key for VPC 2 (AWS-network-2). Checked via Checkov rules for pattern configuration.aws_network.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV2_AWS_11",
+              "CKV_AWS_130",
+              "CKV_AWS_24"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3259,10 +3693,28 @@
         {
           "id": "REQ-3219-01",
           "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
-          "description": "Corpus obligation from ADR-3219: 0.0.0.0/0 SSH ingress for security group 3 (AWS-network-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3219: 0.0.0.0/0 SSH ingress for security group 3 (AWS-network-3). Checked via Checkov rules for pattern security.aws_network.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_23",
+              "CKV2_AWS_11",
+              "CKV_AWS_130"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3276,10 +3728,28 @@
         {
           "id": "REQ-3220-01",
           "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
-          "description": "Corpus obligation from ADR-3220: NACL allow-all ephemeral rule for VPC 4 (AWS-network-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3220: NACL allow-all ephemeral rule for VPC 4 (AWS-network-4). Checked via Checkov rules for pattern security.aws_network.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_23",
+              "CKV2_AWS_11",
+              "CKV_AWS_130"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3327,10 +3797,27 @@
         {
           "id": "REQ-3223-01",
           "title": "AWS network: Peering without least-privilege routes for VPC 7",
-          "description": "Corpus obligation from ADR-3223: peering without least-privilege routes for VPC 7 (AWS-network-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3223: peering without least-privilege routes for VPC 7 (AWS-network-7). Checked via Checkov rules for pattern architecture.aws_network.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_130",
+              "CKV2_AWS_11",
+              "CKV_AWS_24"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3344,10 +3831,28 @@
         {
           "id": "REQ-3224-01",
           "title": "AWS network: Security group reference cycles for tier 8",
-          "description": "Corpus obligation from ADR-3224: security group reference cycles for tier 8 (AWS-network-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3224: security group reference cycles for tier 8 (AWS-network-8). Checked via Checkov rules for pattern security.aws_network.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_23",
+              "CKV2_AWS_11",
+              "CKV_AWS_130"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3361,10 +3866,28 @@
         {
           "id": "REQ-3225-01",
           "title": "AWS logging: CloudTrail multi-region required key for org 1",
-          "description": "Corpus obligation from ADR-3225: CloudTrail multi-region required key for org 1 (AWS-logging-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3225: CloudTrail multi-region required key for org 1 (AWS-logging-1). Checked via Checkov rules for pattern configuration.aws_logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_67",
+              "CKV_AWS_36",
+              "CKV_AWS_66",
+              "CKV_AWS_338"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3378,10 +3901,28 @@
         {
           "id": "REQ-3226-01",
           "title": "AWS logging: CloudTrail log file validation setting for trail 2",
-          "description": "Corpus obligation from ADR-3226: CloudTrail log file validation setting for trail 2 (AWS-logging-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3226: CloudTrail log file validation setting for trail 2 (AWS-logging-2). Checked via Checkov rules for pattern configuration.aws_logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_67",
+              "CKV_AWS_36",
+              "CKV_AWS_66",
+              "CKV_AWS_338"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3395,10 +3936,20 @@
         {
           "id": "REQ-3227-01",
           "title": "AWS logging: CloudTrail stop-logging permission for role 3",
-          "description": "Corpus obligation from ADR-3227: CloudTrail stop-logging permission for role 3 (AWS-logging-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3227: CloudTrail stop-logging permission for role 3 (AWS-logging-3). Checked via OpenGrep rules for pattern security.aws_logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py"
+            ]
           }
         }
       ]
@@ -3412,10 +3963,20 @@
         {
           "id": "REQ-3228-01",
           "title": "AWS logging: S3 access logging disablement for trail bucket 4",
-          "description": "Corpus obligation from ADR-3228: S3 access logging disablement for trail bucket 4 (AWS-logging-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3228: S3 access logging disablement for trail bucket 4 (AWS-logging-4). Checked via OpenGrep rules for pattern security.aws_logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py"
+            ]
           }
         }
       ]
@@ -3463,10 +4024,28 @@
         {
           "id": "REQ-3231-01",
           "title": "AWS logging: Config recorder required key for region 7",
-          "description": "Corpus obligation from ADR-3231: Config recorder required key for region 7 (AWS-logging-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3231: Config recorder required key for region 7 (AWS-logging-7). Checked via Checkov rules for pattern configuration.aws_logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_67",
+              "CKV_AWS_36",
+              "CKV_AWS_66",
+              "CKV_AWS_338"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3480,10 +4059,20 @@
         {
           "id": "REQ-3232-01",
           "title": "AWS logging: CloudWatch log group without retention for app 8",
-          "description": "Corpus obligation from ADR-3232: CloudWatch log group without retention for app 8 (AWS-logging-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3232: CloudWatch log group without retention for app 8 (AWS-logging-8). Checked via OpenGrep rules for pattern security.aws_logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.aws-cloudtrail-stop-logging"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py"
+            ]
           }
         }
       ]
@@ -3940,10 +4529,28 @@
         {
           "id": "REQ-3249-01",
           "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
-          "description": "Corpus obligation from ADR-3249: 0.0.0.0/0 on port 3389 for security group 1 (AWS-security_groups-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3249: 0.0.0.0/0 on port 3389 for security group 1 (AWS-security_groups-1). Checked via Checkov rules for pattern security.aws_sg.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_25",
+              "CKV_AWS_23",
+              "CKV_AWS_277"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3957,10 +4564,28 @@
         {
           "id": "REQ-3250-01",
           "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
-          "description": "Corpus obligation from ADR-3250: unrestricted egress 0.0.0.0/0 for sensitive tier 2 (AWS-security_groups-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3250: unrestricted egress 0.0.0.0/0 for sensitive tier 2 (AWS-security_groups-2). Checked via Checkov rules for pattern security.aws_sg.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_25",
+              "CKV_AWS_23",
+              "CKV_AWS_277"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3974,10 +4599,27 @@
         {
           "id": "REQ-3251-01",
           "title": "AWS security_groups: Security group description required key for SG 3",
-          "description": "Corpus obligation from ADR-3251: security group description required key for SG 3 (AWS-security_groups-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3251: security group description required key for SG 3 (AWS-security_groups-3). Checked via Checkov rules for pattern configuration.aws_sg.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_23",
+              "CKV_AWS_24",
+              "CKV_AWS_25"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -3991,10 +4633,28 @@
         {
           "id": "REQ-3252-01",
           "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
-          "description": "Corpus obligation from ADR-3252:  overlapping world-open rules for alb SG 4 (AWS-security_groups-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3252:  overlapping world-open rules for alb SG 4 (AWS-security_groups-4). Checked via Checkov rules for pattern security.aws_sg.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_25",
+              "CKV_AWS_23",
+              "CKV_AWS_277"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4042,10 +4702,27 @@
         {
           "id": "REQ-3255-01",
           "title": "AWS security_groups: Database SG attached to public interface for db 7",
-          "description": "Corpus obligation from ADR-3255: database SG attached to public interface for db 7 (AWS-security_groups-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3255: database SG attached to public interface for db 7 (AWS-security_groups-7). Checked via Checkov rules for pattern architecture.aws_sg.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_25",
+              "CKV_AWS_23"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4059,10 +4736,28 @@
         {
           "id": "REQ-3256-01",
           "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
-          "description": "Corpus obligation from ADR-3256: self-referencing SG with all ports for tier 8 (AWS-security_groups-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3256: self-referencing SG with all ports for tier 8 (AWS-security_groups-8). Checked via Checkov rules for pattern security.aws_sg.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_24",
+              "CKV_AWS_25",
+              "CKV_AWS_23",
+              "CKV_AWS_277"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4093,10 +4788,30 @@
         {
           "id": "REQ-3258-01",
           "title": "AWS root_mfa: Root access key creation for account 2",
-          "description": "Corpus obligation from ADR-3258: root access key creation for account 2 (AWS-root_mfa-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3258: root access key creation for account 2 (AWS-root_mfa-2). Checked via OpenGrep rules for pattern security.aws_root.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.go-shell-command",
+              "rules.pathfinder.python-dynamic-eval",
+              "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts",
+              ".java",
+              ".php",
+              ".rb"
+            ]
           }
         }
       ]
@@ -4110,10 +4825,30 @@
         {
           "id": "REQ-3259-01",
           "title": "AWS root_mfa: Daily root console usage for account 3",
-          "description": "Corpus obligation from ADR-3259: daily root console usage for account 3 (AWS-root_mfa-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3259: daily root console usage for account 3 (AWS-root_mfa-3). Checked via OpenGrep rules for pattern security.aws_root.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.go-shell-command",
+              "rules.pathfinder.python-dynamic-eval",
+              "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts",
+              ".java",
+              ".php",
+              ".rb"
+            ]
           }
         }
       ]
@@ -4127,10 +4862,30 @@
         {
           "id": "REQ-3260-01",
           "title": "AWS root_mfa: Root email without monitored inbox for account 4",
-          "description": "Corpus obligation from ADR-3260: root email without monitored inbox for account 4 (AWS-root_mfa-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3260: root email without monitored inbox for account 4 (AWS-root_mfa-4). Checked via OpenGrep rules for pattern security.aws_root.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.go-shell-command",
+              "rules.pathfinder.python-dynamic-eval",
+              "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts",
+              ".java",
+              ".php",
+              ".rb"
+            ]
           }
         }
       ]
@@ -4195,10 +4950,30 @@
         {
           "id": "REQ-3264-01",
           "title": "AWS root_mfa: Shared root password manager entry for team 8",
-          "description": "Corpus obligation from ADR-3264: shared root password manager entry for team 8 (AWS-root_mfa-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3264: shared root password manager entry for team 8 (AWS-root_mfa-8). Checked via OpenGrep rules for pattern security.aws_root.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.go-shell-command",
+              "rules.pathfinder.python-dynamic-eval",
+              "rules.pathfinder.no-dynamic-eval",
+              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.owasp-hardcoded-aws-key"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".go",
+              ".js",
+              ".ts",
+              ".java",
+              ".php",
+              ".rb"
+            ]
           }
         }
       ]
@@ -4212,10 +4987,26 @@
         {
           "id": "REQ-3265-01",
           "title": "AWS backups: AWS Backup plan required key for workload 1",
-          "description": "Corpus obligation from ADR-3265: AWS Backup plan required key for workload 1 (AWS-backups-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3265: AWS Backup plan required key for workload 1 (AWS-backups-1). Checked via Checkov rules for pattern configuration.aws_backup.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_166",
+              "CKV_AWS_16"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4229,10 +5020,26 @@
         {
           "id": "REQ-3266-01",
           "title": "AWS backups: Cross-region backup copy setting for vault 2",
-          "description": "Corpus obligation from ADR-3266: cross-region backup copy setting for vault 2 (AWS-backups-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3266: cross-region backup copy setting for vault 2 (AWS-backups-2). Checked via Checkov rules for pattern configuration.aws_backup.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_166",
+              "CKV_AWS_16"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4246,10 +5053,26 @@
         {
           "id": "REQ-3267-01",
           "title": "AWS backups: Backup vault policy principal star for vault 3",
-          "description": "Corpus obligation from ADR-3267: backup vault policy principal star for vault 3 (AWS-backups-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3267: backup vault policy principal star for vault 3 (AWS-backups-3). Checked via Checkov rules for pattern security.aws_backup.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_166",
+              "CKV_AWS_16"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4263,10 +5086,26 @@
         {
           "id": "REQ-3268-01",
           "title": "AWS backups: Disabled backup vault lock for vault 4",
-          "description": "Corpus obligation from ADR-3268: disabled backup vault lock for vault 4 (AWS-backups-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3268: disabled backup vault lock for vault 4 (AWS-backups-4). Checked via Checkov rules for pattern security.aws_backup.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_166",
+              "CKV_AWS_16"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4314,10 +5153,26 @@
         {
           "id": "REQ-3271-01",
           "title": "AWS backups: RDS automated backup retention setting for database 7",
-          "description": "Corpus obligation from ADR-3271: RDS automated backup retention setting for database 7 (AWS-backups-7). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3271: RDS automated backup retention setting for database 7 (AWS-backups-7). Checked via Checkov rules for pattern configuration.aws_backup.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_166",
+              "CKV_AWS_16"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4331,10 +5186,26 @@
         {
           "id": "REQ-3272-01",
           "title": "AWS backups: Manual snapshot without encryption for database 8",
-          "description": "Corpus obligation from ADR-3272: manual snapshot without encryption for database 8 (AWS-backups-8). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3272: manual snapshot without encryption for database 8 (AWS-backups-8). Checked via Checkov rules for pattern security.aws_backup.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_166",
+              "CKV_AWS_16"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4365,10 +5236,25 @@
         {
           "id": "REQ-3274-01",
           "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
-          "description": "Corpus obligation from ADR-3274: instance metadata hop limit setting for ASG 2 (AWS-tagging_compute-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3274: instance metadata hop limit setting for ASG 2 (AWS-tagging_compute-2). Checked via Checkov rules for pattern configuration.aws_compute.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_79"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]

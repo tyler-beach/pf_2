@@ -23,8 +23,14 @@ OpenGrep rule packs that accompany the corpus (shared across many ADRs, not 1:1)
 - `rules/owasp-ssrf.yml`
 - `rules/owasp-secrets.yml`
 - `rules/aws-sdk-misuse.yml`
+- `rules/owasp-misc-promote.yml` — hardening, supply-chain, logging promotions
 
 Merge packs into the CI default config with `python3 scripts/merge_opengrep_rules.py`.
+
+Checkov (IaC) configuration and fixtures:
+
+- `rules/checkov.yml` — pinned frameworks (terraform/cloudformation/kubernetes/dockerfile)
+- `testdata/analyzer-fixtures/{vulnerable,clean}/iac/` — positive/negative Terraform fixtures
 
 Label fields:
 
@@ -46,9 +52,14 @@ Local sandbox mimic of an issue with code fences:
 
 ```bash
 python3 scripts/issue_sandbox_extract.py --input /path/to/issue.md --out-dir /tmp/issue-src
+# copy rules into the sandbox, then:
 go run ./cmd/adrctl scan-opengrep --root /tmp/issue-src --config rules/pathfinder-security.yml ...
+go run ./cmd/adrctl scan-checkov --root /tmp/issue-src --config rules/checkov.yml ...
 go run ./cmd/adrctl assess-repo --root /tmp/issue-src --requirements testdata/corpus/requirements.json \
-  --analyzer-evidence ... --analyzer-sarif ... --report /tmp/report.md --json-out /tmp/assessment.json
+  --issue-surface \
+  --analyzer-evidence analyzer-evidence/opengrep.json,analyzer-evidence/checkov.json \
+  --analyzer-sarif analyzer-evidence/opengrep.sarif,analyzer-evidence/checkov.sarif \
+  --report /tmp/report.md --json-out /tmp/assessment.json
 ```
 
 ## Extract harness
@@ -63,6 +74,7 @@ Default CI always runs the synthetic reuse-pilot. The labeled corpus workflow is
 
 Harness output includes `recall_by_confidence` (and `precision_by_confidence`) so workshop-emit can publish band-level `kpi.harness.recall.*`.
 
-## Joern / Checkov deferral
+## Analyzer coverage notes
 
-Do **not** add Joern/CPG or Checkov/cfn-nag adapters until at least **10 accepted ADRs** need evidence those tools uniquely provide. Until then, AWS IaC-heavy obligations stay `manual_review` / `infra.policy`, and interpretation gaps use confidence-gated batch LLM assist + human review.
+- **Checkov** is implemented for AWS IaC patterns (`security.aws_sg`, `security.aws_network`, IAM/encryption/logging/backup configuration families, `infra.policy`). Issue/sandbox assess runs Checkov alongside OpenGrep and uses `--issue-surface` so unbound `manual-review` rows become `NOT_APPLICABLE` instead of forcing `INDETERMINATE`.
+- **Joern/CPG** remains deferred until at least **10 accepted ADRs** need cross-file/data-flow evidence OpenGrep cannot supply (`N=10`).

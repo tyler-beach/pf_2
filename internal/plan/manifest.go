@@ -141,16 +141,16 @@ func BuildManifest(root string, specs []AnalyzerSpec, maxConcurrency int) (Manif
 		if binarySHA != "" && !validDigest(binarySHA) {
 			return out, fmt.Errorf("analyzer %q binary_sha256 must be a lowercase SHA-256 hex digest", spec.Name)
 		}
-		if strings.EqualFold(spec.Name, "opengrep") && binarySHA == "" {
-			return out, fmt.Errorf("OpenGrep plans must pin binary_sha256 before they can be executed")
+		if (strings.EqualFold(spec.Name, "opengrep") || strings.EqualFold(spec.Name, "checkov")) && binarySHA == "" {
+			return out, fmt.Errorf("%s plans must pin binary_sha256 before they can be executed", spec.Name)
 		}
 		ruleSetSHA := strings.ToLower(strings.TrimSpace(spec.RuleSetSHA256))
 		if ruleSetSHA == "" { ruleSetSHA = configHash }
 		if !validDigest(ruleSetSHA) {
 			return out, fmt.Errorf("analyzer %q ruleset_sha256 must be a lowercase SHA-256 hex digest", spec.Name)
 		}
-		if strings.EqualFold(spec.Name, "opengrep") && ruleSetSHA != configHash {
-			return out, fmt.Errorf("OpenGrep ruleset_sha256 must match the SHA-256 of its single configuration/rules file")
+		if (strings.EqualFold(spec.Name, "opengrep") || strings.EqualFold(spec.Name, "checkov")) && ruleSetSHA != configHash {
+			return out, fmt.Errorf("%s ruleset_sha256 must match the SHA-256 of its single configuration/rules file", spec.Name)
 		}
 		spec.BinarySHA256 = binarySHA
 		spec.RuleSetSHA256 = ruleSetSHA
