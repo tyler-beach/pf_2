@@ -1,4 +1,5 @@
 rules:
+# --- from pathfinder-security-core.yml ---
   - id: pathfinder.no-dynamic-eval
     languages: [javascript, typescript, php]
     message: Avoid dynamic evaluation of data that may be attacker-controlled.
@@ -178,3 +179,407 @@ rules:
       confidence: MEDIUM
       cwe: "CWE-78"
     pattern: Sys.command $COMMAND
+
+# --- from owasp-injection.yml ---
+  - id: pathfinder.owasp-sql-string-concat-python
+    languages: [python]
+    message: Avoid building SQL with string concatenation of untrusted input.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-89"
+    pattern-regex: 'execute\s*\(\s*f["'\'']'
+
+  - id: pathfinder.owasp-sql-format-go
+    languages: [go]
+    message: Avoid building SQL with fmt.Sprintf.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-89"
+    pattern-regex: 'fmt\.Sprintf\(\s*"(?i)(SELECT|INSERT|UPDATE|DELETE)\b'
+
+  - id: pathfinder.owasp-child-process-exec-node
+    languages: [javascript, typescript]
+    message: Avoid child_process.exec with dynamically supplied commands.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: require("child_process").exec(...)
+
+  - id: pathfinder.owasp-os-system-python
+    languages: [python]
+    message: Avoid os.system with dynamically supplied commands.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: os.system(...)
+
+  - id: pathfinder.owasp-pickle-loads-python
+    languages: [python]
+    message: Avoid pickle.loads on untrusted data.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A08
+      confidence: MEDIUM
+      cwe: "CWE-502"
+    pattern: pickle.loads(...)
+
+  - id: pathfinder.owasp-yaml-unsafe-load-python
+    languages: [python]
+    message: Avoid yaml.load without a SafeLoader on untrusted input.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A08
+      confidence: MEDIUM
+      cwe: "CWE-502"
+    pattern: yaml.load(...)
+
+  - id: pathfinder.owasp-subprocess-shell-python
+    languages: [python]
+    message: Avoid subprocess calls with shell=True.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern-regex: 'subprocess\.(call|run|Popen)\([^)]*shell\s*=\s*True'
+
+  - id: pathfinder.owasp-raw-query-java
+    languages: [java]
+    message: Avoid Statement.execute with concatenated SQL.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-89"
+    pattern: $STMT.execute($SQL + ...)
+
+# --- from owasp-crypto.yml ---
+  - id: pathfinder.owasp-md5-python
+    languages: [python]
+    message: Avoid MD5 for security-sensitive digests.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: hashlib.md5(...)
+
+  - id: pathfinder.owasp-sha1-python
+    languages: [python]
+    message: Avoid SHA1 for security-sensitive digests.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: hashlib.sha1(...)
+
+  - id: pathfinder.owasp-md5-go
+    languages: [go]
+    message: Avoid MD5 for security-sensitive digests.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: md5.New()
+
+  - id: pathfinder.owasp-sha1-go
+    languages: [go]
+    message: Avoid SHA1 for security-sensitive digests.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: sha1.New()
+
+  - id: pathfinder.owasp-des-java
+    languages: [java]
+    message: Avoid DES cipher algorithms.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-327"
+    pattern: Cipher.getInstance("DES")
+
+  - id: pathfinder.owasp-math-random-java
+    languages: [java]
+    message: Avoid java.util.Random for security-sensitive tokens.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-330"
+    pattern: new Random()
+
+  - id: pathfinder.owasp-insecure-tls-python
+    languages: [python]
+    message: Avoid disabling TLS certificate verification.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-295"
+    pattern-regex: 'verify\s*=\s*False'
+
+  - id: pathfinder.owasp-insecure-skip-verify-go
+    languages: [go]
+    message: Avoid InsecureSkipVerify in TLS clients.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-295"
+    pattern: InsecureSkipVerify: true
+
+# --- from owasp-ssrf.yml ---
+  - id: pathfinder.owasp-ssrf-http-get-python
+    languages: [python]
+    message: Review requests.get with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: requests.get(...)
+
+  - id: pathfinder.owasp-ssrf-urlopen-python
+    languages: [python]
+    message: Review urllib urlopen with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: urllib.request.urlopen(...)
+
+  - id: pathfinder.owasp-ssrf-http-get-go
+    languages: [go]
+    message: Review http.Get with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: http.Get(...)
+
+  - id: pathfinder.owasp-ssrf-fetch-javascript
+    languages: [javascript, typescript]
+    message: Review fetch with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: fetch(...)
+
+  - id: pathfinder.owasp-ssrf-axios-javascript
+    languages: [javascript, typescript]
+    message: Review axios.get with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: axios.get(...)
+
+  - id: pathfinder.owasp-ssrf-httpurl-java
+    languages: [java]
+    message: Review URL.openConnection with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: (new URL(...)).openConnection()
+
+# --- from owasp-secrets.yml ---
+  - id: pathfinder.owasp-hardcoded-aws-key
+    languages: [python, go, javascript, typescript, java]
+    message: Possible hardcoded AWS access key ID.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: ["A02", "A07"]
+      aws: secrets
+      confidence: MEDIUM
+      cwe: "CWE-798"
+    pattern-regex: 'AKIA[0-9A-Z]{16}'
+
+  - id: pathfinder.owasp-hardcoded-password-assign-python
+    languages: [python]
+    message: Possible hardcoded password assignment.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A07
+      confidence: LOW
+      cwe: "CWE-798"
+    pattern-regex: '(?i)(password|passwd|pwd)\s*=\s*["\'][^"\']{8,}["\']'
+
+  - id: pathfinder.owasp-hardcoded-api-key-javascript
+    languages: [javascript, typescript]
+    message: Possible hardcoded API key assignment.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A07
+      confidence: LOW
+      cwe: "CWE-798"
+    pattern-regex: '(?i)(api[_-]?key|apikey)\s*[:=]\s*["\'][A-Za-z0-9_\-]{16,}["\']'
+
+  - id: pathfinder.owasp-hardcoded-bearer-go
+    languages: [go]
+    message: Possible hardcoded bearer token.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A07
+      confidence: LOW
+      cwe: "CWE-798"
+    pattern-regex: '(?i)Bearer\s+[A-Za-z0-9_\-\.]{20,}'
+
+  - id: pathfinder.owasp-private-key-literal
+    languages: [python, go, javascript, typescript]
+    message: Possible PEM private key embedded in source.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: HIGH
+      cwe: "CWE-798"
+    pattern-regex: '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----'
+
+  - id: pathfinder.owasp-slack-token
+    languages: [python, go, javascript, typescript]
+    message: Possible Slack token embedded in source.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A07
+      confidence: MEDIUM
+      cwe: "CWE-798"
+    # Use a fixture-safe marker; avoid literal xoxb- shapes that trip git push protection.
+    pattern-regex: 'pf-test-slack-token-[0-9]{6,}|xox[baprs]-[0-9A-Za-z-]{10,}'
+
+# --- from aws-sdk-misuse.yml ---
+  - id: pathfinder.aws-s3-public-read-acl-python
+    languages: [python]
+    message: Avoid S3 public-read canned ACLs in application code.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: s3
+      owasp: A01
+      confidence: MEDIUM
+      cwe: "CWE-284"
+    pattern-regex: 'ACL\s*=\s*["'\'']public-read["'\'']'
+
+  - id: pathfinder.aws-s3-public-read-acl-go
+    languages: [go]
+    message: Avoid S3 ObjectCannedACLPublicRead in application code.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: s3
+      confidence: MEDIUM
+      cwe: "CWE-284"
+    pattern: types.ObjectCannedACLPublicRead
+
+  - id: pathfinder.aws-s3-public-read-write-python
+    languages: [python]
+    message: Avoid S3 public-read-write canned ACLs.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: s3
+      confidence: MEDIUM
+      cwe: "CWE-284"
+    pattern-regex: 'ACL\s*=\s*["'\'']public-read-write["'\'']'
+
+  - id: pathfinder.aws-put-bucket-acl-public-python
+    languages: [python]
+    message: Review put_bucket_acl calls that may grant public access.
+    severity: WARNING
+    metadata:
+      category: security
+      aws: s3
+      confidence: LOW
+      cwe: "CWE-284"
+    pattern: put_bucket_acl(...)
+
+  - id: pathfinder.aws-disable-s3-encryption-python
+    languages: [python]
+    message: Review S3 puts that omit server-side encryption.
+    severity: WARNING
+    metadata:
+      category: security
+      aws: encryption
+      confidence: LOW
+      cwe: "CWE-311"
+    pattern-regex: 'put_object\([^\)]*Bucket\s*='
+
+  - id: pathfinder.aws-imds-v1-token-skip
+    languages: [python, go]
+    message: Prefer IMDSv2; avoid code that documents IMDSv1-only access.
+    severity: WARNING
+    metadata:
+      category: security
+      aws: compute
+      confidence: LOW
+      cwe: "CWE-668"
+    pattern-regex: '169\.254\.169\.254/latest/meta-data'
+
+  - id: pathfinder.aws-hardcoded-secret-env-python
+    languages: [python]
+    message: Avoid assigning AWS secret keys into process environment in source.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: secrets
+      confidence: MEDIUM
+      cwe: "CWE-798"
+    pattern-regex: 'os\.environ\[["'\'']AWS_SECRET_ACCESS_KEY["'\'']\]\s*='
+
+  - id: pathfinder.aws-setenv-secret-go
+    languages: [go]
+    message: Avoid setting AWS_SECRET_ACCESS_KEY in process environment from source.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: secrets
+      confidence: MEDIUM
+      cwe: "CWE-798"
+    pattern: os.Setenv("AWS_SECRET_ACCESS_KEY", ...)

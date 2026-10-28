@@ -25,6 +25,7 @@ jobs:
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
           mkdir -p "$inputs"
+          go run ./cmd/adrctl validate --requirements testdata/corpus/requirements.json
           go run ./cmd/adrctl ingest-adrs --root testdata/corpus/adrs --json-out "$inputs/ingested.json"
           go run ./cmd/adrctl extract-obligations \
             --index "$inputs/ingested.json" \

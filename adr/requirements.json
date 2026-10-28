@@ -388,6 +388,418 @@
           }
         }
       ]
+    },
+    {
+      "id": "ADR-007",
+      "title": "Prevent OWASP injection sinks in application source",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-007-01",
+          "title": "Python must not build SQL with f-string execute",
+          "description": "Python data access must not pass f-string SQL into execute.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-sql-string-concat-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-007-02",
+          "title": "Go must not format SQL with fmt.Sprintf",
+          "description": "Go data access must not build SQL via fmt.Sprintf.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-sql-format-go"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".go"]
+          }
+        },
+        {
+          "id": "REQ-007-03",
+          "title": "Python must not call os.system with dynamic commands",
+          "description": "Python sources must not invoke os.system on attacker-influenced input.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-os-system-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-007-04",
+          "title": "Python must not use subprocess shell=True",
+          "description": "Python sources must not launch subprocesses with shell=True.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-subprocess-shell-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-007-05",
+          "title": "Node must not use child_process.exec with dynamic commands",
+          "description": "JavaScript/TypeScript must not call child_process.exec with attacker-influenced commands.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-child-process-exec-node"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx"]
+          }
+        },
+        {
+          "id": "REQ-007-06",
+          "title": "Java must not concatenate SQL into Statement.execute",
+          "description": "Java JDBC code must not concatenate untrusted input into Statement.execute.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-raw-query-java"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".java"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-008",
+      "title": "Prevent insecure deserialization",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-008-01",
+          "title": "Python must not pickle.loads untrusted data",
+          "description": "Python sources must not deserialize untrusted payloads with pickle.loads.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-pickle-loads-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-008-02",
+          "title": "Python must not yaml.load untrusted data unsafely",
+          "description": "Python sources must not call yaml.load on untrusted input without a safe loader.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-yaml-unsafe-load-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-009",
+      "title": "Prevent weak cryptography and TLS bypasses",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-009-01",
+          "title": "Python must not use MD5 for security digests",
+          "description": "Python sources must not call hashlib.md5 for security-sensitive digests.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-md5-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-009-02",
+          "title": "Python must not use SHA1 for security digests",
+          "description": "Python sources must not call hashlib.sha1 for security-sensitive digests.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-sha1-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-009-03",
+          "title": "Go must not use MD5 for security digests",
+          "description": "Go sources must not call md5.New for security-sensitive digests.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-md5-go"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".go"]
+          }
+        },
+        {
+          "id": "REQ-009-04",
+          "title": "Go must not use SHA1 for security digests",
+          "description": "Go sources must not call sha1.New for security-sensitive digests.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-sha1-go"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".go"]
+          }
+        },
+        {
+          "id": "REQ-009-05",
+          "title": "Java must not use DES ciphers",
+          "description": "Java sources must not request Cipher.getInstance(\"DES\").",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-des-java"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".java"]
+          }
+        },
+        {
+          "id": "REQ-009-06",
+          "title": "Python must not disable TLS verification",
+          "description": "Python HTTP clients must not set verify=False.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-insecure-tls-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-009-07",
+          "title": "Go must not set InsecureSkipVerify",
+          "description": "Go TLS clients must not set InsecureSkipVerify: true.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-insecure-skip-verify-go"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".go"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-010",
+      "title": "Prevent hardcoded secrets in source",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-010-01",
+          "title": "Source must not embed AWS access key IDs",
+          "description": "Repositories must not contain AKIA-form AWS access key IDs.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-hardcoded-aws-key"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py", ".go", ".js", ".ts", ".java"]
+          }
+        },
+        {
+          "id": "REQ-010-02",
+          "title": "Python must not hardcode password assignments",
+          "description": "Python sources must not assign long literal passwords.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-hardcoded-password-assign-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-010-03",
+          "title": "JavaScript must not hardcode API keys",
+          "description": "JavaScript/TypeScript must not embed long literal API keys.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-hardcoded-api-key-javascript"],
+            "source_path_prefixes": ["cmd/", "internal/", "scripts/"],
+            "source_extensions": [".js", ".ts"]
+          }
+        },
+        {
+          "id": "REQ-010-04",
+          "title": "Source must not embed PEM private keys",
+          "description": "Repositories must not embed PEM private key material.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-private-key-literal"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py", ".go", ".js", ".ts"]
+          }
+        },
+        {
+          "id": "REQ-010-05",
+          "title": "Source must not embed Slack tokens",
+          "description": "Repositories must not embed Slack bot/user tokens.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-slack-token"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py", ".go", ".js", ".ts"]
+          }
+        },
+        {
+          "id": "REQ-010-06",
+          "title": "Python must not assign AWS secret keys into environ",
+          "description": "Python sources must not assign AWS_SECRET_ACCESS_KEY in os.environ.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.aws-hardcoded-secret-env-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-010-07",
+          "title": "Go must not Setenv AWS secret keys",
+          "description": "Go sources must not os.Setenv AWS_SECRET_ACCESS_KEY.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.aws-setenv-secret-go"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".go"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-011",
+      "title": "Prevent AWS S3 public ACL misuse in SDK code",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-011-01",
+          "title": "Python must not use S3 public-read ACLs",
+          "description": "Python AWS SDK usage must not set ACL=public-read.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.aws-s3-public-read-acl-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-011-02",
+          "title": "Python must not use S3 public-read-write ACLs",
+          "description": "Python AWS SDK usage must not set ACL=public-read-write.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.aws-s3-public-read-write-python"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-011-03",
+          "title": "Go must not use ObjectCannedACLPublicRead",
+          "description": "Go AWS SDK usage must not reference ObjectCannedACLPublicRead.",
+          "severity": "error",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.aws-s3-public-read-acl-go"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".go"]
+          }
+        },
+        {
+          "id": "REQ-011-04",
+          "title": "Code must not target IMDSv1 metadata URLs",
+          "description": "Application code must not hardcode IMDSv1 metadata URLs.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.aws-imds-v1-token-skip"],
+            "source_path_prefixes": ["."],
+            "source_extensions": [".py", ".go"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADR-012",
+      "title": "Review user-controlled URL fetch sinks",
+      "version": 1,
+      "status": "accepted",
+      "requirements": [
+        {
+          "id": "REQ-012-01",
+          "title": "Python requests.get sinks require review evidence",
+          "description": "Python requests.get usage is flagged for SSRF review when bound to analyzer evidence.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-ssrf-http-get-python"],
+            "source_path_prefixes": ["cmd/", "internal/", "scripts/"],
+            "source_extensions": [".py"]
+          }
+        },
+        {
+          "id": "REQ-012-02",
+          "title": "Go http.Get sinks require review evidence",
+          "description": "Go http.Get usage is flagged for SSRF review when bound to analyzer evidence.",
+          "severity": "warning",
+          "verifier": {
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": ["rules.pathfinder.owasp-ssrf-http-get-go"],
+            "source_path_prefixes": ["cmd/", "internal/"],
+            "source_extensions": [".go"]
+          }
+        }
+      ]
     }
   ]
 }

@@ -143,27 +143,36 @@ jobs:
           jq -r '[.findings[] | (.path | split(".")[-1])] | group_by(.) | map({language:.[0], count:length})' "$RUNNER_TEMP/opengrep-vulnerable.json"
           jq -e '
             .status == "COMPLETE"
-            and (.findings | length) >= 18
-            and ([.findings[].rule_id] | unique | sort) == [
-              "rules.pathfinder.bash-dynamic-eval",
-              "rules.pathfinder.c-shell-command",
-              "rules.pathfinder.cpp-shell-command",
-              "rules.pathfinder.csharp-process-start",
-              "rules.pathfinder.dart-process-run",
-              "rules.pathfinder.elixir-dynamic-eval",
-              "rules.pathfinder.go-shell-command",
-              "rules.pathfinder.java-runtime-exec",
-              "rules.pathfinder.kotlin-runtime-exec",
-              "rules.pathfinder.lua-dynamic-eval",
-              "rules.pathfinder.no-dynamic-eval",
-              "rules.pathfinder.ocaml-system-command",
-              "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.ruby-dynamic-eval",
-              "rules.pathfinder.rust-shell-command",
-              "rules.pathfinder.scala-runtime-exec",
-              "rules.pathfinder.swift-shell-command",
-              "rules.pathfinder.visualbasic-process-start"
-            ]
+            and (.findings | length) >= 40
+            and (
+              ([.findings[].rule_id] | unique) | length
+            ) >= 40
+            and (
+              [
+                "rules.pathfinder.bash-dynamic-eval",
+                "rules.pathfinder.c-shell-command",
+                "rules.pathfinder.cpp-shell-command",
+                "rules.pathfinder.csharp-process-start",
+                "rules.pathfinder.dart-process-run",
+                "rules.pathfinder.elixir-dynamic-eval",
+                "rules.pathfinder.go-shell-command",
+                "rules.pathfinder.java-runtime-exec",
+                "rules.pathfinder.kotlin-runtime-exec",
+                "rules.pathfinder.lua-dynamic-eval",
+                "rules.pathfinder.no-dynamic-eval",
+                "rules.pathfinder.ocaml-system-command",
+                "rules.pathfinder.python-dynamic-eval",
+                "rules.pathfinder.ruby-dynamic-eval",
+                "rules.pathfinder.rust-shell-command",
+                "rules.pathfinder.scala-runtime-exec",
+                "rules.pathfinder.swift-shell-command",
+                "rules.pathfinder.visualbasic-process-start",
+                "rules.pathfinder.owasp-md5-python",
+                "rules.pathfinder.owasp-hardcoded-aws-key",
+                "rules.pathfinder.aws-s3-public-read-acl-python",
+                "rules.pathfinder.owasp-ssrf-http-get-python"
+              ] - ([.findings[].rule_id] | unique) | length
+            ) == 0
           ' "$RUNNER_TEMP/opengrep-vulnerable.json"
 
           # Distinct rule IDs are not enough for shared multi-language rules: require

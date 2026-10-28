@@ -1,0 +1,2204 @@
+# OWASP Top 10 + AWS security MADR corpus taxonomy.
+# Regenerate ADRs/labels with: python3 scripts/generate_security_corpus.py
+corpus_size: 200
+entries:
+  - id: ADR-3001
+    title: "A01: Object-level authorization check for resource family 1"
+    band: high
+    modality: must_not
+    pattern_id: architecture.access_control
+    escalate: false
+    owasp: [A01]
+    marker: object-level authorization check for resource family 1 (A01-1)
+    decision: Services SHALL NOT return or mutate objects without an object-level authorization check for resource family 1 (A01-1).
+    context: Missing object-level checks allow horizontal privilege escalation.
+    consequences: Denied requests remain observable in access logs.
+  - id: ADR-3002
+    title: "A01: Function-level authorization gate for admin action 2"
+    band: high
+    modality: must_not
+    pattern_id: architecture.access_control
+    escalate: false
+    owasp: [A01]
+    marker: function-level authorization gate for admin action 2 (A01-2)
+    decision: Administrative endpoints MUST NOT execute without a function-level authorization gate for admin action 2 (A01-2).
+    context: Function-level gaps expose privileged operations to authenticated users.
+    consequences: Authorization failures return 403 without leaking existence details.
+  - id: ADR-3003
+    title: "A01: Direct object reference token for record slot 3"
+    band: high
+    modality: must_not
+    pattern_id: security.access_control
+    escalate: false
+    owasp: [A01]
+    marker: direct object reference token for record slot 3 (A01-3)
+    decision: APIs SHALL NOT accept an unverified direct object reference token for record slot 3 (A01-3).
+    context: Insecure direct object references bypass ownership checks.
+    consequences: Identifiers are mapped server-side after authorization.
+  - id: ADR-3004
+    title: "A01: Cross-tenant data path for tenancy boundary 4"
+    band: high
+    modality: must_not
+    pattern_id: architecture.access_control
+    escalate: false
+    owasp: [A01]
+    marker: cross-tenant data path for tenancy boundary 4 (A01-4)
+    decision: Handlers MUST NOT cross a cross-tenant data path for tenancy boundary 4 (A01-4).
+    context: Multi-tenant platforms fail when tenant scope is optional.
+    consequences: Tenant IDs come from verified auth context only.
+  - id: ADR-3005
+    title: "A01: Mass-assignment field pack for form surface 5"
+    band: high
+    modality: must_not
+    pattern_id: security.access_control
+    escalate: false
+    owasp: [A01]
+    marker: mass-assignment field pack for form surface 5 (A01-5)
+    decision: Services SHALL NOT bind an unfiltered mass-assignment field pack for form surface 5 (A01-5).
+    context: Mass assignment lets clients set role or price fields.
+    consequences: Allow-lists define writable fields per role.
+  - id: ADR-3006
+    title: "A01: Elevated privilege cookie for session lane 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.access_control
+    escalate: false
+    owasp: [A01]
+    marker: elevated privilege cookie for session lane 6 (A01-6)
+    decision: Clients MUST NOT receive an elevated privilege cookie for session lane 6 (A01-6) unless an exception is explicitly documented.
+    context: Privilege cookies expand blast radius when stolen.
+    consequences: Prefer short-lived server sessions with step-up auth.
+  - id: ADR-3007
+    title: "A01: CORS reflection allow-list for origin set 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.access_control
+    escalate: false
+    owasp: [A01]
+    marker: CORS reflection allow-list for origin set 7 (A01-7)
+    decision: Gateways SHALL NOT use a CORS reflection allow-list for origin set 7 (A01-7) unless an exception is explicitly documented.
+    context: Reflecting Origin enables credentialed cross-site calls.
+    consequences: Explicit origin allow-lists replace reflection.
+  - id: ADR-3008
+    title: "A01: Directory traversal path join for file lane 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.access_control
+    escalate: false
+    owasp: [A01]
+    marker: directory traversal path join for file lane 8 (A01-8)
+    decision: File handlers MUST NOT perform a directory traversal path join for file lane 8 (A01-8) unless an exception is explicitly documented.
+    context: Unvalidated paths read outside the intended root.
+    consequences: Resolve and confine paths before open.
+  - id: ADR-3009
+    title: "A01: Prefer centralized policy-as-code for access family 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A01]
+    marker: prefer centralized policy-as-code for access family 9 (A01-9)
+    decision: Teams SHOULD prefer centralized policy-as-code for access family 9 (A01-9) when authorization rules grow complex.
+    context: Scattered checks drift across services.
+    consequences: Policy reviews track ownership of each rule pack.
+  - id: ADR-3010
+    title: "A01: Prefer deny-by-default catalogs for capability set 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A01]
+    marker: prefer deny-by-default catalogs for capability set 10 (A01-10)
+    decision: Platforms SHOULD prefer deny-by-default catalogs for capability set 10 (A01-10) where capability sprawl is a risk.
+    context: Allow-by-default catalogs accumulate unused rights.
+    consequences: Periodic access reviews remain is expected to.
+  - id: ADR-3011
+    title: "A01: Documented break-glass role for incident lane 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A01]
+    marker: documented break-glass role for incident lane 11 (A01-11)
+    decision: Operators MAY adopt a documented break-glass role for incident lane 11 (A01-11) when restoring service during incidents.
+    context: Emergency access needs audited escape hatches.
+    consequences: Break-glass use pages on-call owners.
+  - id: ADR-3012
+    title: "A01: Documented partner impersonation flow for support desk 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A01]
+    marker: documented partner impersonation flow for support desk 12 (A01-12)
+    decision: Support tools MAY adopt a documented partner impersonation flow for support desk 12 (A01-12) when assisting end users.
+    context: Impersonation is sensitive and often necessary for support.
+    consequences: Every impersonation session is time-boxed and logged.
+  - id: ADR-3013
+    title: "A02: TLS minimum version setting for listener 1"
+    band: high
+    modality: must
+    pattern_id: configuration.tls_baseline
+    escalate: false
+    owasp: [A02]
+    marker: TLS minimum version setting for listener 1 (A02-1)
+    decision: Edge configuration MUST declare a TLS minimum version setting for listener 1 (A02-1).
+    context: Legacy TLS enables downgrade and weak ciphers.
+    consequences: Handshake metrics alert on protocol regressions.
+  - id: ADR-3014
+    title: "A02: Encryption-at-rest required key for datastore 2"
+    band: high
+    modality: must
+    pattern_id: configuration.crypto_baseline
+    escalate: false
+    owasp: [A02]
+    marker: encryption-at-rest required key for datastore 2 (A02-2)
+    decision: Datastore configuration SHALL include an encryption-at-rest required key for datastore 2 (A02-2).
+    context: Unencrypted volumes expose data on disk theft.
+    consequences: Key rotation follows platform KMS policy.
+  - id: ADR-3015
+    title: "A02: MD5 password digest for credential store 3"
+    band: high
+    modality: must_not
+    pattern_id: security.crypto
+    escalate: false
+    owasp: [A02]
+    marker: MD5 password digest for credential store 3 (A02-3)
+    decision: Services MUST NOT store an MD5 password digest for credential store 3 (A02-3).
+    context: Broken hash algorithms are trivial to crack offline.
+    consequences: Use modern password KDFs with unique salts.
+  - id: ADR-3016
+    title: "A02: Cleartext credential log line for channel 4"
+    band: high
+    modality: must_not
+    pattern_id: security.secrets
+    escalate: false
+    owasp: [A02]
+    marker: cleartext credential log line for channel 4 (A02-4)
+    decision: Services SHALL NOT emit a cleartext credential log line for channel 4 (A02-4).
+    context: Secrets in logs propagate through aggregators.
+    consequences: Redaction filters cover tokens and passwords.
+  - id: ADR-3017
+    title: "A02: HSTS max-age configuration for site family 5"
+    band: high
+    modality: must
+    pattern_id: configuration.tls_baseline
+    escalate: false
+    owasp: [A02]
+    marker: HSTS max-age configuration for site family 5 (A02-5)
+    decision: Public sites MUST set an HSTS max-age configuration for site family 5 (A02-5).
+    context: Missing HSTS allows SSL stripping on first visit.
+    consequences: Preload is evaluated per brand domain.
+  - id: ADR-3018
+    title: "A02: Custom crypto protocol for message lane 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.crypto
+    escalate: false
+    owasp: [A02]
+    marker: custom crypto protocol for message lane 6 (A02-6)
+    decision: Teams SHALL NOT invent a custom crypto protocol for message lane 6 (A02-6) unless an exception is explicitly documented.
+    context: Homegrown crypto fails subtly under real adversaries.
+    consequences: Use vetted libraries and protocols only.
+  - id: ADR-3019
+    title: "A02: Hard-coded encryption secret for vault slot 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.secrets
+    escalate: false
+    owasp: [A02]
+    marker: hard-coded encryption secret for vault slot 7 (A02-7)
+    decision: Binaries MUST NOT embed a hard-coded encryption secret for vault slot 7 (A02-7) unless an exception is explicitly documented.
+    context: Embedded keys are extractable from artifacts.
+    consequences: Runtime secret managers supply keys.
+  - id: ADR-3020
+    title: "A02: SHA1 integrity checksum for artifact lane 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.crypto
+    escalate: false
+    owasp: [A02]
+    marker: SHA1 integrity checksum for artifact lane 8 (A02-8)
+    decision: Release pipelines MUST NOT rely on a SHA1 integrity checksum for artifact lane 8 (A02-8) unless an exception is explicitly documented.
+    context: SHA-1 collisions undermine integrity guarantees.
+    consequences: Prefer SHA-256 or stronger digests.
+  - id: ADR-3021
+    title: "A02: Prefer envelope encryption for backup set 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A02]
+    marker: prefer envelope encryption for backup set 9 (A02-9)
+    decision: Data platforms SHOULD prefer envelope encryption for backup set 9 (A02-9) when managing large key estates.
+    context: Per-object keys simplify rotation at scale.
+    consequences: Master keys stay in KMS/HSM boundaries.
+  - id: ADR-3022
+    title: "A02: Prefer forward secrecy cipher suites for mesh 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A02]
+    marker: prefer forward secrecy cipher suites for mesh 10 (A02-10)
+    decision: Service meshes SHOULD prefer forward secrecy cipher suites for mesh 10 (A02-10) where protocol support allows.
+    context: Static RSA key exchange weakens past-session secrecy.
+    consequences: Cipher inventory is reviewed quarterly.
+  - id: ADR-3023
+    title: "A02: Documented legacy cipher waiver for partner link 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A02]
+    marker: documented legacy cipher waiver for partner link 11 (A02-11)
+    decision: Integrations MAY adopt a documented legacy cipher waiver for partner link 11 (A02-11) when a partner cannot upgrade.
+    context: Some B2B partners lag on TLS upgrades.
+    consequences: Waivers expire and are risk-accepted.
+  - id: ADR-3024
+    title: "A02: Documented field-level encryption scope for PII class 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A02]
+    marker: documented field-level encryption scope for PII class 12 (A02-12)
+    decision: Products MAY adopt a documented field-level encryption scope for PII class 12 (A02-12) when regulation demands it.
+    context: Not all fields need application-level encryption.
+    consequences: Key access is separated from data access roles.
+  - id: ADR-3025
+    title: "A03: Dynamic SQL string concat for query family 1"
+    band: high
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: dynamic SQL string concat for query family 1 (A03-1)
+    decision: Data access code SHALL NOT build a dynamic SQL string concat for query family 1 (A03-1).
+    context: String-built SQL enables classic injection.
+    consequences: Parameterized queries or query builders are mandatory.
+  - id: ADR-3026
+    title: "A03: Shell command string for ops helper 2"
+    band: high
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: shell command string for ops helper 2 (A03-2)
+    decision: Services MUST NOT compose a shell command string for ops helper 2 (A03-2).
+    context: Shell injection turns input into remote code execution.
+    consequences: Prefer argv arrays without a shell.
+  - id: ADR-3027
+    title: "A03: Eval of untrusted input for script lane 3"
+    band: high
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: eval of untrusted input for script lane 3 (A03-3)
+    decision: Runtimes SHALL NOT perform eval of untrusted input for script lane 3 (A03-3).
+    context: Dynamic evaluation executes attacker payloads.
+    consequences: Use parsers and allow-listed operations instead.
+  - id: ADR-3028
+    title: "A03: LDAP filter concat for directory lookup 4"
+    band: high
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: LDAP filter concat for directory lookup 4 (A03-4)
+    decision: Identity code MUST NOT build an LDAP filter concat for directory lookup 4 (A03-4).
+    context: LDAP injection alters filter logic.
+    consequences: Encode filter values with directory-safe APIs.
+  - id: ADR-3029
+    title: "A03: OS command passthrough for tool wrapper 5"
+    band: high
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: OS command passthrough for tool wrapper 5 (A03-5)
+    decision: Wrappers SHALL NOT allow an OS command passthrough for tool wrapper 5 (A03-5).
+    context: Passthrough arguments become shell metacharacters.
+    consequences: Validate against an allow-list of verbs.
+  - id: ADR-3030
+    title: "A03: Template injection render for page family 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: template injection render for page family 6 (A03-6)
+    decision: Servers SHALL NOT enable a template injection render for page family 6 (A03-6) unless an exception is explicitly documented.
+    context: Server-side template injection yields RCE.
+    consequences: Logic-less templates or sandboxed engines only.
+  - id: ADR-3031
+    title: "A03: NoSQL operator injection for document query 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: NoSQL operator injection for document query 7 (A03-7)
+    decision: APIs MUST NOT accept a NoSQL operator injection for document query 7 (A03-7) unless an exception is explicitly documented.
+    context: JSON operators like $gt alter query intent.
+    consequences: Strip operator keys from user documents.
+  - id: ADR-3032
+    title: "A03: Xpath concat for XML lookup 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.injection
+    escalate: false
+    owasp: [A03]
+    marker: xpath concat for XML lookup 8 (A03-8)
+    decision: XML services SHALL NOT build an xpath concat for XML lookup 8 (A03-8) unless an exception is explicitly documented.
+    context: XPath injection bypasses access filters.
+    consequences: Bind variables through the XML API.
+  - id: ADR-3033
+    title: "A03: Prefer prepared statement coverage for datastore 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A03]
+    marker: prefer prepared statement coverage for datastore 9 (A03-9)
+    decision: Teams SHOULD prefer prepared statement coverage for datastore 9 (A03-9) when reviewing data-access PRs.
+    context: Mixed ORM and raw SQL increases miss rate.
+    consequences: Static checks gate new raw SQL.
+  - id: ADR-3034
+    title: "A03: Prefer output encoding libraries for view layer 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A03]
+    marker: prefer output encoding libraries for view layer 10 (A03-10)
+    decision: Frontends SHOULD prefer output encoding libraries for view layer 10 (A03-10) when rendering untrusted text.
+    context: Manual escaping is inconsistently applied.
+    consequences: Framework defaults stay enabled.
+  - id: ADR-3035
+    title: "A03: Documented raw SQL escape hatch for analytics job 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A03]
+    marker: documented raw SQL escape hatch for analytics job 11 (A03-11)
+    decision: Analytics jobs MAY adopt a documented raw SQL escape hatch for analytics job 11 (A03-11) when the ORM cannot express the query.
+    context: Complex reporting sometimes needs raw SQL.
+    consequences: Escape hatches require dual review.
+  - id: ADR-3036
+    title: "A03: Documented dangerous-HTML allowlist for CMS block 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A03]
+    marker: documented dangerous-HTML allowlist for CMS block 12 (A03-12)
+    decision: CMS platforms MAY adopt a documented dangerous-HTML allowlist for CMS block 12 (A03-12) when marketing requires rich content.
+    context: Rich content conflicts with strict sanitization.
+    consequences: Allow-lists are versioned and tested.
+  - id: ADR-3037
+    title: "A04: Rate-limit configuration for public route 1"
+    band: high
+    modality: must
+    pattern_id: configuration.abuse_controls
+    escalate: false
+    owasp: [A04]
+    marker: rate-limit configuration for public route 1 (A04-1)
+    decision: Edge configuration MUST declare a rate-limit configuration for public route 1 (A04-1).
+    context: Missing rate limits enable abuse and credential stuffing.
+    consequences: Limits are tuned per authenticity risk.
+  - id: ADR-3038
+    title: "A04: Business-logic retry budget for workflow 2"
+    band: high
+    modality: must
+    pattern_id: configuration.bounds_or_required_values
+    escalate: false
+    owasp: [A04]
+    marker: business-logic retry budget for workflow 2 (A04-2)
+    decision: Workflow engines SHALL set a business-logic retry budget for workflow 2 (A04-2).
+    context: Unbounded retries amplify costly side effects.
+    consequences: Idempotency keys accompany mutating steps.
+  - id: ADR-3039
+    title: "A04: Trust boundary bypass for payment step 3"
+    band: high
+    modality: must_not
+    pattern_id: architecture.secure_design
+    escalate: false
+    owasp: [A04]
+    marker: trust boundary bypass for payment step 3 (A04-3)
+    decision: Checkout flows MUST NOT allow a trust boundary bypass for payment step 3 (A04-3).
+    context: Skipping verification steps enables fraud.
+    consequences: State machines enforce is expected to transitions.
+  - id: ADR-3040
+    title: "A04: Unauthenticated state-changing RPC for action 4"
+    band: high
+    modality: must_not
+    pattern_id: security.secure_design
+    escalate: false
+    owasp: [A04]
+    marker: unauthenticated state-changing RPC for action 4 (A04-4)
+    decision: Services MUST NOT expose an unauthenticated state-changing RPC for action 4 (A04-4).
+    context: CSRF-like gaps appear when auth is optional on writes.
+    consequences: Mutations require authn plus anti-forgery controls.
+  - id: ADR-3041
+    title: "A04: Account lockout threshold setting for login family 5"
+    band: high
+    modality: must
+    pattern_id: configuration.abuse_controls
+    escalate: false
+    owasp: [A04]
+    marker: account lockout threshold setting for login family 5 (A04-5)
+    decision: Identity services SHALL configure an account lockout threshold setting for login family 5 (A04-5).
+    context: Unlimited guesses defeat password controls.
+    consequences: Lockouts alert fraud systems.
+  - id: ADR-3042
+    title: "A04: Security control deferral for launch train 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.secure_design
+    escalate: false
+    owasp: [A04]
+    marker: security control deferral for launch train 6 (A04-6)
+    decision: Teams MUST NOT accept a security control deferral for launch train 6 (A04-6) unless an exception is explicitly documented.
+    context: Shipping without controls creates permanent debt.
+    consequences: Deferred controls get dated tickets and owners.
+  - id: ADR-3043
+    title: "A04: Client-only authorization decision for feature 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.secure_design
+    escalate: false
+    owasp: [A04]
+    marker: client-only authorization decision for feature 7 (A04-7)
+    decision: Products SHALL NOT rely on a client-only authorization decision for feature 7 (A04-7) unless an exception is explicitly documented.
+    context: Client checks are bypassable.
+    consequences: Server re-validates every sensitive action.
+  - id: ADR-3044
+    title: "A04: Shared mutable cache key for tenant 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.secure_design
+    escalate: false
+    owasp: [A04]
+    marker: shared mutable cache key for tenant 8 (A04-8)
+    decision: Caches MUST NOT use a shared mutable cache key for tenant 8 (A04-8) unless an exception is explicitly documented.
+    context: Key collisions leak or clobber tenant data.
+    consequences: Keys include tenant and object identity.
+  - id: ADR-3045
+    title: "A04: Prefer threat modeling workshops for initiative 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A04]
+    marker: prefer threat modeling workshops for initiative 9 (A04-9)
+    decision: Delivery teams SHOULD prefer threat modeling workshops for initiative 9 (A04-9) before high-risk launches.
+    context: Late design reviews miss structural issues.
+    consequences: Outputs feed the ADR backlog.
+  - id: ADR-3046
+    title: "A04: Prefer abuse-case reviews for marketplace flow 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A04]
+    marker: prefer abuse-case reviews for marketplace flow 10 (A04-10)
+    decision: Product teams SHOULD prefer abuse-case reviews for marketplace flow 10 (A04-10) when incentives invite fraud.
+    context: Happy-path QA misses adversarial misuse.
+    consequences: Findings map to detection stories.
+  - id: ADR-3047
+    title: "A04: Documented risk acceptance for beta surface 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A04]
+    marker: documented risk acceptance for beta surface 11 (A04-11)
+    decision: Programs MAY adopt a documented risk acceptance for beta surface 11 (A04-11) when exposing limited beta features.
+    context: Betas sometimes ship with reduced controls.
+    consequences: Acceptances expire with GA criteria.
+  - id: ADR-3048
+    title: "A04: Documented design trade-study for consistency model 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A04]
+    marker: documented design trade-study for consistency model 12 (A04-12)
+    decision: Architects MAY adopt a documented design trade-study for consistency model 12 (A04-12) when choosing eventual consistency.
+    context: Consistency choices are contextual.
+    consequences: Trade-studies cite failure modes.
+  - id: ADR-3049
+    title: "A05: Debug mode configuration flag for environment 1"
+    band: high
+    modality: must
+    pattern_id: configuration.hardening
+    escalate: false
+    owasp: [A05]
+    marker: debug mode configuration flag for environment 1 (A05-1)
+    decision: Production configuration SHALL not enable a debug mode configuration flag for environment 1 (A05-1).
+    context: Debug modes leak stacks and admin tools.
+    consequences: Deploy gates reject debug=true in prod.
+  - id: ADR-3050
+    title: "A05: Default admin password setting for appliance 2"
+    band: high
+    modality: must
+    pattern_id: configuration.hardening
+    escalate: false
+    owasp: [A05]
+    marker: default admin password setting for appliance 2 (A05-2)
+    decision: Platform images SHALL rotate any default admin password setting for appliance 2 (A05-2).
+    context: Default credentials are publicly known.
+    consequences: First-boot forces unique secrets.
+  - id: ADR-3051
+    title: "A05: Unnecessary feature toggle for service profile 3"
+    band: high
+    modality: must
+    pattern_id: configuration.hardening
+    escalate: false
+    owasp: [A05]
+    marker: unnecessary feature toggle for service profile 3 (A05-3)
+    decision: Hardened profiles MUST disable each unnecessary feature toggle for service profile 3 (A05-3).
+    context: Extra features expand attack surface.
+    consequences: Baselines are versioned per runtime.
+  - id: ADR-3052
+    title: "A05: Security header required key for HTTP profile 4"
+    band: high
+    modality: must
+    pattern_id: configuration.hardening
+    escalate: false
+    owasp: [A05]
+    marker: security header required key for HTTP profile 4 (A05-4)
+    decision: Edge configuration SHALL include a security header required key for HTTP profile 4 (A05-4).
+    context: Missing headers weaken browser isolation.
+    consequences: Header baselines cover CSP frame options and referrer.
+  - id: ADR-3053
+    title: "A05: Error verbosity configuration for API family 5"
+    band: high
+    modality: must
+    pattern_id: configuration.hardening
+    escalate: false
+    owasp: [A05]
+    marker: error verbosity configuration for API family 5 (A05-5)
+    decision: APIs MUST set a bounded error verbosity configuration for API family 5 (A05-5).
+    context: Verbose errors expose internals to attackers.
+    consequences: Clients receive opaque correlation IDs.
+  - id: ADR-3054
+    title: "A05: Directory listing enablement for static host 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.misconfiguration
+    escalate: false
+    owasp: [A05]
+    marker: directory listing enablement for static host 6 (A05-6)
+    decision: Static hosts SHALL NOT allow a directory listing enablement for static host 6 (A05-6) unless an exception is explicitly documented.
+    context: Listings reveal sensitive paths and backups.
+    consequences: Indexes are disabled by default.
+  - id: ADR-3055
+    title: "A05: Wildcard CORS credential mode for API 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.misconfiguration
+    escalate: false
+    owasp: [A05]
+    marker: wildcard CORS credential mode for API 7 (A05-7)
+    decision: APIs MUST NOT enable a wildcard CORS credential mode for API 7 (A05-7) unless an exception is explicitly documented.
+    context: Wildcard plus credentials is an unsafe browser combo.
+    consequences: Origins are enumerated explicitly.
+  - id: ADR-3056
+    title: "A05: Cloud metadata exposure path for workload 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.misconfiguration
+    escalate: false
+    owasp: [A05]
+    marker: cloud metadata exposure path for workload 8 (A05-8)
+    decision: Workloads SHALL NOT expose a cloud metadata exposure path for workload 8 (A05-8) unless an exception is explicitly documented.
+    context: SSRF to metadata yields cloud credentials.
+    consequences: IMDSv2 and egress controls are is expected to.
+  - id: ADR-3057
+    title: "A05: Prefer hardened OS baselines for compute pool 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A05]
+    marker: prefer hardened OS baselines for compute pool 9 (A05-9)
+    decision: Platform teams SHOULD prefer hardened OS baselines for compute pool 9 (A05-9) when provisioning fleets.
+    context: Ad-hoc images drift quickly.
+    consequences: Baselines rebuild on a cadence.
+  - id: ADR-3058
+    title: "A05: Prefer automated config drift detection for stack 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A05]
+    marker: prefer automated config drift detection for stack 10 (A05-10)
+    decision: Ops SHOULD prefer automated config drift detection for stack 10 (A05-10) where manual reviews miss changes.
+    context: Silent drift reopens closed findings.
+    consequences: Drift alerts page owning teams.
+  - id: ADR-3059
+    title: "A05: Documented temporary debug session for incident 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A05]
+    marker: documented temporary debug session for incident 11 (A05-11)
+    decision: Responders MAY adopt a documented temporary debug session for incident 11 (A05-11) when diagnosing production faults.
+    context: Live debug can be necessary during SEVs.
+    consequences: Sessions auto-expire and are audited.
+  - id: ADR-3060
+    title: "A05: Documented non-prod parity exception for lab 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A05]
+    marker: documented non-prod parity exception for lab 12 (A05-12)
+    decision: Labs MAY adopt a documented non-prod parity exception for lab 12 (A05-12) when full prod hardening blocks testing.
+    context: Some labs need looser settings.
+    consequences: Exceptions is expected to apply to production accounts.
+  - id: ADR-3061
+    title: "A06: Dependency allow-list configuration for runtime 1"
+    band: high
+    modality: must
+    pattern_id: configuration.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: dependency allow-list configuration for runtime 1 (A06-1)
+    decision: Build systems SHALL maintain a dependency allow-list configuration for runtime 1 (A06-1).
+    context: Unvetted packages introduce known CVEs.
+    consequences: Allow-list updates require security review.
+  - id: ADR-3062
+    title: "A06: Unpinned transitive import for module set 2"
+    band: high
+    modality: must_not
+    pattern_id: architecture.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: unpinned transitive import for module set 2 (A06-2)
+    decision: Services MUST NOT rely on an unpinned transitive import for module set 2 (A06-2).
+    context: Floating versions pull breaking or vulnerable releases.
+    consequences: Lockfiles are committed and verified in CI.
+  - id: ADR-3063
+    title: "A06: CVE remediation SLA setting for severity 3"
+    band: high
+    modality: must
+    pattern_id: configuration.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: CVE remediation SLA setting for severity 3 (A06-3)
+    decision: Security configuration SHALL declare a CVE remediation SLA setting for severity 3 (A06-3).
+    context: "Without SLAs, critical CVEs linger."
+    consequences: SLA breaches open executive risk tickets.
+  - id: ADR-3064
+    title: "A06: End-of-life runtime package for service 4"
+    band: high
+    modality: must_not
+    pattern_id: security.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: end-of-life runtime package for service 4 (A06-4)
+    decision: Deployments MUST NOT ship an end-of-life runtime package for service 4 (A06-4).
+    context: EOL runtimes stop receiving security patches.
+    consequences: Upgrade trains are scheduled before EOL dates.
+  - id: ADR-3065
+    title: "A06: SBOM required key for release artifact 5"
+    band: high
+    modality: must
+    pattern_id: configuration.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: SBOM required key for release artifact 5 (A06-5)
+    decision: Release pipelines SHALL emit an SBOM required key for release artifact 5 (A06-5).
+    context: "Without SBOMs, blast radius of CVEs is unknown."
+    consequences: SBOMs attach to provenance attestations.
+  - id: ADR-3066
+    title: "A06: Unmaintained library retention for legacy app 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: unmaintained library retention for legacy app 6 (A06-6)
+    decision: Teams MUST NOT keep an unmaintained library retention for legacy app 6 (A06-6) unless an exception is explicitly documented.
+    context: Abandoned libraries accumulate exploit PoCs.
+    consequences: Exceptions include compensating controls.
+  - id: ADR-3067
+    title: "A06: Direct Git dependency URL for build 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: direct Git dependency URL for build 7 (A06-7)
+    decision: Builds SHALL NOT fetch a direct Git dependency URL for build 7 (A06-7) unless an exception is explicitly documented.
+    context: Mutable Git refs bypass review and hashing.
+    consequences: Prefer versioned registries with digests.
+  - id: ADR-3068
+    title: "A06: Unsigned package install for agent 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.supply_chain
+    escalate: false
+    owasp: [A06]
+    marker: unsigned package install for agent 8 (A06-8)
+    decision: Agents MUST NOT perform an unsigned package install for agent 8 (A06-8) unless an exception is explicitly documented.
+    context: Unsigned packages enable supply-chain swaps.
+    consequences: Signature verification is enforced.
+  - id: ADR-3069
+    title: "A06: Prefer automated dependency update bots for repo 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A06]
+    marker: prefer automated dependency update bots for repo 9 (A06-9)
+    decision: Teams SHOULD prefer automated dependency update bots for repo 9 (A06-9) when patch volume is high.
+    context: Manual bumps lag behind disclosures.
+    consequences: Bots still require human review.
+  - id: ADR-3070
+    title: "A06: Prefer private package mirrors for build farm 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A06]
+    marker: prefer private package mirrors for build farm 10 (A06-10)
+    decision: Platforms SHOULD prefer private package mirrors for build farm 10 (A06-10) where upstream availability is a risk.
+    context: Public registries can be unavailable or tampered.
+    consequences: Mirrors verify upstream checksums.
+  - id: ADR-3071
+    title: "A06: Documented freeze window for release train 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A06]
+    marker: documented freeze window for release train 11 (A06-11)
+    decision: Programs MAY adopt a documented freeze window for release train 11 (A06-11) when stabilizing a major launch.
+    context: Freezes delay patches intentionally.
+    consequences: Critical CVE exceptions pierce freezes.
+  - id: ADR-3072
+    title: "A06: Documented vendor risk acceptance for OEM component 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A06]
+    marker: documented vendor risk acceptance for OEM component 12 (A06-12)
+    decision: Hardware programs MAY adopt a documented vendor risk acceptance for OEM component 12 (A06-12) when firmware cannot be patched in-house.
+    context: OEM components constrain remediation.
+    consequences: Acceptances include vendor SLAs.
+  - id: ADR-3073
+    title: "A07: Password minimum length setting for realm 1"
+    band: high
+    modality: must
+    pattern_id: configuration.authentication
+    escalate: false
+    owasp: [A07]
+    marker: password minimum length setting for realm 1 (A07-1)
+    decision: Identity configuration MUST declare a password minimum length setting for realm 1 (A07-1).
+    context: Short passwords fall to online guessing.
+    consequences: Compromised-password checks complement length.
+  - id: ADR-3074
+    title: "A07: Credential stuffing without bot controls for login 2"
+    band: high
+    modality: must_not
+    pattern_id: security.authentication
+    escalate: false
+    owasp: [A07]
+    marker: credential stuffing without bot controls for login 2 (A07-2)
+    decision: Login services SHALL NOT allow credential stuffing without bot controls for login 2 (A07-2).
+    context: Unthrottled logins enable stuffing at scale.
+    consequences: Bot and velocity controls are mandatory.
+  - id: ADR-3075
+    title: "A07: Session fixation accept for auth flow 3"
+    band: high
+    modality: must_not
+    pattern_id: security.authentication
+    escalate: false
+    owasp: [A07]
+    marker: session fixation accept for auth flow 3 (A07-3)
+    decision: Auth flows MUST NOT perform a session fixation accept for auth flow 3 (A07-3).
+    context: Reusing pre-login session IDs enables fixation.
+    consequences: Rotate session identifiers on authentication.
+  - id: ADR-3076
+    title: "A07: MFA required key for privileged role 4"
+    band: high
+    modality: must
+    pattern_id: configuration.authentication
+    escalate: false
+    owasp: [A07]
+    marker: MFA required key for privileged role 4 (A07-4)
+    decision: Privileged access configuration SHALL include an MFA required key for privileged role 4 (A07-4).
+    context: Password-only admin access is insufficient.
+    consequences: Phishing-resistant factors are preferred.
+  - id: ADR-3077
+    title: "A07: Plaintext password recovery channel for user 5"
+    band: high
+    modality: must_not
+    pattern_id: security.authentication
+    escalate: false
+    owasp: [A07]
+    marker: plaintext password recovery channel for user 5 (A07-5)
+    decision: Recovery flows MUST NOT send a plaintext password recovery channel for user 5 (A07-5).
+    context: Emailing passwords defeats hashing controls.
+    consequences: Use single-use reset tokens only.
+  - id: ADR-3078
+    title: "A07: Long-lived bearer token for SPA session 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.authentication
+    escalate: false
+    owasp: [A07]
+    marker: long-lived bearer token for SPA session 6 (A07-6)
+    decision: SPAs SHALL NOT store a long-lived bearer token for SPA session 6 (A07-6) unless an exception is explicitly documented.
+    context: Long-lived tokens magnify XSS impact.
+    consequences: Prefer short-lived access tokens plus refresh rotation.
+  - id: ADR-3079
+    title: "A07: Knowledge-based auth questions for recovery 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.authentication
+    escalate: false
+    owasp: [A07]
+    marker: knowledge-based auth questions for recovery 7 (A07-7)
+    decision: Recovery MUST NOT rely on knowledge-based auth questions for recovery 7 (A07-7) unless an exception is explicitly documented.
+    context: KBA answers are often public or reused.
+    consequences: Out-of-band verified channels replace KBA.
+  - id: ADR-3080
+    title: "A07: Concurrent session unlimited policy for account 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.authentication
+    escalate: false
+    owasp: [A07]
+    marker: concurrent session unlimited policy for account 8 (A07-8)
+    decision: Accounts MUST NOT use a concurrent session unlimited policy for account 8 (A07-8) unless an exception is explicitly documented.
+    context: Unlimited sessions hide account takeover.
+    consequences: Session inventories support remote revoke.
+  - id: ADR-3081
+    title: "A07: Prefer phishing-resistant MFA for workforce 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A07]
+    marker: prefer phishing-resistant MFA for workforce 9 (A07-9)
+    decision: Workforce IAM SHOULD prefer phishing-resistant MFA for workforce 9 (A07-9) when rolling out stronger factors.
+    context: OTP MFA is phishable at scale.
+    consequences: WebAuthn/passkeys are the target state.
+  - id: ADR-3082
+    title: "A07: Prefer centralized identity providers for app portfolio 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A07]
+    marker: prefer centralized identity providers for app portfolio 10 (A07-10)
+    decision: Product orgs SHOULD prefer centralized identity providers for app portfolio 10 (A07-10) when reducing password sprawl.
+    context: Per-app identity multiplies weak configs.
+    consequences: Federation standards are documented.
+  - id: ADR-3083
+    title: "A07: Documented service-account password for legacy batch 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A07]
+    marker: documented service-account password for legacy batch 11 (A07-11)
+    decision: Legacy batches MAY adopt a documented service-account password for legacy batch 11 (A07-11) when modern federation is unavailable.
+    context: Some mainframe jobs still need passwords.
+    consequences: Passwords rotate and are vaulted.
+  - id: ADR-3084
+    title: "A07: Documented step-up auth exemption for read API 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A07]
+    marker: documented step-up auth exemption for read API 12 (A07-12)
+    decision: APIs MAY adopt a documented step-up auth exemption for read API 12 (A07-12) when low-risk reads would over-prompt users.
+    context: Step-up friction can harm UX on reads.
+    consequences: Exemptions exclude sensitive fields.
+  - id: ADR-3085
+    title: "A08: Unsigned update payload for client 1"
+    band: high
+    modality: must_not
+    pattern_id: security.integrity
+    escalate: false
+    owasp: [A08]
+    marker: unsigned update payload for client 1 (A08-1)
+    decision: Update agents SHALL NOT apply an unsigned update payload for client 1 (A08-1).
+    context: Unsigned updates enable supply-chain takeover.
+    consequences: Signatures verify against pinned public keys.
+  - id: ADR-3086
+    title: "A08: Insecure deserialization gadget for payload 2"
+    band: high
+    modality: must_not
+    pattern_id: security.integrity
+    escalate: false
+    owasp: [A08]
+    marker: insecure deserialization gadget for payload 2 (A08-2)
+    decision: Services MUST NOT perform an insecure deserialization gadget for payload 2 (A08-2).
+    context: Unsafe deserializers execute attacker gadgets.
+    consequences: Prefer safe formats and allow-listed types.
+  - id: ADR-3087
+    title: "A08: CI provenance required key for deploy artifact 3"
+    band: high
+    modality: must
+    pattern_id: configuration.integrity
+    escalate: false
+    owasp: [A08]
+    marker: CI provenance required key for deploy artifact 3 (A08-3)
+    decision: Deploy pipelines SHALL attach a CI provenance required key for deploy artifact 3 (A08-3).
+    context: "Without provenance, builds can be swapped."
+    consequences: Attestations are verified before promote.
+  - id: ADR-3088
+    title: "A08: Untrusted plugin import for extension host 4"
+    band: high
+    modality: must_not
+    pattern_id: architecture.integrity
+    escalate: false
+    owasp: [A08]
+    marker: untrusted plugin import for extension host 4 (A08-4)
+    decision: Hosts MUST NOT load an untrusted plugin import for extension host 4 (A08-4).
+    context: Plugins run with host privileges.
+    consequences: Plugins are signed and permission-scoped.
+  - id: ADR-3089
+    title: "A08: Auto-execute macro content for document pipe 5"
+    band: high
+    modality: must_not
+    pattern_id: security.integrity
+    escalate: false
+    owasp: [A08]
+    marker: auto-execute macro content for document pipe 5 (A08-5)
+    decision: Pipelines SHALL NOT auto-execute macro content for document pipe 5 (A08-5).
+    context: Macros become code execution vectors.
+    consequences: Documents are sandboxed or converted.
+  - id: ADR-3090
+    title: "A08: CDN integrity skip for script include 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.integrity
+    escalate: false
+    owasp: [A08]
+    marker: CDN integrity skip for script include 6 (A08-6)
+    decision: Pages SHALL NOT use a CDN integrity skip for script include 6 (A08-6) unless an exception is explicitly documented.
+    context: Missing SRI allows CDN compromise impact.
+    consequences: Subresource Integrity hashes are mandatory.
+  - id: ADR-3091
+    title: "A08: Mutable tag deploy reference for release 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.integrity
+    escalate: false
+    owasp: [A08]
+    marker: mutable tag deploy reference for release 7 (A08-7)
+    decision: Deployments MUST NOT use a mutable tag deploy reference for release 7 (A08-7) unless an exception is explicitly documented.
+    context: Floating tags can be retargeted silently.
+    consequences: Immutable digests pin what runs.
+  - id: ADR-3092
+    title: "A08: Webhook without signature check for integration 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.integrity
+    escalate: false
+    owasp: [A08]
+    marker: webhook without signature check for integration 8 (A08-8)
+    decision: Integrations SHALL NOT accept a webhook without signature check for integration 8 (A08-8) unless an exception is explicitly documented.
+    context: Unsigned webhooks are forgeable.
+    consequences: HMAC or mTLS authenticates publishers.
+  - id: ADR-3093
+    title: "A08: Prefer reproducible builds for release train 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A08]
+    marker: prefer reproducible builds for release train 9 (A08-9)
+    decision: Release engineering SHOULD prefer reproducible builds for release train 9 (A08-9) when verifying supply-chain claims.
+    context: Non-reproducible builds obscure tampering.
+    consequences: Differences are investigated before ship.
+  - id: ADR-3094
+    title: "A08: Prefer signed commits for protected branch 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A08]
+    marker: prefer signed commits for protected branch 10 (A08-10)
+    decision: Repositories SHOULD prefer signed commits for protected branch 10 (A08-10) when defending against author spoofing.
+    context: Unsigned history weakens audit trails.
+    consequences: Signing keys are centrally managed.
+  - id: ADR-3095
+    title: "A08: Documented unsigned internal package for lab 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A08]
+    marker: documented unsigned internal package for lab 11 (A08-11)
+    decision: Labs MAY adopt a documented unsigned internal package for lab 11 (A08-11) when prototyping throwaway tooling.
+    context: Labs move faster with fewer gates.
+    consequences: Unsigned packages is expected to promote to prod.
+  - id: ADR-3096
+    title: "A08: Documented integrity downgrade for partner feed 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A08]
+    marker: documented integrity downgrade for partner feed 12 (A08-12)
+    decision: Integrations MAY adopt a documented integrity downgrade for partner feed 12 (A08-12) when a partner cannot sign payloads.
+    context: Some partners lack signing capability.
+    consequences: Compensating network controls are is expected to.
+  - id: ADR-3097
+    title: "A09: Security event logging required key for service 1"
+    band: high
+    modality: must
+    pattern_id: configuration.logging
+    escalate: false
+    owasp: [A09]
+    marker: security event logging required key for service 1 (A09-1)
+    decision: Service configuration MUST include a security event logging required key for service 1 (A09-1).
+    context: "Without security events, detections are blind."
+    consequences: Events cover authn failures and policy denies.
+  - id: ADR-3098
+    title: "A09: Log retention days setting for audit lane 2"
+    band: high
+    modality: must
+    pattern_id: configuration.logging
+    escalate: false
+    owasp: [A09]
+    marker: log retention days setting for audit lane 2 (A09-2)
+    decision: Audit configuration SHALL declare a log retention days setting for audit lane 2 (A09-2).
+    context: Short retention destroys forensics value.
+    consequences: Retention meets legal and detection needs.
+  - id: ADR-3099
+    title: "A09: Silent auth failure path for login family 3"
+    band: high
+    modality: must_not
+    pattern_id: security.logging
+    escalate: false
+    owasp: [A09]
+    marker: silent auth failure path for login family 3 (A09-3)
+    decision: Identity services MUST NOT use a silent auth failure path for login family 3 (A09-3).
+    context: Unaudited failures hide credential attacks.
+    consequences: Failures emit structured security events.
+  - id: ADR-3100
+    title: "A09: Alerting webhook configuration for detection 4"
+    band: high
+    modality: must
+    pattern_id: configuration.logging
+    escalate: false
+    owasp: [A09]
+    marker: alerting webhook configuration for detection 4 (A09-4)
+    decision: Detection stacks SHALL set an alerting webhook configuration for detection 4 (A09-4).
+    context: Logs without alerts delay response.
+    consequences: Pages include runbook links.
+  - id: ADR-3101
+    title: "A09: Immutable log sink required key for archive 5"
+    band: high
+    modality: must
+    pattern_id: configuration.logging
+    escalate: false
+    owasp: [A09]
+    marker: immutable log sink required key for archive 5 (A09-5)
+    decision: Security logging MUST declare an immutable log sink required key for archive 5 (A09-5).
+    context: Mutable sinks allow attackers to erase trails.
+    consequences: Sinks enforce append-only controls.
+  - id: ADR-3102
+    title: "A09: PII-rich debug logging for request 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.logging
+    escalate: false
+    owasp: [A09]
+    marker: PII-rich debug logging for request 6 (A09-6)
+    decision: Services SHALL NOT enable PII-rich debug logging for request 6 (A09-6) unless an exception is explicitly documented.
+    context: Over-logging creates privacy incidents.
+    consequences: Field allow-lists govern log payloads.
+  - id: ADR-3103
+    title: "A09: Log shipping disablement for node pool 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.logging
+    escalate: false
+    owasp: [A09]
+    marker: log shipping disablement for node pool 7 (A09-7)
+    decision: Fleets MUST NOT allow a log shipping disablement for node pool 7 (A09-7) unless an exception is explicitly documented.
+    context: Local-only logs vanish with the node.
+    consequences: Agents are monitored for heartbeat loss.
+  - id: ADR-3104
+    title: "A09: Clock skew ignore for audit stamp 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.logging
+    escalate: false
+    owasp: [A09]
+    marker: clock skew ignore for audit stamp 8 (A09-8)
+    decision: Auditors SHALL NOT accept a clock skew ignore for audit stamp 8 (A09-8) unless an exception is explicitly documented.
+    context: Skew breaks correlation across systems.
+    consequences: NTP hardening is mandatory.
+  - id: ADR-3105
+    title: "A09: Prefer centralized SIEM correlation for detection pack 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A09]
+    marker: prefer centralized SIEM correlation for detection pack 9 (A09-9)
+    decision: Security teams SHOULD prefer centralized SIEM correlation for detection pack 9 (A09-9) when stitching multi-system attacks.
+    context: Siloed logs miss lateral movement.
+    consequences: Use cases are versioned as code.
+  - id: ADR-3106
+    title: "A09: Prefer canary detections for control family 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A09]
+    marker: prefer canary detections for control family 10 (A09-10)
+    decision: Detection owners SHOULD prefer canary detections for control family 10 (A09-10) when validating pipeline health.
+    context: Silent detection failures go unnoticed.
+    consequences: Canary misses page pipeline owners.
+  - id: ADR-3107
+    title: "A09: Documented reduced logging mode for privacy region 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A09]
+    marker: documented reduced logging mode for privacy region 11 (A09-11)
+    decision: Products MAY adopt a documented reduced logging mode for privacy region 11 (A09-11) when local law restricts telemetry.
+    context: Privacy regimes constrain security logs.
+    consequences: Compensating monitoring is described.
+  - id: ADR-3108
+    title: "A09: Documented sampling strategy for high-volume trace 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A09]
+    marker: documented sampling strategy for high-volume trace 12 (A09-12)
+    decision: Observability teams MAY adopt a documented sampling strategy for high-volume trace 12 (A09-12) when full capture is cost-prohibitive.
+    context: Full fidelity can be unaffordable.
+    consequences: Security-critical events remain unsampled.
+  - id: ADR-3109
+    title: "A10: User-controlled URL fetch for connector 1"
+    band: high
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: user-controlled URL fetch for connector 1 (A10-1)
+    decision: Services MUST NOT perform a user-controlled URL fetch for connector 1 (A10-1).
+    context: SSRF reaches internal and cloud metadata targets.
+    consequences: Allow-listed hosts and schemes are enforced.
+  - id: ADR-3110
+    title: "A10: Raw HTTP redirect follow for webhook 2"
+    band: high
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: raw HTTP redirect follow for webhook 2 (A10-2)
+    decision: HTTP clients MUST NOT enable a raw HTTP redirect follow for webhook 2 (A10-2).
+    context: Redirects pivot SSRF into unexpected networks.
+    consequences: Redirects are disabled or re-validated.
+  - id: ADR-3111
+    title: "A10: Link-local address request for probe 3"
+    band: high
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: link-local address request for probe 3 (A10-3)
+    decision: Egress SHALL NOT allow a link-local address request for probe 3 (A10-3).
+    context: Link-local ranges host cloud metadata services.
+    consequences: Block 169.254.0.0/16 and equivalent IPv6.
+  - id: ADR-3112
+    title: "A10: Egress allow-list configuration for fetcher 4"
+    band: high
+    modality: must
+    pattern_id: configuration.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: egress allow-list configuration for fetcher 4 (A10-4)
+    decision: Fetcher configuration MUST declare an egress allow-list configuration for fetcher 4 (A10-4).
+    context: Open egress turns SSRF into intranet scanning.
+    consequences: Deny-by-default egress is preferred.
+  - id: ADR-3113
+    title: "A10: File URL scheme open for import job 5"
+    band: high
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: file URL scheme open for import job 5 (A10-5)
+    decision: Importers SHALL NOT allow a file URL scheme open for import job 5 (A10-5).
+    context: "file:// URLs read local secrets."
+    consequences: Only https schemes are is expected to.
+  - id: ADR-3114
+    title: "A10: DNS rebinding tolerance for preview fetch 6"
+    band: medium
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: DNS rebinding tolerance for preview fetch 6 (A10-6)
+    decision: Previewers MUST NOT allow a DNS rebinding tolerance for preview fetch 6 (A10-6) unless an exception is explicitly documented.
+    context: Rebinding races bypass host allow-lists.
+    consequences: Resolve once and pin the approved IP.
+  - id: ADR-3115
+    title: "A10: Internal hostname allow for media proxy 7"
+    band: medium
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: internal hostname allow for media proxy 7 (A10-7)
+    decision: Media proxies SHALL NOT grant an internal hostname allow for media proxy 7 (A10-7) unless an exception is explicitly documented.
+    context: Internal hostnames expand SSRF reach.
+    consequences: "Public suffixes only, with IP validation."
+  - id: ADR-3116
+    title: "A10: Webhook callback to RFC1918 for integration 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.ssrf
+    escalate: false
+    owasp: [A10]
+    marker: webhook callback to RFC1918 for integration 8 (A10-8)
+    decision: Integrations MUST NOT permit a webhook callback to RFC1918 for integration 8 (A10-8) unless an exception is explicitly documented.
+    context: Private callbacks expose internal services.
+    consequences: Callbacks require public verified endpoints.
+  - id: ADR-3117
+    title: "A10: Prefer network egress proxies for URL preview 9"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A10]
+    marker: prefer network egress proxies for URL preview 9 (A10-9)
+    decision: Platforms SHOULD prefer network egress proxies for URL preview 9 (A10-9) when centralizing SSRF controls.
+    context: Per-service filters drift.
+    consequences: Proxies emit deny metrics.
+  - id: ADR-3118
+    title: "A10: Prefer metadata hop enforcement for cloud workload 10"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A10]
+    marker: prefer metadata hop enforcement for cloud workload 10 (A10-10)
+    decision: Cloud platforms SHOULD prefer metadata hop enforcement for cloud workload 10 (A10-10) when mitigating SSRF credential theft.
+    context: IMDSv1 is trivial via SSRF.
+    consequences: IMDSv2 hop limits are mandatory.
+  - id: ADR-3119
+    title: "A10: Documented internal fetch exception for admin tool 11"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A10]
+    marker: documented internal fetch exception for admin tool 11 (A10-11)
+    decision: Admin tools MAY adopt a documented internal fetch exception for admin tool 11 (A10-11) when operators need to reach internal health endpoints.
+    context: Some admin workflows need internal URLs.
+    consequences: Exceptions are identity-bound and audited.
+  - id: ADR-3120
+    title: "A10: Documented partner callback to private link 12"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    owasp: [A10]
+    marker: documented partner callback to private link 12 (A10-12)
+    decision: Integrations MAY adopt a documented partner callback to private link 12 (A10-12) when a partner requires PrivateLink delivery.
+    context: PrivateLink is intentional private reachability.
+    consequences: Allow-lists are account-scoped.
+  - id: ADR-3201
+    title: "AWS iam: Wildcard IAM action star for role 1"
+    band: high
+    modality: must_not
+    pattern_id: architecture.aws_iam
+    escalate: false
+    aws: [iam]
+    marker: wildcard IAM action star for role 1 (AWS-iam-1)
+    decision: IAM policies SHALL NOT grant a wildcard IAM action star for role 1 (AWS-iam-1).
+    context: Action wildcards violate least privilege.
+    consequences: Policies list explicit actions only.
+  - id: ADR-3202
+    title: "AWS iam: Resource star on sensitive IAM policy for role 2"
+    band: high
+    modality: must_not
+    pattern_id: architecture.aws_iam
+    escalate: false
+    aws: [iam]
+    marker: Resource star on sensitive IAM policy for role 2 (AWS-iam-2)
+    decision: IAM policies MUST NOT use a Resource star on sensitive IAM policy for role 2 (AWS-iam-2).
+    context: "Resource=* widens blast radius."
+    consequences: Resources are ARNs scoped to the workload.
+  - id: ADR-3203
+    title: "AWS iam: IAM Access Analyzer required key for account 3"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_iam
+    escalate: false
+    aws: [iam]
+    marker: IAM Access Analyzer required key for account 3 (AWS-iam-3)
+    decision: Account baselines SHALL include an IAM Access Analyzer required key for account 3 (AWS-iam-3).
+    context: External access findings need continuous detection.
+    consequences: Analyzer findings page security owners.
+  - id: ADR-3204
+    title: "AWS iam: Inline IAM policy sprawl for role 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_iam
+    escalate: false
+    aws: [iam]
+    marker: inline IAM policy sprawl for role 4 (AWS-iam-4)
+    decision: Teams MUST NOT create an inline IAM policy sprawl for role 4 (AWS-iam-4) unless an exception is explicitly documented.
+    context: Inline policies evade reusable review.
+    consequences: Managed policies are preferred.
+  - id: ADR-3205
+    title: "AWS iam: Prefer permission boundaries for developer role 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [iam]
+    marker: prefer permission boundaries for developer role 5 (AWS-iam-5)
+    decision: Platforms SHOULD prefer permission boundaries for developer role 5 (AWS-iam-5) when delegating IAM creation.
+    context: Unbounded CreateRole enables privilege escalation.
+    consequences: Boundaries cap maximum permissions.
+  - id: ADR-3206
+    title: "AWS iam: Documented break-glass IAM role for account 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [iam]
+    marker: documented break-glass IAM role for account 6 (AWS-iam-6)
+    decision: Security teams MAY adopt a documented break-glass IAM role for account 6 (AWS-iam-6) when recovering from lockouts.
+    context: Break-glass access is sometimes is expected to.
+    consequences: Assumptions are dual-controlled and logged.
+  - id: ADR-3207
+    title: "AWS iam: Long-term IAM user access key for workload 7"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_iam
+    escalate: false
+    aws: [iam]
+    marker: long-term IAM user access key for workload 7 (AWS-iam-7)
+    decision: Workloads SHALL NOT use a long-term IAM user access key for workload 7 (AWS-iam-7).
+    context: Static keys leak and rarely rotate.
+    consequences: Prefer roles and temporary credentials.
+  - id: ADR-3208
+    title: "AWS iam: Sts assume-role without external ID for partner 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_iam
+    escalate: false
+    aws: [iam]
+    marker: sts assume-role without external ID for partner 8 (AWS-iam-8)
+    decision: Cross-account trusts MUST NOT allow sts assume-role without external ID for partner 8 (AWS-iam-8) unless an exception is explicitly documented.
+    context: Missing external IDs enable confused deputy.
+    consequences: ExternalId conditions are mandatory for partners.
+  - id: ADR-3209
+    title: "AWS encryption: KMS CMK required key for data class 1"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_encryption
+    escalate: false
+    aws: [encryption]
+    marker: KMS CMK required key for data class 1 (AWS-encryption-1)
+    decision: Sensitive data stores SHALL declare a KMS CMK required key for data class 1 (AWS-encryption-1).
+    context: AWS-managed defaults avoids meet separation needs.
+    consequences: CMK policies separate admins from users.
+  - id: ADR-3210
+    title: "AWS encryption: TLS in transit required key for service link 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_encryption
+    escalate: false
+    aws: [encryption]
+    marker: TLS in transit required key for service link 2 (AWS-encryption-2)
+    decision: Service links SHALL set a TLS in transit required key for service link 2 (AWS-encryption-2).
+    context: Cleartext AWS service calls expose data.
+    consequences: SDK minimum TLS is enforced.
+  - id: ADR-3211
+    title: "AWS encryption: SSE-S3 demotion for regulated bucket 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_encryption
+    escalate: false
+    aws: [encryption]
+    marker: SSE-S3 demotion for regulated bucket 3 (AWS-encryption-3)
+    decision: Regulated buckets MUST NOT allow an SSE-S3 demotion for regulated bucket 3 (AWS-encryption-3).
+    context: Customer-controlled keys is expected to be is expected to.
+    consequences: SSE-KMS with CMKs is the baseline.
+  - id: ADR-3212
+    title: "AWS encryption: Plaintext Secrets Manager put for secret 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_encryption
+    escalate: false
+    aws: [encryption]
+    marker: plaintext Secrets Manager put for secret 4 (AWS-encryption-4)
+    decision: Automation SHALL NOT perform a plaintext Secrets Manager put for secret 4 (AWS-encryption-4) unless an exception is explicitly documented.
+    context: CLI mistakes leave secrets in shell history.
+    consequences: Prefer API calls from secured runners.
+  - id: ADR-3213
+    title: "AWS encryption: Prefer automatic KMS key rotation for CMK 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [encryption]
+    marker: prefer automatic KMS key rotation for CMK 5 (AWS-encryption-5)
+    decision: Security teams SHOULD prefer automatic KMS key rotation for CMK 5 (AWS-encryption-5) when keys guard long-lived data.
+    context: Manual rotation is often skipped.
+    consequences: Apps is expected to tolerate key version changes.
+  - id: ADR-3214
+    title: "AWS encryption: Documented client-side encryption for extranet file 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [encryption]
+    marker: documented client-side encryption for extranet file 6 (AWS-encryption-6)
+    decision: Partners MAY adopt a documented client-side encryption for extranet file 6 (AWS-encryption-6) when sharing regulated files.
+    context: Some transfers need encryption before upload.
+    consequences: Key exchange procedures are documented.
+  - id: ADR-3215
+    title: "AWS encryption: EBS encryption by default setting for account 7"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_encryption
+    escalate: false
+    aws: [encryption]
+    marker: EBS encryption by default setting for account 7 (AWS-encryption-7)
+    decision: Accounts MUST enable an EBS encryption by default setting for account 7 (AWS-encryption-7).
+    context: Unencrypted volumes appear via misconfiguration.
+    consequences: SCPs reinforce the account setting.
+  - id: ADR-3216
+    title: "AWS encryption: Disabled RDS encryption flag for database 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_encryption
+    escalate: false
+    aws: [encryption]
+    marker: disabled RDS encryption flag for database 8 (AWS-encryption-8)
+    decision: Databases SHALL NOT ship a disabled RDS encryption flag for database 8 (AWS-encryption-8) unless an exception is explicitly documented.
+    context: Unencrypted RDS snapshots leak easily.
+    consequences: Encryption is enabled at create time.
+  - id: ADR-3217
+    title: "AWS network: Public subnet placement for data store 1"
+    band: high
+    modality: must_not
+    pattern_id: architecture.aws_network
+    escalate: false
+    aws: [network]
+    marker: public subnet placement for data store 1 (AWS-network-1)
+    decision: Data stores MUST NOT use a public subnet placement for data store 1 (AWS-network-1).
+    context: Public subnets expose databases to the internet path.
+    consequences: Private subnets plus controlled ingress only.
+  - id: ADR-3218
+    title: "AWS network: VPC flow logs required key for VPC 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_network
+    escalate: false
+    aws: [network]
+    marker: VPC flow logs required key for VPC 2 (AWS-network-2)
+    decision: Network baselines SHALL include a VPC flow logs required key for VPC 2 (AWS-network-2).
+    context: "Without flow logs, lateral movement is hard to see."
+    consequences: Logs land in immutable accounts.
+  - id: ADR-3219
+    title: "AWS network: 0.0.0.0/0 SSH ingress for security group 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_network
+    escalate: false
+    aws: [network]
+    marker: 0.0.0.0/0 SSH ingress for security group 3 (AWS-network-3)
+    decision: Security groups MUST NOT allow a 0.0.0.0/0 SSH ingress for security group 3 (AWS-network-3).
+    context: Open SSH is routinely scanned and exploited.
+    consequences: Admin access uses SSM or tightly scoped CIDRs.
+  - id: ADR-3220
+    title: "AWS network: NACL allow-all ephemeral rule for VPC 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_network
+    escalate: false
+    aws: [network]
+    marker: NACL allow-all ephemeral rule for VPC 4 (AWS-network-4)
+    decision: Teams MUST NOT rely on a NACL allow-all ephemeral rule for VPC 4 (AWS-network-4) unless an exception is explicitly documented.
+    context: Over-broad NACLs weaken defense in depth.
+    consequences: NACLs complement security groups deliberately.
+  - id: ADR-3221
+    title: "AWS network: Prefer centralized egress inspection for VPC 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [network]
+    marker: prefer centralized egress inspection for VPC 5 (AWS-network-5)
+    decision: Network teams SHOULD prefer centralized egress inspection for VPC 5 (AWS-network-5) when controlling data exfiltration.
+    context: Per-VPC ad-hoc NAT hides destinations.
+    consequences: Egress gateways log and filter destinations.
+  - id: ADR-3222
+    title: "AWS network: Documented public ALB for marketing site 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [network]
+    marker: documented public ALB for marketing site 6 (AWS-network-6)
+    decision: Web teams MAY adopt a documented public ALB for marketing site 6 (AWS-network-6) when content is intentionally public.
+    context: Public ingress is valid for public sites.
+    consequences: WAF and TLS baselines still apply.
+  - id: ADR-3223
+    title: "AWS network: Peering without least-privilege routes for VPC 7"
+    band: high
+    modality: must_not
+    pattern_id: architecture.aws_network
+    escalate: false
+    aws: [network]
+    marker: peering without least-privilege routes for VPC 7 (AWS-network-7)
+    decision: VPC peerings SHALL NOT use a peering without least-privilege routes for VPC 7 (AWS-network-7).
+    context: Full-net routes overexpose peered CIDRs.
+    consequences: Routes advertise only is expected to prefixes.
+  - id: ADR-3224
+    title: "AWS network: Security group reference cycles for tier 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_network
+    escalate: false
+    aws: [network]
+    marker: security group reference cycles for tier 8 (AWS-network-8)
+    decision: Architectures MUST NOT create security group reference cycles for tier 8 (AWS-network-8) unless an exception is explicitly documented.
+    context: Cycles obscure effective permissions.
+    consequences: Tiered SG designs are documented.
+  - id: ADR-3225
+    title: "AWS logging: CloudTrail multi-region required key for org 1"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_logging
+    escalate: false
+    aws: [logging]
+    marker: CloudTrail multi-region required key for org 1 (AWS-logging-1)
+    decision: Organizations SHALL enable a CloudTrail multi-region required key for org 1 (AWS-logging-1).
+    context: Partial trails miss regional attacker activity.
+    consequences: Org trails bind to a security Log Archive account.
+  - id: ADR-3226
+    title: "AWS logging: CloudTrail log file validation setting for trail 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_logging
+    escalate: false
+    aws: [logging]
+    marker: CloudTrail log file validation setting for trail 2 (AWS-logging-2)
+    decision: Trails MUST enable a CloudTrail log file validation setting for trail 2 (AWS-logging-2).
+    context: "Without validation, log tampering is harder to detect."
+    consequences: Validation digests are monitored.
+  - id: ADR-3227
+    title: "AWS logging: CloudTrail stop-logging permission for role 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_logging
+    escalate: false
+    aws: [logging]
+    marker: CloudTrail stop-logging permission for role 3 (AWS-logging-3)
+    decision: Operational roles SHALL NOT hold a CloudTrail stop-logging permission for role 3 (AWS-logging-3).
+    context: Attackers stop trails to hide activity.
+    consequences: Only break-glass roles is expected to alter trails.
+  - id: ADR-3228
+    title: "AWS logging: S3 access logging disablement for trail bucket 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_logging
+    escalate: false
+    aws: [logging]
+    marker: S3 access logging disablement for trail bucket 4 (AWS-logging-4)
+    decision: Trail buckets MUST NOT allow an S3 access logging disablement for trail bucket 4 (AWS-logging-4) unless an exception is explicitly documented.
+    context: Access logs detect unauthorized reads of trails.
+    consequences: Logging buckets are separately locked down.
+  - id: ADR-3229
+    title: "AWS logging: Prefer GuardDuty across all regions for account 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [logging]
+    marker: prefer GuardDuty across all regions for account 5 (AWS-logging-5)
+    decision: Security teams SHOULD prefer GuardDuty across all regions for account 5 (AWS-logging-5) when enabling threat detection.
+    context: Single-region detectors miss elsewhere.
+    consequences: Findings aggregate to a delegated admin.
+  - id: ADR-3230
+    title: "AWS logging: Documented CloudTrail exclusion for high-volume data event 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [logging]
+    marker: documented CloudTrail exclusion for high-volume data event 6 (AWS-logging-6)
+    decision: Platforms MAY adopt a documented CloudTrail exclusion for high-volume data event 6 (AWS-logging-6) when costs would dominate.
+    context: Data events can be extremely high volume.
+    consequences: Exclusions are risk-reviewed annually.
+  - id: ADR-3231
+    title: "AWS logging: Config recorder required key for region 7"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_logging
+    escalate: false
+    aws: [logging]
+    marker: Config recorder required key for region 7 (AWS-logging-7)
+    decision: Regions MUST enable a Config recorder required key for region 7 (AWS-logging-7).
+    context: "Without Config, drift and noncompliance hide."
+    consequences: Rules evaluate continuous compliance.
+  - id: ADR-3232
+    title: "AWS logging: CloudWatch log group without retention for app 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_logging
+    escalate: false
+    aws: [logging]
+    marker: CloudWatch log group without retention for app 8 (AWS-logging-8)
+    decision: Apps SHALL NOT create a CloudWatch log group without retention for app 8 (AWS-logging-8) unless an exception is explicitly documented.
+    context: Infinite retention explodes cost; zero loses forensics.
+    consequences: Retention matches the data classification.
+  - id: ADR-3233
+    title: "AWS secrets: Hardcoded AWS access key in source for app 1"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_secrets
+    escalate: false
+    aws: [secrets]
+    marker: hardcoded AWS access key in source for app 1 (AWS-secrets-1)
+    decision: Repositories MUST NOT contain a hardcoded AWS access key in source for app 1 (AWS-secrets-1).
+    context: Committed keys are harvested by scanners within minutes.
+    consequences: Secrets scanners gate merges.
+  - id: ADR-3234
+    title: "AWS secrets: Secrets Manager rotation required key for secret 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_secrets
+    escalate: false
+    aws: [secrets]
+    marker: Secrets Manager rotation required key for secret 2 (AWS-secrets-2)
+    decision: Secret definitions SHALL include a Secrets Manager rotation required key for secret 2 (AWS-secrets-2).
+    context: Static secrets eventually leak.
+    consequences: Rotation Lambda ownership is assigned.
+  - id: ADR-3235
+    title: "AWS secrets: Plaintext environment secret for Lambda 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_secrets
+    escalate: false
+    aws: [secrets]
+    marker: plaintext environment secret for Lambda 3 (AWS-secrets-3)
+    decision: Lambdas MUST NOT inject a plaintext environment secret for Lambda 3 (AWS-secrets-3).
+    context: Environment variables appear in consoles and dumps.
+    consequences: Fetch secrets at runtime from Secrets Manager/SSM.
+  - id: ADR-3236
+    title: "AWS secrets: Shared secret across environments for service 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_secrets
+    escalate: false
+    aws: [secrets]
+    marker: shared secret across environments for service 4 (AWS-secrets-4)
+    decision: Services SHALL NOT reuse a shared secret across environments for service 4 (AWS-secrets-4) unless an exception is explicitly documented.
+    context: Prod/non-prod secret sharing collapses blast radius.
+    consequences: Each environment has unique secrets.
+  - id: ADR-3237
+    title: "AWS secrets: Prefer SSM Parameter Store SecureString for config 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [secrets]
+    marker: prefer SSM Parameter Store SecureString for config 5 (AWS-secrets-5)
+    decision: Apps SHOULD prefer SSM Parameter Store SecureString for config 5 (AWS-secrets-5) when values are sensitive.
+    context: String parameters leave values readable.
+    consequences: KMS CMKs encrypt SecureString params.
+  - id: ADR-3238
+    title: "AWS secrets: Documented static API key for SaaS vendor 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [secrets]
+    marker: documented static API key for SaaS vendor 6 (AWS-secrets-6)
+    decision: Integrations MAY adopt a documented static API key for SaaS vendor 6 (AWS-secrets-6) when the vendor lacks OAuth.
+    context: Some vendors only offer static keys.
+    consequences: Keys rotate on a documented cadence.
+  - id: ADR-3239
+    title: "AWS secrets: Secrets in AMI or container layer for image 7"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_secrets
+    escalate: false
+    aws: [secrets]
+    marker: secrets in AMI or container layer for image 7 (AWS-secrets-7)
+    decision: Images MUST NOT bake secrets in AMI or container layer for image 7 (AWS-secrets-7).
+    context: Layer history retains deleted secrets.
+    consequences: Inject secrets at runtime only.
+  - id: ADR-3240
+    title: "AWS secrets: Unencrypted EBS snapshot share for account 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_secrets
+    escalate: false
+    aws: [secrets]
+    marker: unencrypted EBS snapshot share for account 8 (AWS-secrets-8)
+    decision: Operators MUST NOT create an unencrypted EBS snapshot share for account 8 (AWS-secrets-8) unless an exception is explicitly documented.
+    context: Shared snapshots leak disk contents.
+    consequences: Shares require encryption and approvals.
+  - id: ADR-3241
+    title: "AWS s3: Public ACL grant for bucket 1"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_s3
+    escalate: false
+    aws: [s3]
+    marker: public ACL grant for bucket 1 (AWS-s3-1)
+    decision: Buckets SHALL NOT apply a public ACL grant for bucket 1 (AWS-s3-1).
+    context: Public ACLs are a leading cause of data leaks.
+    consequences: Block Public Access is account-enforced.
+  - id: ADR-3242
+    title: "AWS s3: S3 Block Public Access required key for account 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_s3
+    escalate: false
+    aws: [s3]
+    marker: S3 Block Public Access required key for account 2 (AWS-s3-2)
+    decision: Accounts MUST set an S3 Block Public Access required key for account 2 (AWS-s3-2).
+    context: Per-bucket mistakes still happen without account BPA.
+    consequences: Exceptions are rare and ticketed.
+  - id: ADR-3243
+    title: "AWS s3: Public-read canned ACL in SDK put for object 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_s3
+    escalate: false
+    aws: [s3]
+    marker: public-read canned ACL in SDK put for object 3 (AWS-s3-3)
+    decision: Application code SHALL NOT use a public-read canned ACL in SDK put for object 3 (AWS-s3-3).
+    context: SDK canned ACLs bypass infrastructure intent.
+    consequences: Object ownership enforces bucket owner enforced.
+  - id: ADR-3244
+    title: "AWS s3: Bucket policy principal star for bucket 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_s3
+    escalate: false
+    aws: [s3]
+    marker: bucket policy principal star for bucket 4 (AWS-s3-4)
+    decision: Policies MUST NOT use a bucket policy principal star for bucket 4 (AWS-s3-4) unless an exception is explicitly documented.
+    context: "Principal * opens anonymous access paths."
+    consequences: Principals are account or service scoped.
+  - id: ADR-3245
+    title: "AWS s3: Prefer Object Lock for compliance bucket 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [s3]
+    marker: prefer Object Lock for compliance bucket 5 (AWS-s3-5)
+    decision: Compliance stores SHOULD prefer Object Lock for compliance bucket 5 (AWS-s3-5) when retention is legally required.
+    context: Soft deletes are insufficient for some regimes.
+    consequences: Retention modes are legal-reviewed.
+  - id: ADR-3246
+    title: "AWS s3: Documented public website bucket for static site 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [s3]
+    marker: documented public website bucket for static site 6 (AWS-s3-6)
+    decision: Web teams MAY adopt a documented public website bucket for static site 6 (AWS-s3-6) when hosting public static assets.
+    context: Static websites are intentionally public.
+    consequences: CloudFront and OAC are preferred fronts.
+  - id: ADR-3247
+    title: "AWS s3: S3 versioning required key for backup bucket 7"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_s3
+    escalate: false
+    aws: [s3]
+    marker: S3 versioning required key for backup bucket 7 (AWS-s3-7)
+    decision: Backup buckets SHALL include an S3 versioning required key for backup bucket 7 (AWS-s3-7).
+    context: Versioning enables recovery from ransomware deletes.
+    consequences: Lifecycle policies control cost.
+  - id: ADR-3248
+    title: "AWS s3: Cross-account get without condition for bucket 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_s3
+    escalate: false
+    aws: [s3]
+    marker: cross-account get without condition for bucket 8 (AWS-s3-8)
+    decision: Shares MUST NOT allow a cross-account get without condition for bucket 8 (AWS-s3-8) unless an exception is explicitly documented.
+    context: Unconditional cross-account gets overshare.
+    consequences: Conditions bind org ID or VPC endpoints.
+  - id: ADR-3249
+    title: "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_sg
+    escalate: false
+    aws: [security_groups]
+    marker: 0.0.0.0/0 on port 3389 for security group 1 (AWS-security_groups-1)
+    decision: Security groups SHALL NOT allow 0.0.0.0/0 on port 3389 for security group 1 (AWS-security_groups-1).
+    context: Open RDP is mass-scanned.
+    consequences: Use SSM or VPN-sourced CIDRs.
+  - id: ADR-3250
+    title: "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_sg
+    escalate: false
+    aws: [security_groups]
+    marker: unrestricted egress 0.0.0.0/0 for sensitive tier 2 (AWS-security_groups-2)
+    decision: Sensitive tiers SHALL NOT allow unrestricted egress 0.0.0.0/0 for sensitive tier 2 (AWS-security_groups-2).
+    context: Open egress enables exfiltration and SSRF impact.
+    consequences: Egress is allow-listed by destination.
+  - id: ADR-3251
+    title: "AWS security_groups: Security group description required key for SG 3"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_sg
+    escalate: false
+    aws: [security_groups]
+    marker: security group description required key for SG 3 (AWS-security_groups-3)
+    decision: Security groups MUST set a security group description required key for SG 3 (AWS-security_groups-3).
+    context: Empty descriptions hide ownership and intent.
+    consequences: Descriptions name system and owner.
+  - id: ADR-3252
+    title: "AWS security_groups:  overlapping world-open rules for alb SG 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_sg
+    escalate: false
+    aws: [security_groups]
+    marker: " overlapping world-open rules for alb SG 4 (AWS-security_groups-4)"
+    decision: ALB groups SHALL NOT keep overlapping world-open rules for alb SG 4 (AWS-security_groups-4) unless an exception is explicitly documented.
+    context: Duplicate opens complicate audits.
+    consequences: Only 80/443 from the world when is expected to.
+  - id: ADR-3253
+    title: "AWS security_groups: Prefer prefix lists for shared CIDR sets 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [security_groups]
+    marker: prefer prefix lists for shared CIDR sets 5 (AWS-security_groups-5)
+    decision: Network teams SHOULD prefer prefix lists for shared CIDR sets 5 (AWS-security_groups-5) when many SGs share sources.
+    context: Copied CIDR lists drift.
+    consequences: Managed prefix lists are the source of truth.
+  - id: ADR-3254
+    title: "AWS security_groups: Documented temporary world-open rule for migration 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [security_groups]
+    marker: documented temporary world-open rule for migration 6 (AWS-security_groups-6)
+    decision: Migrators MAY adopt a documented temporary world-open rule for migration 6 (AWS-security_groups-6) when cutovers need broad testing.
+    context: Short migrations sometimes need open access.
+    consequences: Rules expire automatically.
+  - id: ADR-3255
+    title: "AWS security_groups: Database SG attached to public interface for db 7"
+    band: high
+    modality: must_not
+    pattern_id: architecture.aws_sg
+    escalate: false
+    aws: [security_groups]
+    marker: database SG attached to public interface for db 7 (AWS-security_groups-7)
+    decision: Databases MUST NOT use a database SG attached to public interface for db 7 (AWS-security_groups-7).
+    context: Public interfaces plus DB ports equal exposure.
+    consequences: DB SGs only accept app-tier SGs.
+  - id: ADR-3256
+    title: "AWS security_groups: Self-referencing SG with all ports for tier 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_sg
+    escalate: false
+    aws: [security_groups]
+    marker: self-referencing SG with all ports for tier 8 (AWS-security_groups-8)
+    decision: Tiers SHALL NOT use a self-referencing SG with all ports for tier 8 (AWS-security_groups-8) unless an exception is explicitly documented.
+    context: All-ports self refs defeat microsegmentation.
+    consequences: Allow only is expected to ports between peers.
+  - id: ADR-3257
+    title: "AWS root_mfa: Root MFA required key for account 1"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_root
+    escalate: false
+    aws: [root_mfa]
+    marker: root MFA required key for account 1 (AWS-root_mfa-1)
+    decision: Accounts MUST enforce a root MFA required key for account 1 (AWS-root_mfa-1).
+    context: Unprotected root can destroy the account.
+    consequences: Root credentials stay vaulted offline.
+  - id: ADR-3258
+    title: "AWS root_mfa: Root access key creation for account 2"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_root
+    escalate: false
+    aws: [root_mfa]
+    marker: root access key creation for account 2 (AWS-root_mfa-2)
+    decision: Operators SHALL NOT perform a root access key creation for account 2 (AWS-root_mfa-2).
+    context: Root access keys are almost is expected to justified.
+    consequences: SCPs deny root key creation.
+  - id: ADR-3259
+    title: "AWS root_mfa: Daily root console usage for account 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_root
+    escalate: false
+    aws: [root_mfa]
+    marker: daily root console usage for account 3 (AWS-root_mfa-3)
+    decision: Teams MUST NOT rely on daily root console usage for account 3 (AWS-root_mfa-3).
+    context: Routine root use expands exposure.
+    consequences: Delegated admin roles replace root tasks.
+  - id: ADR-3260
+    title: "AWS root_mfa: Root email without monitored inbox for account 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_root
+    escalate: false
+    aws: [root_mfa]
+    marker: root email without monitored inbox for account 4 (AWS-root_mfa-4)
+    decision: Accounts MUST NOT keep a root email without monitored inbox for account 4 (AWS-root_mfa-4) unless an exception is explicitly documented.
+    context: Unmonitored root email misses recovery and alerts.
+    consequences: Security-owned aliases receive root mail.
+  - id: ADR-3261
+    title: "AWS root_mfa: Prefer hardware MFA for root user 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [root_mfa]
+    marker: prefer hardware MFA for root user 5 (AWS-root_mfa-5)
+    decision: Security teams SHOULD prefer hardware MFA for root user 5 (AWS-root_mfa-5) when protecting high-value accounts.
+    context: Virtual MFA can be cloned with the phone.
+    consequences: Hardware tokens are dual-custodied.
+  - id: ADR-3262
+    title: "AWS root_mfa: Documented root login for account closure 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [root_mfa]
+    marker: documented root login for account closure 6 (AWS-root_mfa-6)
+    decision: Finance MAY adopt a documented root login for account closure 6 (AWS-root_mfa-6) when AWS requires root for closure flows.
+    context: Some account lifecycle actions need root.
+    consequences: Logins are witnessed and ticketed.
+  - id: ADR-3263
+    title: "AWS root_mfa: Organization SCP deny-root-keys setting for ou 7"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_root
+    escalate: false
+    aws: [root_mfa]
+    marker: organization SCP deny-root-keys setting for ou 7 (AWS-root_mfa-7)
+    decision: Organizations SHALL apply an organization SCP deny-root-keys setting for ou 7 (AWS-root_mfa-7).
+    context: Account-local discipline fails under pressure.
+    consequences: SCPs provide a hard guardrail.
+  - id: ADR-3264
+    title: "AWS root_mfa: Shared root password manager entry for team 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_root
+    escalate: false
+    aws: [root_mfa]
+    marker: shared root password manager entry for team 8 (AWS-root_mfa-8)
+    decision: Teams MUST NOT keep a shared root password manager entry for team 8 (AWS-root_mfa-8) unless an exception is explicitly documented.
+    context: Shared root passwords defeat accountability.
+    consequences: Break-glass sealed envelopes replace sharing.
+  - id: ADR-3265
+    title: "AWS backups: AWS Backup plan required key for workload 1"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_backup
+    escalate: false
+    aws: [backups]
+    marker: AWS Backup plan required key for workload 1 (AWS-backups-1)
+    decision: Workloads SHALL declare an AWS Backup plan required key for workload 1 (AWS-backups-1).
+    context: Missing backups turn incidents into data loss.
+    consequences: Plans define frequency and cold storage.
+  - id: ADR-3266
+    title: "AWS backups: Cross-region backup copy setting for vault 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_backup
+    escalate: false
+    aws: [backups]
+    marker: cross-region backup copy setting for vault 2 (AWS-backups-2)
+    decision: Critical vaults MUST enable a cross-region backup copy setting for vault 2 (AWS-backups-2).
+    context: Single-region disasters destroy local backups.
+    consequences: Copies land in a isolated account.
+  - id: ADR-3267
+    title: "AWS backups: Backup vault policy principal star for vault 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_backup
+    escalate: false
+    aws: [backups]
+    marker: backup vault policy principal star for vault 3 (AWS-backups-3)
+    decision: Vault policies SHALL NOT use a backup vault policy principal star for vault 3 (AWS-backups-3).
+    context: Open vault policies allow backup destruction.
+    consequences: Vault access is tightly role-scoped.
+  - id: ADR-3268
+    title: "AWS backups: Disabled backup vault lock for vault 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_backup
+    escalate: false
+    aws: [backups]
+    marker: disabled backup vault lock for vault 4 (AWS-backups-4)
+    decision: Compliance vaults MUST NOT keep a disabled backup vault lock for vault 4 (AWS-backups-4) unless an exception is explicitly documented.
+    context: Unlocked vaults can be mass-deleted.
+    consequences: Vault Lock in compliance mode for regulated data.
+  - id: ADR-3269
+    title: "AWS backups: Prefer restore-test drills for backup plan 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [backups]
+    marker: prefer restore-test drills for backup plan 5 (AWS-backups-5)
+    decision: Ops SHOULD prefer restore-test drills for backup plan 5 (AWS-backups-5) when validating recoverability.
+    context: Untested backups fail during incidents.
+    consequences: Drill results are recorded as evidence.
+  - id: ADR-3270
+    title: "AWS backups: Documented shorter retention for nonprod vault 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [backups]
+    marker: documented shorter retention for nonprod vault 6 (AWS-backups-6)
+    decision: Nonprod MAY adopt a documented shorter retention for nonprod vault 6 (AWS-backups-6) when cost outweighs long retention.
+    context: Nonprod data avoids need long retention.
+    consequences: Prod retention remains stricter.
+  - id: ADR-3271
+    title: "AWS backups: RDS automated backup retention setting for database 7"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_backup
+    escalate: false
+    aws: [backups]
+    marker: RDS automated backup retention setting for database 7 (AWS-backups-7)
+    decision: Databases MUST set an RDS automated backup retention setting for database 7 (AWS-backups-7).
+    context: Zero retention removes point-in-time recovery.
+    consequences: Retention meets RPO commitments.
+  - id: ADR-3272
+    title: "AWS backups: Manual snapshot without encryption for database 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_backup
+    escalate: false
+    aws: [backups]
+    marker: manual snapshot without encryption for database 8 (AWS-backups-8)
+    decision: Operators SHALL NOT create a manual snapshot without encryption for database 8 (AWS-backups-8) unless an exception is explicitly documented.
+    context: Unencrypted snapshots are easy to exfiltrate.
+    consequences: Snapshots inherit encryption requirements.
+  - id: ADR-3273
+    title: "AWS tagging_compute: Mandatory cost allocation tag setting for account 1"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_tagging
+    escalate: false
+    aws: [tagging_compute]
+    marker: mandatory cost allocation tag setting for account 1 (AWS-tagging_compute-1)
+    decision: Accounts MUST enforce a mandatory cost allocation tag setting for account 1 (AWS-tagging_compute-1).
+    context: Untagged resources hide owners and cost.
+    consequences: SCPs or Config rules enforce keys.
+  - id: ADR-3274
+    title: "AWS tagging_compute: Instance metadata hop limit setting for ASG 2"
+    band: high
+    modality: must
+    pattern_id: configuration.aws_compute
+    escalate: false
+    aws: [tagging_compute]
+    marker: instance metadata hop limit setting for ASG 2 (AWS-tagging_compute-2)
+    decision: Compute baselines SHALL set an instance metadata hop limit setting for ASG 2 (AWS-tagging_compute-2).
+    context: IMDSv1 without hop limits enables SSRF key theft.
+    consequences: Require IMDSv2 with hop limit 1 for containers.
+  - id: ADR-3275
+    title: "AWS tagging_compute: Admin IAM instance profile for web ASG 3"
+    band: high
+    modality: must_not
+    pattern_id: security.aws_compute
+    escalate: false
+    aws: [tagging_compute]
+    marker: admin IAM instance profile for web ASG 3 (AWS-tagging_compute-3)
+    decision: Web tiers MUST NOT attach an admin IAM instance profile for web ASG 3 (AWS-tagging_compute-3).
+    context: Overprivileged instance roles are a prime target.
+    consequences: Roles grant only the API calls needed.
+  - id: ADR-3276
+    title: "AWS tagging_compute: Public EC2 with elastic IP for app 4"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_compute
+    escalate: false
+    aws: [tagging_compute]
+    marker: public EC2 with elastic IP for app 4 (AWS-tagging_compute-4)
+    decision: Apps SHALL NOT place a public EC2 with elastic IP for app 4 (AWS-tagging_compute-4) unless an exception is explicitly documented.
+    context: Public instances bypass private network controls.
+    consequences: Prefer private instances behind load balancers.
+  - id: ADR-3277
+    title: "AWS tagging_compute: Prefer Graviton or right-sized instance families for service 5"
+    band: low
+    modality: should
+    pattern_id: manual_review
+    escalate: true
+    aws: [tagging_compute]
+    marker: prefer Graviton or right-sized instance families for service 5 (AWS-tagging_compute-5)
+    decision: Platforms SHOULD prefer Graviton or right-sized instance families for service 5 (AWS-tagging_compute-5) when optimizing cost without weakening isolation.
+    context: Oversized fleets waste spend and expand patch surface.
+    consequences: Rightsizing reviews run monthly.
+  - id: ADR-3278
+    title: "AWS tagging_compute: Documented untagged sandbox resource for experiment 6"
+    band: low
+    modality: may
+    pattern_id: manual_review
+    escalate: true
+    aws: [tagging_compute]
+    marker: documented untagged sandbox resource for experiment 6 (AWS-tagging_compute-6)
+    decision: Builders MAY adopt a documented untagged sandbox resource for experiment 6 (AWS-tagging_compute-6) when prototyping for under 72 hours.
+    context: Short experiments sometimes precede tagging.
+    consequences: Sandbox accounts auto-reap untagged resources.
+  - id: ADR-3279
+    title: "AWS tagging_compute: Shared SSH keypair across fleet for env 7"
+    band: high
+    modality: must_not
+    pattern_id: architecture.aws_compute
+    escalate: false
+    aws: [tagging_compute]
+    marker: shared SSH keypair across fleet for env 7 (AWS-tagging_compute-7)
+    decision: Fleets MUST NOT reuse a shared SSH keypair across fleet for env 7 (AWS-tagging_compute-7).
+    context: Shared keys complicate rotation and attribution.
+    consequences: Prefer SSM Session Manager without SSH keys.
+  - id: ADR-3280
+    title: "AWS tagging_compute: User-data containing secrets for launch template 8"
+    band: medium
+    modality: must_not
+    pattern_id: security.aws_compute
+    escalate: false
+    aws: [tagging_compute]
+    marker: user-data containing secrets for launch template 8 (AWS-tagging_compute-8)
+    decision: Launch templates MUST NOT include user-data containing secrets for launch template 8 (AWS-tagging_compute-8) unless an exception is explicitly documented.
+    context: User-data is readable to many operators and APIs.
+    consequences: Secrets are fetched after boot from a vault.

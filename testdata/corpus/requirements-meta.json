@@ -1,0 +1,7 @@
+{
+  "source": "testdata/corpus/labels.json",
+  "generator": "scripts/generate_corpus_bindings.py",
+  "analyzer_backed": 69,
+  "manual_review": 131,
+  "corpus_size": 200
+}

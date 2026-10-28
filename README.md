@@ -6,7 +6,7 @@ A zero-token, deterministic MVP for evaluating architectural requirements from G
 
 - Models multiple independently assessable requirements per accepted ADR.
 - Reuses typed deterministic verifiers for Go import boundaries and JSON keys/ranges, plus a version-pinned OpenGrep adapter that normalizes SARIF into source-scoped evidence.
-- Accepts Markdown issue submissions and parses Go/JSON code fences without executing submitted code. Repository-level OpenGrep scans run in a separate CI stage; analyzer binaries are not run on issue-submitted snippets.
+- Accepts Markdown issue submissions. Language-tagged fences are sandboxed and scanned with pinned OpenGrep against the **200-ADR OWASP/AWS corpus** (`testdata/corpus/requirements.json`); submitted code is never executed. The small live catalog (`adr/requirements.json`) remains for repository CI.
 - Emits a Markdown report, JSON evidence, and SARIF findings.
 - Runs through GitHub Actions and posts the report to the originating issue.
 - Runs repository CI and uses reviewdog to annotate SARIF findings on pull requests.
@@ -15,9 +15,9 @@ A zero-token, deterministic MVP for evaluating architectural requirements from G
 ## Start here
 
 1. Open **Issues → New issue → ADR compliance assessment**.
-2. Include source snippets with a heading such as `### File: internal/domain/customer.go` followed by a fenced Go code block.
-3. Create the issue with the default `[ADR Assessment]` title prefix.
-4. The ADR Assessment workflow runs tests, evaluates supported requirements, comments the report, and uploads machine-readable evidence.
+2. Paste fenced code (python/go/javascript/…) and/or a tech spec ADR. The issue is assessed against the **full corpus** (200 OWASP Top 10 + AWS ADRs).
+3. Keep the `[ADR Assessment]` title prefix.
+4. The workflow sandboxes fences → OpenGrep → corpus assess, comments the report, uploads `workshop-inputs-*`, and on success **Workshop Publish** merges a snapshot into GitHub Pages.
 
 ## Local validation
 
@@ -132,7 +132,7 @@ See [docs/language-support.md](docs/language-support.md) for the explicit rule/e
 
 ## Multi-language analyzer (implemented)
 
-Repository CI downloads OpenGrep v1.30.0 from the upstream release and verifies the binary SHA-256 before execution. Checked-in rules in `rules/pathfinder-security.yml` are exercised against vulnerable and clean fixtures in Go, Python, JavaScript, TypeScript, Java, C#, PHP, and Ruby. The CI gate requires the expected rule families to produce findings in vulnerable fixtures and no findings for clean fixtures.
+Repository CI downloads OpenGrep v1.30.0 from the upstream release and verifies the binary SHA-256 before execution. Checked-in rules in `rules/pathfinder-security.yml` (merged from `rules/pathfinder-security-core.yml` plus OWASP/AWS packs via `scripts/merge_opengrep_rules.py`) are exercised against vulnerable and clean fixtures. The CI gate requires the legacy shell/eval families plus key OWASP/AWS rules to produce findings in vulnerable fixtures and no findings for clean fixtures. The labeled MADR corpus under `testdata/corpus` covers 200 OWASP Top 10 + AWS security ADRs (`python3 scripts/generate_security_corpus.py`).
 
 Scan a repository and retain both raw and normalized evidence:
 

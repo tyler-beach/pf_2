@@ -32,13 +32,15 @@ OpenGrep supports a wider language set than Pathfinder currently has security ru
 | Visual Basic | `.vb` | `pathfinder.visualbasic-process-start` | Process creation |
 | OCaml | `.ml` | `pathfinder.ocaml-system-command` | `Sys.command` invocation |
 
+Additional OWASP/AWS packs under `rules/owasp-*.yml` and `rules/aws-sdk-misuse.yml` (merged into `rules/pathfinder-security.yml`) cover injection, weak crypto, SSRF heuristics, hardcoded secrets, and AWS SDK misuse. Those packs ship with vulnerable/clean fixtures and are bound via ADR-007 through ADR-012.
+
 ## Catalog bindings
 
-Each CI-validated rule family above is bound to an accepted `analyzer-rule` requirement in `adr/requirements.json` (ADR-003 through ADR-006) with explicit `source_path_prefixes` and `source_extensions`. Reusable pattern IDs for those bindings are defined in `adr/patterns.json`.
+Legacy shell/eval families are bound in `adr/requirements.json` (ADR-003 through ADR-006). OWASP/AWS packs are bound in ADR-007 through ADR-012 with explicit `source_path_prefixes` and `source_extensions`. Reusable pattern IDs are defined in `adr/patterns.json`.
 
 ## Test and enforcement boundaries
 
-- The CI fixture gate requires a complete scan and exact expected rule-family set for the vulnerable fixture corpus; a clean corpus must produce zero findings. Any rule/parser behavior change is therefore visible as a regression.
+- The CI fixture gate requires a complete scan, all legacy shell/eval rule families, and a minimum set of OWASP/AWS rule hits for the vulnerable fixture corpus; a clean corpus must produce zero findings. Any rule/parser behavior change is therefore visible as a regression.
 - Repository scan coverage is limited to enabled rules and the paths/languages actually covered by the analyzer. A clean scan means only that those checks found nothing in the scanned scope.
 - A rule match is a review signal, not proof that input is attacker-controlled or that exploitability is confirmed. Rules should be reviewed for false-positive behavior before a matching obligation is made blocking.
 - New language rules should arrive with both a vulnerable fixture and a clean fixture. Pin the analyzer version and binary digest in CI, preserve raw SARIF, and require the full suite to pass before changing enforcement bindings.

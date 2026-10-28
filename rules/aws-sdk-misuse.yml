@@ -1,0 +1,89 @@
+rules:
+  - id: pathfinder.aws-s3-public-read-acl-python
+    languages: [python]
+    message: Avoid S3 public-read canned ACLs in application code.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: s3
+      owasp: A01
+      confidence: MEDIUM
+      cwe: "CWE-284"
+    pattern-regex: 'ACL\s*=\s*["'\'']public-read["'\'']'
+
+  - id: pathfinder.aws-s3-public-read-acl-go
+    languages: [go]
+    message: Avoid S3 ObjectCannedACLPublicRead in application code.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: s3
+      confidence: MEDIUM
+      cwe: "CWE-284"
+    pattern: types.ObjectCannedACLPublicRead
+
+  - id: pathfinder.aws-s3-public-read-write-python
+    languages: [python]
+    message: Avoid S3 public-read-write canned ACLs.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: s3
+      confidence: MEDIUM
+      cwe: "CWE-284"
+    pattern-regex: 'ACL\s*=\s*["'\'']public-read-write["'\'']'
+
+  - id: pathfinder.aws-put-bucket-acl-public-python
+    languages: [python]
+    message: Review put_bucket_acl calls that may grant public access.
+    severity: WARNING
+    metadata:
+      category: security
+      aws: s3
+      confidence: LOW
+      cwe: "CWE-284"
+    pattern: put_bucket_acl(...)
+
+  - id: pathfinder.aws-disable-s3-encryption-python
+    languages: [python]
+    message: Review S3 puts that omit server-side encryption.
+    severity: WARNING
+    metadata:
+      category: security
+      aws: encryption
+      confidence: LOW
+      cwe: "CWE-311"
+    pattern-regex: 'put_object\([^\)]*Bucket\s*='
+
+  - id: pathfinder.aws-imds-v1-token-skip
+    languages: [python, go]
+    message: Prefer IMDSv2; avoid code that documents IMDSv1-only access.
+    severity: WARNING
+    metadata:
+      category: security
+      aws: compute
+      confidence: LOW
+      cwe: "CWE-668"
+    pattern-regex: '169\.254\.169\.254/latest/meta-data'
+
+  - id: pathfinder.aws-hardcoded-secret-env-python
+    languages: [python]
+    message: Avoid assigning AWS secret keys into process environment in source.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: secrets
+      confidence: MEDIUM
+      cwe: "CWE-798"
+    pattern-regex: 'os\.environ\[["'\'']AWS_SECRET_ACCESS_KEY["'\'']\]\s*='
+
+  - id: pathfinder.aws-setenv-secret-go
+    languages: [go]
+    message: Avoid setting AWS_SECRET_ACCESS_KEY in process environment from source.
+    severity: ERROR
+    metadata:
+      category: security
+      aws: secrets
+      confidence: MEDIUM
+      cwe: "CWE-798"
+    pattern: os.Setenv("AWS_SECRET_ACCESS_KEY", ...)

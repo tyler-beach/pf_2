@@ -23,12 +23,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Verify toolchain and catalog
+      - name: Verify toolchain and catalogs
         run: |
           go version
           ./scripts/go_test.sh
           go vet $(go list ./... | grep -v '/node_modules/')
           go run ./cmd/adrctl validate --requirements adr/requirements.json
+          go run ./cmd/adrctl validate --requirements testdata/corpus/requirements.json
 
       - name: Verify malformed ADR rejection for regression issue
         if: contains(github.event.issue.title, '[malformed-adr-smoke]')
@@ -54,18 +55,16 @@ jobs:
             exit 1
           fi
 
-      - name: Assess issue content without executing submitted code
+      - name: Assess issue against the full OWASP/AWS corpus
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           set -euo pipefail
           printf '%s' "$ISSUE_BODY" > issue.md
-          requirements="adr/requirements.json"
 
-          # This title-gated fixture exercises explicit human-review semantics
-          # through the same issue-to-report pipeline. Ordinary issues always
-          # use the repository's unchanged compatibility catalog.
+          # Default: full 200-ADR corpus pack. Smoke titles keep the small live catalog.
+          requirements="testdata/corpus/requirements.json"
           if [[ "$ISSUE_TITLE" == *"[manual-review-smoke]"* ]]; then
             requirements="$RUNNER_TEMP/requirements-manual-review.json"
             jq '.adrs += [{
@@ -83,12 +82,50 @@ jobs:
             }]' adr/requirements.json > "$requirements"
           fi
 
-          go run ./cmd/adrctl assess \
-            --input issue.md \
-            --requirements "$requirements" \
-            --report report.md \
-            --json-out assessment.json \
-            --sarif-out results.sarif
+          sandbox="$RUNNER_TEMP/issue-sandbox"
+          python3 scripts/issue_sandbox_extract.py --input issue.md --out-dir "$sandbox"
+          snippet_count="$(find "$sandbox" -type f ! -name '.pathfinder-sandbox' | wc -l | tr -d ' ')"
+          echo "sandbox_snippets=${snippet_count}" >> "$GITHUB_STEP_SUMMARY"
+          echo "requirements=${requirements}" >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "$snippet_count" -gt 0 && "$requirements" == "testdata/corpus/requirements.json" ]]; then
+            # Materialize fences and run OpenGrep — never execute submitted code.
+            install_dir="$RUNNER_TEMP/opengrep"
+            mkdir -p "$install_dir"
+            curl --fail --location --silent --show-error \
+              https://github.com/opengrep/opengrep/releases/download/v1.30.0/opengrep_manylinux_x86 \
+              --output "$install_dir/opengrep"
+            echo "35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c  $install_dir/opengrep" | sha256sum --check
+            chmod 0755 "$install_dir/opengrep"
+
+            mkdir -p "$sandbox/rules" analyzer-evidence
+            cp rules/pathfinder-security.yml "$sandbox/rules/pathfinder-security.yml"
+            go run ./cmd/adrctl scan-opengrep \
+              --root "$sandbox" \
+              --config rules/pathfinder-security.yml \
+              --binary "$install_dir/opengrep" \
+              --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+              --version 1.30.0 \
+              --json-out analyzer-evidence/opengrep.json \
+              --sarif-out analyzer-evidence/opengrep.sarif
+
+            go run ./cmd/adrctl assess-repo \
+              --root "$sandbox" \
+              --requirements "$requirements" \
+              --analyzer-evidence analyzer-evidence/opengrep.json \
+              --analyzer-sarif analyzer-evidence/opengrep.sarif \
+              --report report.md \
+              --json-out assessment.json \
+              --sarif-out results.sarif
+          else
+            # Prose-only or smoke catalog: snippet/native assess (no OpenGrep on body).
+            go run ./cmd/adrctl assess \
+              --input issue.md \
+              --requirements "$requirements" \
+              --report report.md \
+              --json-out assessment.json \
+              --sarif-out results.sarif
+          fi
 
       - name: Validate issue SARIF against the pinned 2.1.0 schema
         run: |

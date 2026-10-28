@@ -1,11 +1,15 @@
 name: ADR compliance assessment
-description: Assess a technical specification or source snippet against accepted architectural decisions.
+description: Assess a technical specification or source snippet against the full OWASP Top 10 + AWS corpus (200 ADRs).
 title: "[ADR Assessment] "
 body:
   - type: markdown
     attributes:
       value: |
-        Submit source or a technical specification for deterministic ADR checks. Source snippets are parsed as data and never executed. Runtime LLM calls are disabled.
+        Submissions are checked against **`testdata/corpus/requirements.json`** (200 OWASP/AWS MADRs).
+
+        - Fenced **code snippets** are written to a sandbox and scanned with OpenGrep (never executed).
+        - Prose / tech specs are assessed without OpenGrep; analyzer-backed obligations stay indeterminate until code is provided.
+        - Successful runs publish a workshop snapshot to GitHub Pages via Workshop Publish.
   - type: dropdown
     id: assessment_mode
     attributes:
@@ -18,12 +22,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: adr_ids
-    attributes:
-      label: ADR IDs
-      description: Optional ADR identifiers. The MVP evaluates all accepted requirements in its catalog.
-      placeholder: "ADR-001"
-  - type: textarea
     id: context
     attributes:
       label: Design context
@@ -32,21 +30,29 @@ body:
     id: source_code
     attributes:
       label: Source code
-      description: Include the file path and a fenced code block for each Go source or JSON configuration file you want assessed.
+      description: Use language-tagged fences (python, go, javascript, …). Each fence becomes a sandbox file for OpenGrep vs the corpus.
       value: |
-        ### File: internal/domain/example.go
-        ```go
-        package domain
+        ```python
+        # example — replace with the code under review
+        password = "SuperSecretPassword1"
         ```
   - type: textarea
-    id: spec_facts
+    id: tech_spec
     attributes:
-      label: Structured architecture facts (optional)
-      description: The MVP does not infer missing facts from prose. Unsupported requirements will be indeterminate.
+      label: Technical specification / ADR (optional)
+      description: Markdown with a level-one title if you want obligation extraction from the issue body.
+      value: |
+        # ADR-ISSUE: Example decision
+
+        ## Status
+        Accepted
+
+        ## Decision
+        Services MUST NOT store plaintext credentials in source.
   - type: checkboxes
     id: acknowledgement
     attributes:
       label: Acknowledgement
       options:
-        - label: I understand results are limited to supported requirements and supplied evidence.
+        - label: I understand submitted code is not executed, and results cover the corpus pack (OpenGrep + manual-review obligations).
           required: true

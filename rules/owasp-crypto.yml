@@ -1,0 +1,88 @@
+rules:
+  - id: pathfinder.owasp-md5-python
+    languages: [python]
+    message: Avoid MD5 for security-sensitive digests.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: hashlib.md5(...)
+
+  - id: pathfinder.owasp-sha1-python
+    languages: [python]
+    message: Avoid SHA1 for security-sensitive digests.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: hashlib.sha1(...)
+
+  - id: pathfinder.owasp-md5-go
+    languages: [go]
+    message: Avoid MD5 for security-sensitive digests.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: md5.New()
+
+  - id: pathfinder.owasp-sha1-go
+    languages: [go]
+    message: Avoid SHA1 for security-sensitive digests.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-328"
+    pattern: sha1.New()
+
+  - id: pathfinder.owasp-des-java
+    languages: [java]
+    message: Avoid DES cipher algorithms.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-327"
+    pattern: Cipher.getInstance("DES")
+
+  - id: pathfinder.owasp-math-random-java
+    languages: [java]
+    message: Avoid java.util.Random for security-sensitive tokens.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-330"
+    pattern: new Random()
+
+  - id: pathfinder.owasp-insecure-tls-python
+    languages: [python]
+    message: Avoid disabling TLS certificate verification.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-295"
+    pattern-regex: 'verify\s*=\s*False'
+
+  - id: pathfinder.owasp-insecure-skip-verify-go
+    languages: [go]
+    message: Avoid InsecureSkipVerify in TLS clients.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A02
+      confidence: MEDIUM
+      cwe: "CWE-295"
+    pattern: InsecureSkipVerify: true

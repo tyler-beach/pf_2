@@ -11,6 +11,195 @@
       "fixture_refs": ["testdata/pass-issue.md", "testdata/json-pass-issue.md", "config/service.json"]
     },
     {
+      "id": "configuration.json_fact",
+      "title": "Native JSON configuration facts",
+      "verifier_types": ["json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files"],
+      "applicability": "Same observation contract as JSON verifiers, emitted as canonical evidence facts",
+      "blind_spots": ["Nested paths", "Non-JSON formats"],
+      "fixture_refs": ["config/service.json", "testdata/conftest-benchmark"]
+    },
+    {
+      "id": "configuration.tls_baseline",
+      "title": "TLS and transport security configuration baselines",
+      "verifier_types": ["json-required-keys", "json-number-range", "analyzer-rule"],
+      "inputs": ["json configuration", "optional OpenGrep evidence"],
+      "applicability": "Minimum TLS versions, HSTS, and related transport settings",
+      "blind_spots": ["Negotiated cipher suites at runtime", "Non-JSON edge configs"],
+      "fixture_refs": ["config/service.json"]
+    },
+    {
+      "id": "configuration.crypto_baseline",
+      "title": "Encryption-at-rest and crypto configuration baselines",
+      "verifier_types": ["json-required-keys", "analyzer-rule"],
+      "inputs": ["json configuration", "optional OpenGrep evidence"],
+      "applicability": "Required encryption flags and related config keys",
+      "blind_spots": ["Cloud console-only settings", "HCL/Terraform without JSON projection"],
+      "fixture_refs": ["config/service.json"]
+    },
+    {
+      "id": "configuration.hardening",
+      "title": "Security hardening and misconfiguration baselines",
+      "verifier_types": ["json-required-keys", "analyzer-rule"],
+      "inputs": ["json configuration", "optional OpenGrep evidence"],
+      "applicability": "Debug flags, security headers, error verbosity, feature toggles",
+      "blind_spots": ["Runtime feature flags outside config files"],
+      "fixture_refs": ["config/service.json"]
+    },
+    {
+      "id": "configuration.abuse_controls",
+      "title": "Abuse and anti-automation configuration",
+      "verifier_types": ["json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files"],
+      "applicability": "Rate limits, lockout thresholds, retry budgets",
+      "blind_spots": ["Edge WAF rules not projected to JSON"],
+      "fixture_refs": ["config/service.json"]
+    },
+    {
+      "id": "configuration.supply_chain",
+      "title": "Supply-chain and dependency configuration",
+      "verifier_types": ["json-required-keys", "manual-review"],
+      "inputs": ["lockfiles", "SBOM artifacts", "allow-lists"],
+      "applicability": "Allow-lists, CVE SLAs, SBOM emission requirements",
+      "blind_spots": ["Transitive vulnerability exploitability"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.authentication",
+      "title": "Authentication configuration baselines",
+      "verifier_types": ["json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files"],
+      "applicability": "Password policy, MFA required keys, session settings",
+      "blind_spots": ["IdP console settings"],
+      "fixture_refs": ["config/service.json"]
+    },
+    {
+      "id": "configuration.integrity",
+      "title": "Integrity and provenance configuration",
+      "verifier_types": ["json-required-keys", "analyzer-rule"],
+      "inputs": ["CI provenance", "release metadata"],
+      "applicability": "Required provenance attestations and integrity metadata",
+      "blind_spots": ["Unsigned upstream vendor artifacts"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.logging",
+      "title": "Security logging configuration",
+      "verifier_types": ["json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files"],
+      "applicability": "Security event logging, retention, alerting sinks",
+      "blind_spots": ["SIEM correlation quality"],
+      "fixture_refs": ["config/service.json"]
+    },
+    {
+      "id": "configuration.ssrf",
+      "title": "SSRF egress configuration",
+      "verifier_types": ["json-required-keys", "analyzer-rule"],
+      "inputs": ["json configuration", "OpenGrep evidence"],
+      "applicability": "Egress allow-lists for URL fetchers",
+      "blind_spots": ["DNS rebinding races"],
+      "fixture_refs": ["rules/owasp-ssrf.yml", "testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "configuration.aws_iam",
+      "title": "AWS IAM configuration baselines",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["IAM policy documents", "account baselines"],
+      "applicability": "Access Analyzer and related IAM guardrails",
+      "blind_spots": ["Effective permission simulation"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_encryption",
+      "title": "AWS encryption configuration baselines",
+      "verifier_types": ["manual-review", "json-required-keys"],
+      "inputs": ["account/service configuration"],
+      "applicability": "KMS CMK, TLS-in-transit, EBS default encryption",
+      "blind_spots": ["Console-only toggles without IaC"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_network",
+      "title": "AWS network configuration baselines",
+      "verifier_types": ["manual-review"],
+      "inputs": ["VPC and flow-log configuration"],
+      "applicability": "Flow logs and related network baselines",
+      "blind_spots": ["Effective SG/NACL evaluation"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_logging",
+      "title": "AWS logging and detection configuration",
+      "verifier_types": ["manual-review"],
+      "inputs": ["CloudTrail/Config baselines"],
+      "applicability": "Org trails, validation, Config recorders",
+      "blind_spots": ["Detection tuning quality"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_secrets",
+      "title": "AWS secrets configuration baselines",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["Secrets Manager settings", "source scanners"],
+      "applicability": "Rotation required keys and related controls",
+      "blind_spots": ["Runtime secret fetch correctness"],
+      "fixture_refs": ["rules/owasp-secrets.yml"]
+    },
+    {
+      "id": "configuration.aws_s3",
+      "title": "AWS S3 configuration baselines",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["account BPA settings", "SDK usage evidence"],
+      "applicability": "Block Public Access and versioning baselines",
+      "blind_spots": ["Cross-account condition nuance"],
+      "fixture_refs": ["rules/aws-sdk-misuse.yml"]
+    },
+    {
+      "id": "configuration.aws_sg",
+      "title": "AWS security group configuration baselines",
+      "verifier_types": ["manual-review"],
+      "inputs": ["security group descriptions and rules"],
+      "applicability": "Required descriptions and related SG hygiene",
+      "blind_spots": ["Effective path analysis"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_root",
+      "title": "AWS root account configuration baselines",
+      "verifier_types": ["manual-review"],
+      "inputs": ["account root MFA/SCP settings"],
+      "applicability": "Root MFA and SCP deny-root-keys",
+      "blind_spots": ["Human process adherence"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_backup",
+      "title": "AWS backup configuration baselines",
+      "verifier_types": ["manual-review", "json-required-keys"],
+      "inputs": ["backup plan configuration"],
+      "applicability": "Backup plans, cross-region copy, RDS retention",
+      "blind_spots": ["Restore test effectiveness"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_tagging",
+      "title": "AWS tagging configuration baselines",
+      "verifier_types": ["manual-review"],
+      "inputs": ["tag policies / SCPs"],
+      "applicability": "Mandatory cost allocation tags",
+      "blind_spots": ["Tag value quality"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "configuration.aws_compute",
+      "title": "AWS compute hardening configuration",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["ASG/launch template settings"],
+      "applicability": "IMDS hop limits and related compute baselines",
+      "blind_spots": ["Container hop-limit edge cases"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
       "id": "security.source_pattern",
       "title": "Source security patterns via analyzer-rule",
       "verifier_types": ["analyzer-rule"],
@@ -18,6 +207,195 @@
       "applicability": "OpenGrep rule families bound in adr/requirements.json with path/extension scope",
       "blind_spots": ["Semantic exploitability", "Issue-snippet mode", "Unbound rule families"],
       "fixture_refs": ["testdata/analyzer-fixtures/vulnerable", "testdata/analyzer-fixtures/clean", "rules/pathfinder-security.yml"]
+    },
+    {
+      "id": "security.injection",
+      "title": "Injection sink patterns",
+      "verifier_types": ["analyzer-rule"],
+      "inputs": ["OpenGrep evidence"],
+      "applicability": "SQL/command/eval/template injection families",
+      "blind_spots": ["Second-order injection", "ORM-specific sinks"],
+      "fixture_refs": ["rules/owasp-injection.yml", "testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.crypto",
+      "title": "Weak cryptography patterns",
+      "verifier_types": ["analyzer-rule"],
+      "inputs": ["OpenGrep evidence"],
+      "applicability": "Broken hashes and insecure crypto APIs",
+      "blind_spots": ["Protocol-level downgrade"],
+      "fixture_refs": ["rules/owasp-crypto.yml", "testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.secrets",
+      "title": "Hardcoded secret patterns",
+      "verifier_types": ["analyzer-rule"],
+      "inputs": ["OpenGrep evidence"],
+      "applicability": "Hardcoded credentials and cloud keys in source",
+      "blind_spots": ["Entropy-only secrets", "vault misuse"],
+      "fixture_refs": ["rules/owasp-secrets.yml", "testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.ssrf",
+      "title": "SSRF URL-fetch patterns",
+      "verifier_types": ["analyzer-rule"],
+      "inputs": ["OpenGrep evidence"],
+      "applicability": "User-influenced HTTP fetch sinks",
+      "blind_spots": ["Indirect fetch wrappers"],
+      "fixture_refs": ["rules/owasp-ssrf.yml", "testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.access_control",
+      "title": "Access-control related source patterns",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "review"],
+      "applicability": "Heuristic access-control anti-patterns in source",
+      "blind_spots": ["Missing checks are often absences, not sinks"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.secure_design",
+      "title": "Insecure design signals",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["ADR review", "optional analyzer evidence"],
+      "applicability": "Design-time obligations with limited static evidence",
+      "blind_spots": ["Most design flaws need human review"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.misconfiguration",
+      "title": "Misconfiguration source signals",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "config review"],
+      "applicability": "Code-level misconfiguration patterns",
+      "blind_spots": ["Infra-only misconfigurations"],
+      "fixture_refs": ["testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.supply_chain",
+      "title": "Supply-chain source and packaging signals",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["dependency manifests", "review"],
+      "applicability": "EOL packages and unsafe install patterns",
+      "blind_spots": ["Advisory quality varies by ecosystem"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.authentication",
+      "title": "Authentication failure source signals",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "review"],
+      "applicability": "Session and credential handling anti-patterns",
+      "blind_spots": ["IdP-side controls"],
+      "fixture_refs": ["testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.integrity",
+      "title": "Software integrity source signals",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "review"],
+      "applicability": "Unsafe deserialization, unsigned updates, webhook auth",
+      "blind_spots": ["Build system integrity outside repo"],
+      "fixture_refs": ["rules/owasp-injection.yml", "testdata/analyzer-fixtures"]
+    },
+    {
+      "id": "security.logging",
+      "title": "Logging security source signals",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["review", "optional OpenGrep evidence"],
+      "applicability": "Silent failure paths and over-logging of secrets",
+      "blind_spots": ["Detection content quality"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.aws_iam",
+      "title": "AWS IAM source/SDK misuse",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "policy review"],
+      "applicability": "SDK and policy anti-patterns for IAM",
+      "blind_spots": ["Effective permission simulation"],
+      "fixture_refs": ["rules/aws-sdk-misuse.yml"]
+    },
+    {
+      "id": "security.aws_encryption",
+      "title": "AWS encryption misuse signals",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "review"],
+      "applicability": "SSE demotion and plaintext secret puts",
+      "blind_spots": ["Console-only encryption settings"],
+      "fixture_refs": ["rules/aws-sdk-misuse.yml"]
+    },
+    {
+      "id": "security.aws_network",
+      "title": "AWS network exposure signals",
+      "verifier_types": ["manual-review"],
+      "inputs": ["IaC/policy review"],
+      "applicability": "Open SSH and related network exposure (IaC deferred)",
+      "blind_spots": ["Needs Checkov/cfn-nag for strong evidence"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.aws_logging",
+      "title": "AWS logging misuse signals",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["review", "optional IAM evidence"],
+      "applicability": "Stop-logging permissions and related anti-patterns",
+      "blind_spots": ["Org-trail topology"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.aws_secrets",
+      "title": "AWS secrets misuse signals",
+      "verifier_types": ["analyzer-rule"],
+      "inputs": ["OpenGrep evidence"],
+      "applicability": "Hardcoded AWS keys and plaintext env secrets",
+      "blind_spots": ["Memory-only secret handling"],
+      "fixture_refs": ["rules/owasp-secrets.yml", "rules/aws-sdk-misuse.yml"]
+    },
+    {
+      "id": "security.aws_s3",
+      "title": "AWS S3 public access SDK misuse",
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "bucket policy review"],
+      "applicability": "Public ACL grants and public-read canned ACLs",
+      "blind_spots": ["Account BPA overrides"],
+      "fixture_refs": ["rules/aws-sdk-misuse.yml"]
+    },
+    {
+      "id": "security.aws_sg",
+      "title": "AWS security group exposure signals",
+      "verifier_types": ["manual-review"],
+      "inputs": ["IaC review"],
+      "applicability": "World-open SG rules (IaC deferred)",
+      "blind_spots": ["Needs Checkov for strong evidence"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.aws_root",
+      "title": "AWS root account misuse signals",
+      "verifier_types": ["manual-review"],
+      "inputs": ["account process review"],
+      "applicability": "Root key creation and routine root usage",
+      "blind_spots": ["Human process evidence"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.aws_backup",
+      "title": "AWS backup protection signals",
+      "verifier_types": ["manual-review"],
+      "inputs": ["backup vault policy review"],
+      "applicability": "Open vault policies and unlocked vaults",
+      "blind_spots": ["Restore verification"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "security.aws_compute",
+      "title": "AWS compute privilege signals",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["instance profile review", "user-data scanners"],
+      "applicability": "Overprivileged profiles and secrets in user-data",
+      "blind_spots": ["Effective role permission sets"],
+      "fixture_refs": ["rules/aws-sdk-misuse.yml"]
     },
     {
       "id": "architecture.dependency_or_boundary",
@@ -29,6 +407,78 @@
       "fixture_refs": ["testdata/pass-issue.md", "testdata/deviation-issue.md", "testdata/arch-go-benchmark"]
     },
     {
+      "id": "architecture.access_control",
+      "title": "Access-control architectural boundaries",
+      "verifier_types": ["go-import-boundary", "manual-review", "analyzer-rule"],
+      "inputs": ["architecture review", "optional AST evidence"],
+      "applicability": "Object/function-level authorization boundaries",
+      "blind_spots": ["Missing checks are absences"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.secure_design",
+      "title": "Secure design architectural constraints",
+      "verifier_types": ["manual-review", "go-import-boundary"],
+      "inputs": ["architecture review"],
+      "applicability": "Trust-boundary and workflow constraints",
+      "blind_spots": ["Business-logic abuse cases"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.supply_chain",
+      "title": "Dependency boundary architecture",
+      "verifier_types": ["manual-review", "go-import-boundary"],
+      "inputs": ["module graphs", "review"],
+      "applicability": "Unpinned imports and plugin trust boundaries",
+      "blind_spots": ["Language-specific module graphs"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.integrity",
+      "title": "Integrity architectural constraints",
+      "verifier_types": ["manual-review", "analyzer-rule"],
+      "inputs": ["plugin/extension boundaries"],
+      "applicability": "Untrusted plugin import boundaries",
+      "blind_spots": ["Dynamic plugin loaders"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.aws_iam",
+      "title": "AWS IAM architectural constraints",
+      "verifier_types": ["manual-review"],
+      "inputs": ["IAM policy review"],
+      "applicability": "Wildcard actions/resources and trust design",
+      "blind_spots": ["Needs policy analyzer for strong evidence"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.aws_network",
+      "title": "AWS network architectural constraints",
+      "verifier_types": ["manual-review"],
+      "inputs": ["VPC design review"],
+      "applicability": "Public subnet placement and peering routes",
+      "blind_spots": ["Needs IaC analyzers"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.aws_sg",
+      "title": "AWS security group architectural constraints",
+      "verifier_types": ["manual-review"],
+      "inputs": ["SG design review"],
+      "applicability": "Database SG public attachment and tiering",
+      "blind_spots": ["Needs IaC analyzers"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
+      "id": "architecture.aws_compute",
+      "title": "AWS compute architectural constraints",
+      "verifier_types": ["manual-review"],
+      "inputs": ["fleet access design"],
+      "applicability": "Shared SSH keypairs and related compute trust",
+      "blind_spots": ["SSM session alternatives"],
+      "fixture_refs": ["testdata/corpus/adrs"]
+    },
+    {
       "id": "manual_review",
       "title": "Human judgment / semantic preference",
       "verifier_types": ["manual-review"],
@@ -38,13 +488,13 @@
       "fixture_refs": ["testdata/specifications/service-runtime.md"]
     },
     {
-      "id": "configuration.json_fact",
-      "title": "Native JSON configuration facts",
-      "verifier_types": ["json-required-keys", "json-number-range"],
-      "inputs": ["json configuration files"],
-      "applicability": "Same observation contract as JSON verifiers, emitted as canonical evidence facts",
-      "blind_spots": ["Nested paths", "Non-JSON formats"],
-      "fixture_refs": ["config/service.json", "testdata/conftest-benchmark"]
+      "id": "infra.policy",
+      "title": "Infrastructure policy (deferred Checkov/cfn-nag)",
+      "verifier_types": ["manual-review"],
+      "inputs": ["IaC templates"],
+      "applicability": "Placeholder until Checkov/cfn-nag adapter lands for ≥10 accepted infra ADRs",
+      "blind_spots": ["No automated IaC evidence yet"],
+      "fixture_refs": ["testdata/corpus/adrs"]
     }
   ]
 }

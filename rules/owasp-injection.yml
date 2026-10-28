@@ -1,0 +1,88 @@
+rules:
+  - id: pathfinder.owasp-sql-string-concat-python
+    languages: [python]
+    message: Avoid building SQL with string concatenation of untrusted input.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-89"
+    pattern-regex: 'execute\s*\(\s*f["'\'']'
+
+  - id: pathfinder.owasp-sql-format-go
+    languages: [go]
+    message: Avoid building SQL with fmt.Sprintf.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-89"
+    pattern-regex: 'fmt\.Sprintf\(\s*"(?i)(SELECT|INSERT|UPDATE|DELETE)\b'
+
+  - id: pathfinder.owasp-child-process-exec-node
+    languages: [javascript, typescript]
+    message: Avoid child_process.exec with dynamically supplied commands.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: require("child_process").exec(...)
+
+  - id: pathfinder.owasp-os-system-python
+    languages: [python]
+    message: Avoid os.system with dynamically supplied commands.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern: os.system(...)
+
+  - id: pathfinder.owasp-pickle-loads-python
+    languages: [python]
+    message: Avoid pickle.loads on untrusted data.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A08
+      confidence: MEDIUM
+      cwe: "CWE-502"
+    pattern: pickle.loads(...)
+
+  - id: pathfinder.owasp-yaml-unsafe-load-python
+    languages: [python]
+    message: Avoid yaml.load without a SafeLoader on untrusted input.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A08
+      confidence: MEDIUM
+      cwe: "CWE-502"
+    pattern: yaml.load(...)
+
+  - id: pathfinder.owasp-subprocess-shell-python
+    languages: [python]
+    message: Avoid subprocess calls with shell=True.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-78"
+    pattern-regex: 'subprocess\.(call|run|Popen)\([^)]*shell\s*=\s*True'
+
+  - id: pathfinder.owasp-raw-query-java
+    languages: [java]
+    message: Avoid Statement.execute with concatenated SQL.
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: A03
+      confidence: MEDIUM
+      cwe: "CWE-89"
+    pattern: $STMT.execute($SQL + ...)

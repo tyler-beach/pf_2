@@ -1,0 +1,66 @@
+rules:
+  - id: pathfinder.owasp-ssrf-http-get-python
+    languages: [python]
+    message: Review requests.get with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: requests.get(...)
+
+  - id: pathfinder.owasp-ssrf-urlopen-python
+    languages: [python]
+    message: Review urllib urlopen with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: urllib.request.urlopen(...)
+
+  - id: pathfinder.owasp-ssrf-http-get-go
+    languages: [go]
+    message: Review http.Get with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: http.Get(...)
+
+  - id: pathfinder.owasp-ssrf-fetch-javascript
+    languages: [javascript, typescript]
+    message: Review fetch with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: fetch(...)
+
+  - id: pathfinder.owasp-ssrf-axios-javascript
+    languages: [javascript, typescript]
+    message: Review axios.get with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: axios.get(...)
+
+  - id: pathfinder.owasp-ssrf-httpurl-java
+    languages: [java]
+    message: Review URL.openConnection with potentially user-controlled URLs.
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: A10
+      confidence: MEDIUM
+      cwe: "CWE-918"
+    pattern: (new URL(...)).openConnection()

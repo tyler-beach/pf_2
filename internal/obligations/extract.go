@@ -567,11 +567,11 @@ func isNonDecisionSection(heading string) bool {
 func suggestPattern(statement string) string {
 	lower := strings.ToLower(statement)
 	switch {
-	case anyPhrase(lower, "timeout", "retry", "retries", "attempt", "attempts", "backoff", "configuration", "config", "required key", "setting"):
+	case anyPhrase(lower, "timeout", "retry", "retries", "attempt", "attempts", "backoff", "configuration", "config", "required key", "setting", "retention", "rate-limit", "rate limit", "min-age", "max-age", "header", "tls minimum", "encryption-at-rest", "hop limit", "flow logs", "cloudtrail", "backup plan", "versioning", "block public access", "access analyzer", "kms cmk", "encryption by default"):
 		return "configuration.bounds_or_required_values"
-	case anyPhrase(lower, "shell", "command", "process.start", "runtime.exec", "eval", "credential", "secret"):
+	case anyPhrase(lower, "shell", "command", "process.start", "runtime.exec", "eval", "credential", "secret", "injection", "sql", "ssrf", "url fetch", "deserialize", "password digest", "md5", "sha1", "plaintext", "public acl", "public-read", "access key", "xss", "ldap", "xpath", "nosql", "redirect follow", "link-local", "metadata exposure", "hardcoded", "hard-coded", "canned acl", "insecure deserialization", "unsigned update", "unsigned package", "cookie", "cors", "traversal", "privilege cookie", "mass-assignment", "template injection", "webhook", "macro", "cdn integrity", "mutable tag", "bearer token", "knowledge-based", "session fixation", "credential stuffing", "directory listing", "wildcard cors", "debug logging", "log shipping", "clock skew", "dns rebinding", "rfc1918", "file url", "stop-logging", "root access key", "root console", "user-data containing secrets", "elastic ip", "snapshot share", "sse-s3", "principal star", "vault policy", "vault lock", "inline iam", "external id", "world-open", "self-referencing"):
 		return "security.source_pattern"
-	case anyPhrase(lower, "dependency", "import", "package", "coupling", "gateway", "service boundary"):
+	case anyPhrase(lower, "dependency", "import", "package", "coupling", "gateway", "service boundary", "trust boundary", "authorization", "iam", "permission", "security group", "public subnet", "peering", "instance profile", "object-level", "function-level", "cross-tenant", "wildcard iam", "resource star", "direct object reference", "admin action", "tenancy boundary", "keypair", "public interface"):
 		return "architecture.dependency_or_boundary"
 	default:
 		return "manual_review"
