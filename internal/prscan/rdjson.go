@@ -36,6 +36,9 @@ type ConvertOptions struct {
 	HeadSHA  string
 	IssueURL string
 	Marker   string
+	// RunID / WorkshopBase feed Pages dig-in links (#/runs?run_id=…, #/submissions).
+	RunID        string
+	WorkshopBase string
 }
 
 const defaultMaxInline = 25

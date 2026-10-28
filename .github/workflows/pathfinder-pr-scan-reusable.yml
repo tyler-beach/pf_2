@@ -282,6 +282,7 @@ print(json.dumps(parts))')"
             --max-inline 25 \
             --pr-url "$PR_URL" \
             --head-sha "$HEAD_SHA" \
+            --run-id "${GITHUB_RUN_ID}" \
             --docs-base "$DOCS_BASE"
 
           marker="pathfinder-pr-scan:${HEAD_SHA}"

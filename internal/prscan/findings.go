@@ -133,6 +133,8 @@ func ExtractFindings(result assessment.Result, opt ConvertOptions) (findings []F
 		HeadSHA:          opt.HeadSHA,
 		IssueURL:         opt.IssueURL,
 		DocsBase:         opt.DocsBase,
+		WorkshopBase:     opt.WorkshopBase,
+		RunID:            opt.RunID,
 		Marker:           opt.Marker,
 	}
 	return out, stats

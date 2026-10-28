@@ -11,6 +11,9 @@ import (
 // override is provided. Operators can set ConvertOptions.DocsBase.
 const DefaultDocsBase = "https://tyler-beach.github.io/pf_2/#/docs/pr-scan"
 
+// DefaultWorkshopBase is the Pages origin for run/submission dig-in links.
+const DefaultWorkshopBase = "https://tyler-beach.github.io/pf_2"
+
 // CommentBlocks is the shared, reporter-agnostic body used for every finding.
 // All reviewdog reporters consume the same message string so inline reviews,
 // checks, and annotations stay consistent.
@@ -116,6 +119,17 @@ func FormatSummary(s Summary) string {
 	if s.DocsBase != "" {
 		fmt.Fprintf(&sb, "- **Docs:** %s\n", s.DocsBase)
 	}
+	workshop := strings.TrimSpace(s.WorkshopBase)
+	if workshop == "" {
+		workshop = DefaultWorkshopBase
+	}
+	workshop = strings.TrimRight(workshop, "/")
+	if s.RunID != "" {
+		fmt.Fprintf(&sb, "- **Workshop run:** %s/#/runs?run_id=%s\n", workshop, s.RunID)
+		fmt.Fprintf(&sb, "- **Submissions dig-in:** %s/#/submissions\n", workshop)
+	} else if s.WorkshopURL != "" {
+		fmt.Fprintf(&sb, "- **Workshop:** %s\n", s.WorkshopURL)
+	}
 	sb.WriteString("\n> Only FAIL deviations with path/line evidence are posted as reviewdog diagnostics. N/A floods are never inlined.\n")
 	if s.Marker != "" {
 		fmt.Fprintf(&sb, "\n<!-- pathfinder-pr-scan:%s -->\n", s.Marker)
@@ -139,6 +153,9 @@ type Summary struct {
 	HeadSHA          string
 	IssueURL         string
 	DocsBase         string
+	WorkshopBase     string
+	WorkshopURL      string
+	RunID            string
 	Marker           string
 }
 

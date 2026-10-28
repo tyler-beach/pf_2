@@ -68,6 +68,8 @@ See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance ve
 
 Workshop docs include **PR URL scan** (`#/docs/pr-scan`). Operator guide: [pr-scan.md](pr-scan.md). Issue template: **Pathfinder PR scan (reviewdog + Security)**, or **Actions → Pathfinder PR Scan → Run workflow** (`pr_url` + feedback flags). Secrets matrix: `PATHFINDER_REVIEW_TOKEN` / `PATHFINDER_SARIF_TOKEN`. Stable check name: `pathfinder-pr-scan`. Local fixture E2E: `./scripts/pr_scan_local_e2e.sh`.
 
+PR-scan summaries deep-link to `#/runs?run_id=<GITHUB_RUN_ID>` and `#/submissions`. After Epic 2 applicability, re-assess with OpenGrep/Checkov evidence and republish so ADR Flagging `assessed > 0` (see `testdata/confidence/README.md`).
+
 ## Follow-on (not this iteration)
 
 Joern / CPG adapters when **≥10** accepted ADRs require cross-file data-flow evidence OpenGrep cannot supply (`N=10`). AWS comes after the GitHub workshop proves product value.

@@ -68,6 +68,8 @@ func runAssessmentToRDJSON(ctx context.Context, args []string) error {
 	headSHA := fs.String("head-sha", "", "PR head SHA for summary / dedupe marker")
 	issueURL := fs.String("issue-url", "", "originating scan issue URL")
 	marker := fs.String("marker", "", "dedupe marker (defaults to head SHA)")
+	runID := fs.String("run-id", "", "Actions run id for workshop #/runs?run_id= dig-in")
+	workshopBase := fs.String("workshop-base", prscan.DefaultWorkshopBase, "Pages origin for run/submission deep links")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -94,6 +96,8 @@ func runAssessmentToRDJSON(ctx context.Context, args []string) error {
 		HeadSHA:          *headSHA,
 		IssueURL:         *issueURL,
 		Marker:           mark,
+		RunID:            *runID,
+		WorkshopBase:     *workshopBase,
 	})
 	if err != nil {
 		return fmt.Errorf("prscan convert: %w", err)

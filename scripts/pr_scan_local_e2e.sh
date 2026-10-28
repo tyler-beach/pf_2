@@ -59,6 +59,7 @@ echo "==> convert known-FAIL assessment → rdjson + Security SARIF + summary"
   --max-inline 25 \
   --pr-url "https://github.com/tyler-beach/pf_2/pull/1" \
   --head-sha "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef" \
+  --run-id "e2e-local-run" \
   --docs-base "https://tyler-beach.github.io/pf_2/#/docs/pr-scan"
 
 python3 - <<'PY'
@@ -79,6 +80,8 @@ for r in results:
     assert r.get("ruleId", "").startswith("pathfinder/")
 assert "pathfinder-pr-scan:" in summary or "deadbeef" in summary
 assert "FAIL" in summary or "deviation" in summary.lower() or "Finding" in summary or "REQ-003" in summary
+assert "#/runs?run_id=e2e-local-run" in summary
+assert "#/submissions" in summary
 print(f"converter OK: {len(diags)} rdjson diagnostic(s), {len(results)} SARIF result(s)")
 PY
 

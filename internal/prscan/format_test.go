@@ -57,6 +57,7 @@ func TestFormatSummaryOmitsNAList(t *testing.T) {
 		Posted: 3, CappedFrom: 40, NotApplicable: 180, Pass: 5, OtherNonFail: 2,
 		Deduped: 1, PRURL: "https://github.com/acme/widgets/pull/1",
 		HeadSHA: "abcdef0123456789", Marker: "abc123",
+		RunID: "123456789",
 	})
 	if strings.Contains(got, "ADR-") && strings.Contains(got, "NOT_APPLICABLE requirement") {
 		t.Fatal("summary should not enumerate N/A requirements")
@@ -66,5 +67,8 @@ func TestFormatSummaryOmitsNAList(t *testing.T) {
 	}
 	if !strings.Contains(got, "<!-- pathfinder-pr-scan:abc123 -->") {
 		t.Fatalf("missing dedupe marker:\n%s", got)
+	}
+	if !strings.Contains(got, "#/runs?run_id=123456789") || !strings.Contains(got, "#/submissions") {
+		t.Fatalf("expected workshop deep links:\n%s", got)
 	}
 }

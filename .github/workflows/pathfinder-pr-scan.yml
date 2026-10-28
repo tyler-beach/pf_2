@@ -409,6 +409,7 @@ jobs:
             --pr-url "$PR_URL" \
             --head-sha "$HEAD_SHA" \
             --issue-url "$ISSUE_URL" \
+            --run-id "${GITHUB_RUN_ID}" \
             --docs-base "https://tyler-beach.github.io/pf_2/#/docs/pr-scan"
           wc -c pathfinder.rdjson pathfinder-security.sarif pathfinder-pr-summary.md
           jq -e '.diagnostics | type == "array"' pathfinder.rdjson

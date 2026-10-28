@@ -1,0 +1,50 @@
+{
+  "schema_version": "confidence-gold-assess-oracles-v1",
+  "task": "assess_verdict_oracles",
+  "description": "Adjudicated assess oracles from fixtures. Not used by Platt/conformal FitFromGold — keep extract gold (gold-extract-v1.json) separate. Use these to guard Epic-2 applicability and PR-scan converter E2E.",
+  "examples": [
+    {
+      "id": "GOLD-ASSESS-PASS-ISSUE",
+      "source": "testdata/pass-issue.md",
+      "catalog": "adr/requirements.json",
+      "submission_kind": "code_snippet",
+      "label": {
+        "expected_verdict": "PASS",
+        "min_applicable": 4
+      },
+      "hooks": {
+        "assess": {
+          "oracle": "go run ./cmd/adrctl assess --input testdata/pass-issue.md --requirements adr/requirements.json --submission-kind code_snippet"
+        }
+      }
+    },
+    {
+      "id": "GOLD-ASSESS-DEVIATION-ISSUE",
+      "source": "testdata/deviation-issue.md",
+      "catalog": "adr/requirements.json",
+      "submission_kind": "code_snippet",
+      "label": {
+        "expected_verdict": "FAIL",
+        "min_fail": 2
+      },
+      "hooks": {
+        "assess": {
+          "oracle": "go run ./cmd/adrctl assess --input testdata/deviation-issue.md --requirements adr/requirements.json --submission-kind code_snippet"
+        }
+      }
+    },
+    {
+      "id": "GOLD-ASSESS-PR-SCAN-KNOWN-FAIL",
+      "source": "testdata/pr-scan/known-fail/assessment-fail.json",
+      "label": {
+        "expected_verdict": "FAIL",
+        "converter": "assessment-to-rdjson deviation-only"
+      },
+      "hooks": {
+        "assess": {
+          "oracle": "./scripts/pr_scan_local_e2e.sh"
+        }
+      }
+    }
+  ]
+}
