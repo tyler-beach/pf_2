@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "source_index_sha256": "94f93b593fa8a8bb4928aad5368929aaccb4697fe27d530295fbb59ad8fca753",
+  "max_confidence": "low",
+  "provider": "offline-fixture",
+  "model": "offline-replay",
+  "prompt_version": "pathfinder-assist-v1",
+  "candidate_count": 1,
+  "proposal_count": 1,
+  "runtime_llm_calls": 1,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "estimated_cost_usd": 0,
+  "cost_currency": "USD",
+  "cost_pricing_note": "offline=0; live uses gpt-4o-mini list rates ($0.15/1M input, $0.60/1M output) when usage is reported",
+  "proposals": [
+    {
+      "schema_version": "1",
+      "proposal_id": "PROP-686972a071e147f5",
+      "parent_candidate_id": "CAND-d991a35e245c83e4",
+      "adr_id": "ADR-901",
+      "statement": "An exception may be approved only when a documented interoperability constraint prevents a timeout.",
+      "normalized_statement": "offline assist replay — review required",
+      "modality": "must",
+      "suggested_pattern_id": "manual_review",
+      "rationale": "Deterministic offline fixture response for Promptfoo/CI; not a live model judgment.",
+      "source_path": "testdata/adr-corpus/ADR-901-timeouts.md",
+      "source_sha256": "d3d99d52481dd7a730c4fd860f31ae5d5c017a3280c78b114a7274ac1d7f1c0e",
+      "source_line_start": 15,
+      "source_line_end": 15,
+      "source_quote": "An exception may be approved only when a documented interoperability constraint prevents a timeout.",
+      "parent_confidence": "low",
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "exception_language",
+        "conditional_scope"
+      ],
+      "provider": "offline-fixture",
+      "model": "offline-replay",
+      "prompt_version": "pathfinder-assist-v1",
+      "prompt_sha256": "80919bdc8ee1a1b1a4beb6de34c75736596e312deddbb6b23f9ea43a5693e819",
+      "raw_response_sha256": "a49a8dc8384dc67a95b5f39d8f6a860e010aec1ce4a0fd671bd2c905a1fe9032",
+      "approval_status": "pending_review",
+      "executable": false,
+      "generated_at": "2026-10-28T01:26:20Z"
+    }
+  ]
+}

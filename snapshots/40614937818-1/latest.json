@@ -1,0 +1,42 @@
+{
+  "schema_version": "workshop-snapshot-v1",
+  "run": {
+    "run_id": "40614937818-1",
+    "workflow": "CI",
+    "git_sha": "cf01521786df2128e048ee54d684518b9fe0579a",
+    "timestamp": "2026-10-28T01:26:20Z",
+    "html_url": "https://github.com/tyler-beach/pf_2/actions/runs/40614937818",
+    "provider_mode": "offline"
+  },
+  "metrics": {
+    "schema_version": "workshop-metrics-v1",
+    "candidate_total": 4,
+    "confidence_high": 2,
+    "confidence_medium": 1,
+    "confidence_low": 1,
+    "kpi.confidence.share.high": 0.5,
+    "kpi.confidence.share.medium": 0.25,
+    "kpi.confidence.share.low": 0.25,
+    "kpi.escalation.rate": 0.25,
+    "kpi.assist.proposal_count": 1,
+    "kpi.assist.prompt_tokens": 0,
+    "kpi.assist.completion_tokens": 0,
+    "kpi.assist.cost_usd": 0,
+    "kpi.assist.provider": "offline-fixture",
+    "kpi.assist.model": "offline-replay",
+    "kpi.promptfoo.pass_rate": 1,
+    "promptfoo_mode": "offline",
+    "kpi.evidence.gap_rate": 0
+  },
+  "slo": {
+    "assess_runtime_llm_calls_zero": true,
+    "high_confidence_share": 0.5,
+    "promptfoo_offline_pass": true
+  },
+  "links": {
+    "candidates": "candidates.json",
+    "promptfoo": "promptfoo.json",
+    "proposals": "proposals.json"
+  },
+  "summary": "workflow=CI; candidates=4 (high=2 medium=1 low=1); proposals=1"
+}
