@@ -1,0 +1,78 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 2,
+  "candidates": [
+    {
+      "id": "CAND-HIGH",
+      "adr_id": "ADR-2001",
+      "confidence": "high",
+      "modality": "must",
+      "kind": "obligation",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "statement": "Services must set a finite request timeout.",
+      "source_path": "",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "conformal_set_vacuous_point_band"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "",
+      "confidence_p": 0.6651,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-LOW",
+      "adr_id": "ADR-2002",
+      "confidence": "low",
+      "modality": "should",
+      "kind": "obligation",
+      "pattern_hint": "manual_review",
+      "statement": "Services should prefer asynchronous messaging where appropriate.",
+      "source_path": "",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "ambiguity_flags",
+        "subjective_or_underspecified",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": [
+        "subjective_or_preference_language"
+      ],
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "subjective_or_underspecified",
+        "ambiguous_interpretation"
+      ],
+      "submission_kind": "",
+      "confidence_p": 0.2267,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 1,
+    "low": 1,
+    "medium": 0
+  },
+  "schema_version": "1"
+}

@@ -1,0 +1,7 @@
+{
+  "run_id": "fixture-001",
+  "workflow": "fixture",
+  "git_sha": "0000000",
+  "timestamp": "2026-10-27T12:00:00Z",
+  "provider_mode": "offline"
+}
