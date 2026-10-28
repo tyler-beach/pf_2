@@ -35,6 +35,9 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
 
 concurrency:
   group: pathfinder-app-pr-scan-${{ github.event.pull_request.number || github.run_id }}
@@ -108,6 +111,7 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
         run: |
           set -euo pipefail
+          # Never use secrets.* in job/step `if:` — GitHub blanks them for probes.
           if [[ -n "${APP_PRIVATE_KEY:-}" && ( -n "${APP_ID:-}" || -n "${APP_CLIENT_ID:-}" ) ]]; then
             if [[ -n "${APP_CLIENT_ID:-}" ]]; then
               echo "auth_mode=client_id" >> "$GITHUB_OUTPUT"
@@ -180,7 +184,7 @@ jobs:
       pr_url: ${{ needs.mint-app-token.outputs.pr_url }}
       pathfinder_ref: main
       reporters: ${{ needs.mint-app-token.outputs.reporters }}
-      upload_sarif: ${{ fromJSON(needs.mint-app-token.outputs.upload_sarif) }}
+      upload_sarif: ${{ needs.mint-app-token.outputs.upload_sarif == 'true' }}
       filter_mode: added
       catalog: ${{ needs.mint-app-token.outputs.catalog }}
       fail_level: none

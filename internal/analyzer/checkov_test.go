@@ -115,6 +115,33 @@ func TestCheckovScannerRejectsBinaryDigestMismatchBeforeExecution(t *testing.T) 
 	}
 }
 
+func TestCheckovScannerDropsFindingsOutsideEligibleInventory(t *testing.T) {
+	root := prepareCheckovFixture(t)
+	fixtureDir := filepath.Join(root, filepath.FromSlash(analyzerFixtureDirectory), "clean", "iac")
+	if err := os.MkdirAll(fixtureDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fixtureDir, "security_group.tf"), []byte("resource \"aws_security_group\" \"bad\" {}\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	sarif := `{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"checkov","version":"3.3.30","rules":[{"id":"CKV_AWS_24"}]}},"results":[{"ruleId":"CKV_AWS_24","level":"error","message":{"text":"open sg"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"testdata/analyzer-fixtures/clean/iac/security_group.tf"},"region":{"startLine":1}}}]},{"ruleId":"CKV_AWS_24","level":"error","message":{"text":"in-scope"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"security_group.tf"},"region":{"startLine":1}}}]}]}]}`
+	runner := &checkovFakeRunner{sarif: []byte(sarif), scanExitCode: 1}
+	got, err := (CheckovScanner{
+		Binary: "/opt/checkov", Version: "3.3.30", ConfigPath: "rules/checkov.yml",
+		Timeout: time.Second, Runner: runner, ScanPaths: []string{"security_group.tf"},
+	}).Scan(context.Background(), root)
+	if err != nil {
+		t.Fatalf("Scan returned error: %v", err)
+	}
+	if len(got.Findings) != 1 || got.Findings[0].Path != "security_group.tf" {
+		t.Fatalf("expected only in-inventory finding, got %+v", got.Findings)
+	}
+	joined := strings.Join(runner.calls[len(runner.calls)-1].args, " ")
+	if !strings.Contains(joined, "--skip-path "+analyzerFixtureDirectory) {
+		t.Fatalf("expected Checkov skip-path for fixtures, args=%v", runner.calls[len(runner.calls)-1].args)
+	}
+}
+
 func TestNormalizeCheckovRuleID(t *testing.T) {
 	cases := map[string]string{
 		"CKV_AWS_24":                     "CKV_AWS_24",

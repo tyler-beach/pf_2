@@ -173,9 +173,10 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 	for _, fw := range frameworks {
 		args = append(args, "--framework", fw)
 	}
+	// Checkov -d walks the declared root; skip excluded analyzer fixtures and
+	// later drop any SARIF hits outside the eligible inventory.
+	args = append(args, "--skip-path", analyzerFixtureDirectory)
 	if len(selectedPaths) > 0 {
-		// Checkov -d scans a directory; scoped inventories are recorded for
-		// evidence even when the CLI still walks the declared root.
 		_ = selectedPaths
 	}
 
@@ -236,6 +237,20 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 			return out, fmt.Errorf("discover checkov scanner scope: %w", err)
 		}
 	}
+	// Checkov may still emit findings for skipped/ineligible trees; keep only
+	// inventory paths so VerifyScopedScanEvidence and assess-repo stay aligned.
+	inventory := make(map[string]bool, len(parsed.ScannedPaths))
+	for _, p := range parsed.ScannedPaths {
+		inventory[filepath.ToSlash(p)] = true
+	}
+	kept := parsed.Findings[:0]
+	for _, finding := range parsed.Findings {
+		path := filepath.ToSlash(finding.Path)
+		if path == "" || inventory[path] {
+			kept = append(kept, finding)
+		}
+	}
+	parsed.Findings = kept
 	if parsed.Status != ScanStatusComplete {
 		return parsed, fmt.Errorf("Checkov scan was incomplete; refusing to treat partial evidence as complete")
 	}
