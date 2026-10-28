@@ -1,0 +1,3 @@
+# Intentional vulnerable fixtures for Pathfinder/OpenGrep/reviewdog E2E.
+# Product exec hardening lives in internal/analyzer/command.go (dca0b19).
+testdata/

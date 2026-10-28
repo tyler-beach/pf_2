@@ -26,7 +26,7 @@
         {
           "rule_id": "rules.pathfinder.go-shell-command",
           "path": "internal/bad/shell.go",
-          "line": 8,
+          "line": 14,
           "column": 2,
           "message": "Avoid composing shell commands with untrusted input",
           "analyzer": "opengrep",
