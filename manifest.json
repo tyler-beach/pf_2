@@ -1,6 +1,6 @@
 {
-  "data_sha": "3d5c80474bb603a7ff152d7236a800d6e7c1c7a63d14b44236671258d0cfb80c",
-  "latest_run_id": "workshop-submissions-20261028T021536Z",
+  "data_sha": "0addfb15dac8930d730791cc26b124deacd80c04871f8a054695fe648c828a98",
+  "latest_run_id": "fixture-001",
   "snapshots": [
     {
       "path": "snapshots/fixture-001",
@@ -15,5 +15,5 @@
       "run_id": "workshop-submissions-20261028T021536Z"
     }
   ],
-  "updated_at": "2026-10-28T02:43:20.964236+00:00"
+  "updated_at": "2026-10-28T03:00:54.515350+00:00"
 }

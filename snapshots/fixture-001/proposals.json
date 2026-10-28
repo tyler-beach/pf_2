@@ -4,25 +4,17 @@
   "candidate_count": 1,
   "provider": "offline-fixture",
   "model": "offline-replay",
-  "prompt_tokens": 0,
-  "completion_tokens": 0,
-  "estimated_cost_usd": 0,
-  "cost_currency": "USD",
-  "cost_pricing_note": "offline=0; live uses gpt-4o-mini list rates ($0.15/1M input, $0.60/1M output) when usage is reported",
-  "runtime_llm_calls": 1,
   "proposals": [
     {
       "proposal_id": "PROP-fixture",
-      "parent_candidate_id": "CAND-4",
-      "statement": "Edge certificate lifecycle must remain platform-managed without per-team exceptions.",
-      "normalized_statement": "Platform must manage edge TLS certificate lifecycle; no per-team exceptions.",
+      "parent_candidate_id": "CAND-LOW",
+      "statement": "Services should prefer asynchronous messaging where appropriate.",
+      "normalized_statement": "offline assist replay — review required",
       "suggested_pattern_id": "manual_review",
       "rationale": "Deterministic offline fixture response for Promptfoo/CI; not a live model judgment.",
       "parent_confidence": "low",
       "executable": false,
-      "approval_status": "pending_review",
-      "provider": "offline-fixture",
-      "model": "offline-replay"
+      "approval_status": "pending_review"
     }
   ]
 }
