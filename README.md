@@ -10,6 +10,7 @@ A zero-token, deterministic MVP for evaluating architectural requirements from G
 - Emits a Markdown report, JSON evidence, and SARIF findings.
 - Runs through GitHub Actions and posts the report to the originating issue.
 - Runs repository CI and uses reviewdog to annotate SARIF findings on pull requests.
+- Accepts a **PR URL** (this repo or another) via the Pathfinder PR scan issue template, then posts sparse reviewdog feedback and optional Security-tab SARIF (see [docs/pr-scan.md](docs/pr-scan.md)).
 - Does not require an Anthropic API key; runtime LLM calls are zero.
 
 ## Start here
@@ -18,6 +19,12 @@ A zero-token, deterministic MVP for evaluating architectural requirements from G
 2. Paste fenced code (python/go/javascript/…) and/or a tech spec ADR. The issue is assessed against the **full corpus** (200 OWASP Top 10 + AWS ADRs).
 3. Keep the `[ADR Assessment]` title prefix.
 4. The workflow sandboxes fences → OpenGrep → corpus assess, comments the report, uploads `workshop-inputs-*`, and on success **Workshop Publish** merges a snapshot into GitHub Pages.
+
+### Scan an external PR (reviewdog + Security)
+
+1. Open **Issues → New issue → Pathfinder PR scan (reviewdog + Security)**.
+2. Paste a GitHub PR URL; check reviewdog reporters and/or **Upload SARIF to GitHub code scanning**.
+3. For other repositories, configure `PATHFINDER_REVIEW_TOKEN` (and optional `PATHFINDER_SARIF_TOKEN`). Details: [docs/pr-scan.md](docs/pr-scan.md).
 
 ## Local validation
 

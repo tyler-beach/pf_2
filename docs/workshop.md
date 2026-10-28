@@ -64,6 +64,10 @@ go run ./cmd/adrctl workshop-emit \
 
 See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance verdicts.** Assess paths must keep `runtime_llm_calls == 0`.
 
+## PR URL scan (reviewdog + Security)
+
+Workshop docs include **PR URL scan** (`#/docs/pr-scan`). Operator guide: [pr-scan.md](pr-scan.md). Issue template: **Pathfinder PR scan (reviewdog + Security)**.
+
 ## Follow-on (not this iteration)
 
 Joern / CPG adapters when **≥10** accepted ADRs require cross-file data-flow evidence OpenGrep cannot supply (`N=10`). AWS comes after the GitHub workshop proves product value.

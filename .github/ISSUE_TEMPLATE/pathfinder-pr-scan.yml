@@ -1,0 +1,89 @@
+name: Pathfinder PR scan (reviewdog + Security)
+description: Paste any GitHub PR URL — Pathfinder assesses the PR head and posts sparse reviewdog feedback and/or SARIF to the Security tab.
+title: "[Pathfinder PR Scan] "
+labels: ["pathfinder-pr-scan"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Assess a **pull request** (this repo or another) with Pathfinder, then publish structured feedback:
+
+        - **reviewdog** — inline PR comments / checks / annotations (diff-filtered)
+        - **SARIF → Security tab** — code-scanning alerts like CodeQL/SAST
+
+        Pathfinder clones the PR head as **data only** (never executes untrusted workflows or PR scripts). Cross-repo posts require a PAT secret with write access on the **target** repo (see docs).
+  - type: input
+    id: pr_url
+    attributes:
+      label: Pull request URL
+      description: Full GitHub PR URL (e.g. https://github.com/org/repo/pull/123). Other repos are supported when PATHFINDER_REVIEW_TOKEN can access them.
+      placeholder: https://github.com/org/repo/pull/123
+    validations:
+      required: true
+  - type: checkboxes
+    id: feedback_modes
+    attributes:
+      label: Feedback modes (reviewdog)
+      description: Select one or more. All modes share the same short finding body (severity, ADR, why, evidence, next).
+      options:
+        - label: "`github-pr-review` — inline line comments on deviations"
+          required: false
+        - label: "`github-pr-check` — Checks API annotations"
+          required: false
+        - label: "`github-check` — commit Check Run"
+          required: false
+        - label: "`github-pr-annotations` — Actions job annotations"
+          required: false
+        - label: "`local` — upload rdjson artifact only (no remote reviewdog post)"
+          required: false
+  - type: checkboxes
+    id: security_sarif
+    attributes:
+      label: GitHub Security (code scanning)
+      description: Complementary to reviewdog — alerts appear under the target repo Security → Code scanning tab.
+      options:
+        - label: Upload SARIF to GitHub code scanning (Security tab)
+          required: false
+  - type: dropdown
+    id: filter_mode
+    attributes:
+      label: Diff filter mode
+      description: reviewdog `-filter-mode` (keeps inline comments on the PR diff when possible).
+      options:
+        - added
+        - diff_context
+        - file
+        - nofilter
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: catalog
+    attributes:
+      label: Requirement catalog
+      options:
+        - Corpus pack (testdata/corpus/requirements.json)
+        - Live catalog (adr/requirements.json)
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: fail_level
+    attributes:
+      label: Fail level
+      description: reviewdog `-fail-level` (does not change Pathfinder verdict).
+      options:
+        - none
+        - any
+        - warning
+        - error
+      default: 0
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I understand Pathfinder will not execute the PR’s code or workflows; only Pathfinder’s pinned analyzers run against a shallow checkout. Cross-repo commenting/Security upload needs a capable token secret.
+          required: true

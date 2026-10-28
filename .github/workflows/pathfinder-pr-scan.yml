@@ -1,0 +1,339 @@
+name: Pathfinder PR Scan
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: pathfinder-pr-scan-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    if: >-
+      startsWith(github.event.issue.title, '[Pathfinder PR Scan]') ||
+      contains(join(github.event.issue.labels.*.name, ','), 'pathfinder-pr-scan')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      issues: write
+      # Same-repo reviewdog / checks / security when token is GITHUB_TOKEN.
+      pull-requests: write
+      checks: write
+      security-events: write
+    steps:
+      - name: Checkout Pathfinder (trusted host)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Go
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Parse issue form
+        id: parse
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/issue-body.md"
+          go run ./cmd/adrctl parse-pr-scan-issue --body "$RUNNER_TEMP/issue-body.md" > "$RUNNER_TEMP/pr-scan-request.json"
+          cat "$RUNNER_TEMP/pr-scan-request.json"
+
+          owner="$(jq -r '.PR.Owner' "$RUNNER_TEMP/pr-scan-request.json")"
+          repo="$(jq -r '.PR.Repo' "$RUNNER_TEMP/pr-scan-request.json")"
+          number="$(jq -r '.PR.Number' "$RUNNER_TEMP/pr-scan-request.json")"
+          filter="$(jq -r '.FilterMode' "$RUNNER_TEMP/pr-scan-request.json")"
+          catalog="$(jq -r '.Catalog' "$RUNNER_TEMP/pr-scan-request.json")"
+          fail_level="$(jq -r '.FailLevel' "$RUNNER_TEMP/pr-scan-request.json")"
+          upload_sarif="$(jq -r '.UploadSARIF' "$RUNNER_TEMP/pr-scan-request.json")"
+          reporters="$(jq -c '.Reporters' "$RUNNER_TEMP/pr-scan-request.json")"
+
+          echo "owner=$owner" >> "$GITHUB_OUTPUT"
+          echo "repo=$repo" >> "$GITHUB_OUTPUT"
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "filter=$filter" >> "$GITHUB_OUTPUT"
+          echo "catalog=$catalog" >> "$GITHUB_OUTPUT"
+          echo "fail_level=$fail_level" >> "$GITHUB_OUTPUT"
+          echo "upload_sarif=$upload_sarif" >> "$GITHUB_OUTPUT"
+          echo "reporters=$reporters" >> "$GITHUB_OUTPUT"
+
+          if [[ "$catalog" == "live" ]]; then
+            echo "requirements=adr/requirements.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "requirements=testdata/corpus/requirements.json" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve cross-repo access
+        id: token
+        env:
+          REVIEW_TOKEN: ${{ secrets.PATHFINDER_REVIEW_TOKEN }}
+          TARGET_OWNER: ${{ steps.parse.outputs.owner }}
+          TARGET_REPO: ${{ steps.parse.outputs.repo }}
+        run: |
+          set -euo pipefail
+          same_repo=false
+          if [[ "${TARGET_OWNER}/${TARGET_REPO}" == "$GITHUB_REPOSITORY" ]]; then
+            same_repo=true
+          fi
+          echo "same_repo=$same_repo" >> "$GITHUB_OUTPUT"
+          if [[ "$same_repo" != "true" && -z "${REVIEW_TOKEN:-}" ]]; then
+            echo "::error::Cross-repo PR scan requires secrets.PATHFINDER_REVIEW_TOKEN (contents:read, pull_requests:write, checks:write; security_events:write for SARIF). Optional PATHFINDER_SARIF_TOKEN overrides SARIF upload."
+            exit 1
+          fi
+
+      - name: Fetch PR metadata (API only)
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.PATHFINDER_REVIEW_TOKEN || github.token }}
+          OWNER: ${{ steps.parse.outputs.owner }}
+          REPO: ${{ steps.parse.outputs.repo }}
+          NUMBER: ${{ steps.parse.outputs.number }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${OWNER}/${REPO}/pulls/${NUMBER}" > "$RUNNER_TEMP/pr.json"
+          head_sha="$(jq -r '.head.sha' "$RUNNER_TEMP/pr.json")"
+          head_ref="$(jq -r '.head.ref' "$RUNNER_TEMP/pr.json")"
+          clone_url="$(jq -r '.head.repo.clone_url // .base.repo.clone_url' "$RUNNER_TEMP/pr.json")"
+          full_name="$(jq -r '.head.repo.full_name // .base.repo.full_name' "$RUNNER_TEMP/pr.json")"
+          html_url="$(jq -r '.html_url' "$RUNNER_TEMP/pr.json")"
+          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
+          echo "clone_url=$clone_url" >> "$GITHUB_OUTPUT"
+          echo "full_name=$full_name" >> "$GITHUB_OUTPUT"
+          echo "html_url=$html_url" >> "$GITHUB_OUTPUT"
+          echo "Scanning PR ${html_url} @ ${head_sha}"
+
+      - name: Shallow-fetch PR head as data (never execute PR code)
+        env:
+          GH_TOKEN: ${{ secrets.PATHFINDER_REVIEW_TOKEN || github.token }}
+          CLONE_URL: ${{ steps.pr.outputs.clone_url }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          pr_root="$RUNNER_TEMP/pr-head"
+          rm -rf "$pr_root"
+          mkdir -p "$pr_root"
+          auth_url="$CLONE_URL"
+          if [[ "$CLONE_URL" == https://* ]]; then
+            auth_url="https://x-access-token:${GH_TOKEN}@${CLONE_URL#https://}"
+          fi
+          git -C "$pr_root" init
+          git -C "$pr_root" remote add origin "$auth_url"
+          GIT_TERMINAL_PROMPT=0 git -C "$pr_root" fetch --depth 1 --no-tags origin "$HEAD_SHA"
+          git -C "$pr_root" checkout --force FETCH_HEAD
+          git -C "$pr_root" remote set-url origin "$CLONE_URL"
+          echo "PR_ROOT=$pr_root" >> "$GITHUB_ENV"
+          find "$pr_root" -maxdepth 3 -type f | head -n 40 || true
+
+      - name: Install pinned analyzers + reviewdog
+        run: |
+          set -euo pipefail
+          install_dir="$RUNNER_TEMP/opengrep"
+          mkdir -p "$install_dir"
+          curl --fail --location --silent --show-error \
+            https://github.com/opengrep/opengrep/releases/download/v1.30.0/opengrep_manylinux_x86 \
+            --output "$install_dir/opengrep"
+          echo "35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c  $install_dir/opengrep" | sha256sum --check
+          chmod 0755 "$install_dir/opengrep"
+          echo "OPENGREP_BIN=$install_dir/opengrep" >> "$GITHUB_ENV"
+
+          checkov_venv="$RUNNER_TEMP/checkov-venv"
+          python3 -m venv "$checkov_venv"
+          "$checkov_venv/bin/python" -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
+          checkov_bin="$checkov_venv/bin/checkov"
+          test -x "$checkov_bin"
+          echo "CHECKOV_BIN=$checkov_bin" >> "$GITHUB_ENV"
+          echo "CHECKOV_SHA=$(sha256sum "$checkov_bin" | awk '{print $1}')" >> "$GITHUB_ENV"
+
+          go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Assess PR head (Pathfinder host binaries only)
+        run: |
+          set -euo pipefail
+          requirements="${{ steps.parse.outputs.requirements }}"
+          mkdir -p analyzer-evidence
+          # Analyzers treat the PR tree as input data; Pathfinder binaries stay on the host checkout.
+          go run ./cmd/adrctl scan-opengrep \
+            --root "$PR_ROOT" \
+            --config rules/pathfinder-security.yml \
+            --binary "$OPENGREP_BIN" \
+            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --version 1.30.0 \
+            --json-out analyzer-evidence/opengrep.json \
+            --sarif-out analyzer-evidence/opengrep.sarif || true
+
+          go run ./cmd/adrctl scan-checkov \
+            --root "$PR_ROOT" \
+            --config rules/checkov.yml \
+            --binary "$CHECKOV_BIN" \
+            --binary-sha256 "$CHECKOV_SHA" \
+            --version 3.2.484 \
+            --json-out analyzer-evidence/checkov.json \
+            --sarif-out analyzer-evidence/checkov.sarif || true
+
+          evidence_flags=()
+          if [[ -f analyzer-evidence/opengrep.json && -f analyzer-evidence/checkov.json ]]; then
+            evidence_flags=(
+              --analyzer-evidence analyzer-evidence/opengrep.json,analyzer-evidence/checkov.json
+              --analyzer-sarif analyzer-evidence/opengrep.sarif,analyzer-evidence/checkov.sarif
+            )
+          elif [[ -f analyzer-evidence/opengrep.json ]]; then
+            evidence_flags=(
+              --analyzer-evidence analyzer-evidence/opengrep.json
+              --analyzer-sarif analyzer-evidence/opengrep.sarif
+            )
+          elif [[ -f analyzer-evidence/checkov.json ]]; then
+            evidence_flags=(
+              --analyzer-evidence analyzer-evidence/checkov.json
+              --analyzer-sarif analyzer-evidence/checkov.sarif
+            )
+          fi
+
+          go run ./cmd/adrctl assess-repo \
+            --root "$PR_ROOT" \
+            --requirements "$requirements" \
+            --issue-surface \
+            "${evidence_flags[@]}" \
+            --report report.md \
+            --json-out assessment.json \
+            --sarif-out results.sarif
+
+          jq -e '.runtime_llm_calls == 0' assessment.json
+
+      - name: Convert assessment → rdjson + Security SARIF
+        env:
+          PR_URL: ${{ steps.pr.outputs.html_url }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          set -euo pipefail
+          go run ./cmd/adrctl assessment-to-rdjson \
+            --assessment assessment.json \
+            --rdjson-out pathfinder.rdjson \
+            --sarif-out pathfinder-security.sarif \
+            --summary-out pathfinder-pr-summary.md \
+            --max-inline 25 \
+            --pr-url "$PR_URL" \
+            --head-sha "$HEAD_SHA" \
+            --issue-url "$ISSUE_URL" \
+            --docs-base "https://tyler-beach.github.io/pf_2/#/docs/pr-scan"
+          wc -c pathfinder.rdjson pathfinder-security.sarif pathfinder-pr-summary.md
+          jq -e '.diagnostics | type == "array"' pathfinder.rdjson
+          jq -e '.runs[0].results | type == "array"' pathfinder-security.sarif
+
+      - name: Post Pathfinder summary on target PR
+        env:
+          GH_TOKEN: ${{ secrets.PATHFINDER_REVIEW_TOKEN || github.token }}
+          OWNER: ${{ steps.parse.outputs.owner }}
+          REPO: ${{ steps.parse.outputs.repo }}
+          NUMBER: ${{ steps.parse.outputs.number }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          marker="pathfinder-pr-scan:${HEAD_SHA}"
+          existing="$(gh api "repos/${OWNER}/${REPO}/issues/${NUMBER}/comments?per_page=100" \
+            | jq -r --arg m "$marker" '[.[] | select(.body | contains($m))] | length')"
+          if [[ "$existing" != "0" ]]; then
+            echo "Summary for $marker already present; skipping duplicate comment."
+            exit 0
+          fi
+          gh api \
+            --method POST \
+            "repos/${OWNER}/${REPO}/issues/${NUMBER}/comments" \
+            -f body="$(cat pathfinder-pr-summary.md)"
+
+      - name: Run reviewdog reporters
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.PATHFINDER_REVIEW_TOKEN || github.token }}
+          CI_REPO_OWNER: ${{ steps.parse.outputs.owner }}
+          CI_REPO_NAME: ${{ steps.parse.outputs.repo }}
+          CI_PULL_REQUEST: ${{ steps.parse.outputs.number }}
+          CI_COMMIT: ${{ steps.pr.outputs.head_sha }}
+          FILTER: ${{ steps.parse.outputs.filter }}
+          FAIL_LEVEL: ${{ steps.parse.outputs.fail_level }}
+          REPORTERS_JSON: ${{ steps.parse.outputs.reporters }}
+        run: |
+          set -euo pipefail
+          # reviewdog resolves paths relative to the PR checkout.
+          cp "$GITHUB_WORKSPACE/pathfinder.rdjson" "$PR_ROOT/pathfinder.rdjson"
+          cd "$PR_ROOT"
+          mapfile -t reporters < <(echo "$REPORTERS_JSON" | jq -r '.[]')
+          if [[ ${#reporters[@]} -eq 0 ]]; then
+            echo "No reviewdog reporters selected; skipping."
+            exit 0
+          fi
+          for reporter in "${reporters[@]}"; do
+            echo "::group::reviewdog reporter=${reporter}"
+            if [[ "$reporter" == "local" ]]; then
+              reviewdog -f=rdjson -reporter=local -filter-mode="$FILTER" -fail-level=none < pathfinder.rdjson \
+                | tee "$GITHUB_WORKSPACE/reviewdog-local.txt" || true
+            else
+              reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" -fail-level="$FAIL_LEVEL" \
+                -name=pathfinder < pathfinder.rdjson || true
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Upload SARIF to target Security tab
+        if: steps.parse.outputs.upload_sarif == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PATHFINDER_SARIF_TOKEN || secrets.PATHFINDER_REVIEW_TOKEN || github.token }}
+          OWNER: ${{ steps.parse.outputs.owner }}
+          REPO: ${{ steps.parse.outputs.repo }}
+          NUMBER: ${{ steps.parse.outputs.number }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          chmod +x scripts/upload_code_scanning_sarif.sh
+          scripts/upload_code_scanning_sarif.sh \
+            --owner "$OWNER" \
+            --repo "$REPO" \
+            --sha "$HEAD_SHA" \
+            --ref "refs/pull/${NUMBER}/head" \
+            --sarif pathfinder-security.sarif \
+            --tool Pathfinder
+
+      - name: Comment status on scan issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ steps.pr.outputs.html_url }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+          UPLOAD_SARIF: ${{ steps.parse.outputs.upload_sarif }}
+          REPORTERS: ${{ steps.parse.outputs.reporters }}
+        run: |
+          set -euo pipefail
+          body="## Pathfinder PR scan finished
+
+          - **Target:** ${PR_URL:-unknown}
+          - **Head:** \`${HEAD_SHA:-unknown}\`
+          - **reviewdog reporters:** \`${REPORTERS}\`
+          - **Security SARIF upload:** \`${UPLOAD_SARIF}\`
+          - **Workflow:** ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          Artifacts (rdjson / security SARIF / assessment) are uploaded with this run.
+          "
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${{ github.event.issue.number }}/comments" -f body="$body"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pathfinder-pr-scan-${{ github.event.issue.number }}
+          path: |
+            assessment.json
+            report.md
+            results.sarif
+            pathfinder.rdjson
+            pathfinder-security.sarif
+            pathfinder-pr-summary.md
+            analyzer-evidence/
+          if-no-files-found: warn

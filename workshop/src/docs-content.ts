@@ -95,6 +95,21 @@ export const DOC_SECTIONS: DocSection[] = [
 <p>CI policy: <code>FAIL</code>, <code>EVIDENCE_MISSING</code>, <code>ERROR</code>, and overall <code>INDETERMINATE</code> are merge-blocking. See <code>docs/architecture.md</code>.</p>`,
   },
   {
+    id: 'pr-scan',
+    title: 'PR URL scan (reviewdog + Security)',
+    group: 'Pipelines',
+    summary: 'Paste any GitHub PR URL; Pathfinder posts sparse reviewdog feedback and optional Security-tab SARIF.',
+    body: `
+<ol class="docs-steps">
+  <li>Open <strong>Pathfinder PR scan</strong> issue template; paste a PR URL (this repo or another).</li>
+  <li>Select reviewdog reporters and/or <strong>Upload SARIF to GitHub code scanning</strong>.</li>
+  <li>Workflow shallow-fetches the PR head as data only (never runs untrusted PR code), assesses with pinned OpenGrep/Checkov + <code>assess-repo --issue-surface</code>.</li>
+  <li>Shared finding model → rdjson (reviewdog) and SARIF 2.1.0 (Security). Bodies are short: severity, ADR, why, evidence, next/docs.</li>
+  <li>N/A floods are omitted; inline comments capped; one PR summary with counts.</li>
+</ol>
+<p><strong>Cross-repo:</strong> set <code>PATHFINDER_REVIEW_TOKEN</code> (and optional <code>PATHFINDER_SARIF_TOKEN</code> with <code>security_events</code>). Full operator doc: <code>docs/pr-scan.md</code>.</p>`,
+  },
+  {
     id: 'workshop-data',
     title: 'Workshop data plane',
     group: 'Pipelines',
@@ -273,6 +288,7 @@ export const DOC_SECTIONS: DocSection[] = [
     <tr><td><code>specification-check</code></td><td>Report-only end-to-end on sample specs.</td></tr>
     <tr><td><code>workshop-emit</code></td><td>Snapshot for Pages.</td></tr>
     <tr><td><code>assert-issue-verdict</code> / <code>low-confidence-checklist</code></td><td>CI / triage helpers.</td></tr>
+    <tr><td><code>parse-pr-url</code> / <code>parse-pr-scan-issue</code> / <code>assessment-to-rdjson</code></td><td>PR-scan URL parse + shared rdjson/Security SARIF converter.</td></tr>
   </tbody>
 </table>
 <p>Usage banner is authoritative in <code>cmd/adrctl/main.go</code>.</p>`,
@@ -286,6 +302,7 @@ export const DOC_SECTIONS: DocSection[] = [
 <ul>
   <li><strong>CI</strong> — validate, fixtures, analyzer proofs, often <code>workshop-emit</code>.</li>
   <li><strong>ADR Assessment</strong> — issue-triggered sandbox + corpus assess + report comment.</li>
+  <li><strong>Pathfinder PR Scan</strong> — PR URL via issue template → reviewdog + optional Security SARIF (<code>docs/pr-scan.md</code>).</li>
   <li><strong>Corpus Eval</strong> — labeled harness / extract quality metrics.</li>
   <li><strong>LLM Assist</strong> — batch assist (offline default) + Promptfoo; live gated.</li>
   <li><strong>Workshop Publish</strong> — on <code>workflow_run</code> or <code>workflow_dispatch</code>; merges <code>workshop-data</code> and deploys Pages.</li>
@@ -466,6 +483,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li>Joern and deeper graph analysis are not implemented yet (N=10 gate).</li>
   <li>Partial coverage must never be marketed as a full PASS.</li>
   <li>Promptfoo / harness scores are not compliance verdicts.</li>
+  <li>Cross-repo PR scan / Security SARIF upload needs a PAT (or App) with write access on the <em>target</em> repo; default <code>GITHUB_TOKEN</code> cannot post elsewhere.</li>
 </ul>`,
   },
 ];
