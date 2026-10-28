@@ -25,7 +25,10 @@ Pass/deviation assess oracles after Go or analyzer bumps when assessment default
 
 ## Holdbacks
 
-_None yet — filled as upgrades land or majors are intentionally pinned._
+| Pin | Kept / dropped | WHY |
+|-----|----------------|-----|
+| `@types/diff` | **removed** (was 7.0.2) | `diff@9` ships its own typings; `@types/diff@8.0.0` is a deprecated stub. |
+| `dompurify` / `diff2html` | kept at 3.4.17 / 3.4.56 | Already current at audit time; not bumped. |
 
 ## Final pin table
 

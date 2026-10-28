@@ -9,15 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "diff": "8.0.3",
+    "diff": "9.0.0",
     "diff2html": "3.4.56",
     "dompurify": "3.4.17",
-    "marked": "15.0.7",
-    "uplot": "1.6.31"
+    "marked": "18.1.2",
+    "uplot": "1.6.32"
   },
   "devDependencies": {
-    "@types/diff": "7.0.2",
-    "typescript": "5.8.2",
-    "vite": "6.4.5"
+    "typescript": "7.0.2",
+    "vite": "8.3.5"
   }
 }
