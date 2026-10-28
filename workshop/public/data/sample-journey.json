@@ -116,15 +116,15 @@
       "short": "Extract",
       "title": "Extract a Candidate (not an approval)",
       "why": "Deterministic extractors turn Decision prose into reviewable [[Candidate]] objects. Nothing here is executable; approval_status stays pending_review.",
-      "technical": "extract-obligations emits an Index of Candidates. Confidence bands (high | medium | low) combine modality strength, [[pattern_hint]] match quality, and citation quality. Only the low band is eligible for batch LLM assist.\n\nFor this PDB wording, modality is must (strong) but Kubernetes policy matching is weak in today’s heuristic map — so confidence=low with escalation_reasons like weak_pattern_match and broad_scope. That is intentional: humans (or assist) decide the [[pattern_id]], extract never auto-binds.",
+      "technical": "extract-obligations emits an Index of Candidates with statistical confidence — not the old heuristic-alone triage.\n\n1) Heuristic confidence_score from modality / pattern_hint / ambiguity (an *input feature*, not a probability; citations bind location, they do not score 'clarity').\n2) Calibrated confidence_p = Platt/logistic P(extract_correct) when gold-fitted params are present (confidence_method=platt_conformal); otherwise honest heuristic fallback.\n3) Conformal prediction set at target coverage (default 90%) maps to band high|medium|low under exchangeability with gold. Singleton {high} → high; otherwise widen. Assist still gates on the band (default max_confidence=low).\n\nFor this PDB wording, modality is must but pattern_hint is manual_review — expect a low/widened band and escalation_reasons. Workshop: #/confidence and Docs → Confidence scoring.",
       "commands": [
         "adrctl extract-obligations --index ingested.json --root adrs --json-out candidates.json",
         "adrctl assist-obligations --index candidates.json --root adrs --json-out proposals.json"
       ],
       "notice": [
         "executable is always false until human bind",
-        "pattern_hint is a suggestion, not a binding",
-        "kpi.escalation.rate = confidence_low / candidate_total"
+        "confidence_score ≠ probability; use confidence_p + confidence_method",
+        "kpi.escalation.rate = confidence_low / candidate_total (± Wilson CI in metrics)"
       ],
       "chips": [
         "Candidate",
@@ -138,7 +138,7 @@
           "lang": "json",
           "shimmer": true,
           "caption": "Fields mirror internal/obligations.Candidate JSON tags.",
-          "code": "{\n  \"id\": \"CAND-PDB-1\",\n  \"adr_id\": \"ADR-2100\",\n  \"adr_title\": \"Pod Disruption Budgets for critical Deployments\",\n  \"adr_status\": \"accepted\",\n  \"section_heading\": \"Decision\",\n  \"statement\": \"Critical Deployments MUST declare a PodDisruptionBudget that keeps minAvailable at or above a majority of desired replicas, or sets maxUnavailable to at most one when replica count is three or fewer.\",\n  \"modality\": \"must\",\n  \"kind\": \"obligation\",\n  \"pattern_hint\": \"manual_review\",\n  \"source_path\": \"ADR-2100.md\",\n  \"source_sha256\": \"a1b2…fixture\",\n  \"source_line_start\": 10,\n  \"source_line_end\": 12,\n  \"approval_status\": \"pending_review\",\n  \"enforcement_mode\": \"review_required\",\n  \"executable\": false,\n  \"confidence\": \"low\",\n  \"confidence_score\": 0.34,\n  \"escalation_reasons\": [\"weak_pattern_match\", \"broad_scope\"]\n}"
+          "code": "{\n  \"id\": \"CAND-PDB-1\",\n  \"adr_id\": \"ADR-2100\",\n  \"adr_title\": \"Pod Disruption Budgets for critical Deployments\",\n  \"adr_status\": \"accepted\",\n  \"section_heading\": \"Decision\",\n  \"statement\": \"Critical Deployments MUST declare a PodDisruptionBudget that keeps minAvailable at or above a majority of desired replicas, or sets maxUnavailable to at most one when replica count is three or fewer.\",\n  \"modality\": \"must\",\n  \"kind\": \"obligation\",\n  \"pattern_hint\": \"manual_review\",\n  \"source_path\": \"ADR-2100.md\",\n  \"source_sha256\": \"a1b2…fixture\",\n  \"source_line_start\": 10,\n  \"source_line_end\": 12,\n  \"approval_status\": \"pending_review\",\n  \"enforcement_mode\": \"review_required\",\n  \"executable\": false,\n  \"confidence\": \"low\",\n  \"confidence_score\": 0.34,\n  \"confidence_p\": 0.22,\n  \"confidence_method\": \"platt_conformal\",\n  \"confidence_coverage\": 0.9,\n  \"prediction_set\": [\"medium\", \"low\"],\n  \"escalation_reasons\": [\"manual_review_pattern_hint\", \"conformal_set_widened\"]\n}"
         }
       ],
       "deeper": {

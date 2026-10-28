@@ -37,6 +37,33 @@ func TestScoreConfidenceBands(t *testing.T) {
 	}
 }
 
+func TestScoreCandidateCalibrated(t *testing.T) {
+	high := Candidate{
+		Modality: "must", PatternHint: "configuration.bounds_or_required_values",
+		Kind: "normative_candidate",
+	}
+	res := ScoreCandidate(high)
+	if res.ConfidenceP <= 0 || res.ConfidenceP > 1 {
+		t.Fatalf("confidence_p %v", res.ConfidenceP)
+	}
+	if res.ConfidenceMethod == "" {
+		t.Fatal("confidence_method required")
+	}
+	if res.ConfidenceBand == "" {
+		t.Fatal("confidence_band required")
+	}
+	low := Candidate{
+		Modality: "should", PatternHint: "manual_review",
+		Kind: "normative_candidate",
+		ReviewHints: []string{"subjective_or_underspecified", "ambiguous_interpretation"},
+		Ambiguity:   []string{"subjective_or_preference_language"},
+	}
+	res = ScoreCandidate(low)
+	if res.ConfidenceBand != ConfidenceLow && res.ConfidenceP > 0.7 {
+		t.Fatalf("expected low/uncertain, got band=%s p=%v method=%s", res.ConfidenceBand, res.ConfidenceP, res.ConfidenceMethod)
+	}
+}
+
 func TestFilterByMaxConfidence(t *testing.T) {
 	index := Index{Candidates: []Candidate{
 		{ID: "a", Confidence: ConfidenceHigh},

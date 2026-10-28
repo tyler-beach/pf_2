@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/tyler-beach/pf_2/internal/obligations"
+	"github.com/tyler-beach/pf_2/internal/obligations/calibration"
 )
 
 const SnapshotSchemaVersion = "workshop-snapshot-v1"
@@ -36,6 +37,27 @@ type Metrics struct {
 	ConfidenceShareMedium *float64 `json:"kpi.confidence.share.medium,omitempty"`
 	ConfidenceShareLow    *float64 `json:"kpi.confidence.share.low,omitempty"`
 	EscalationRate        float64  `json:"kpi.escalation.rate"`
+
+	// Wilson score intervals (95%) for key rates — workshop ± display.
+	EscalationRateLo          *float64 `json:"kpi.escalation.rate.ci_low,omitempty"`
+	EscalationRateHi          *float64 `json:"kpi.escalation.rate.ci_high,omitempty"`
+	ConfidenceShareHighLo     *float64 `json:"kpi.confidence.share.high.ci_low,omitempty"`
+	ConfidenceShareHighHi     *float64 `json:"kpi.confidence.share.high.ci_high,omitempty"`
+	ConfidenceShareLowLo      *float64 `json:"kpi.confidence.share.low.ci_low,omitempty"`
+	ConfidenceShareLowHi      *float64 `json:"kpi.confidence.share.low.ci_high,omitempty"`
+	EscalationTechSpecLo      *float64 `json:"kpi.escalation.rate.tech_spec.ci_low,omitempty"`
+	EscalationTechSpecHi      *float64 `json:"kpi.escalation.rate.tech_spec.ci_high,omitempty"`
+	EscalationCodeSnippetLo   *float64 `json:"kpi.escalation.rate.code_snippet.ci_low,omitempty"`
+	EscalationCodeSnippetHi   *float64 `json:"kpi.escalation.rate.code_snippet.ci_high,omitempty"`
+	HarnessPrecisionLo        *float64 `json:"kpi.harness.precision.ci_low,omitempty"`
+	HarnessPrecisionHi        *float64 `json:"kpi.harness.precision.ci_high,omitempty"`
+	ConfidenceMethod          string   `json:"kpi.confidence.method,omitempty"`
+	ConfidenceCoverageTarget  *float64 `json:"kpi.confidence.coverage_target,omitempty"`
+	ConfidenceMeanP           *float64 `json:"kpi.confidence.mean_p,omitempty"`
+	ConfidenceCalibratedCount *int     `json:"kpi.confidence.calibrated_count,omitempty"`
+	ConfidenceHeuristicCount  *int     `json:"kpi.confidence.heuristic_count,omitempty"`
+	CILevel                   float64  `json:"kpi.ci.level,omitempty"`
+	CIMethod                  string   `json:"kpi.ci.method,omitempty"`
 
 	HarnessPrecision    *float64 `json:"kpi.harness.precision,omitempty"`
 	HarnessRecall       *float64 `json:"kpi.harness.recall,omitempty"`
@@ -125,10 +147,17 @@ func Emit(opts EmitOptions) (Latest, error) {
 				Medium int `json:"medium"`
 				Low    int `json:"low"`
 			} `json:"confidence_summary"`
+			Calibration struct {
+				Method  string  `json:"method"`
+				Coverage float64 `json:"coverage"`
+			} `json:"calibration"`
 			Candidates []struct {
-				PatternHint    string `json:"pattern_hint"`
-				SubmissionKind string `json:"submission_kind"`
-				Confidence     string `json:"confidence"`
+				PatternHint        string  `json:"pattern_hint"`
+				SubmissionKind     string  `json:"submission_kind"`
+				Confidence         string  `json:"confidence"`
+				ConfidenceP        float64 `json:"confidence_p"`
+				ConfidenceMethod   string  `json:"confidence_method"`
+				ConfidenceCoverage float64 `json:"confidence_coverage"`
 			} `json:"candidates"`
 		}
 		if err := readJSON(opts.CandidatesPath, &payload); err != nil {
@@ -138,6 +167,8 @@ func Emit(opts EmitOptions) (Latest, error) {
 		metrics.ConfidenceHigh = payload.ConfidenceSummary.High
 		metrics.ConfidenceMedium = payload.ConfidenceSummary.Medium
 		metrics.ConfidenceLow = payload.ConfidenceSummary.Low
+		metrics.CILevel = 0.95
+		metrics.CIMethod = "wilson"
 		if payload.CandidateCount > 0 {
 			metrics.EscalationRate = float64(payload.ConfidenceSummary.Low) / float64(payload.CandidateCount)
 			h := float64(payload.ConfidenceSummary.High) / float64(payload.CandidateCount)
@@ -146,10 +177,23 @@ func Emit(opts EmitOptions) (Latest, error) {
 			metrics.ConfidenceShareHigh = &h
 			metrics.ConfidenceShareMedium = &m
 			metrics.ConfidenceShareLow = &l
+			escCI := calibration.WilsonInterval(payload.ConfidenceSummary.Low, payload.CandidateCount, 0.95)
+			metrics.EscalationRateLo = floatPtr(escCI.Low)
+			metrics.EscalationRateHi = floatPtr(escCI.High)
+			hiCI := calibration.WilsonInterval(payload.ConfidenceSummary.High, payload.CandidateCount, 0.95)
+			metrics.ConfidenceShareHighLo = floatPtr(hiCI.Low)
+			metrics.ConfidenceShareHighHi = floatPtr(hiCI.High)
+			loCI := calibration.WilsonInterval(payload.ConfidenceSummary.Low, payload.CandidateCount, 0.95)
+			metrics.ConfidenceShareLowLo = floatPtr(loCI.Low)
+			metrics.ConfidenceShareLowHi = floatPtr(loCI.High)
 		}
 		manual := 0
 		techSpec, codeSnippet := 0, 0
 		techSpecLow, codeSnippetLow := 0, 0
+		calibrated, heuristic := 0, 0
+		sumP := 0.0
+		method := payload.Calibration.Method
+		coverage := payload.Calibration.Coverage
 		for _, c := range payload.Candidates {
 			if c.PatternHint == "manual_review" {
 				manual++
@@ -166,16 +210,50 @@ func Emit(opts EmitOptions) (Latest, error) {
 					codeSnippetLow++
 				}
 			}
+			sumP += c.ConfidenceP
+			cm := c.ConfidenceMethod
+			if cm == "" {
+				cm = method
+			}
+			if cm == calibration.MethodPlattConformal {
+				calibrated++
+			} else {
+				heuristic++
+			}
+			if method == "" && cm != "" {
+				method = cm
+			}
+			if coverage <= 0 && c.ConfidenceCoverage > 0 {
+				coverage = c.ConfidenceCoverage
+			}
 		}
+		if method != "" {
+			metrics.ConfidenceMethod = method
+		}
+		if coverage > 0 {
+			metrics.ConfidenceCoverageTarget = floatPtr(coverage)
+		}
+		if len(payload.Candidates) > 0 {
+			meanP := sumP / float64(len(payload.Candidates))
+			metrics.ConfidenceMeanP = &meanP
+		}
+		metrics.ConfidenceCalibratedCount = &calibrated
+		metrics.ConfidenceHeuristicCount = &heuristic
 		if techSpec > 0 {
 			metrics.SubmissionTechSpec = &techSpec
 			rate := float64(techSpecLow) / float64(techSpec)
 			metrics.EscalationTechSpec = &rate
+			ci := calibration.WilsonInterval(techSpecLow, techSpec, 0.95)
+			metrics.EscalationTechSpecLo = floatPtr(ci.Low)
+			metrics.EscalationTechSpecHi = floatPtr(ci.High)
 		}
 		if codeSnippet > 0 {
 			metrics.SubmissionCodeSnippet = &codeSnippet
 			rate := float64(codeSnippetLow) / float64(codeSnippet)
 			metrics.EscalationCodeSnippet = &rate
+			ci := calibration.WilsonInterval(codeSnippetLow, codeSnippet, 0.95)
+			metrics.EscalationCodeSnippetLo = floatPtr(ci.Low)
+			metrics.EscalationCodeSnippetHi = floatPtr(ci.High)
 		}
 		if payload.CandidateCount > 0 {
 			rate := float64(manual) / float64(payload.CandidateCount)
@@ -289,6 +367,8 @@ func Emit(opts EmitOptions) (Latest, error) {
 		var payload struct {
 			Precision          float64                       `json:"precision"`
 			Recall             float64                       `json:"recall"`
+			MatchedCandidates  int                           `json:"matched_candidates"`
+			FalsePositives     int                           `json:"false_positives"`
 			RecallByConfidence map[string]map[string]float64 `json:"recall_by_confidence"`
 		}
 		if err := readJSON(opts.HarnessPath, &payload); err != nil {
@@ -297,6 +377,12 @@ func Emit(opts EmitOptions) (Latest, error) {
 		p, r := payload.Precision, payload.Recall
 		metrics.HarnessPrecision = &p
 		metrics.HarnessRecall = &r
+		denom := payload.MatchedCandidates + payload.FalsePositives
+		if denom > 0 {
+			ci := calibration.WilsonInterval(payload.MatchedCandidates, denom, 0.95)
+			metrics.HarnessPrecisionLo = floatPtr(ci.Low)
+			metrics.HarnessPrecisionHi = floatPtr(ci.High)
+		}
 		for band, ptr := range map[string]**float64{
 			"high":   &metrics.HarnessRecallHigh,
 			"medium": &metrics.HarnessRecallMedium,
@@ -442,6 +528,8 @@ func asFloat(v any) float64 {
 }
 
 func intPtr(v int) *int { return &v }
+
+func floatPtr(v float64) *float64 { return &v }
 
 func readJSON(path string, dest any) error {
 	data, err := os.ReadFile(path)

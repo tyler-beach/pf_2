@@ -1,0 +1,167 @@
+{
+  "steps": [
+    {
+      "id": "ingest",
+      "order": 1,
+      "title": "Ingest ADRs",
+      "subtitle": "Parse Markdown ADR sources into a stable index",
+      "command": "adrctl ingest-adrs --root <adrs> --json-out ingested-adrs.json",
+      "invariant": "Fail-closed on malformed ADR structure",
+      "inputs": ["ADR Markdown tree"],
+      "outputs": ["ingested-adrs.json"],
+      "deep": {
+        "what": "Normalize ADR documents into a content-addressed ingestion index with titles, paths, and body hashes.",
+        "how": [
+          "Walk the ADR root and require a level-one title heading",
+          "Compute per-file SHA-256 for citation binding",
+          "Emit a machine index used by extract and assess joins"
+        ],
+        "failure_modes": [
+          "Missing H1 title rejects the document",
+          "Path escapes outside repository root are refused"
+        ],
+        "metrics": ["kpi.corpus.size"],
+        "sample_artifact": {
+          "schema_version": "adr-ingestion-v1",
+          "documents": [{ "id": "ADR-2001", "path": "ADR-2001.md", "title": "TLS termination at edge" }]
+        }
+      }
+    },
+    {
+      "id": "extract",
+      "order": 2,
+      "title": "Extract obligations",
+      "subtitle": "Deterministic candidates + statistical confidence",
+      "command": "adrctl extract-obligations --index ingested.json --root <adrs> --json-out candidates.json",
+      "invariant": "No LLM on extract path",
+      "inputs": ["ingested-adrs.json", "patterns.json", "calibration params (embedded)"],
+      "outputs": ["obligation-candidates.json", "obligation-candidates.md"],
+      "deep": {
+        "what": "Heuristic extraction of obligation-like statements, then calibrated P(correct) + conformal bands (heuristic score is an input feature, not a probability).",
+        "how": [
+          "Scan ADR bodies for modality cues (must/should/shall)",
+          "Compute heuristic triage score from modality, pattern hint, ambiguity, exceptions, compound cues (not 'citation clarity')",
+          "Apply Platt/logistic calibration → confidence_p; inductive conformal set → high|medium|low at target coverage",
+          "Label confidence_method=platt_conformal or honest heuristic fallback; low band is assist-eligible"
+        ],
+        "failure_modes": [
+          "Ambiguous prose widens conformal set / lands in low band",
+          "manual_review pattern hint when no executable verifier exists",
+          "Domain shift without gold refit voids coverage claims"
+        ],
+        "metrics": ["candidate_total", "kpi.escalation.rate", "kpi.escalation.rate.ci_*", "kpi.confidence.share.*", "kpi.confidence.mean_p", "kpi.confidence.method", "kpi.evidence.gap_rate"],
+        "sample_artifact": {
+          "candidate_count": 4,
+          "confidence_summary": { "high": 2, "medium": 1, "low": 1 },
+          "calibration": { "method": "platt_conformal", "coverage": 0.9 }
+        }
+      }
+    },
+    {
+      "id": "assist",
+      "order": 3,
+      "title": "LLM assist (batch)",
+      "subtitle": "Proposals only for low-confidence candidates",
+      "command": "adrctl assist-obligations --index candidates.json --root <adrs> --json-out proposals.json",
+      "invariant": "Never executable; never writes requirements/registry",
+      "inputs": ["obligation-candidates.json", "optional LLM_API_KEY"],
+      "outputs": ["llm-obligation-proposals.json"],
+      "deep": {
+        "what": "Confidence-gated batch assist that drafts normalized statements and pattern suggestions for humans.",
+        "how": [
+          "Filter candidates at or below max_confidence (default low)",
+          "Offline provider emits deterministic fixtures when no key",
+          "Live OpenAI-compatible provider records token usage + estimated USD",
+          "Citation verified against source SHA + line ranges before emit"
+        ],
+        "failure_modes": [
+          "Citation drift fails closed",
+          "Executable candidates are refused",
+          "Missing API key forces offline mode"
+        ],
+        "metrics": ["kpi.assist.proposal_count", "kpi.assist.cost_usd", "kpi.assist.prompt_tokens", "kpi.assist.completion_tokens"],
+        "sample_artifact": {
+          "provider": "offline-fixture",
+          "proposal_count": 1,
+          "estimated_cost_usd": 0,
+          "approval_status": "pending_review"
+        }
+      }
+    },
+    {
+      "id": "review",
+      "order": 4,
+      "title": "Human review",
+      "subtitle": "Append-only registry decisions",
+      "command": "adrctl accept-assist-proposal | record-obligation-review",
+      "invariant": "Approvals are human-authored ledger entries",
+      "inputs": ["proposals.json", "candidates.json", "requirements.json", "obligation-reviews.json"],
+      "outputs": ["updated obligation-reviews.json", "coverage.json"],
+      "deep": {
+        "what": "Map assist proposals into review records or record reviews directly; compute accept_rate.",
+        "how": [
+          "proposal-to-review maps a pending proposal into a ReviewProposal",
+          "accept-assist-proposal verifies citation drift then RecordReview",
+          "low-confidence-checklist emits Markdown for issue UX"
+        ],
+        "failure_modes": [
+          "Stale source SHA blocks accept",
+          "Executable proposals refused",
+          "Missing reviewer / review_reference"
+        ],
+        "metrics": ["kpi.review.backlog", "kpi.review.pending_*", "kpi.review.accept_rate"],
+        "sample_artifact": {
+          "decision": "approved",
+          "enforcement_mode": "review_required",
+          "reviewer": "architect"
+        }
+      }
+    },
+    {
+      "id": "assess",
+      "order": 5,
+      "title": "Assess / enforce",
+      "subtitle": "Zero-runtime-LLM compliance gate",
+      "command": "adrctl assess-repo | assess-obligations --enforce-blocking",
+      "invariant": "runtime_llm_calls == 0",
+      "inputs": ["requirements.json", "registry", "analyzer evidence"],
+      "outputs": ["assessment.json", "report.md", "results.sarif"],
+      "deep": {
+        "what": "Deterministic requirement evaluation joined with obligation binding coverage.",
+        "how": [
+          "OpenGrep / analyzer evidence bound to requirements",
+          "Obligation assessment joins candidates + reviews",
+          "Blocking gate fails on pending/stale/orphaned bindings"
+        ],
+        "failure_modes": [
+          "Pending candidates block enforcement",
+          "Stale approvals require re-review",
+          "Non-zero runtime_llm_calls fails workshop-emit on assess workflows"
+        ],
+        "metrics": ["kpi.assess.verdict", "kpi.assess.covered", "kpi.invariant.llm_calls"],
+        "sample_artifact": { "verdict": "PASS", "runtime_llm_calls": 0 }
+      }
+    },
+    {
+      "id": "workshop",
+      "order": 6,
+      "title": "Workshop emit",
+      "subtitle": "GitOps snapshot → Pages command center",
+      "command": "adrctl workshop-emit --out-dir snapshot ...",
+      "invariant": "Assess paths still enforce LLM=0",
+      "inputs": ["candidates", "proposals", "assessment", "harness", "promptfoo", "registry"],
+      "outputs": ["latest.json", "metrics.json", "copied artifacts"],
+      "deep": {
+        "what": "Flatten KPIs into workshop-metrics-v1 and publish via workshop-data + Pages.",
+        "how": [
+          "Copy linked artifacts into snapshot",
+          "Compute accept_rate when registry+proposals present",
+          "Append metrics/runs.jsonl for trends"
+        ],
+        "failure_modes": ["Missing out-dir", "Assess LLM invariant violation"],
+        "metrics": ["all KPI dictionary fields"],
+        "sample_artifact": { "schema_version": "workshop-snapshot-v1", "summary": "workflow=fixture; verdict=PASS" }
+      }
+    }
+  ]
+}

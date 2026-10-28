@@ -2,6 +2,7 @@ import 'uplot/dist/uPlot.min.css';
 import 'diff2html/bundles/css/diff2html.min.css';
 import { renderChrome } from './chrome';
 import { bindCopyButtons, closeDrawer, loadingState } from './ui';
+import { renderConfidence } from './confidence-view';
 import {
   renderADRs,
   renderAssess,
@@ -25,6 +26,7 @@ const navGroups: Array<{ label: string; items: Array<[string, string]> }> = [
     items: [
       ['/', 'Overview'],
       ['/metrics', 'Metrics'],
+      ['/confidence', 'Confidence'],
       ['/pipeline', 'Pipeline'],
       ['/sample', 'Sample'],
     ],
@@ -96,6 +98,9 @@ async function render() {
       break;
     case '/metrics':
       await renderMetrics(app);
+      break;
+    case '/confidence':
+      await renderConfidence(app);
       break;
     case '/pipeline':
       await renderPipeline(app, rest[0]);

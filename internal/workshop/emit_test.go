@@ -42,6 +42,12 @@ func TestEmitAggregatesKPIsAndFailsClosedOnAssessLLM(t *testing.T) {
 	if latest.Metrics.EscalationRate != 0.25 {
 		t.Fatalf("escalation rate: %v", latest.Metrics.EscalationRate)
 	}
+	if latest.Metrics.EscalationRateLo == nil || latest.Metrics.EscalationRateHi == nil {
+		t.Fatalf("expected Wilson CI on escalation: %+v", latest.Metrics)
+	}
+	if latest.Metrics.CIMethod != "wilson" || latest.Metrics.CILevel != 0.95 {
+		t.Fatalf("CI meta: method=%s level=%v", latest.Metrics.CIMethod, latest.Metrics.CILevel)
+	}
 	if latest.Metrics.ConfidenceShareHigh == nil || *latest.Metrics.ConfidenceShareHigh != 0.5 {
 		t.Fatalf("confidence share high: %v", latest.Metrics.ConfidenceShareHigh)
 	}

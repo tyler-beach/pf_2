@@ -7,11 +7,17 @@ Emitted by `adrctl workshop-emit` into `metrics.json` and appended to `workshop-
 
 | KPI ID | Question | Formula | Unit | Dimensions | Freshness |
 |---|---|---|---|---|---|
-| `kpi.confidence.share` | How are candidates distributed by confidence? | Emitted as `kpi.confidence.share.{high,medium,low}` = band_count / `candidate_total` (plus raw counts) | count / ratio | workflow, ref, band | every extract |
-| `kpi.escalation.rate` | How often do we escalate to assist? | `confidence_low / candidate_total` | ratio 0–1 | workflow, ref | every extract |
-| `kpi.escalation.rate.tech_spec` / `code_snippet` | Escalation by submission kind | low_band_count / kind_count among candidates tagged `submission_kind` | ratio 0–1 | submission_kind | every extract |
+| `kpi.confidence.share` | How are candidates distributed by confidence band? | Emitted as `kpi.confidence.share.{high,medium,low}` = band_count / `candidate_total` (plus raw counts). Bands are conformal when `kpi.confidence.method=platt_conformal`, else heuristic. | count / ratio | workflow, ref, band | every extract |
+| `kpi.confidence.share.*.ci_low/ci_high` | Sampling uncertainty on band shares | Wilson 95% score interval on band_count / n | ratio | workflow, ref | every extract |
+| `kpi.confidence.method` | Which confidence stack produced bands? | `platt_conformal` or `heuristic` (honest fallback) | enum | workflow | every extract |
+| `kpi.confidence.coverage_target` | Conformal target coverage | e.g. 0.90 when conformal active | ratio | workflow | every extract |
+| `kpi.confidence.mean_p` | Mean calibrated P(extract_correct) | mean of candidate `confidence_p` | ratio | workflow | every extract |
+| `kpi.confidence.calibrated_count` / `heuristic_count` | Method mix | counts of candidates by `confidence_method` | count | workflow | every extract |
+| `kpi.escalation.rate` | How often do we escalate to assist? | `confidence_low / candidate_total` (± Wilson `kpi.escalation.rate.ci_low/ci_high`) | ratio 0–1 | workflow, ref | every extract |
+| `kpi.escalation.rate.tech_spec` / `code_snippet` | Escalation by submission kind | low_band_count / kind_count among candidates tagged `submission_kind` (± Wilson CIs) | ratio 0–1 | submission_kind | every extract |
+| `kpi.ci.level` / `kpi.ci.method` | Interval metadata | typically `0.95` / `wilson` | enum | workflow | every extract |
 | `kpi.submission.tech_spec_count` / `code_snippet_count` | Candidate volume by input shape | count of candidates with `submission_kind` | count | submission_kind | every extract |
-| `kpi.harness.precision` | Are labeled extractions candidates precise? | harness matched / (matched + FP), overall and by band | ratio | corpus, band | corpus-eval / reuse-pilot |
+| `kpi.harness.precision` | Are labeled extractions candidates precise? | harness matched / (matched + FP), overall and by band; Wilson `kpi.harness.precision.ci_*` when counts present | ratio | corpus, band | corpus-eval / reuse-pilot |
 | `kpi.harness.recall` | Do we recover labeled statements? | matched markers / expected markers; also `kpi.harness.recall.{high,medium,low}` from harness `recall_by_confidence` | ratio | corpus, band | corpus-eval / reuse-pilot |
 | `kpi.review.backlog` | How many candidates await human review? | `pending_review_count` | count | workflow | validate-obligation-reviews |
 | `kpi.review.pending_by_band` | Where is backlog concentrated? | pending_high / medium / low | count | band | validate-obligation-reviews |

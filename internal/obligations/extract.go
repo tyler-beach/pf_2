@@ -12,6 +12,7 @@ import (
 
 	"github.com/tyler-beach/pf_2/internal/adringest"
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/obligations/calibration"
 )
 
 const (
@@ -48,9 +49,23 @@ type Candidate struct {
 	Exceptions []string `json:"exceptions,omitempty"`
 	Ambiguity  []string `json:"ambiguity,omitempty"`
 	// Deterministic confidence; never produced by an LLM.
+	// Confidence is the conformal (or heuristic) triage band.
 	Confidence        string   `json:"confidence"`
-	ConfidenceScore   float64  `json:"confidence_score"`
+	ConfidenceScore   float64  `json:"confidence_score"` // heuristic triage score (compat); not a probability
+	ConfidenceP       float64  `json:"confidence_p"`     // calibrated P(extract_correct); equals score when method=heuristic
+	ConfidenceMethod  string   `json:"confidence_method,omitempty"`
+	ConfidenceCoverage float64 `json:"confidence_coverage,omitempty"`
+	PredictionSet     []string `json:"prediction_set,omitempty"`
 	EscalationReasons []string `json:"escalation_reasons,omitempty"`
+}
+
+// CalibrationMeta summarizes which statistical confidence method produced bands.
+type CalibrationMeta struct {
+	Method             string  `json:"method"`
+	Coverage           float64 `json:"coverage,omitempty"`
+	GoldExampleCount   int     `json:"gold_example_count,omitempty"`
+	ParamsVersion      string  `json:"params_version,omitempty"`
+	ExchangeabilityNote string `json:"exchangeability_note,omitempty"`
 }
 
 // Index is a deterministic candidate inventory tied to exact input bytes.
@@ -62,6 +77,7 @@ type Index struct {
 	DocumentsWithCandidates int               `json:"documents_with_candidates"`
 	CandidateCount          int               `json:"candidate_count"`
 	ConfidenceSummary       ConfidenceSummary `json:"confidence_summary"`
+	Calibration             CalibrationMeta   `json:"calibration,omitempty"`
 	Candidates              []Candidate       `json:"candidates"`
 }
 
@@ -143,6 +159,14 @@ func BuildIndex(documents []adringest.Document, sourceRootPath, sourceRootLabel 
 	})
 	out.CandidateCount = len(out.Candidates)
 	out.ConfidenceSummary = SummarizeConfidence(out)
+	params := calibration.DefaultParams()
+	out.Calibration = CalibrationMeta{
+		Method:              params.Method,
+		Coverage:            params.ConformalTargetCoverage,
+		GoldExampleCount:    params.GoldExampleCount,
+		ParamsVersion:       params.Version,
+		ExchangeabilityNote: params.ExchangeabilityNote,
+	}
 	return out, nil
 }
 
@@ -160,8 +184,16 @@ func MarkdownCandidateReport(index Index) string {
 	}
 	fmt.Fprintf(&b, "- Documents: %d; documents with candidates: %d; candidates: %d\n",
 		index.DocumentCount, index.DocumentsWithCandidates, index.CandidateCount)
-	fmt.Fprintf(&b, "- Confidence: high=%d medium=%d low=%d (low-confidence candidates are escalation candidates for batch LLM assist)\n\n",
+	fmt.Fprintf(&b, "- Confidence: high=%d medium=%d low=%d (low conformal/heuristic band is assist-eligible)\n",
 		summary.High, summary.Medium, summary.Low)
+	if index.Calibration.Method != "" {
+		fmt.Fprintf(&b, "- Calibration method: `%s`", index.Calibration.Method)
+		if index.Calibration.Coverage > 0 {
+			fmt.Fprintf(&b, "; conformal coverage target=%.0f%%", index.Calibration.Coverage*100)
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString("\n")
 	if len(index.Candidates) == 0 {
 		b.WriteString("No normative candidate statements were found. This is not evidence that the ADR corpus has no obligations.\n")
 		return b.String()
@@ -279,10 +311,14 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 					ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
 					ReviewHints: hints, Conditions: conditions, Exceptions: exceptions, Ambiguity: ambiguity,
 				}
-				band, score, reasons := scoreConfidence(candidate)
-				candidate.Confidence = band
-				candidate.ConfidenceScore = score
-				candidate.EscalationReasons = reasons
+				scored := ScoreCandidate(candidate)
+				candidate.Confidence = scored.ConfidenceBand
+				candidate.ConfidenceScore = scored.HeuristicScore
+				candidate.ConfidenceP = scored.ConfidenceP
+				candidate.ConfidenceMethod = scored.ConfidenceMethod
+				candidate.ConfidenceCoverage = scored.ConfidenceCoverage
+				candidate.PredictionSet = scored.PredictionSet
+				candidate.EscalationReasons = scored.EscalationReasons
 				candidate.ID = candidateID(candidate)
 				result = append(result, candidate)
 			}

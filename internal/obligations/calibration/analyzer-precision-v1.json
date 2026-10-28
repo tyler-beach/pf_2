@@ -1,0 +1,21 @@
+{
+  "schema_version": "analyzer-precision-v1",
+  "default_precision": 0.72,
+  "notes": "Empiric-ish precision priors from vulnerable/clean fixture families. Used as optional evidence weights for OpenGrep/Checkov findings — not a Bayesian posterior. Grow with labeled analyzer outcomes.",
+  "precision_by_rule_id": {
+    "CKV_AWS_23": 0.9,
+    "CKV_AWS_24": 0.92,
+    "CKV_AWS_260": 0.88,
+    "CKV_AWS_41": 0.85,
+    "CKV_AWS_45": 0.84,
+    "CKV2_AWS_5": 0.8,
+    "pathfinder.shell-injection": 0.86,
+    "pathfinder.eval-exec": 0.88,
+    "owasp.injection.sql": 0.82,
+    "owasp.injection.command": 0.84,
+    "owasp.crypto.weak-hash": 0.9,
+    "owasp.ssrf.url-open": 0.78,
+    "owasp.secrets.hardcoded": 0.91,
+    "aws.sdk.insecure-transport": 0.83
+  }
+}

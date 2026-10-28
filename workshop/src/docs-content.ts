@@ -55,7 +55,7 @@ export const DOC_SECTIONS: DocSection[] = [
 <ol class="docs-steps">
   <li><strong>Ingest</strong> — preserve source bytes, identity, version, and locations (<code>ingest-adrs</code>).</li>
   <li><strong>Extract</strong> — candidate obligations with modality, citations, ambiguity (<code>extract-obligations</code>). Never executable by default.</li>
-  <li><strong>Confidence</strong> — high / medium / low bands; low escalate to batch assist.</li>
+  <li><strong>Confidence</strong> — heuristic score → calibrated <code>confidence_p</code> → conformal high/medium/low; low escalate to batch assist. Details: <a href="#/docs/confidence">Confidence scoring</a>.</li>
   <li><strong>Assist (batch only)</strong> — optional LLM proposals; never auto-approved (<code>assist-obligations</code>).</li>
   <li><strong>Human review</strong> — approve / reject / bind in the obligation registry.</li>
   <li><strong>Bind</strong> — map to a verifier pattern (Go AST, JSON, OpenGrep, Checkov, manual-review).</li>
@@ -307,7 +307,45 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><strong>Export</strong> — Copy TSV / Markdown / failing checklist for Issues.</li>
   <li><strong>Docs</strong> route as <code>#/docs/:section</code> (this page).</li>
 </ul>
-<p>Routes: Overview, Metrics, Pipeline, Sample, ADRs, Candidates, Proposals, Assess, Costs, Runs, Evals, Corpus, Docs.</p>`,
+<p>Routes: Overview, Metrics, <a href="#/confidence">Confidence</a>, Pipeline, Sample, ADRs, Candidates, Proposals, Assess, Costs, Runs, Evals, Corpus, Docs.</p>`,
+  },
+  {
+    id: 'confidence',
+    title: 'Confidence scoring (statistical)',
+    group: 'Operator reference',
+    summary: 'Heuristic triage vs calibrated P(correct) vs conformal bands — honesty limits included.',
+    body: `
+<p>Pathfinder confidence is produced on the <strong>extract</strong> path (deterministic, zero LLM). Assist gates on the resulting band; assess/workshop metrics carry the same fields forward. Dashboard: <a href="#/confidence"><code>#/confidence</code></a>.</p>
+<h3>Three layers (do not conflate)</h3>
+<table class="docs-table">
+  <thead><tr><th>Field</th><th>Meaning</th><th>Not a claim of…</th></tr></thead>
+  <tbody>
+    <tr><td><code>confidence_score</code></td><td>Heuristic triage from modality, pattern hint, ambiguity, exceptions, compound cues.</td><td>A probability. Old “citation clarity” wording was overclaim — citations bind location; they do not score semantic clarity.</td></tr>
+    <tr><td><code>confidence_p</code></td><td>Calibrated <em>P(extract_correct)</em> via Platt/logistic on a feature vector (heuristic score is one <em>input</em> feature).</td><td>Compliance, assess PASS, or Promptfoo quality.</td></tr>
+    <tr><td><code>confidence</code> / band</td><td>Inductive conformal prediction set mapped to high / medium / low at target coverage (default 90%). Singleton <code>{high}</code> → high; otherwise widen.</td><td>Guaranteed correctness on shifted domains without refit.</td></tr>
+  </tbody>
+</table>
+<p><code>confidence_method</code> is <code>platt_conformal</code> when fitted gold params apply, or <code>heuristic</code> when gold is insufficient / params missing — labeled honestly. <code>confidence_coverage</code> records the conformal target when active.</p>
+<h3>Where scores appear</h3>
+<ol class="docs-steps">
+  <li><strong>Extract / candidates</strong> — full fields on each candidate + <code>calibration</code> meta on the index.</li>
+  <li><strong>Assist</strong> — filters by conformal/heuristic band (<code>max_confidence</code>, default low); proposals copy parent <code>confidence_*</code>.</li>
+  <li><strong>Assess</strong> — candidate assessments inherit confidence; optional analyzer <code>evidence_weight</code> from fixture precision-by-rule-id.</li>
+  <li><strong>Metrics</strong> — band shares, escalation, mean_p, method counts, Wilson 95% CIs (<code>kpi.*.ci_low/ci_high</code>).</li>
+</ol>
+<h3>Gold &amp; params</h3>
+<ul>
+  <li>Gold schema: <code>testdata/confidence/gold-extract-v1.json</code> (<code>extract_correct</code>, <code>expected_band</code>, assess/assist hooks).</li>
+  <li>Fitted params (embedded + mirrored): <code>internal/obligations/calibration/params-v1.json</code>.</li>
+  <li><strong>Exchangeability:</strong> conformal coverage assumes future candidates are exchangeable with gold. Grow gold (e.g. 50-submissions pack) and refit before claiming the same coverage on a new domain.</li>
+</ul>
+<h3>How to read bands &amp; CIs</h3>
+<ul>
+  <li><strong>Band</strong> — triage / assist eligibility, not a compliance verdict.</li>
+  <li><strong>Wilson CI</strong> — sampling uncertainty on rates (escalation, shares, harness precision when counts exist). Not calibration error bars on <code>confidence_p</code>.</li>
+  <li>Prefer <a href="#/confidence">Confidence</a> for overview + trends; <a href="#/metrics?focus=confidence">Metrics → confidence</a> for raw KPI keys.</li>
+</ul>
+<p>Related: <a href="#/docs/kpis">KPI glossary</a> · <a href="#/sample/extract">Sample extract step</a> · repo <code>docs/kpi-dictionary.md</code> · <code>docs/architecture.md</code>.</p>`,
   },
   {
     id: 'kpis',
@@ -317,13 +355,14 @@ export const DOC_SECTIONS: DocSection[] = [
     body: `
 <ul>
   <li><code>kpi.invariant.llm_calls</code> must be <strong>0</strong> on assess paths.</li>
-  <li>Confidence / escalation / harness precision-recall measure extract quality.</li>
+  <li>Confidence / escalation / harness precision-recall measure extract quality. See <a href="#/docs/confidence">Confidence scoring</a> for calibrated P vs heuristic vs conformal.</li>
+  <li>Wilson intervals: <code>kpi.*.ci_low</code> / <code>ci_high</code> (95%) on escalation, shares, harness precision when counts exist. Dashboard: <a href="#/confidence">Confidence</a>.</li>
   <li><code>kpi.assess.submission_kind</code> and <code>kpi.submission.*_count</code> / <code>kpi.escalation.rate.{tech_spec,code_snippet}</code> split trends for English tech specs vs code/IaC.</li>
   <li>Assist cost &amp; proposal counts measure batch assist — not compliance.</li>
   <li>Promptfoo pass rate is assist regression only.</li>
   <li>Assess covered / unbound / stale track binding completeness, not “green estate.”</li>
 </ul>
-<p>Authoritative definitions: repository <code>docs/kpi-dictionary.md</code>. Charts: <a href="#/metrics">Metrics</a>.</p>`,
+<p>Authoritative definitions: repository <code>docs/kpi-dictionary.md</code>. Charts: <a href="#/metrics">Metrics</a> · <a href="#/confidence">Confidence</a>.</p>`,
   },
   {
     id: 'glossary',
@@ -340,7 +379,9 @@ export const DOC_SECTIONS: DocSection[] = [
     <tr><td>Binding</td><td>Approved link from obligation → pattern/verifier with digests; can go stale.</td></tr>
     <tr><td>Issue surface</td><td><code>assess-repo --issue-surface</code>: sandbox fences; manual-review → N/A.</td></tr>
     <tr><td>Coverage</td><td><code>COMPLETE</code> / <code>PARTIAL</code> / <code>NONE</code> for applicable evidence — not a verdict.</td></tr>
-    <tr><td>Escalation</td><td>Low-confidence / ambiguous candidates flagged for assist or human review.</td></tr>
+    <tr><td>Escalation</td><td>Low conformal/heuristic band candidates flagged for assist or human review.</td></tr>
+    <tr><td>Calibrated P</td><td><code>confidence_p</code> — Platt/logistic P(extract_correct); see <a href="#/docs/confidence">Confidence scoring</a>.</td></tr>
+    <tr><td>Conformal band</td><td>Prediction-set triage at target coverage under exchangeability with gold.</td></tr>
     <tr><td>Assist proposal</td><td>Batch LLM draft; <code>executable=false</code> until human accepts into review.</td></tr>
     <tr><td>Plan manifest</td><td>Deterministic analyzer work description; verified before <code>execute-plan</code>.</td></tr>
     <tr><td>workshop-data</td><td>Git branch storing run snapshots and <code>runs.jsonl</code> for Pages.</td></tr>

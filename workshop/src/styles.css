@@ -1454,6 +1454,12 @@ td.col-id code.id {
   max-width: none;
 }
 .spark-grid .chart { min-height: 140px; }
+.conf-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 900px) {
+  .conf-grid { grid-template-columns: 1fr; }
+}
 
 /* Docs — published reading surface inside the workshop shell */
 .app:has(.docs-shell) {

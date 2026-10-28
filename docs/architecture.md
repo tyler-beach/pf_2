@@ -163,6 +163,17 @@ go run ./cmd/adrctl assess \
 
 The deterministic extract-obligations stage converts indexed ADR statements with explicit normative cues into a source-cited review queue. Candidates include the ADR/source hash, section, line range, modality, candidate kind, and a non-binding reusable-pattern hint. Every candidate is emitted as pending_review, review_required, and executable=false; no candidate is inserted into the active requirements catalog. Optional batch-time AI interpretation remains separate and is not required by this deterministic pipeline.
 
+### Statistical confidence (extract → assist → metrics)
+
+Confidence is **not** an LLM score and **not** “citation clarity.” Source citations bind bytes/lines; triage uses extract signals:
+
+1. **Heuristic `confidence_score`** — deterministic deductions from modality, pattern hint, ambiguity, exceptions, compound/conditional cues. Kept for compatibility and as a **feature input**.
+2. **Calibrated `confidence_p`** — Platt/logistic P(extract_correct) fitted offline on `testdata/confidence/gold-extract-v1.json`; params embedded in `internal/obligations/calibration/params-v1.json`. When gold is insufficient, method falls back to `heuristic` and is labeled as such.
+3. **Conformal `confidence` band** — inductive prediction sets at target coverage (default 90%) under an **exchangeability** assumption with the gold calibration set. Singleton `{high}` → high; otherwise widen to medium/low. Assist gates on this band (`max_confidence`, default low).
+4. **KPI Wilson CIs** — `workshop-emit` adds 95% Wilson intervals on escalation, band shares, and harness precision (when counts exist).
+
+Workshop surfaces: `#/confidence` dashboard, Docs → Confidence scoring, candidate/proposal drawers. Grow gold (including the 50-submissions pack) and refit before claiming coverage on a new domain.
+
 ## Implemented vs target
 
 | Scalable-architecture phase | Status | Concrete packages / commands |

@@ -1,6 +1,10 @@
 package obligations
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/tyler-beach/pf_2/internal/obligations/calibration"
+)
 
 const (
 	ConfidenceHigh   = "high"
@@ -8,8 +12,24 @@ const (
 	ConfidenceLow    = "low"
 )
 
-// scoreConfidence assigns a deterministic confidence band. It never consults an
-// LLM; scores are derived only from modality, pattern hints, and review signals.
+// ScoreCandidate runs heuristic triage then calibrated P + conformal bands.
+// When calibration params are missing or gold-insufficient, method=heuristic.
+func ScoreCandidate(c Candidate) calibration.Result {
+	band, score, reasons := scoreConfidence(c)
+	return calibration.Apply(calibration.FeatureInput{
+		HeuristicScore: score,
+		Modality:       c.Modality,
+		PatternHint:    c.PatternHint,
+		Kind:           c.Kind,
+		Ambiguity:      c.Ambiguity,
+		Exceptions:     c.Exceptions,
+		Conditions:     c.Conditions,
+		ReviewHints:    c.ReviewHints,
+	}, band, reasons, calibration.DefaultParams())
+}
+
+// scoreConfidence assigns a deterministic heuristic triage score/band. It never
+// consults an LLM. The score is an *input feature* to calibration, not a probability.
 func scoreConfidence(c Candidate) (band string, score float64, reasons []string) {
 	reasons = make([]string, 0, 4)
 	score = 0.85

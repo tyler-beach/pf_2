@@ -31,26 +31,29 @@
       "id": "extract",
       "order": 2,
       "title": "Extract obligations",
-      "subtitle": "Deterministic candidates + confidence bands",
+      "subtitle": "Deterministic candidates + statistical confidence",
       "command": "adrctl extract-obligations --index ingested.json --root <adrs> --json-out candidates.json",
       "invariant": "No LLM on extract path",
-      "inputs": ["ingested-adrs.json", "patterns.json"],
+      "inputs": ["ingested-adrs.json", "patterns.json", "calibration params (embedded)"],
       "outputs": ["obligation-candidates.json", "obligation-candidates.md"],
       "deep": {
-        "what": "Heuristic extraction of obligation-like statements with modality, pattern hints, and confidence scoring.",
+        "what": "Heuristic extraction of obligation-like statements, then calibrated P(correct) + conformal bands (heuristic score is an input feature, not a probability).",
         "how": [
           "Scan ADR bodies for modality cues (must/should/shall)",
-          "Score confidence from citation clarity, modality, and pattern match strength",
-          "Band into high | medium | low; low is assist-eligible"
+          "Compute heuristic triage score from modality, pattern hint, ambiguity, exceptions, compound cues (not 'citation clarity')",
+          "Apply Platt/logistic calibration → confidence_p; inductive conformal set → high|medium|low at target coverage",
+          "Label confidence_method=platt_conformal or honest heuristic fallback; low band is assist-eligible"
         ],
         "failure_modes": [
-          "Ambiguous prose lands in low band",
-          "manual_review pattern hint when no executable verifier exists"
+          "Ambiguous prose widens conformal set / lands in low band",
+          "manual_review pattern hint when no executable verifier exists",
+          "Domain shift without gold refit voids coverage claims"
         ],
-        "metrics": ["candidate_total", "kpi.escalation.rate", "kpi.confidence.share.*", "kpi.evidence.gap_rate"],
+        "metrics": ["candidate_total", "kpi.escalation.rate", "kpi.escalation.rate.ci_*", "kpi.confidence.share.*", "kpi.confidence.mean_p", "kpi.confidence.method", "kpi.evidence.gap_rate"],
         "sample_artifact": {
           "candidate_count": 4,
-          "confidence_summary": { "high": 2, "medium": 1, "low": 1 }
+          "confidence_summary": { "high": 2, "medium": 1, "low": 1 },
+          "calibration": { "method": "platt_conformal", "coverage": 0.9 }
         }
       }
     },

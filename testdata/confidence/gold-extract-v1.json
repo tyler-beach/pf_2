@@ -1,0 +1,3082 @@
+{
+  "schema_version": "confidence-gold-extract-v1",
+  "task": "extract_quality",
+  "description": "Gold labels for extract-quality calibration (Platt logistic + inductive conformal bands). extract_correct=true when corpus harness match has correct modality and pattern_hint. hooks.assess / hooks.assist reserved for later assess/assist gold. Grow with the 50-submissions pack; do not treat heuristic confidence_score alone as a probability.",
+  "label_schema": {
+    "extract_correct": "bool \u2014 modality+pattern+statement match gold",
+    "expected_band": "high|medium|low \u2014 human/corpus triage band",
+    "escalate_expected": "bool \u2014 should enter assist queue",
+    "hooks.assess": "optional assess-side annotations",
+    "hooks.assist": "optional assist-side annotations"
+  },
+  "examples": [
+    {
+      "id": "GOLD-EX-001",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3001",
+      "statement": "Services SHALL NOT return or mutate objects without an object-level authorization check for resource family 1 (A01-1).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "architecture.dependency_or_boundary"
+      },
+      "features": {
+        "heuristic_score": 0.75,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": true,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-002",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3013",
+      "statement": "Edge configuration MUST declare a TLS minimum version setting for listener 1 (A02-1).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-003",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3017",
+      "statement": "Public sites MUST set an HSTS max-age configuration for site family 5 (A02-5).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-004",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3028",
+      "statement": "Identity code MUST NOT build an LDAP filter concat for directory lookup 4 (A03-4).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-005",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3039",
+      "statement": "Checkout flows MUST NOT allow a trust boundary bypass for payment step 3 (A04-3).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "architecture.dependency_or_boundary"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-006",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3053",
+      "statement": "APIs MUST set a bounded error verbosity configuration for API family 5 (A05-5).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-007",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3065",
+      "statement": "Release pipelines SHALL emit an SBOM required key for release artifact 5 (A06-5).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-008",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3076",
+      "statement": "Privileged access configuration SHALL include an MFA required key for privileged role 4 (A07-4).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-009",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3087",
+      "statement": "Deploy pipelines SHALL attach a CI provenance required key for deploy artifact 3 (A08-3).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-010",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3098",
+      "statement": "Audit configuration SHALL declare a log retention days setting for audit lane 2 (A09-2).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-011",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3110",
+      "statement": "HTTP clients MUST NOT enable a raw HTTP redirect follow for webhook 2 (A10-2).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-012",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3201",
+      "statement": "IAM policies SHALL NOT grant a wildcard IAM action star for role 1 (AWS-iam-1).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "architecture.dependency_or_boundary"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-013",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3209",
+      "statement": "Sensitive data stores SHALL declare a KMS CMK required key for data class 1 (AWS-encryption-1).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-014",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3217",
+      "statement": "Data stores MUST NOT use a public subnet placement for data store 1 (AWS-network-1).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "architecture.dependency_or_boundary"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-015",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3226",
+      "statement": "Trails MUST enable a CloudTrail log file validation setting for trail 2 (AWS-logging-2).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-016",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3235",
+      "statement": "Lambdas MUST NOT inject a plaintext environment secret for Lambda 3 (AWS-secrets-3).",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-017",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3003",
+      "statement": "APIs SHALL NOT accept an unverified direct object reference token for record slot 3 (A01-3).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-018",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3040",
+      "statement": "Services MUST NOT expose an unauthenticated state-changing RPC for action 4 (A04-4).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.6,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-019",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3049",
+      "statement": "Production configuration SHALL not enable a debug mode configuration flag for environment 1 (A05-1).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-020",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3051",
+      "statement": "Hardened profiles MUST disable each unnecessary feature toggle for service profile 3 (A05-3).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must",
+        "expected_pattern_id": "configuration.bounds_or_required_values"
+      },
+      "features": {
+        "heuristic_score": 0.6,
+        "modality": "must",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-021",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3064",
+      "statement": "Deployments MUST NOT ship an end-of-life runtime package for service 4 (A06-4).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-022",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3099",
+      "statement": "Identity services MUST NOT use a silent auth failure path for login family 3 (A09-3).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.6,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-023",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3219",
+      "statement": "Security groups MUST NOT allow a 0.0.0.0/0 SSH ingress for security group 3 (AWS-network-3).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-024",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3227",
+      "statement": "Operational roles SHALL NOT hold a CloudTrail stop-logging permission for role 3 (AWS-logging-3).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-025",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3239",
+      "statement": "Images MUST NOT bake secrets in AMI or container layer for image 7 (AWS-secrets-7).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.5,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": true,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-026",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3249",
+      "statement": "Security groups SHALL NOT allow 0.0.0.0/0 on port 3389 for security group 1 (AWS-security_groups-1).",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "high",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-027",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3006",
+      "statement": "Clients MUST NOT receive an elevated privilege cookie for session lane 6 (A01-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-028",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3008",
+      "statement": "File handlers MUST NOT perform a directory traversal path join for file lane 8 (A01-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-029",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3020",
+      "statement": "Release pipelines MUST NOT rely on a SHA1 integrity checksum for artifact lane 8 (A02-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-030",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3031",
+      "statement": "APIs MUST NOT accept a NoSQL operator injection for document query 7 (A03-7) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-031",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3054",
+      "statement": "Static hosts SHALL NOT allow a directory listing enablement for static host 6 (A05-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-032",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3056",
+      "statement": "Workloads SHALL NOT expose a cloud metadata exposure path for workload 8 (A05-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-033",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3078",
+      "statement": "SPAs SHALL NOT store a long-lived bearer token for SPA session 6 (A07-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-034",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3090",
+      "statement": "Pages SHALL NOT use a CDN integrity skip for script include 6 (A08-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-035",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3092",
+      "statement": "Integrations SHALL NOT accept a webhook without signature check for integration 8 (A08-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-036",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3103",
+      "statement": "Fleets MUST NOT allow a log shipping disablement for node pool 7 (A09-7) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-037",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3114",
+      "statement": "Previewers MUST NOT allow a DNS rebinding tolerance for preview fetch 6 (A10-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-038",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3204",
+      "statement": "Teams MUST NOT create an inline IAM policy sprawl for role 4 (AWS-iam-4) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-039",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3212",
+      "statement": "Automation SHALL NOT perform a plaintext Secrets Manager put for secret 4 (AWS-encryption-4) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-040",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3240",
+      "statement": "Operators MUST NOT create an unencrypted EBS snapshot share for account 8 (AWS-secrets-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-041",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3252",
+      "statement": "ALB groups SHALL NOT keep overlapping world-open rules for alb SG 4 (AWS-security_groups-4) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-042",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3268",
+      "statement": "Compliance vaults MUST NOT keep a disabled backup vault lock for vault 4 (AWS-backups-4) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-043",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3018",
+      "statement": "Teams SHALL NOT invent a custom crypto protocol for message lane 6 (A02-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-044",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3042",
+      "statement": "Teams MUST NOT accept a security control deferral for launch train 6 (A04-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-045",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3043",
+      "statement": "Products SHALL NOT rely on a client-only authorization decision for feature 7 (A04-7) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-046",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3044",
+      "statement": "Caches MUST NOT use a shared mutable cache key for tenant 8 (A04-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-047",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3066",
+      "statement": "Teams MUST NOT keep an unmaintained library retention for legacy app 6 (A06-6) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-048",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3067",
+      "statement": "Builds SHALL NOT fetch a direct Git dependency URL for build 7 (A06-7) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.55,
+        "modality": "must_not",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-049",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3080",
+      "statement": "Accounts MUST NOT use a concurrent session unlimited policy for account 8 (A07-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-050",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3115",
+      "statement": "Media proxies SHALL NOT grant an internal hostname allow for media proxy 7 (A10-7) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-051",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3216",
+      "statement": "Databases SHALL NOT ship a disabled RDS encryption flag for database 8 (AWS-encryption-8) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-052",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3220",
+      "statement": "Teams MUST NOT rely on a NACL allow-all ephemeral rule for VPC 4 (AWS-network-4) unless an exception is explicitly documented.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "medium",
+        "escalate_expected": false,
+        "expected_modality": "must_not",
+        "expected_pattern_id": "security.source_pattern"
+      },
+      "features": {
+        "heuristic_score": 0.3,
+        "modality": "must_not",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-053",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3010",
+      "statement": "Platforms SHOULD prefer deny-by-default catalogs for capability set 10 (A01-10) where capability sprawl is a risk.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-054",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3012",
+      "statement": "Support tools MAY adopt a documented partner impersonation flow for support desk 12 (A01-12) when assisting end users.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-055",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3022",
+      "statement": "Service meshes SHOULD prefer forward secrecy cipher suites for mesh 10 (A02-10) where protocol support allows.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-056",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3024",
+      "statement": "Products MAY adopt a documented field-level encryption scope for PII class 12 (A02-12) when regulation demands it.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-057",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3034",
+      "statement": "Frontends SHOULD prefer output encoding libraries for view layer 10 (A03-10) when rendering untrusted text.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-058",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3045",
+      "statement": "Delivery teams SHOULD prefer threat modeling workshops for initiative 9 (A04-9) before high-risk launches.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.05,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-059",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3047",
+      "statement": "Programs MAY adopt a documented risk acceptance for beta surface 11 (A04-11) when exposing limited beta features.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-060",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3057",
+      "statement": "Platform teams SHOULD prefer hardened OS baselines for compute pool 9 (A05-9) when provisioning fleets.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-061",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3060",
+      "statement": "Labs MAY adopt a documented non-prod parity exception for lab 12 (A05-12) when full prod hardening blocks testing.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.05,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": true,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-062",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3072",
+      "statement": "Hardware programs MAY adopt a documented vendor risk acceptance for OEM component 12 (A06-12) when firmware cannot be patched in-house.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-063",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3083",
+      "statement": "Legacy batches MAY adopt a documented service-account password for legacy batch 11 (A07-11) when modern federation is unavailable.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-064",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3093",
+      "statement": "Release engineering SHOULD prefer reproducible builds for release train 9 (A08-9) when verifying supply-chain claims.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-065",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3096",
+      "statement": "Integrations MAY adopt a documented integrity downgrade for partner feed 12 (A08-12) when a partner cannot sign payloads.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-066",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3106",
+      "statement": "Detection owners SHOULD prefer canary detections for control family 10 (A09-10) when validating pipeline health.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-067",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3108",
+      "statement": "Observability teams MAY adopt a documented sampling strategy for high-volume trace 12 (A09-12) when full capture is cost-prohibitive.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-068",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3120",
+      "statement": "Integrations MAY adopt a documented partner callback to private link 12 (A10-12) when a partner requires PrivateLink delivery.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-069",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3009",
+      "statement": "Teams SHOULD prefer centralized policy-as-code for access family 9 (A01-9) when authorization rules grow complex.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-070",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3035",
+      "statement": "Analytics jobs MAY adopt a documented raw SQL escape hatch for analytics job 11 (A03-11) when the ORM cannot express the query.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.5,
+        "modality": "may",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-071",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3058",
+      "statement": "Ops SHOULD prefer automated config drift detection for stack 10 (A05-10) where manual reviews miss changes.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-072",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3069",
+      "statement": "Teams SHOULD prefer automated dependency update bots for repo 9 (A06-9) when patch volume is high.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-073",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3070",
+      "statement": "Platforms SHOULD prefer private package mirrors for build farm 10 (A06-10) where upstream availability is a risk.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-074",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3081",
+      "statement": "Workforce IAM SHOULD prefer phishing-resistant MFA for workforce 9 (A07-9) when rolling out stronger factors.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-075",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3095",
+      "statement": "Labs MAY adopt a documented unsigned internal package for lab 11 (A08-11) when prototyping throwaway tooling.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "may",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.5,
+        "modality": "may",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "medium",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-076",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3117",
+      "statement": "Platforms SHOULD prefer network egress proxies for URL preview 9 (A10-9) when centralizing SSRF controls.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-077",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3118",
+      "statement": "Cloud platforms SHOULD prefer metadata hop enforcement for cloud workload 10 (A10-10) when mitigating SSRF credential theft.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "security.source_pattern",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-EX-078",
+      "source": "testdata/corpus",
+      "adr_id": "ADR-3205",
+      "statement": "Platforms SHOULD prefer permission boundaries for developer role 5 (AWS-iam-5) when delegating IAM creation.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true,
+        "expected_modality": "should",
+        "expected_pattern_id": "manual_review"
+      },
+      "features": {
+        "heuristic_score": 0.2,
+        "modality": "should",
+        "pattern_hint": "architecture.dependency_or_boundary",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": false
+        },
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-SYN-001",
+      "source": "synthetic",
+      "adr_id": "SYN-AMBIG",
+      "statement": "Services should somehow be more resilient where appropriate.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true
+      },
+      "features": {
+        "heuristic_score": 0.15,
+        "modality": "should",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": true,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": true,
+        "subjective": true,
+        "conflicting_modality": false,
+        "heuristic_band": "low",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": null,
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-SYN-002",
+      "source": "synthetic",
+      "adr_id": "SYN-CONFLICT",
+      "statement": "Operators may disable encryption but must keep it enabled.",
+      "label": {
+        "extract_correct": false,
+        "expected_band": "low",
+        "escalate_expected": true
+      },
+      "features": {
+        "heuristic_score": 0.25,
+        "modality": "may",
+        "pattern_hint": "manual_review",
+        "has_ambiguity": true,
+        "has_exceptions": true,
+        "is_compound": true,
+        "is_manual_review": true,
+        "is_exception_kind": true,
+        "has_conditions": true,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": true,
+        "heuristic_band": "low",
+        "kind": "exception_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": null,
+        "assist": {
+          "eligible": true
+        }
+      }
+    },
+    {
+      "id": "GOLD-SYN-003",
+      "source": "synthetic",
+      "adr_id": "SYN-CLEAN",
+      "statement": "Payment Deployments MUST set replicas to at least three.",
+      "label": {
+        "extract_correct": true,
+        "expected_band": "high",
+        "escalate_expected": false
+      },
+      "features": {
+        "heuristic_score": 0.85,
+        "modality": "must",
+        "pattern_hint": "configuration.bounds_or_required_values",
+        "has_ambiguity": false,
+        "has_exceptions": false,
+        "is_compound": false,
+        "is_manual_review": false,
+        "is_exception_kind": false,
+        "has_conditions": false,
+        "non_decision_section": false,
+        "subjective": false,
+        "conflicting_modality": false,
+        "heuristic_band": "high",
+        "kind": "normative_candidate",
+        "submission_kind": "tech_spec"
+      },
+      "hooks": {
+        "assess": {
+          "binding_ready": true
+        },
+        "assist": {
+          "eligible": false
+        }
+      }
+    }
+  ]
+}

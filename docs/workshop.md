@@ -8,6 +8,8 @@ The workshop is the GitHub-era **command center** for Pathfinder: polished inter
 |---|---|
 | `#/` | Overview / SLO tiles / pipeline glance |
 | `#/metrics` | KPI command deck with focus tabs + trends |
+| `#/confidence` | Statistical confidence dashboard (calibrated P, conformal bands, Wilson CIs) |
+| `#/docs/confidence` | Docs article: heuristic vs calibrated vs conformal |
 | `#/pipeline/:step` | Per-stage deep analysis (I/O, failures, sample artifacts) |
 | `#/sample/:step` | Interactive technical journey through Pathfinder |
 | `#/adrs/:id` | Dig into published ADR bodies + linked candidates |

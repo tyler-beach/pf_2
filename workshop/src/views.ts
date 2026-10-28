@@ -381,15 +381,15 @@ export async function renderMetrics(app: HTMLElement) {
       { label: 'Promptfoo', value: fmt(m['kpi.promptfoo.pass_rate']) },
     ],
     confidence: [
-      { label: 'High share', value: fmt(m['kpi.confidence.share.high'] ?? (Number(m.candidate_total) ? Number(m.confidence_high) / Number(m.candidate_total) : null)) },
+      { label: 'High share ±', value: `${fmt(m['kpi.confidence.share.high'] ?? (Number(m.candidate_total) ? Number(m.confidence_high) / Number(m.candidate_total) : null))}${m['kpi.confidence.share.high.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.high.ci_low'])}–${fmt(m['kpi.confidence.share.high.ci_high'])}]` : ''}` },
       { label: 'Medium share', value: fmt(m['kpi.confidence.share.medium']) },
-      { label: 'Low share', value: fmt(m['kpi.confidence.share.low'] ?? m['kpi.escalation.rate']) },
-      { label: 'High count', value: fmt(m.confidence_high) },
-      { label: 'Med count', value: fmt(m.confidence_medium) },
-      { label: 'Low count', value: fmt(m.confidence_low) },
+      { label: 'Low share ±', value: `${fmt(m['kpi.confidence.share.low'] ?? m['kpi.escalation.rate'])}${m['kpi.confidence.share.low.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.low.ci_low'])}–${fmt(m['kpi.confidence.share.low.ci_high'])}]` : ''}` },
+      { label: 'Mean P', value: fmt(m['kpi.confidence.mean_p']) },
+      { label: 'Method', value: fmt(m['kpi.confidence.method']) },
+      { label: 'High / med / low', value: `${fmt(m.confidence_high)} / ${fmt(m.confidence_medium)} / ${fmt(m.confidence_low)}` },
     ],
     escalation: [
-      { label: 'Escalation rate', value: fmt(m['kpi.escalation.rate']) },
+      { label: 'Escalation ±CI', value: `${fmt(m['kpi.escalation.rate'])}${m['kpi.escalation.rate.ci_low'] != null ? ` [${fmt(m['kpi.escalation.rate.ci_low'])}–${fmt(m['kpi.escalation.rate.ci_high'])}]` : ''}` },
       { label: 'Escalation tech-spec', value: fmt(m['kpi.escalation.rate.tech_spec']) },
       { label: 'Escalation code', value: fmt(m['kpi.escalation.rate.code_snippet']) },
       { label: 'Low candidates', value: fmt(m.confidence_low) },
@@ -851,7 +851,8 @@ async function renderADRDetail(app: HTMLElement, id: string) {
 
 export async function renderCandidates(app: HTMLElement) {
   setCrumb('Candidates');
-  setPurpose('Filter by confidence band and submission_kind (tech_spec vs code_snippet). / search · j/k · Enter opens ADR · o/Space/Details expands.');
+  setPurpose('Filter by confidence band and submission_kind (tech_spec vs code_snippet). Drawers show calibrated P + method. / search · j/k · Enter opens ADR · o/Space/Details expands.');
+  setTopActions(`<a class="btn" href="#/confidence">Confidence dashboard</a><a class="btn" href="#/docs/confidence">Confidence docs</a>`);
   const focusId = queryParam('id');
   const state = readListQuery({ band: 'all', kind: 'all', sort: 'confidence', dir: 'asc', q: focusId || '' });
   const [data, proposals] = await Promise.all([
@@ -860,6 +861,11 @@ export async function renderCandidates(app: HTMLElement) {
         id: string;
         adr_id: string;
         confidence: string;
+        confidence_score?: number;
+        confidence_p?: number;
+        confidence_method?: string;
+        confidence_coverage?: number;
+        prediction_set?: string[];
         escalation_reasons?: string[];
         statement: string;
         pattern_hint: string;
@@ -869,6 +875,7 @@ export async function renderCandidates(app: HTMLElement) {
         source_line_end?: number;
       }>;
       confidence_summary?: { high: number; medium: number; low: number };
+      calibration?: { method?: string; coverage?: number };
     }>('candidates'),
     loadLinkJSON<{ proposals?: Array<{ proposal_id: string; parent_candidate_id: string }> }>('proposals'),
   ]);
@@ -889,6 +896,7 @@ export async function renderCandidates(app: HTMLElement) {
       { label: 'High', value: fmt(data?.confidence_summary?.high ?? rows.filter((c) => c.confidence === 'high').length), cls: 'ok' },
       { label: 'Medium', value: fmt(data?.confidence_summary?.medium ?? rows.filter((c) => c.confidence === 'medium').length) },
       { label: 'Low', value: fmt(data?.confidence_summary?.low ?? rows.filter((c) => c.confidence === 'low').length), cls: 'warn' },
+      { label: 'Method', value: fmt(data?.calibration?.method || rows.find((c) => c.confidence_method)?.confidence_method), href: '#/confidence' },
       { label: 'Tech-spec', value: fmt(rows.filter((c) => c.submission_kind === 'tech_spec').length), href: '#/candidates?kind=tech_spec' },
       { label: 'Code-snippet', value: fmt(rows.filter((c) => c.submission_kind === 'code_snippet').length), href: '#/candidates?kind=code_snippet' },
     ])}
@@ -972,7 +980,7 @@ export async function renderCandidates(app: HTMLElement) {
       .join(' · ');
     openDrawer({
       title: c.id,
-      meta: `${c.adr_id} · ${c.confidence} · ${kindLabel(c.submission_kind)} · ${c.pattern_hint}`,
+      meta: `${c.adr_id} · ${c.confidence} · p=${c.confidence_p ?? '—'} · ${c.confidence_method || '—'} · ${kindLabel(c.submission_kind)}`,
       wide: true,
       bodyHTML: `
         <dl class="kv">
@@ -980,6 +988,11 @@ export async function renderCandidates(app: HTMLElement) {
           ${drawerField('ADR', `<a class="id" href="#/adrs/${escapeHTML(c.adr_id)}">${escapeHTML(c.adr_id)}</a>`)}
           ${drawerField('Kind', kindTag(c.submission_kind))}
           ${drawerField('Band', tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : ''))}
+          ${drawerField('Calibrated P', fmt(c.confidence_p))}
+          ${drawerField('Heuristic score', fmt(c.confidence_score))}
+          ${drawerField('Method', `<code>${escapeHTML(c.confidence_method || '—')}</code>`)}
+          ${drawerField('Coverage', c.confidence_coverage != null ? fmt(c.confidence_coverage) : '—')}
+          ${c.prediction_set?.length ? drawerField('Prediction set', `<code>${escapeHTML(c.prediction_set.join(', '))}</code>`) : ''}
           ${drawerField('Pattern', `<code class="id">${escapeHTML(c.pattern_hint)}</code>`, true)}
           ${drawerField('Source', `<code>${escapeHTML(sourceBits)}</code>`, true)}
           ${prop ? drawerField('Proposal', `<a class="id" href="#/proposals?parent=${escapeHTML(c.id)}">${escapeHTML(prop)}</a>`) : drawerField('Proposal', '<span class="faint">None</span>')}
@@ -1276,6 +1289,11 @@ export async function renderProposals(app: HTMLElement) {
       executable: boolean;
       approval_status: string;
       parent_confidence?: string;
+      parent_confidence_score?: number;
+      parent_confidence_p?: number;
+      parent_confidence_method?: string;
+      parent_confidence_coverage?: number;
+      escalation_reasons?: string[];
       provider?: string;
       model?: string;
     }>;
@@ -1389,17 +1407,27 @@ export async function renderProposals(app: HTMLElement) {
           ${drawerField('Status', `${tag(p.approval_status)} ${tag(`exec=${p.executable}`, p.executable ? 'bad' : 'ok')}`)}
           ${drawerField('Pattern', `<code class="id">${escapeHTML(p.suggested_pattern_id)}</code>`, true)}
           ${p.parent_confidence ? drawerField('Parent band', tag(p.parent_confidence, p.parent_confidence === 'low' ? 'warn' : p.parent_confidence === 'high' ? 'ok' : '')) : ''}
+          ${drawerField('Parent P', fmt(p.parent_confidence_p))}
+          ${drawerField('Parent score', fmt(p.parent_confidence_score))}
+          ${drawerField('Parent method', `<code>${escapeHTML(p.parent_confidence_method || '—')}</code>`)}
+          ${p.parent_confidence_coverage != null ? drawerField('Parent coverage', fmt(p.parent_confidence_coverage)) : ''}
           ${drawerField('Provider', escapeHTML(provider), true)}
           ${drawerField('Model', escapeHTML(model), true)}
           ${drawerField('Batch cost', escapeHTML(fmtUSD(data?.estimated_cost_usd ?? latest?.metrics['kpi.assist.cost_usd'])))}
         </dl>
         ${drawerBlock('Rationale', `<p class="drawer-prose">${escapeHTML(p.rationale)}</p>`)}
+        ${
+          p.escalation_reasons?.length
+            ? drawerBlock('Escalation', `<ul>${p.escalation_reasons.map((r) => `<li>${escapeHTML(r)}</li>`).join('')}</ul>`)
+            : ''
+        }
         ${drawerBlock('Candidate statement', `<p class="drawer-prose">${escapeHTML(p.statement)}</p>`)}
         ${drawerBlock('Normalized statement', `<p class="drawer-prose">${escapeHTML(p.normalized_statement)}</p>`)}
         <div class="drawer-actions">
           <button type="button" class="btn" id="drawer-show-diff">Show statement diff</button>
           <span class="entity-links">
             <a href="#/candidates?id=${escapeHTML(p.parent_candidate_id)}">Candidate</a>
+            <a href="#/confidence">Confidence</a>
             ${adr ? `<a href="#/adrs/${escapeHTML(adr)}">ADR</a>` : ''}
             <a href="#/assess">Assess</a>
             <a href="#/costs">Cost</a>
@@ -1526,6 +1554,7 @@ export async function renderAssess(app: HTMLElement) {
     ...failing.map((r) => `- [ ] ${r.requirement_id}: ${r.title || r.status}`),
   ].join('\n');
   setTopActions(`
+    <a class="btn" href="#/confidence">Confidence</a>
     <a class="btn" href="#/docs/statuses">Status docs</a>
     <a class="btn primary" href="${issueURL('[ADR Assessment] Follow-up from workshop', body)}">Open follow-up issue</a>
   `);
@@ -1536,12 +1565,15 @@ export async function renderAssess(app: HTMLElement) {
       ${statusItem('Verdict', String(assessment?.verdict || latest?.metrics['kpi.assess.verdict'] || '—'), assessment?.verdict === 'PASS' || latest?.metrics['kpi.assess.verdict'] === 'PASS' ? 'ok' : 'warn')}
       ${statusItem('Runtime LLM calls', fmt(llm), llm === 0 ? 'ok' : 'bad')}
       ${statusItem('Coverage', String(assessment?.coverage_status || '—'), '')}
+      ${statusItem('Conf. method', String(latest?.metrics['kpi.confidence.method'] || '—'), '')}
     </div>
     ${metricsRow([
       { label: 'Covered', value: fmt(latest?.metrics['kpi.assess.covered']), href: '#/assess?band=PASS' },
       { label: 'Unbound', value: fmt(latest?.metrics['kpi.assess.unbound']), href: '#/docs/obligations' },
       { label: 'Stale', value: fmt(latest?.metrics['kpi.assess.stale']), href: '#/docs/obligations' },
       { label: 'Failing reqs', value: fmt(failing.length), cls: failing.length ? 'warn' : 'ok', href: '#/assess?band=FAIL' },
+      { label: 'Mean P', value: fmt(latest?.metrics['kpi.confidence.mean_p']), href: '#/confidence' },
+      { label: 'Escalation ±', value: `${fmt(latest?.metrics['kpi.escalation.rate'])}${latest?.metrics['kpi.escalation.rate.ci_low'] != null ? ` [${fmt(latest?.metrics['kpi.escalation.rate.ci_low'])}–${fmt(latest?.metrics['kpi.escalation.rate.ci_high'])}]` : ''}`, href: '#/confidence' },
     ])}
     <div class="toolbar">
       <div class="seg" id="assess-band">

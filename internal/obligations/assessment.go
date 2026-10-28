@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/obligations/calibration"
 )
 
 // CandidateAssessment ties a reviewed candidate to the existing deterministic
@@ -19,21 +20,27 @@ type CandidateAssessment struct {
 	Statement         string   `json:"statement"`
 	Modality          string   `json:"modality"`
 	Kind              string   `json:"kind"`
-	PatternHint       string   `json:"pattern_hint"`
-	ReviewHints       []string `json:"review_hints,omitempty"`
-	SourcePath        string   `json:"source_path"`
-	SourceSHA256      string   `json:"source_sha256"`
-	SourceLineStart   int      `json:"source_line_start"`
-	SourceLineEnd     int      `json:"source_line_end"`
-	Decision          string   `json:"review_decision"`
-	RequirementID     string   `json:"requirement_id,omitempty"`
-	RequirementSHA256 string   `json:"requirement_sha256,omitempty"`
-	PatternID         string   `json:"pattern_id,omitempty"`
-	EnforcementMode   string   `json:"enforcement_mode"`
-	Status            string   `json:"status"`
-	EvidenceStatus    string   `json:"evidence_status"`
-	Evidence          []string `json:"evidence"`
-	Reason            string   `json:"reason"`
+	PatternHint        string   `json:"pattern_hint"`
+	ReviewHints        []string `json:"review_hints,omitempty"`
+	SourcePath         string   `json:"source_path"`
+	SourceSHA256       string   `json:"source_sha256"`
+	SourceLineStart    int      `json:"source_line_start"`
+	SourceLineEnd      int      `json:"source_line_end"`
+	Confidence         string   `json:"confidence,omitempty"`
+	ConfidenceScore    float64  `json:"confidence_score,omitempty"`
+	ConfidenceP        float64  `json:"confidence_p,omitempty"`
+	ConfidenceMethod   string   `json:"confidence_method,omitempty"`
+	ConfidenceCoverage float64  `json:"confidence_coverage,omitempty"`
+	Decision           string   `json:"review_decision"`
+	RequirementID      string   `json:"requirement_id,omitempty"`
+	RequirementSHA256  string   `json:"requirement_sha256,omitempty"`
+	PatternID          string   `json:"pattern_id,omitempty"`
+	EnforcementMode    string   `json:"enforcement_mode"`
+	Status             string   `json:"status"`
+	EvidenceStatus     string   `json:"evidence_status"`
+	Evidence           []string `json:"evidence"`
+	Reason             string   `json:"reason"`
+	EvidenceWeight     float64  `json:"evidence_weight,omitempty"`
 }
 
 // AssessmentReport is a deterministic join of source-cited candidates, the
@@ -119,6 +126,9 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 			ReviewHints: append([]string(nil), candidate.ReviewHints...),
 			SourcePath:  candidate.SourcePath, SourceSHA256: candidate.SourceSHA256,
 			SourceLineStart: candidate.SourceLineStart, SourceLineEnd: candidate.SourceLineEnd,
+			Confidence: candidate.Confidence, ConfidenceScore: candidate.ConfidenceScore,
+			ConfidenceP: candidate.ConfidenceP, ConfidenceMethod: candidate.ConfidenceMethod,
+			ConfidenceCoverage: candidate.ConfidenceCoverage,
 			Decision: DecisionPending, EnforcementMode: EnforcementReviewRequired,
 			Status: "INDETERMINATE", EvidenceStatus: "MISSING", Evidence: []string{},
 			Reason: "candidate has not been reviewed; no compliance conclusion is available",
@@ -174,6 +184,7 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 			}
 			item.EvidenceStatus = requirementResult.Status
 			item.Evidence = append([]string(nil), requirementResult.Evidence...)
+			item.EvidenceWeight = evidenceWeightForFindings(requirementResult.Findings)
 			if (requirementResult.Status == "PASS" || requirementResult.Status == "FAIL") &&
 				len(requirementResult.Evidence) == 0 && len(requirementResult.Findings) == 0 {
 				item.Status = "INDETERMINATE"
@@ -282,6 +293,18 @@ func MarkdownAssessmentReport(report AssessmentReport) string {
 			mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd, mdCell(candidate.Reason))
 	}
 	return b.String()
+}
+
+func evidenceWeightForFindings(findings []assessment.Finding) float64 {
+	table := calibration.DefaultAnalyzerTable()
+	if len(findings) == 0 {
+		return table.DefaultPrecision
+	}
+	sum := 0.0
+	for _, f := range findings {
+		sum += calibration.EvidenceWeight(f.RuleID, table)
+	}
+	return sum / float64(len(findings))
 }
 
 func mdCell(value string) string {
