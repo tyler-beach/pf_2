@@ -1,11 +1,11 @@
 {
   "source": "testdata/corpus/labels.json",
   "generator": "scripts/generate_corpus_bindings.py",
-  "analyzer_backed": 124,
+  "analyzer_backed": 134,
   "analyzers": {
-    "opengrep": 96,
-    "checkov": 28
+    "opengrep": 100,
+    "checkov": 34
   },
-  "manual_review": 76,
+  "manual_review": 66,
   "corpus_size": 200
 }

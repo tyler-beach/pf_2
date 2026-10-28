@@ -23,7 +23,7 @@ OpenGrep rule packs that accompany the corpus (shared across many ADRs, not 1:1)
 - `rules/owasp-ssrf.yml`
 - `rules/owasp-secrets.yml`
 - `rules/aws-sdk-misuse.yml`
-- `rules/owasp-misc-promote.yml` — hardening, supply-chain, logging promotions
+- `rules/owasp-misc-promote.yml` — hardening, supply-chain, logging, abuse-control, plugin-boundary, provenance promotions
 
 Merge packs into the CI default config with `python3 scripts/merge_opengrep_rules.py`.
 
@@ -76,5 +76,6 @@ Harness output includes `recall_by_confidence` (and `precision_by_confidence`) s
 
 ## Analyzer coverage notes
 
-- **Checkov** is implemented for AWS IaC patterns (`security.aws_sg`, `security.aws_network`, IAM/encryption/logging/backup configuration families, `infra.policy`). Issue/sandbox assess runs Checkov alongside OpenGrep and uses `--issue-surface` so unbound `manual-review` rows become `NOT_APPLICABLE` instead of forcing `INDETERMINATE`.
+- **Checkov** is implemented for AWS IaC patterns (`security.aws_sg`, `security.aws_network`, IAM/encryption/logging/backup configuration families, `configuration.authentication` password policy, `configuration.logging` retention/trails/object-lock, `infra.policy`). Issue/sandbox assess runs Checkov alongside OpenGrep and uses `--issue-surface` so unbound `manual-review` rows become `NOT_APPLICABLE` instead of forcing `INDETERMINATE`.
+- **Still manual (by design):** catalog `manual_review` preferences; business-logic bounds; trust-boundary design; account root MFA/SCP process; org cost-allocation tag policies; shared SSH keypair fleet design. These stay `REVIEW_REQUIRED` in repo CI and `NOT_APPLICABLE` on `--issue-surface`.
 - **Joern/CPG** remains deferred until at least **10 accepted ADRs** need cross-file/data-flow evidence OpenGrep cannot supply (`N=10`).

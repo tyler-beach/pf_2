@@ -280,6 +280,63 @@ PATTERN_BINDINGS: dict[str, dict] = {
         "rule_ids": R("pathfinder.aws-cloudtrail-stop-logging"),
         "extensions": [".py"],
     },
+    # Promoted from leftover manual-review: abuse / auth / logging / integrity / root.
+    "configuration.abuse_controls": {
+        "analyzer": "opengrep",
+        "rule_ids": R(
+            "pathfinder.owasp-rate-limit-disabled-python",
+            "pathfinder.owasp-lockout-disabled-python",
+        ),
+        "extensions": [".py"],
+    },
+    "configuration.authentication": {
+        "analyzer": "checkov",
+        "rule_ids": C(
+            "CKV_AWS_10",
+            "CKV_AWS_11",
+            "CKV_AWS_12",
+            "CKV_AWS_14",
+            "CKV_AWS_15",
+        ),
+        "extensions": IAC_EXTENSIONS,
+    },
+    "configuration.logging": {
+        "analyzer": "checkov",
+        "rule_ids": C(
+            "CKV_AWS_66",
+            "CKV_AWS_67",
+            "CKV_AWS_76",
+            "CKV_AWS_143",
+            "CKV_AWS_252",
+        ),
+        "extensions": IAC_EXTENSIONS,
+    },
+    "configuration.integrity": {
+        "analyzer": "opengrep",
+        "rule_ids": R(
+            "pathfinder.owasp-curl-pipe-shell",
+            "pathfinder.owasp-git-dependency-npm",
+            "pathfinder.owasp-git-dependency-gomod",
+        ),
+        "extensions": [".sh", ".bash", ".yml", ".yaml", ".json", ".mod", ".txt", ".go"],
+    },
+    "architecture.integrity": {
+        "analyzer": "opengrep",
+        "rule_ids": R(
+            "pathfinder.owasp-untrusted-plugin-import-python",
+            "pathfinder.owasp-untrusted-plugin-require-javascript",
+        ),
+        "extensions": [".py", ".js", ".ts", ".jsx", ".tsx"],
+    },
+    # Replace extract-pattern fallback to shell/eval with root-relevant SDK signals.
+    "security.aws_root": {
+        "analyzer": "opengrep",
+        "rule_ids": R(
+            "pathfinder.aws-iam-create-access-key",
+            "pathfinder.owasp-hardcoded-aws-key",
+        ),
+        "extensions": [".py", ".go", ".js", ".ts"],
+    },
     # Checkov IaC bindings (true infrastructure assessment).
     "security.aws_network": {
         "analyzer": "checkov",

@@ -57,3 +57,28 @@ resource "aws_instance" "imds_v1" {
     encrypted = false
   }
 }
+
+resource "aws_iam_account_password_policy" "weak" {
+  minimum_password_length        = 8
+  require_lowercase_characters   = false
+  require_numbers                = false
+  require_uppercase_characters   = false
+  require_symbols                = false
+  allow_users_to_change_password = true
+}
+
+resource "aws_cloudwatch_log_group" "no_retention" {
+  name = "app-logs"
+}
+
+resource "aws_s3_bucket" "mutable_logs" {
+  bucket = "mutable-log-archive"
+}
+
+resource "aws_cloudtrail" "no_sns" {
+  name                          = "org-trail"
+  s3_bucket_name                = "trail-bucket"
+  include_global_service_events = false
+  is_multi_region_trail         = false
+  enable_log_file_validation    = false
+}

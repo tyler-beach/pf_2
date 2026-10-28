@@ -49,11 +49,11 @@
     {
       "id": "configuration.abuse_controls",
       "title": "Abuse and anti-automation configuration",
-      "verifier_types": ["json-required-keys", "json-number-range"],
-      "inputs": ["json configuration files"],
-      "applicability": "Rate limits, lockout thresholds, retry budgets",
-      "blind_spots": ["Edge WAF rules not projected to JSON"],
-      "fixture_refs": ["config/service.json"]
+      "verifier_types": ["analyzer-rule", "json-required-keys", "json-number-range"],
+      "inputs": ["json configuration files", "OpenGrep evidence"],
+      "applicability": "Rate limits, lockout thresholds, retry budgets; disabled/unbounded controls in source",
+      "blind_spots": ["Edge WAF rules not projected to JSON", "Absence of a limit is not always a finding"],
+      "fixture_refs": ["rules/owasp-misc-promote.yml", "testdata/analyzer-fixtures"]
     },
     {
       "id": "configuration.supply_chain",
@@ -67,29 +67,29 @@
     {
       "id": "configuration.authentication",
       "title": "Authentication configuration baselines",
-      "verifier_types": ["json-required-keys", "json-number-range"],
-      "inputs": ["json configuration files"],
-      "applicability": "Password policy, MFA required keys, session settings",
-      "blind_spots": ["IdP console settings"],
-      "fixture_refs": ["config/service.json"]
+      "verifier_types": ["analyzer-rule", "json-required-keys", "json-number-range"],
+      "inputs": ["Checkov SARIF", "json configuration files"],
+      "applicability": "IAM password policy length/complexity; MFA required keys still lean IdP/process",
+      "blind_spots": ["IdP console MFA settings without IaC", "Account root MFA is process evidence"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.integrity",
       "title": "Integrity and provenance configuration",
       "verifier_types": ["json-required-keys", "analyzer-rule"],
-      "inputs": ["CI provenance", "release metadata"],
-      "applicability": "Required provenance attestations and integrity metadata",
-      "blind_spots": ["Unsigned upstream vendor artifacts"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "inputs": ["CI provenance", "release metadata", "OpenGrep evidence"],
+      "applicability": "Curl|shell installs and unpinned Git deps that break provenance",
+      "blind_spots": ["Unsigned upstream vendor artifacts", "Absence of attestations is not a finding"],
+      "fixture_refs": ["rules/owasp-misc-promote.yml", "testdata/analyzer-fixtures"]
     },
     {
       "id": "configuration.logging",
       "title": "Security logging configuration",
-      "verifier_types": ["json-required-keys", "json-number-range"],
-      "inputs": ["json configuration files"],
-      "applicability": "Security event logging, retention, alerting sinks",
-      "blind_spots": ["SIEM correlation quality"],
-      "fixture_refs": ["config/service.json"]
+      "verifier_types": ["analyzer-rule", "json-required-keys", "json-number-range"],
+      "inputs": ["Checkov SARIF", "json configuration files"],
+      "applicability": "CloudWatch retention, CloudTrail multi-region/SNS, API GW access logs, S3 object lock",
+      "blind_spots": ["SIEM correlation quality", "App-level security event schemas"],
+      "fixture_refs": ["testdata/analyzer-fixtures/vulnerable/iac", "rules/checkov.yml"]
     },
     {
       "id": "configuration.ssrf",
@@ -373,11 +373,11 @@
     {
       "id": "security.aws_root",
       "title": "AWS root account misuse signals",
-      "verifier_types": ["manual-review"],
-      "inputs": ["account process review"],
-      "applicability": "Root key creation and routine root usage",
-      "blind_spots": ["Human process evidence"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["OpenGrep evidence", "account process review"],
+      "applicability": "IAM access-key creation and hardcoded AWS keys (root-key proxies in source)",
+      "blind_spots": ["Daily root console use, root email monitoring, shared password-manager entries"],
+      "fixture_refs": ["rules/owasp-misc-promote.yml", "rules/owasp-secrets.yml"]
     },
     {
       "id": "security.aws_backup",
@@ -436,11 +436,11 @@
     {
       "id": "architecture.integrity",
       "title": "Integrity architectural constraints",
-      "verifier_types": ["manual-review", "analyzer-rule"],
-      "inputs": ["plugin/extension boundaries"],
-      "applicability": "Untrusted plugin import boundaries",
-      "blind_spots": ["Dynamic plugin loaders"],
-      "fixture_refs": ["testdata/corpus/adrs"]
+      "verifier_types": ["analyzer-rule", "manual-review"],
+      "inputs": ["plugin/extension boundaries", "OpenGrep evidence"],
+      "applicability": "Filesystem/dynamic plugin loads in Python and JS/TS extension hosts",
+      "blind_spots": ["Custom plugin registries without load_plugin/require patterns"],
+      "fixture_refs": ["rules/owasp-misc-promote.yml", "testdata/analyzer-fixtures"]
     },
     {
       "id": "architecture.aws_iam",

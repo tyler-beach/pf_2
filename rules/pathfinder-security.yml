@@ -654,3 +654,56 @@ rules:
     languages: [python]
     severity: ERROR
     pattern: $CLIENT.stop_logging(...)
+
+  - id: pathfinder.owasp-rate-limit-disabled-python
+    message: "Rate limiting disabled or set to unbounded (0/None)"
+    languages: [python]
+    severity: WARNING
+    pattern-either:
+      - pattern: rate_limit = None
+      - pattern: RATE_LIMIT = None
+      - pattern: rate_limit = 0
+      - pattern: RATE_LIMIT = 0
+      - pattern: max_requests_per_minute = 0
+      - pattern: RATE_LIMIT_ENABLED = False
+
+  - id: pathfinder.owasp-lockout-disabled-python
+    message: "Account lockout threshold disabled or unbounded"
+    languages: [python]
+    severity: WARNING
+    pattern-either:
+      - pattern: lockout_threshold = None
+      - pattern: LOCKOUT_THRESHOLD = None
+      - pattern: lockout_threshold = 0
+      - pattern: max_failed_attempts = 0
+      - pattern: ACCOUNT_LOCKOUT_ENABLED = False
+
+  - id: pathfinder.owasp-untrusted-plugin-import-python
+    message: "Loading a plugin or extension module from a filesystem path (untrusted plugin boundary)"
+    languages: [python]
+    severity: ERROR
+    pattern-either:
+      - pattern: importlib.machinery.SourceFileLoader($NAME, $PATH).load_module()
+      - pattern: importlib.util.spec_from_file_location($NAME, $PATH)
+      - pattern: plugin_manager.load_plugin($PATH)
+      - pattern: load_plugin($PATH)
+
+  - id: pathfinder.owasp-untrusted-plugin-require-javascript
+    message: "Dynamic require/import of a non-literal plugin path (untrusted extension host boundary)"
+    languages: [javascript, typescript]
+    severity: ERROR
+    pattern-either:
+      - patterns:
+          - pattern: require($PATH)
+          - pattern-not: require("...")
+      - patterns:
+          - pattern: import($PATH)
+          - pattern-not: import("...")
+      - pattern: pluginLoader.load($PATH)
+      - pattern: loadPlugin($PATH)
+
+  - id: pathfinder.owasp-curl-pipe-shell
+    message: "Pipeline installs software via curl|shell (breaks CI provenance / integrity)"
+    languages: [bash, yaml]
+    severity: ERROR
+    pattern-regex: 'curl\s+[^\n|;]*\|\s*(sudo\s+)?(ba)?sh'

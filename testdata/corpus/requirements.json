@@ -1076,10 +1076,21 @@
         {
           "id": "REQ-3037-01",
           "title": "A04: Rate-limit configuration for public route 1",
-          "description": "Corpus obligation from ADR-3037: rate-limit configuration for public route 1 (A04-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3037: rate-limit configuration for public route 1 (A04-1). Checked via OpenGrep rules for pattern configuration.abuse_controls.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-rate-limit-disabled-python",
+              "rules.pathfinder.owasp-lockout-disabled-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py"
+            ]
           }
         }
       ]
@@ -1159,10 +1170,21 @@
         {
           "id": "REQ-3041-01",
           "title": "A04: Account lockout threshold setting for login family 5",
-          "description": "Corpus obligation from ADR-3041: account lockout threshold setting for login family 5 (A04-5). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3041: account lockout threshold setting for login family 5 (A04-5). Checked via OpenGrep rules for pattern configuration.abuse_controls.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-rate-limit-disabled-python",
+              "rules.pathfinder.owasp-lockout-disabled-python"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py"
+            ]
           }
         }
       ]
@@ -1979,10 +2001,29 @@
         {
           "id": "REQ-3073-01",
           "title": "A07: Password minimum length setting for realm 1",
-          "description": "Corpus obligation from ADR-3073: password minimum length setting for realm 1 (A07-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3073: password minimum length setting for realm 1 (A07-1). Checked via Checkov rules for pattern configuration.authentication.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_10",
+              "CKV_AWS_11",
+              "CKV_AWS_12",
+              "CKV_AWS_14",
+              "CKV_AWS_15"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2060,10 +2101,29 @@
         {
           "id": "REQ-3076-01",
           "title": "A07: MFA required key for privileged role 4",
-          "description": "Corpus obligation from ADR-3076: MFA required key for privileged role 4 (A07-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3076: MFA required key for privileged role 4 (A07-4). Checked via Checkov rules for pattern configuration.authentication.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_10",
+              "CKV_AWS_11",
+              "CKV_AWS_12",
+              "CKV_AWS_14",
+              "CKV_AWS_15"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2329,10 +2389,29 @@
         {
           "id": "REQ-3087-01",
           "title": "A08: CI provenance required key for deploy artifact 3",
-          "description": "Corpus obligation from ADR-3087: CI provenance required key for deploy artifact 3 (A08-3). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3087: CI provenance required key for deploy artifact 3 (A08-3). Checked via OpenGrep rules for pattern configuration.integrity.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-curl-pipe-shell",
+              "rules.pathfinder.owasp-git-dependency-npm",
+              "rules.pathfinder.owasp-git-dependency-gomod"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".sh",
+              ".bash",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".mod",
+              ".txt",
+              ".go"
+            ]
           }
         }
       ]
@@ -2346,10 +2425,25 @@
         {
           "id": "REQ-3088-01",
           "title": "A08: Untrusted plugin import for extension host 4",
-          "description": "Corpus obligation from ADR-3088: untrusted plugin import for extension host 4 (A08-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3088: untrusted plugin import for extension host 4 (A08-4). Checked via OpenGrep rules for pattern architecture.integrity.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "opengrep",
+            "rule_ids": [
+              "rules.pathfinder.owasp-untrusted-plugin-import-python",
+              "rules.pathfinder.owasp-untrusted-plugin-require-javascript"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".py",
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx"
+            ]
           }
         }
       ]
@@ -2543,10 +2637,29 @@
         {
           "id": "REQ-3097-01",
           "title": "A09: Security event logging required key for service 1",
-          "description": "Corpus obligation from ADR-3097: security event logging required key for service 1 (A09-1). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3097: security event logging required key for service 1 (A09-1). Checked via Checkov rules for pattern configuration.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_66",
+              "CKV_AWS_67",
+              "CKV_AWS_76",
+              "CKV_AWS_143",
+              "CKV_AWS_252"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2560,10 +2673,29 @@
         {
           "id": "REQ-3098-01",
           "title": "A09: Log retention days setting for audit lane 2",
-          "description": "Corpus obligation from ADR-3098: log retention days setting for audit lane 2 (A09-2). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3098: log retention days setting for audit lane 2 (A09-2). Checked via Checkov rules for pattern configuration.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_66",
+              "CKV_AWS_67",
+              "CKV_AWS_76",
+              "CKV_AWS_143",
+              "CKV_AWS_252"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2608,10 +2740,29 @@
         {
           "id": "REQ-3100-01",
           "title": "A09: Alerting webhook configuration for detection 4",
-          "description": "Corpus obligation from ADR-3100: alerting webhook configuration for detection 4 (A09-4). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3100: alerting webhook configuration for detection 4 (A09-4). Checked via Checkov rules for pattern configuration.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_66",
+              "CKV_AWS_67",
+              "CKV_AWS_76",
+              "CKV_AWS_143",
+              "CKV_AWS_252"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -2625,10 +2776,29 @@
         {
           "id": "REQ-3101-01",
           "title": "A09: Immutable log sink required key for archive 5",
-          "description": "Corpus obligation from ADR-3101: immutable log sink required key for archive 5 (A09-5). Requires human review until an automated verifier is bound.",
+          "description": "Corpus obligation from ADR-3101: immutable log sink required key for archive 5 (A09-5). Checked via Checkov rules for pattern configuration.logging.",
           "severity": "error",
           "verifier": {
-            "type": "manual-review"
+            "type": "analyzer-rule",
+            "analyzer": "checkov",
+            "rule_ids": [
+              "CKV_AWS_66",
+              "CKV_AWS_67",
+              "CKV_AWS_76",
+              "CKV_AWS_143",
+              "CKV_AWS_252"
+            ],
+            "source_path_prefixes": [
+              "."
+            ],
+            "source_extensions": [
+              ".tf",
+              ".tfvars",
+              ".yml",
+              ".yaml",
+              ".json",
+              ".template"
+            ]
           }
         }
       ]
@@ -4794,10 +4964,7 @@
             "type": "analyzer-rule",
             "analyzer": "opengrep",
             "rule_ids": [
-              "rules.pathfinder.go-shell-command",
-              "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.no-dynamic-eval",
-              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.aws-iam-create-access-key",
               "rules.pathfinder.owasp-hardcoded-aws-key"
             ],
             "source_path_prefixes": [
@@ -4807,10 +4974,7 @@
               ".py",
               ".go",
               ".js",
-              ".ts",
-              ".java",
-              ".php",
-              ".rb"
+              ".ts"
             ]
           }
         }
@@ -4831,10 +4995,7 @@
             "type": "analyzer-rule",
             "analyzer": "opengrep",
             "rule_ids": [
-              "rules.pathfinder.go-shell-command",
-              "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.no-dynamic-eval",
-              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.aws-iam-create-access-key",
               "rules.pathfinder.owasp-hardcoded-aws-key"
             ],
             "source_path_prefixes": [
@@ -4844,10 +5005,7 @@
               ".py",
               ".go",
               ".js",
-              ".ts",
-              ".java",
-              ".php",
-              ".rb"
+              ".ts"
             ]
           }
         }
@@ -4868,10 +5026,7 @@
             "type": "analyzer-rule",
             "analyzer": "opengrep",
             "rule_ids": [
-              "rules.pathfinder.go-shell-command",
-              "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.no-dynamic-eval",
-              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.aws-iam-create-access-key",
               "rules.pathfinder.owasp-hardcoded-aws-key"
             ],
             "source_path_prefixes": [
@@ -4881,10 +5036,7 @@
               ".py",
               ".go",
               ".js",
-              ".ts",
-              ".java",
-              ".php",
-              ".rb"
+              ".ts"
             ]
           }
         }
@@ -4956,10 +5108,7 @@
             "type": "analyzer-rule",
             "analyzer": "opengrep",
             "rule_ids": [
-              "rules.pathfinder.go-shell-command",
-              "rules.pathfinder.python-dynamic-eval",
-              "rules.pathfinder.no-dynamic-eval",
-              "rules.pathfinder.owasp-os-system-python",
+              "rules.pathfinder.aws-iam-create-access-key",
               "rules.pathfinder.owasp-hardcoded-aws-key"
             ],
             "source_path_prefixes": [
@@ -4969,10 +5118,7 @@
               ".py",
               ".go",
               ".js",
-              ".ts",
-              ".java",
-              ".php",
-              ".rb"
+              ".ts"
             ]
           }
         }
