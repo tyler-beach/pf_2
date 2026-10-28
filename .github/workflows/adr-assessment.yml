@@ -98,8 +98,13 @@ jobs:
             echo "35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c  $install_dir/opengrep" | sha256sum --check
             chmod 0755 "$install_dir/opengrep"
 
-            python3 -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
-            checkov_bin="$(command -v checkov)"
+            # Dedicated venv: adrctl's ExecCommandRunner isolates HOME, so a pip
+            # --user console script under ~/.local/bin cannot import checkov.
+            checkov_venv="$RUNNER_TEMP/checkov-venv"
+            python3 -m venv "$checkov_venv"
+            "$checkov_venv/bin/python" -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
+            checkov_bin="$checkov_venv/bin/checkov"
+            test -x "$checkov_bin"
             checkov_sha="$(sha256sum "$checkov_bin" | awk '{print $1}')"
 
             mkdir -p "$sandbox/rules" analyzer-evidence

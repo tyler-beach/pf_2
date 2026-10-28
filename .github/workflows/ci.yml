@@ -191,8 +191,13 @@ jobs:
       - name: Prove Checkov adapter on IaC fixtures
         run: |
           set -euo pipefail
-          python3 -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
-          checkov_bin="$(command -v checkov)"
+          # Dedicated venv: adrctl's ExecCommandRunner isolates HOME, so a pip
+          # --user console script under ~/.local/bin cannot import checkov.
+          checkov_venv="$RUNNER_TEMP/checkov-venv"
+          python3 -m venv "$checkov_venv"
+          "$checkov_venv/bin/python" -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
+          checkov_bin="$checkov_venv/bin/checkov"
+          test -x "$checkov_bin"
           checkov_sha="$(sha256sum "$checkov_bin" | awk '{print $1}')"
           "$checkov_bin" --version | tee "$RUNNER_TEMP/checkov-version.txt"
           grep -F "3.2.484" "$RUNNER_TEMP/checkov-version.txt"
