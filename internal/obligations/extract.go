@@ -48,6 +48,9 @@ type Candidate struct {
 	Conditions []string `json:"conditions,omitempty"`
 	Exceptions []string `json:"exceptions,omitempty"`
 	Ambiguity  []string `json:"ambiguity,omitempty"`
+	// ExtractionMethod is "deterministic" (rules) or "llm" (batch scaffolding).
+	// LLM rows are pending_review only; assess/PR-scan never call an LLM.
+	ExtractionMethod string `json:"extraction_method,omitempty"`
 	// Deterministic statistical confidence; never produced by an LLM.
 	// Confidence is the conformal triage band; ConfidenceP is calibrated P(extract_correct).
 	Confidence         string   `json:"confidence"`
@@ -67,7 +70,9 @@ type CalibrationMeta struct {
 	ExchangeabilityNote string `json:"exchangeability_note,omitempty"`
 }
 
-// Index is a deterministic candidate inventory tied to exact input bytes.
+// Index is a candidate inventory tied to exact input bytes. Deterministic
+// extract is always present; optional batch LLM scaffolding may add pending
+// llm-tagged rows without mutating the requirements catalog.
 type Index struct {
 	SchemaVersion           string            `json:"schema_version"`
 	SourceRoot              string            `json:"source_root"`
@@ -77,7 +82,10 @@ type Index struct {
 	CandidateCount          int               `json:"candidate_count"`
 	ConfidenceSummary       ConfidenceSummary `json:"confidence_summary"`
 	Calibration             CalibrationMeta   `json:"calibration,omitempty"`
-	Candidates              []Candidate       `json:"candidates"`
+	// LLMExtract records optional batch prose→candidate scaffolding usage.
+	// Assess/PR-scan paths ignore this and keep runtime_llm_calls at zero.
+	LLMExtract LLMExtractMeta `json:"llm_extract,omitempty"`
+	Candidates []Candidate    `json:"candidates"`
 }
 
 // BuildIndex verifies indexed ADR metadata against current source bytes, then
@@ -307,8 +315,9 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 					Kind: kind, SubmissionKind: string(assessment.SubmissionKindTechSpec),
 					PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
 					SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex + 1, SourceLineEnd: lineIndex + 1,
-					ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
-					ReviewHints: hints, Conditions: conditions, Exceptions: exceptions, Ambiguity: ambiguity,
+					ApprovalStatus: DecisionPending, EnforcementMode: EnforcementReviewRequired, Executable: false,
+					ExtractionMethod: ExtractionMethodDeterministic,
+					ReviewHints:      hints, Conditions: conditions, Exceptions: exceptions, Ambiguity: ambiguity,
 				}
 				scored := ScoreCandidate(candidate)
 				candidate.Confidence = scored.ConfidenceBand

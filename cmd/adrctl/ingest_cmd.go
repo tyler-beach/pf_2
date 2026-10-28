@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -9,7 +10,9 @@ import (
 	"strings"
 
 	"github.com/tyler-beach/pf_2/internal/adringest"
+	"github.com/tyler-beach/pf_2/internal/assessment"
 	"github.com/tyler-beach/pf_2/internal/obligations"
+	"github.com/tyler-beach/pf_2/internal/orchestrate"
 )
 
 func runIngestADRs(args []string) error {
@@ -46,18 +49,35 @@ func runIngestADRs(args []string) error {
 	return nil
 }
 
-func runExtractObligations(args []string) error {
+func runExtractObligations(ctx context.Context, args []string) error {
 	fs := flag.NewFlagSet("extract-obligations", flag.ContinueOnError)
 	indexPath := fs.String("index", "adr/ingested-adrs.json", "deterministic ADR ingestion index JSON")
 	root := fs.String("root", "", "directory containing source ADR Markdown; defaults to source_root from index")
 	output := fs.String("json-out", "adr/obligation-candidates.json", "review-only candidate obligation JSON output")
 	reportPath := fs.String("report", "", "optional Markdown review queue output")
 	minConfidenceReport := fs.Bool("min-confidence-report", false, "print confidence-band summary to stdout")
+	extractLLM := fs.Bool("extract-llm", false, "optional batch LLM scaffolding for tech_spec/mixed prose (off by default; or PATHFINDER_EXTRACT_LLM=1)")
+	extractLLMForce := fs.Bool("extract-llm-force", false, "bypass submission_kind gate for extract-llm (still pending_review only)")
+	submissionKind := fs.String("submission-kind", "tech_spec", "input shape for extract-llm gate: tech_spec|mixed|code_snippet")
+	providerName := fs.String("extract-llm-provider", "offline", "extract-llm provider: offline|openai-compatible")
+	model := fs.String("extract-llm-model", "", "model id for live extract-llm (optional label for offline)")
+	endpoint := fs.String("extract-llm-endpoint", "", "OpenAI-compatible chat completions endpoint")
+	apiKeyEnv := fs.String("extract-llm-api-key-env", "LLM_API_KEY", "env var holding API key for live extract-llm")
+	maxTokens := fs.Int("extract-llm-max-tokens", 512, "spend guard: max tokens per extract-llm completion")
+	maxCandidates := fs.Int("extract-llm-max-candidates", 32, "spend guard: max LLM-proposed candidates")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 	if fs.NArg() != 0 {
 		return fmt.Errorf("extract-obligations accepts no positional arguments")
+	}
+	enableLLM := *extractLLM || obligations.ExtractLLMEnabledFromEnv()
+	kind, err := assessment.ParseSubmissionKind(*submissionKind)
+	if err != nil {
+		return fmt.Errorf("submission-kind: %w", err)
+	}
+	if enableLLM && !*extractLLMForce && !kind.AllowsLLMExtract() {
+		return fmt.Errorf("extract-llm refused for submission_kind %q (allowed: tech_spec, mixed); use --extract-llm-force only with explicit operator intent", kind)
 	}
 	indexAbs, err := filepath.Abs(*indexPath)
 	if err != nil {
@@ -117,7 +137,40 @@ func runExtractObligations(args []string) error {
 			return fmt.Errorf("candidate outputs must remain outside the ADR source root")
 		}
 	}
-	candidates, err := obligations.BuildIndex(index.Documents, *root, index.SourceRoot, indexBytes)
+	var provider obligations.AssistProvider
+	if enableLLM {
+		switch strings.ToLower(strings.TrimSpace(*providerName)) {
+		case "offline", "offline-fixture":
+			provider = obligations.OfflineExtractLLMProvider{ModelID: *model}
+		case "openai-compatible":
+			apiKey := strings.TrimSpace(os.Getenv(*apiKeyEnv))
+			if apiKey == "" {
+				return fmt.Errorf("live extract-llm requires API key in $%s", *apiKeyEnv)
+			}
+			if strings.TrimSpace(*model) == "" {
+				return fmt.Errorf("--extract-llm-model is required for openai-compatible provider")
+			}
+			provider = obligations.OpenAICompatProvider{
+				Endpoint:  *endpoint,
+				APIKey:    apiKey,
+				ModelID:   *model,
+				MaxTokens: *maxTokens,
+			}
+		default:
+			return fmt.Errorf("unsupported extract-llm provider %q (want offline|openai-compatible)", *providerName)
+		}
+	}
+	kindLabel := string(kind)
+	if kindLabel == "" {
+		kindLabel = string(assessment.SubmissionKindTechSpec)
+	}
+	orch := orchestrate.DefaultExtractLLMOrchestrator{Observer: cliObserver()}
+	candidates, err := orch.Build(ctx, index.Documents, *root, index.SourceRoot, indexBytes, enableLLM, obligations.ExtractLLMOptions{
+		SubmissionKind: kindLabel,
+		Force:          *extractLLMForce,
+		Provider:       provider,
+		MaxCandidates:  *maxCandidates,
+	})
 	if err != nil {
 		return fmt.Errorf("build review-only obligation candidates: %w", err)
 	}
@@ -137,6 +190,10 @@ func runExtractObligations(args []string) error {
 	fmt.Printf("Created %d review-required candidate(s) from %d ADR document(s) in %s", candidates.CandidateCount, candidates.DocumentCount, *output)
 	if *reportPath != "" {
 		fmt.Printf("; Markdown queue: %s", *reportPath)
+	}
+	if enableLLM {
+		fmt.Printf("; extract-llm scaffolding llm_candidates=%d runtime_llm_calls=%d (pending_review only)",
+			candidates.LLMExtract.LLMCandidateCount, candidates.LLMExtract.RuntimeLLMCalls)
 	}
 	fmt.Printf(". No candidate was approved or made enforceable.\n")
 	if *minConfidenceReport {

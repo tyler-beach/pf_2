@@ -3,7 +3,7 @@
 Machine schema: [`schemas/workshop-metrics-v1.json`](../schemas/workshop-metrics-v1.json).  
 Emitted by `adrctl workshop-emit` into `metrics.json` and appended to `workshop-data` as `metrics/runs.jsonl`.
 
-**Compliance note:** Promptfoo and assist KPIs measure *batch assist quality*. They are **not** Pathfinder compliance verdicts. Runtime assessment remains deterministic with `runtime_llm_calls == 0`.
+**Compliance note:** Promptfoo, assist, and optional extract-llm KPIs measure *batch scaffolding / assist quality*. They are **not** Pathfinder compliance verdicts. Runtime assessment remains deterministic with `runtime_llm_calls == 0`. LLM extract is temporary prose scaffolding — graduate stable patterns into deterministic rules.
 
 Workshop UI: every KPI tile has an ℹ control (keyboard/touch) with plain-English help linking to `#/docs/...`.
 
@@ -43,8 +43,8 @@ Workshop UI: every KPI tile has an ℹ control (keyboard/touch) with plain-Engli
 | `kpi.assess.funnel.*` | Binding / corpus coverage funnel | inventory→accepted→interpreted→bound→evidence_complete counts and `/inventory` rates | count / ratio | workflow | assess |
 | `kpi.assess.covered` / `unbound` / `stale` | Binding coverage health | covered / unbound / stale counts from obligation coverage | count | workflow | assessment + review |
 | `kpi.invariant.llm_calls` | Did assess stay zero-LLM? | `runtime_llm_calls` (must be 0 on assess paths) | count | workflow | assess |
-| `kpi.assist.proposal_count` | Assist volume | proposal_count | count | provider_mode, max_confidence | assist-obligations |
-| `kpi.assist.prompt_tokens` / `completion_tokens` / `cost_usd` | LLM usage & estimated spend | tokens from provider usage; USD estimate for live (`gpt-4o-mini` list rates); offline = 0 | count / USD | provider, model | assist-obligations |
+| `kpi.assist.proposal_count` | Assist / extract-llm scaffolding volume | proposal_count (+ optional `llm_extract.llm_candidate_count` from candidates) | count | provider_mode, max_confidence | assist-obligations / extract-llm |
+| `kpi.assist.prompt_tokens` / `completion_tokens` / `cost_usd` | LLM usage & estimated spend | tokens from assist proposals and/or candidate `llm_extract` meta; USD estimate for live (`gpt-4o-mini` list rates); offline = 0 | count / USD | provider, model | assist-obligations / extract-llm |
 | `kpi.cost.per_accepted_proposal` | USD per useful assist outcome | `cost_usd` / accepted proposal parents (when registry present) | USD | provider | assist + review |
 | `kpi.cost.per_fail` | USD per FAIL observation | `cost_usd` / `kpi.adr.fail_count` when fails > 0 | USD | workflow | assist + assess |
 | `kpi.promptfoo.pass_rate` | Did assist eval assertions pass? | successes / (successes+failures); **not a compliance verdict** | ratio | offline\|live | Promptfoo |

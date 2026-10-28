@@ -14,6 +14,9 @@ const (
 	SubmissionKindUnspecified SubmissionKind = ""
 	SubmissionKindTechSpec    SubmissionKind = "tech_spec"
 	SubmissionKindCodeSnippet SubmissionKind = "code_snippet"
+	// SubmissionKindMixed is prose + code/IaC in one submission (Both). Used for
+	// kind-gated batch extract-llm scaffolding; assess still stays zero-LLM.
+	SubmissionKindMixed SubmissionKind = "mixed"
 )
 
 // ParseSubmissionKind validates an explicit CLI/API value.
@@ -26,8 +29,21 @@ func ParseSubmissionKind(raw string) (SubmissionKind, error) {
 		return SubmissionKindTechSpec, nil
 	case "code_snippet", "code-snippet", "codesnippet", "code", "iac", "snippet":
 		return SubmissionKindCodeSnippet, nil
+	case "mixed", "both":
+		return SubmissionKindMixed, nil
 	default:
-		return "", fmt.Errorf("invalid submission kind %q (want tech_spec, code_snippet, or empty)", raw)
+		return "", fmt.Errorf("invalid submission kind %q (want tech_spec, code_snippet, mixed, or empty)", raw)
+	}
+}
+
+// AllowsLLMExtract reports whether optional batch LLM prose→candidate extract
+// may run for this kind. Pure code_snippet / repo CI stays deterministic-only.
+func (k SubmissionKind) AllowsLLMExtract() bool {
+	switch k {
+	case SubmissionKindTechSpec, SubmissionKindMixed:
+		return true
+	default:
+		return false
 	}
 }
 

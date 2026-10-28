@@ -24,8 +24,9 @@ const (
 
 // Seams document which stages may call an LLM vs must stay deterministic.
 const (
-	SeamDeterministic = "deterministic"
-	SeamLLMAssist     = "llm_assist_batch"
+	SeamDeterministic  = "deterministic"
+	SeamLLMAssist      = "llm_assist_batch"
+	SeamLLMExtractBatch = "llm_extract_batch" // tech_spec/mixed scaffolding only; propose ≠ approve
 )
 
 // StageEvent is a structured observability record for orchestration boundaries.

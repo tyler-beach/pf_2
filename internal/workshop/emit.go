@@ -209,6 +209,11 @@ func Emit(opts EmitOptions) (Latest, error) {
 	links := map[string]string{}
 	copied := map[string]string{}
 
+	extractLLMPromptTokens, extractLLMCompletionTokens := 0, 0
+	extractLLMCostUSD := 0.0
+	extractLLMProvider, extractLLMModel := "", ""
+	extractLLMProposals := 0
+
 	if opts.CandidatesPath != "" {
 		var payload struct {
 			CandidateCount    int `json:"candidate_count"`
@@ -223,6 +228,16 @@ func Emit(opts EmitOptions) (Latest, error) {
 				GoldExampleCount int     `json:"gold_example_count"`
 				ParamsVersion    string  `json:"params_version"`
 			} `json:"calibration"`
+			LLMExtract struct {
+				Enabled           bool    `json:"enabled"`
+				Provider          string  `json:"provider"`
+				Model             string  `json:"model"`
+				RuntimeLLMCalls   int     `json:"runtime_llm_calls"`
+				PromptTokens      int     `json:"prompt_tokens"`
+				CompletionTokens  int     `json:"completion_tokens"`
+				EstimatedCostUSD  float64 `json:"estimated_cost_usd"`
+				LLMCandidateCount int     `json:"llm_candidate_count"`
+			} `json:"llm_extract"`
 			Candidates []struct {
 				PatternHint        string   `json:"pattern_hint"`
 				SubmissionKind     string   `json:"submission_kind"`
@@ -237,6 +252,15 @@ func Emit(opts EmitOptions) (Latest, error) {
 			return Latest{}, fmt.Errorf("candidates: %w", err)
 		}
 		metrics.CandidateTotal = payload.CandidateCount
+		if payload.LLMExtract.Enabled || payload.LLMExtract.RuntimeLLMCalls > 0 || payload.LLMExtract.LLMCandidateCount > 0 {
+			// Roll extract-llm scaffolding spend into assist/cost KPIs (batch only; assess stays 0).
+			extractLLMPromptTokens = payload.LLMExtract.PromptTokens
+			extractLLMCompletionTokens = payload.LLMExtract.CompletionTokens
+			extractLLMCostUSD = payload.LLMExtract.EstimatedCostUSD
+			extractLLMProvider = payload.LLMExtract.Provider
+			extractLLMModel = payload.LLMExtract.Model
+			extractLLMProposals = payload.LLMExtract.LLMCandidateCount
+		}
 		metrics.ConfidenceHigh = payload.ConfidenceSummary.High
 		metrics.ConfidenceMedium = payload.ConfidenceSummary.Medium
 		metrics.ConfidenceLow = payload.ConfidenceSummary.Low
@@ -559,17 +583,34 @@ func Emit(opts EmitOptions) (Latest, error) {
 		if err := readJSON(opts.ProposalsPath, &payload); err != nil {
 			return Latest{}, fmt.Errorf("proposals: %w", err)
 		}
-		metrics.AssistProposalCount = intPtr(payload.ProposalCount)
-		metrics.AssistPromptTokens = intPtr(payload.PromptTokens)
-		metrics.AssistCompletionTokens = intPtr(payload.CompletionTokens)
-		cost := payload.EstimatedCostUSD
+		totalProposals := payload.ProposalCount + extractLLMProposals
+		totalPrompt := payload.PromptTokens + extractLLMPromptTokens
+		totalCompletion := payload.CompletionTokens + extractLLMCompletionTokens
+		cost := payload.EstimatedCostUSD + extractLLMCostUSD
+		metrics.AssistProposalCount = intPtr(totalProposals)
+		metrics.AssistPromptTokens = intPtr(totalPrompt)
+		metrics.AssistCompletionTokens = intPtr(totalCompletion)
 		metrics.AssistCostUSD = &cost
 		metrics.AssistProvider = payload.Provider
+		if metrics.AssistProvider == "" {
+			metrics.AssistProvider = extractLLMProvider
+		}
 		metrics.AssistModel = payload.Model
+		if metrics.AssistModel == "" {
+			metrics.AssistModel = extractLLMModel
+		}
 		if err := copyFile(opts.ProposalsPath, filepath.Join(opts.OutDir, "proposals.json")); err != nil {
 			return Latest{}, err
 		}
 		copied["proposals"] = "proposals.json"
+	} else if extractLLMProposals > 0 || extractLLMPromptTokens > 0 || extractLLMCompletionTokens > 0 || extractLLMCostUSD > 0 {
+		metrics.AssistProposalCount = intPtr(extractLLMProposals)
+		metrics.AssistPromptTokens = intPtr(extractLLMPromptTokens)
+		metrics.AssistCompletionTokens = intPtr(extractLLMCompletionTokens)
+		cost := extractLLMCostUSD
+		metrics.AssistCostUSD = &cost
+		metrics.AssistProvider = extractLLMProvider
+		metrics.AssistModel = extractLLMModel
 	}
 
 	acceptedAssist := 0

@@ -88,11 +88,21 @@ Assessments and extracted candidates may carry `submission_kind`:
 
 | Value | Typical input | Parser / surface |
 |---|---|---|
-| `tech_spec` | ADR / English prose obligations | Goldmark ADR ingest + deterministic extract |
+| `tech_spec` | ADR / English prose obligations | Goldmark ADR ingest + deterministic extract (± optional `--extract-llm`) |
 | `code_snippet` | Source or IaC (YAML/TF/…) | Issue fence sandbox or repository tree + OpenGrep/Checkov |
-| _(empty)_ | Older artifacts / mixed issue bodies | Unspecified; loaders treat as unknown |
+| `mixed` | Prose + fences / Both | Kind-gated extract-llm allowed; scanners still need code/IaC evidence |
+| _(empty)_ | Older artifacts / unclassified issue bodies | Unspecified; loaders treat as unknown |
 
-`EvidenceMode` (`submission` vs `repository`) is orthogonal: it describes evidence completeness semantics. `IssueSurface` flips manual-review / missing-analyzer statuses for GitHub-issue sandboxes. CLI: `--submission-kind=tech_spec|code_snippet` (auto-detects when omitted: fence-only issue → `code_snippet`, ADR-like prose → `tech_spec`, repo assess → `code_snippet`).
+`EvidenceMode` (`submission` vs `repository`) is orthogonal: it describes evidence completeness semantics. `IssueSurface` flips manual-review / missing-analyzer statuses for GitHub-issue sandboxes. CLI: `--submission-kind=tech_spec|code_snippet|mixed` (auto-detects when omitted: fence-only issue → `code_snippet`, ADR-like prose → `tech_spec`, repo assess → `code_snippet`).
+
+### Optional LLM extract scaffolding (batch only)
+
+Deterministic extract remains the default. For narrative `tech_spec` / `mixed` prose, operators may enable **light LLM scaffolding** with `extract-obligations --extract-llm` (or `PATHFINDER_EXTRACT_LLM=1`):
+
+- Kind-gated: refused for pure `code_snippet` / repo CI unless `--extract-llm-force`.
+- Propose ≠ approve: LLM rows are `extraction_method=llm`, `pending_review`, non-executable — same HITL as assist.
+- Union with deterministic extract (dedupe prefers rules); graduate accepted patterns into deterministic extract over time.
+- Token/cost rolls into assist/cost workshop KPIs. **Assess / PR-scan / SARIF stay zero-LLM** (`runtime_llm_calls` must remain 0).
 
 ### Applicability filter (assess-level)
 

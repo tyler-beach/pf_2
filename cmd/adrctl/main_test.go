@@ -550,7 +550,7 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 		t.Fatal(err)
 	}
 	candidatePath := filepath.Join(root, "adr", "obligation-candidates.json")
-	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil {
+	if err := runExtractObligations(context.Background(), []string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil {
 		t.Fatal(err)
 	}
 	index, err := readObligationIndex(candidatePath)
@@ -686,7 +686,7 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 		t.Fatal(err)
 	}
 	indexPath := filepath.Join(root, "adr", "obligation-candidates.json")
-	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", indexPath}); err != nil {
+	if err := runExtractObligations(context.Background(), []string{"--index", ingestionPath, "--root", adrRoot, "--json-out", indexPath}); err != nil {
 		t.Fatal(err)
 	}
 	indexBytes, err := os.ReadFile(indexPath)
@@ -1008,7 +1008,7 @@ func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *tes
 	outPath := filepath.Join(root, "candidates.json")
 	reportPath := filepath.Join(root, "candidates.md")
 	args := []string{"--index", indexPath, "--root", adrRoot, "--json-out", outPath, "--report", reportPath}
-	if err := runExtractObligations(args); err != nil {
+	if err := runExtractObligations(context.Background(), args); err != nil {
 		t.Fatalf("runExtractObligations() error: %v", err)
 	}
 	first, err := os.ReadFile(outPath)
@@ -1033,7 +1033,7 @@ func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *tes
 	secondReportPath := filepath.Join(root, "candidates-again.md")
 	args[5] = secondPath
 	args[7] = secondReportPath
-	if err := runExtractObligations(args); err != nil {
+	if err := runExtractObligations(context.Background(), args); err != nil {
 		t.Fatalf("second run: %v", err)
 	}
 	second, err := os.ReadFile(secondPath)
@@ -1058,7 +1058,7 @@ func TestRunExtractObligationsRefusesToOverwriteIndex(t *testing.T) {
 	if err := os.WriteFile(indexPath, []byte("{"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	err := runExtractObligations([]string{"--index", indexPath, "--root", root, "--json-out", indexPath})
+	err := runExtractObligations(context.Background(), []string{"--index", indexPath, "--root", root, "--json-out", indexPath})
 	if err == nil || !strings.Contains(err.Error(), "must not overwrite") {
 		t.Fatalf("expected index overwrite rejection, got %v", err)
 	}
@@ -1144,7 +1144,7 @@ func TestRunAssistObligationsOfflineWritesProposalsOnly(t *testing.T) {
 	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil {
 		t.Fatal(err)
 	}
-	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil {
+	if err := runExtractObligations(context.Background(), []string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil {
 		t.Fatal(err)
 	}
 	proposalPath := filepath.Join(root, "proposals.json")

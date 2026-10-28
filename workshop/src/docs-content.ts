@@ -44,7 +44,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><strong>Obligation</strong> — cited candidate or approved interpretation (modality, applicability, enforcement mode).</li>
   <li><strong>Verification pattern</strong> — reusable analyzer/policy contract shared by many obligations.</li>
 </ul>
-<p>Optional LLM assist is <strong>batch-time only</strong>. Runtime assessment stays deterministic. See repo <code>docs/architecture.md</code> and <code>docs/scaling-adr-design.md</code>.</p>`,
+<p>Optional LLM assist / extract-llm is <strong>batch-time scaffolding only</strong> (tech_spec/mixed prose → structured candidates). Graduate accepted patterns into deterministic rules; runtime assessment stays zero-LLM. See repo <code>docs/architecture.md</code> and <code>docs/scaling-adr-design.md</code>.</p>`,
   },
   {
     id: 'lifecycle',
@@ -54,9 +54,9 @@ export const DOC_SECTIONS: DocSection[] = [
     body: `
 <ol class="docs-steps">
   <li><strong>Ingest</strong> — preserve source bytes, identity, version, and locations (<code>ingest-adrs</code>).</li>
-  <li><strong>Extract</strong> — candidate obligations with modality, citations, ambiguity (<code>extract-obligations</code>). Never executable by default.</li>
+  <li><strong>Extract</strong> — candidate obligations with modality, citations, ambiguity (<code>extract-obligations</code>). Never executable by default. Optional <code>--extract-llm</code> (tech_spec/mixed only) scaffolds narrative prose into pending <code>extraction_method=llm</code> rows; deterministic extract still runs and wins on dedupe.</li>
   <li><strong>Confidence</strong> — heuristic score → calibrated <code>confidence_p</code> → conformal high/medium/low; low escalate to batch assist. Details: <a href="#/docs/confidence">Confidence scoring</a>.</li>
-  <li><strong>Assist (batch only)</strong> — optional LLM proposals; never auto-approved (<code>assist-obligations</code>).</li>
+  <li><strong>Assist (batch only)</strong> — optional LLM proposals; never auto-approved (<code>assist-obligations</code>). Same HITL as extract-llm: propose ≠ approve.</li>
   <li><strong>Human review</strong> — approve / reject / bind in the obligation registry.</li>
   <li><strong>Bind</strong> — map to a verifier pattern (Go AST, JSON, OpenGrep, Checkov, manual-review).</li>
   <li><strong>Evidence</strong> — pinned analyzers, SARIF normalization, digests for binary/config/input/raw output.</li>
@@ -366,8 +366,8 @@ export const DOC_SECTIONS: DocSection[] = [
   <tbody>
     <tr><td><code>validate</code></td><td>Catalog schema / verifier shape.</td></tr>
     <tr><td><code>assess</code> / <code>assess-repo</code></td><td>Issue vs repository assessment (<code>--issue-surface</code>, multi-analyzer evidence).</td></tr>
-    <tr><td><code>ingest-adrs</code> / <code>extract-obligations</code></td><td>Markdown → candidates.</td></tr>
-    <tr><td><code>assist-obligations</code></td><td>Batch proposals only.</td></tr>
+    <tr><td><code>ingest-adrs</code> / <code>extract-obligations</code></td><td>Markdown → candidates. Optional <code>--extract-llm</code> / <code>PATHFINDER_EXTRACT_LLM=1</code> for tech_spec/mixed scaffolding.</td></tr>
+    <tr><td><code>assist-obligations</code></td><td>Batch proposals only (HITL).</td></tr>
     <tr><td><code>proposal-to-review</code> / <code>accept-assist-proposal</code></td><td>Assist → human review path.</td></tr>
     <tr><td><code>scan-opengrep</code> / <code>scan-checkov</code></td><td>Pinned analyzer runs + evidence.</td></tr>
     <tr><td><code>plan-repo</code> / <code>verify-plan</code> / <code>execute-plan</code></td><td>Deterministic multi-analyzer plans.</td></tr>

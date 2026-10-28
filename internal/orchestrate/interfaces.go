@@ -4,10 +4,10 @@
 //
 // Agentic architecture contracts (tool/agent boundaries):
 //
-//	ingest → extract (deterministic) → assist (LLM batch, HITL) → review (human)
+//	ingest → extract (deterministic ± optional LLM scaffolding) → assist (LLM batch, HITL) → review (human)
 //	plan → execute/analyzers (deterministic) → assess (deterministic) → prscan / workshop
 //
-// Runtime assess/PR gates make zero LLM calls. Assist never auto-approves.
+// Runtime assess/PR gates make zero LLM calls. Assist / extract-llm never auto-approve.
 package orchestrate
 
 import (

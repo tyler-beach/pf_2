@@ -65,7 +65,7 @@ go run ./cmd/adrctl workshop-emit \
 
 ## Interpreting metrics
 
-See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance verdicts.** Assess paths must keep `runtime_llm_calls == 0`.
+See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance verdicts.** Assess paths must keep `runtime_llm_calls == 0`. Optional `--extract-llm` is batch scaffolding for tech_spec/mixed prose (graduate to deterministic rules); it must not taint assess/PR-scan evidence.
 
 ## PR URL scan (reviewdog + Security)
 

@@ -24,7 +24,7 @@ func main() {
 	case "ingest-adrs":
 		err = runIngestADRs(os.Args[2:])
 	case "extract-obligations":
-		err = runExtractObligations(os.Args[2:])
+		err = runExtractObligations(ctx, os.Args[2:])
 	case "assist-obligations":
 		err = runAssistObligations(ctx, os.Args[2:])
 	case "proposal-to-review":

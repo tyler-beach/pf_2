@@ -13,6 +13,8 @@ func TestParseSubmissionKind(t *testing.T) {
 		{"tech-spec", SubmissionKindTechSpec},
 		{"code_snippet", SubmissionKindCodeSnippet},
 		{"iac", SubmissionKindCodeSnippet},
+		{"mixed", SubmissionKindMixed},
+		{"both", SubmissionKindMixed},
 	}
 	for _, tc := range cases {
 		got, err := ParseSubmissionKind(tc.in)
@@ -23,8 +25,14 @@ func TestParseSubmissionKind(t *testing.T) {
 			t.Fatalf("ParseSubmissionKind(%q)=%q want %q", tc.in, got, tc.want)
 		}
 	}
-	if _, err := ParseSubmissionKind("mixed"); err == nil {
+	if _, err := ParseSubmissionKind("not-a-kind"); err == nil {
 		t.Fatal("expected error for unsupported kind")
+	}
+	if !SubmissionKindTechSpec.AllowsLLMExtract() || !SubmissionKindMixed.AllowsLLMExtract() {
+		t.Fatal("tech_spec/mixed must allow extract-llm")
+	}
+	if SubmissionKindCodeSnippet.AllowsLLMExtract() || SubmissionKindUnspecified.AllowsLLMExtract() {
+		t.Fatal("code_snippet/unspecified must not allow extract-llm by default")
 	}
 }
 

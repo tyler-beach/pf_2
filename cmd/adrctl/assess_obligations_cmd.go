@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -27,6 +28,7 @@ func runAssessObligations(args []string) error {
 	jsonPath := fs.String("json-out", "obligation-assessment.json", "per-obligation JSON report output")
 	markdownPath := fs.String("report", "obligation-assessment.md", "per-obligation Markdown report output")
 	enforceBlocking := fs.Bool("enforce-blocking", false, "return an error unless every approved blocking obligation passes with fresh evidence")
+	extractLLM := fs.Bool("extract-llm", false, "allow pending llm-tagged scaffolding candidates in the index (never invokes an LLM; assess evidence stays zero-LLM)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -96,20 +98,28 @@ func runAssessObligations(args []string) error {
 	if relativeSourceRoot == ".." || strings.HasPrefix(relativeSourceRoot, ".."+string(filepath.Separator)) || filepath.IsAbs(relativeSourceRoot) {
 		return fmt.Errorf("ADR source root must remain inside the current repository root")
 	}
+	if obligations.HasLLMExtractedCandidates(index) && !*extractLLM && !obligations.ExtractLLMEnabledFromEnv() {
+		return fmt.Errorf("candidate index contains extraction_method=llm rows; pass --extract-llm to allow pending LLM scaffolding (assess/PR evidence remains zero-LLM)")
+	}
 	rebuiltIndex, err := obligations.BuildIndex(sourceIndex.Documents, sourceRootReal, sourceIndex.SourceRoot, ingestionBytes)
 	if err != nil {
 		return fmt.Errorf("rebuild candidate index from current ADR sources: %w", err)
 	}
-	expectedIndex, err := json.Marshal(rebuiltIndex)
+	// Freshness compares the deterministic subset only so extract-llm scaffolding
+	// cannot taint assess/reviewdog evidence provenance.
+	expectedIndex, err := json.Marshal(obligations.DeterministicCandidates(rebuiltIndex))
 	if err != nil {
 		return fmt.Errorf("encode rebuilt candidate index: %w", err)
 	}
-	providedIndex, err := json.Marshal(index)
+	providedIndex, err := json.Marshal(obligations.DeterministicCandidates(index))
 	if err != nil {
 		return fmt.Errorf("encode provided candidate index: %w", err)
 	}
 	if !bytes.Equal(expectedIndex, providedIndex) {
 		return fmt.Errorf("candidate index does not match current ADR sources and ingestion index; rerun ingest-adrs and extract-obligations")
+	}
+	if err := obligations.AssertExtractLLMHITL(index); err != nil {
+		return err
 	}
 	catalog, err := assessment.LoadCatalog(*catalogPath)
 	if err != nil {
@@ -189,6 +199,7 @@ func runSpecificationCheck(args []string) error {
 	analyzerEvidence := fs.String("analyzer-evidence", "", "optional normalized analyzer scan evidence JSON")
 	analyzerSARIF := fs.String("analyzer-sarif", "", "raw SARIF paired with normalized analyzer evidence")
 	reportOnly := fs.Bool("report-only", false, "write assessment artifacts without enforcing blocking obligations")
+	extractLLM := fs.Bool("extract-llm", false, "optional batch LLM scaffolding during extract (tech_spec/mixed; pending_review only)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -289,7 +300,11 @@ func runSpecificationCheck(args []string) error {
 	if err := runIngestADRs([]string{"--root", adrRootReal, "--json-out", ingestionPath}); err != nil {
 		return fmt.Errorf("ingest ADR sources: %w", err)
 	}
-	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRootReal, "--json-out", candidatePath, "--report", candidateReportPath}); err != nil {
+	extractArgs := []string{"--index", ingestionPath, "--root", adrRootReal, "--json-out", candidatePath, "--report", candidateReportPath}
+	if *extractLLM || obligations.ExtractLLMEnabledFromEnv() {
+		extractArgs = append(extractArgs, "--extract-llm", "--submission-kind", "tech_spec")
+	}
+	if err := runExtractObligations(context.Background(), extractArgs); err != nil {
 		return fmt.Errorf("extract obligation candidates: %w", err)
 	}
 	assessArgs := []string{"--root", rootReal, "--requirements", catalogPath, "--report", repositoryReportPath, "--json-out", assessmentPath, "--sarif-out", sarifPath}
@@ -303,6 +318,9 @@ func runSpecificationCheck(args []string) error {
 		"--root", rootReal, "--index", candidatePath, "--ingestion-index", ingestionPath,
 		"--requirements", catalogPath, "--registry", registryPath, "--assessment", assessmentPath,
 		"--json-out", obligationReportPath, "--report", obligationMarkdownPath,
+	}
+	if *extractLLM || obligations.ExtractLLMEnabledFromEnv() {
+		joinArgs = append(joinArgs, "--extract-llm")
 	}
 	if !*reportOnly {
 		joinArgs = append(joinArgs, "--enforce-blocking")
