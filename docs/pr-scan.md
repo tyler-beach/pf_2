@@ -118,11 +118,19 @@ Code scanning must be available on the **target** repository (public repos: enab
 
 PR changed-path prefixes feed both scanner `--scope` and `assess-repo --scope` so non-intersecting corpus rows become `NOT_APPLICABLE` by applicability (Epic 2) instead of flooding reporters. Use `--assess-all` only in full-corpus CI.
 
-## Workshop deep link
+## Workshop deep links
 
 Scan issue comments include a Pages dig-in:
 
 `https://tyler-beach.github.io/pf_2/#/runs?run_id=<GITHUB_RUN_ID>`
+
+Operator docs in the workshop SPA:
+
+| Route | Content |
+|---|---|
+| [`#/docs/pr-scan`](https://tyler-beach.github.io/pf_2/#/docs/pr-scan) | PR URL scan (issue + dispatch) |
+| [`#/docs/github-app`](https://tyler-beach.github.io/pf_2/#/docs/github-app) | Create App, secrets, install, host workflow |
+| [`#/docs/integrations`](https://tyler-beach.github.io/pf_2/#/docs/integrations) | Workflows, consumers, reviewdog/SARIF, Pages |
 
 ## Limitations
 

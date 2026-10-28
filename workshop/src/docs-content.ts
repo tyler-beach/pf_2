@@ -21,7 +21,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><strong>This workshop</strong> is a GitOps command center: Actions emit snapshots, <code>workshop-data</code> stores history, Pages serves the SPA.</li>
 </ul>
 <p>Guiding rule: a clean scan is never “the whole estate is compliant.” Coverage and status are explicit per obligation.</p>
-<p>Related: <a href="#/docs/architecture">Architecture</a> · <a href="#/docs/lifecycle">Spec → enforcement</a> · <a href="#/sample">Sample journey</a></p>`,
+<p>Related: <a href="#/docs/architecture">Architecture</a> · <a href="#/docs/lifecycle">Spec → enforcement</a> · <a href="#/docs/integrations">Integrations</a> · <a href="#/sample">Sample journey</a></p>`,
   },
   {
     id: 'architecture',
@@ -103,11 +103,98 @@ export const DOC_SECTIONS: DocSection[] = [
 <ol class="docs-steps">
   <li>Open <strong>Pathfinder PR scan</strong> issue template; paste a PR URL (this repo or another).</li>
   <li>Select reviewdog reporters and/or <strong>Upload SARIF to GitHub code scanning</strong>.</li>
+  <li>Or skip the issue: <strong>Actions → Pathfinder PR Scan → Run workflow</strong> with <code>pr_url</code> + reporter flags.</li>
   <li>Workflow shallow-fetches the PR head as data only (never runs untrusted PR code), assesses with pinned OpenGrep/Checkov + <code>assess-repo --issue-surface</code>.</li>
   <li>Shared finding model → rdjson (reviewdog) and SARIF 2.1.0 (Security). Bodies are short: severity, ADR, why, evidence, next/docs.</li>
-  <li>N/A floods are omitted; inline comments capped; one PR summary with counts.</li>
+  <li>N/A floods are omitted; inline comments capped; one PR summary with counts. Stable check name: <code>pathfinder-pr-scan</code>.</li>
 </ol>
-<p><strong>Cross-repo:</strong> set <code>PATHFINDER_REVIEW_TOKEN</code> (and optional <code>PATHFINDER_SARIF_TOKEN</code> with <code>security_events</code>). Full operator doc: <code>docs/pr-scan.md</code>.</p>`,
+<p><strong>Auth:</strong> same-repo uses <code>GITHUB_TOKEN</code>. Cross-repo: prefer the <a href="#/docs/github-app">GitHub App</a> (<code>APP_ID</code> + <code>APP_PRIVATE_KEY</code>) or legacy PAT <code>PATHFINDER_REVIEW_TOKEN</code> / optional <code>PATHFINDER_SARIF_TOKEN</code>. Full operator doc: <code>docs/pr-scan.md</code> · setup map: <a href="#/docs/integrations">Integrations</a>.</p>`,
+  },
+  {
+    id: 'github-app',
+    title: 'GitHub App setup (PR scan)',
+    group: 'Integrations',
+    summary: 'Create the Pathfinder App, paste secrets, install on repos, mint short-lived tokens for reviewdog + Security.',
+    body: `
+<p>Actions-native MVP is shipped: the App supplies ≤1h installation tokens via <code>actions/create-github-app-token</code>. The reusable workflow remains the scan engine. A custom webhook server is out of scope (manifest webhook stays inactive).</p>
+<h3>1. Create the App in GitHub</h3>
+<ol class="docs-steps">
+  <li>Owner account → <strong>Settings → Developer settings → GitHub Apps → New GitHub App</strong> (org: <code>…/organizations/&lt;ORG&gt;/settings/apps/new</code>).</li>
+  <li><strong>Name:</strong> Pathfinder PR Scan (must be unique). <strong>Homepage:</strong> this repository URL.</li>
+  <li><strong>Webhook:</strong> uncheck Active (Actions-native; no server).</li>
+  <li><strong>Repository permissions:</strong> Checks write · Contents read · Pull requests write · Security events write · Metadata read. Do <em>not</em> grant workflows, administration, or contents write.</li>
+  <li>Optional events (future webhook): Pull request, Installation, Installation repositories. Manifest: <code>.github/pathfinder-app-manifest.json</code>.</li>
+  <li><strong>Create GitHub App</strong> → <strong>Private keys → Generate</strong> → save the <code>.pem</code>. Copy <strong>App ID</strong> (and optional <strong>Client ID</strong>).</li>
+</ol>
+<h3>2. Install on repositories</h3>
+<ol class="docs-steps">
+  <li>App settings → <strong>Install App</strong> → choose account → <strong>Only select repositories</strong> → pick <code>pf_2</code> and each consumer repo → Install.</li>
+  <li>Confirm the install shows the permissions above.</li>
+</ol>
+<h3>3. Secrets (host or consumer Actions)</h3>
+<table class="docs-table">
+  <thead><tr><th>Secret</th><th>Required</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td><code>APP_ID</code></td><td>Yes*</td><td>Numeric App ID from App settings</td></tr>
+    <tr><td><code>APP_PRIVATE_KEY</code></td><td>Yes</td><td>Full PEM including BEGIN/END lines (escaped <code>\\n</code> OK)</td></tr>
+    <tr><td><code>APP_CLIENT_ID</code></td><td>Optional</td><td>When set, host workflow prefers client-id mint over App ID</td></tr>
+  </tbody>
+</table>
+<p>*Provide <code>APP_ID</code> and/or <code>APP_CLIENT_ID</code> plus <code>APP_PRIVATE_KEY</code>. Until secrets exist, <strong>Pathfinder App PR Scan</strong> skips with a notice (does not fail every PR).</p>
+<p><strong>Legacy PAT path</strong> (still supported): <code>PATHFINDER_REVIEW_TOKEN</code> with <code>contents:read</code>, <code>pull_requests:write</code>, <code>checks:write</code> on the target; optional <code>PATHFINDER_SARIF_TOKEN</code> for Security-only. Prefer App tokens for multi-repo installs.</p>
+<h3>4. Host workflow</h3>
+<ol class="docs-steps">
+  <li><code>.github/workflows/pathfinder-app-pr-scan.yml</code> runs on <code>pull_request</code> (opened/synchronize/reopened) and <code>workflow_dispatch</code>.</li>
+  <li>Mints an installation token scoped to the current repo with least-privilege permission inputs, then calls the reusable scan with that token as <code>review_token</code> / <code>sarif_token</code>.</li>
+  <li>Same-repo E2E without App secrets: use <strong>Actions → Pathfinder PR Scan → Run workflow</strong> (<code>GITHUB_TOKEN</code>) — see <a href="#/docs/pr-scan">PR URL scan</a>.</li>
+</ol>
+<p>Repo design doc: <code>docs/github-app-design.md</code> · consumer example: <code>examples/consumer-pr-scan-app.yml</code> · map of all surfaces: <a href="#/docs/integrations">Integrations</a>.</p>`,
+  },
+  {
+    id: 'integrations',
+    title: 'Integrations map',
+    group: 'Integrations',
+    summary: 'Host/consumer workflows, reviewdog + SARIF, issue templates, and workshop Pages as the analytics surface.',
+    body: `
+<p>One assessment pipeline, several ways to trigger and authenticate it. Prefer the <a href="#/docs/github-app">GitHub App</a> for cross-repo tokens; keep the issue / dispatch host workflow for same-repo ops.</p>
+<h3>Workflows</h3>
+<table class="docs-table">
+  <thead><tr><th>Workflow</th><th>Trigger</th><th>Auth</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td><code>pathfinder-pr-scan.yml</code></td><td>Issue template + <code>workflow_dispatch</code></td><td><code>GITHUB_TOKEN</code> or <code>PATHFINDER_REVIEW_TOKEN</code></td><td>Host operator scan (issue authors gated OWNER/MEMBER/COLLABORATOR)</td></tr>
+    <tr><td><code>pathfinder-app-pr-scan.yml</code></td><td><code>pull_request</code> + dispatch</td><td><code>APP_ID</code> / <code>APP_CLIENT_ID</code> + <code>APP_PRIVATE_KEY</code></td><td>Mint install token → reusable scan</td></tr>
+    <tr><td><code>pathfinder-pr-scan-reusable.yml</code></td><td><code>workflow_call</code></td><td>Caller-supplied <code>review_token</code> / <code>sarif_token</code></td><td>Shared engine: fetch head as data → OpenGrep/Checkov → assess → reviewdog → optional SARIF</td></tr>
+    <tr><td><code>adr-assessment.yml</code></td><td><code>[ADR Assessment]</code> issues</td><td>repo token</td><td>Sandbox fences vs 200-ADR corpus; feeds workshop snapshots</td></tr>
+    <tr><td><code>workshop-publish.yml</code></td><td><code>workflow_run</code> / dispatch</td><td>Pages permissions</td><td>Merge <code>workshop-data</code> + deploy this SPA</td></tr>
+  </tbody>
+</table>
+<h3>Consumer copy-paste</h3>
+<ol class="docs-steps">
+  <li><strong>App (preferred):</strong> copy <code>examples/consumer-pr-scan-app.yml</code> → mint token with <code>create-github-app-token</code> → <code>uses: tyler-beach/pf_2/.github/workflows/pathfinder-pr-scan-reusable.yml@main</code>.</li>
+  <li><strong>PAT (legacy):</strong> copy <code>examples/consumer-pr-scan.yml</code> → secret <code>PATHFINDER_REVIEW_TOKEN</code> (optional <code>PATHFINDER_SARIF_TOKEN</code>).</li>
+  <li>Pin <code>pathfinder_ref</code> to a tag/SHA when ready. Inputs: <code>reporters</code>, <code>upload_sarif</code>, <code>filter_mode</code>, <code>catalog</code>, <code>fail_level</code>.</li>
+</ol>
+<h3>reviewdog reporters + Security SARIF</h3>
+<ul>
+  <li><code>github-pr-review</code> — inline review comments (default with check)</li>
+  <li><code>github-pr-check</code> / <code>github-check</code> — Checks API / commit Check Run (<strong>require <code>pathfinder-pr-scan</code></strong> in branch protection)</li>
+  <li><code>github-pr-annotations</code> — job annotations · <code>local</code> — artifact only</li>
+  <li><strong>Upload SARIF</strong> / <code>upload_sarif=true</code> → Security tab via code-scanning API (<code>pathfinder/pr-scan</code> automation id). Target needs code scanning available (GHAS on private).</li>
+</ul>
+<p>Filter modes: <code>added</code> (default), <code>diff_context</code>, <code>file</code>, <code>nofilter</code>. Findings = deviations only (never N/A/PASS).</p>
+<h3>Issue templates</h3>
+<ul>
+  <li><strong>Pathfinder PR scan</strong> — paste PR URL; checkboxes for reporters + Security; title prefix <code>[Pathfinder PR Scan]</code> or label <code>pathfinder-pr-scan</code>.</li>
+  <li><strong>ADR compliance assessment</strong> — <code>[ADR Assessment]</code> title; tech-spec prose and/or language-tagged fences; sandbox + corpus assess; successful runs publish workshop snapshots.</li>
+</ul>
+<h3>Workshop Pages (analytics surface)</h3>
+<ol class="docs-steps">
+  <li>Settings → Pages → Source: <strong>GitHub Actions</strong> (once). Environment <code>github-pages</code>.</li>
+  <li>CI / ADR Assessment / Corpus Eval / LLM Assist emit <code>workshop-inputs*</code>; <strong>Workshop Publish</strong> merges history on <code>workshop-data</code> and deploys the SPA.</li>
+  <li>Manual refresh: <strong>Actions → Workshop Publish → Run workflow</strong> (optional <code>source_run_id</code> or fixture snapshot).</li>
+  <li>PR-scan dig-in: <a href="#/runs"><code>#/runs?run_id=…</code></a>. Docs live under <code>#/docs/…</code> (this suite). Site never holds secrets.</li>
+</ol>
+<p>Deep dives: <a href="#/docs/github-app">GitHub App</a> · <a href="#/docs/pr-scan">PR URL scan</a> · <a href="#/docs/issue-flow">Issue assessment</a> · <a href="#/docs/workshop-data">Workshop data plane</a> · repo <code>docs/pr-scan.md</code> · <code>docs/github-app-design.md</code> · <code>docs/workshop.md</code>.</p>`,
   },
   {
     id: 'workshop-data',
@@ -120,7 +207,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><strong>Workshop Publish</strong> appends <code>metrics/runs.jsonl</code>, stores <code>snapshots/&lt;run_id&gt;/</code>, updates <code>latest.json</code> + <code>manifest.json</code> on <code>workshop-data</code>.</li>
   <li>Pages serves the SPA shell (content-hashed) and short-cache data files with cache-busting queries.</li>
 </ol>
-<p>Humans write back via Issues / PR templates / <code>workflow_dispatch</code>. The static site never holds secrets. Local: <code>cd workshop &amp;&amp; npm ci &amp;&amp; npm run dev</code>.</p>`,
+<p>Humans write back via Issues / PR templates / <code>workflow_dispatch</code>. The static site never holds secrets. Local: <code>cd workshop &amp;&amp; npm ci &amp;&amp; npm run dev</code>. Setup map: <a href="#/docs/integrations">Integrations</a>.</p>`,
   },
   {
     id: 'verifiers',
@@ -302,12 +389,14 @@ export const DOC_SECTIONS: DocSection[] = [
 <ul>
   <li><strong>CI</strong> — validate, fixtures, analyzer proofs, often <code>workshop-emit</code>.</li>
   <li><strong>ADR Assessment</strong> — issue-triggered sandbox + corpus assess + report comment.</li>
-  <li><strong>Pathfinder PR Scan</strong> — PR URL via issue template → reviewdog + optional Security SARIF (<code>docs/pr-scan.md</code>).</li>
+  <li><strong>Pathfinder PR Scan</strong> — PR URL via issue template or <code>workflow_dispatch</code> → reviewdog + optional Security SARIF.</li>
+  <li><strong>Pathfinder App PR Scan</strong> — <code>pull_request</code> / dispatch; mints App install token → reusable workflow (<a href="#/docs/github-app">GitHub App</a>).</li>
+  <li><strong>Reusable PR Scan</strong> — <code>workflow_call</code> engine for consumers (<code>examples/consumer-pr-scan*.yml</code>).</li>
   <li><strong>Corpus Eval</strong> — labeled harness / extract quality metrics.</li>
   <li><strong>LLM Assist</strong> — batch assist (offline default) + Promptfoo; live gated.</li>
   <li><strong>Workshop Publish</strong> — on <code>workflow_run</code> or <code>workflow_dispatch</code>; merges <code>workshop-data</code> and deploys Pages.</li>
 </ul>
-<p>Dispatch from chrome <strong>Publish</strong> / <strong>Assist</strong>, or from Overview. Bootstrap: Settings → Pages → Source: GitHub Actions. Doc: <code>docs/workshop.md</code>.</p>`,
+<p>Setup map: <a href="#/docs/integrations">Integrations</a>. Bootstrap Pages: Settings → Pages → Source: GitHub Actions. Docs: <code>docs/workshop.md</code> · <code>docs/pr-scan.md</code>.</p>`,
   },
   {
     id: 'workshop-ui',
@@ -467,6 +556,8 @@ export const DOC_SECTIONS: DocSection[] = [
     <tr><td>Assist proposal</td><td>Batch LLM draft; <code>executable=false</code> until human accepts into review.</td></tr>
     <tr><td>Plan manifest</td><td>Deterministic analyzer work description; verified before <code>execute-plan</code>.</td></tr>
     <tr><td>workshop-data</td><td>Git branch storing run snapshots and <code>runs.jsonl</code> for Pages.</td></tr>
+    <tr><td>GitHub App token</td><td>Short-lived installation access token (≤1h) from <code>APP_ID</code>/<code>APP_CLIENT_ID</code> + <code>APP_PRIVATE_KEY</code>; preferred over PAT for PR scan.</td></tr>
+    <tr><td>pathfinder-pr-scan</td><td>Stable reviewdog check name for branch protection.</td></tr>
   </tbody>
 </table>`,
   },

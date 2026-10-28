@@ -19,6 +19,9 @@ The workshop is the GitHub-era **command center** for Pathfinder: polished inter
 | `#/costs` | Assist token/cost rollups (offline=$0) |
 | `#/runs` | History + A/B metric compare |
 | `#/evals` / `#/corpus` / `#/docs` | Promptfoo, harness, docs |
+| `#/docs/github-app` | Create/install Pathfinder GitHub App + secrets |
+| `#/docs/integrations` | Workflows, consumer examples, reviewdog/SARIF, Pages |
+| `#/docs/pr-scan` | PR URL scan (issue + dispatch) |
 
 ## Data flow
 
@@ -66,7 +69,7 @@ See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance ve
 
 ## PR URL scan (reviewdog + Security)
 
-Workshop docs include **PR URL scan** (`#/docs/pr-scan`). Operator guide: [pr-scan.md](pr-scan.md). Issue template: **Pathfinder PR scan (reviewdog + Security)**, or **Actions → Pathfinder PR Scan → Run workflow** (`pr_url` + feedback flags). GitHub App (Actions-native): [github-app-design.md](github-app-design.md) + **Pathfinder App PR Scan** (`APP_ID` / `APP_PRIVATE_KEY`). Secrets matrix: `PATHFINDER_REVIEW_TOKEN` / `PATHFINDER_SARIF_TOKEN` or App secrets. Stable check name: `pathfinder-pr-scan`. Local fixture E2E: `./scripts/pr_scan_local_e2e.sh`.
+Workshop docs include **PR URL scan** (`#/docs/pr-scan`), **GitHub App setup** (`#/docs/github-app`), and an **Integrations map** (`#/docs/integrations`). Operator guides: [pr-scan.md](pr-scan.md), [github-app-design.md](github-app-design.md). Issue templates: **Pathfinder PR scan (reviewdog + Security)** and **ADR compliance assessment**. Host: **Actions → Pathfinder PR Scan** or **Pathfinder App PR Scan**. Consumers: `examples/consumer-pr-scan-app.yml` (App) / `examples/consumer-pr-scan.yml` (PAT). Secrets: `APP_ID` + `APP_PRIVATE_KEY` (preferred) or `PATHFINDER_REVIEW_TOKEN` / `PATHFINDER_SARIF_TOKEN`. Stable check name: `pathfinder-pr-scan`. Local fixture E2E: `./scripts/pr_scan_local_e2e.sh`.
 
 PR-scan summaries deep-link to `#/runs?run_id=<GITHUB_RUN_ID>` and `#/submissions`. After Epic 2 applicability, re-assess with OpenGrep/Checkov via `./scripts/assess_workshop_submissions.sh` (falls back to assess-only applicability when scanners are missing) and republish so ADR Flagging `assessed > 0` where evidence exists (see `testdata/confidence/README.md`).
 

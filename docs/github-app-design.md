@@ -1,6 +1,8 @@
 # GitHub App (Pathfinder PR Scan)
 
-**Status:** Actions-native MVP shipped. Reusable workflow remains the scan engine; the App supplies short-lived installation tokens instead of a long-lived PAT. A custom webhook server is **out of scope** for MVP (optional later).
+**Status:** Actions-native MVP shipped (see `feat(app): Actions-native GitHub App MVP for PR scan` on `main`). Reusable workflow remains the scan engine; the App supplies short-lived installation tokens instead of a long-lived PAT. A custom webhook server is **out of scope** for MVP (optional later).
+
+**Workshop Pages:** operator walkthrough at [`#/docs/github-app`](https://tyler-beach.github.io/pf_2/#/docs/github-app) · integrations map [`#/docs/integrations`](https://tyler-beach.github.io/pf_2/#/docs/integrations) · PR scan [`#/docs/pr-scan`](https://tyler-beach.github.io/pf_2/#/docs/pr-scan).
 
 | Reusable workflow + PAT | GitHub App (this MVP) |
 |---|---|
