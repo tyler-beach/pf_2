@@ -101,7 +101,7 @@ Still supported for PAT consumers: `PATHFINDER_REVIEW_TOKEN`, `PATHFINDER_SARIF_
    - (optional) `APP_CLIENT_ID` = Client ID
 3. Re-run **Actions → Pathfinder App PR Scan** (or open/sync a PR).
 
-Until secrets exist, the host workflow **skips** with a notice (does not fail every PR).
+Until secrets exist, the host workflow logs a notice and **falls back to `GITHUB_TOKEN`** for same-repo scans (does not fail every PR). Install-token auth activates once `APP_ID`/`APP_CLIENT_ID` + `APP_PRIVATE_KEY` are set.
 
 ## Runtime (Actions-native)
 
