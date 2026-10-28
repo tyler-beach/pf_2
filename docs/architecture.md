@@ -94,6 +94,22 @@ Assessments and extracted candidates may carry `submission_kind`:
 
 `EvidenceMode` (`submission` vs `repository`) is orthogonal: it describes evidence completeness semantics. `IssueSurface` flips manual-review / missing-analyzer statuses for GitHub-issue sandboxes. CLI: `--submission-kind=tech_spec|code_snippet` (auto-detects when omitted: fence-only issue → `code_snippet`, ADR-like prose → `tech_spec`, repo assess → `code_snippet`).
 
+### Applicability filter (assess-level)
+
+Before verifier evaluation, assess marks requirements `NOT_APPLICABLE` when they **cannot** apply to the artifact:
+
+| Input | Effect |
+|---|---|
+| `submission_kind` | `applies_to.submission_kinds` (default: analyzer/json/go-import → `code_snippet`; manual-review → both) |
+| `--scope` / PR changed paths | Shared with scanner `--scope`; non-intersecting path prefixes → N/A |
+| Source extensions / path globs | Analyzer rules with no matching submitted/scoped files → N/A |
+| Available analyzers | When scan evidence is present, rules for other analyzers → N/A |
+
+Catalog rows may set explicit `applies_to: {submission_kinds, path_globs, analyzers}`; corpus bindings emit these via `scripts/generate_corpus_bindings.py`. Conservative defaults derive from the verifier when omitted.
+
+- `--assess-all` disables the filter (full corpus CI / binding coverage). IssueSurface semantics still apply.
+- Grill: never upgrade missing evidence to N/A. Submission-mode go-import/json still emit `EVIDENCE_MISSING` when required scope files are absent. Prefer false N/A over false FAIL only when the rule cannot fire.
+
 Current behavior:
 - `PASS`: every evaluated applicable mandatory requirement passed.
 - `FAIL`: at least one requirement has reproducible violating evidence.

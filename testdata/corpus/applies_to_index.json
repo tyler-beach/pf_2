@@ -1,0 +1,33 @@
+{
+  "schema_version": "applies-to-index-v1",
+  "source": "testdata/corpus/requirements.json",
+  "generator": "scripts/generate_corpus_bindings.py",
+  "notes": [
+    "Each corpus requirement embeds applies_to metadata (submission_kinds, path_globs, analyzers).",
+    "Assess derives the same defaults when applies_to is omitted on other catalogs.",
+    "Pass --assess-all to evaluate the full catalog without applicability filtering.",
+    "Share path scope with assess --scope / scanner --scope / PR changed paths."
+  ],
+  "defaults": {
+    "analyzer-rule": {
+      "submission_kinds": ["code_snippet"],
+      "analyzers": ["from verifier.analyzer"],
+      "path_globs": ["from source_extensions / source_path_prefixes"]
+    },
+    "go-import-boundary": {
+      "submission_kinds": ["code_snippet"],
+      "path_globs": ["from source_path_prefixes"]
+    },
+    "json-required-keys": {
+      "submission_kinds": ["code_snippet"],
+      "path_globs": ["from file_path"]
+    },
+    "json-number-range": {
+      "submission_kinds": ["code_snippet"],
+      "path_globs": ["from file_path"]
+    },
+    "manual-review": {
+      "submission_kinds": ["tech_spec", "code_snippet"]
+    }
+  }
+}

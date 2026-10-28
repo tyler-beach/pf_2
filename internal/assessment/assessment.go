@@ -29,11 +29,12 @@ type ADR struct {
 	Requirements []Requirement `json:"requirements"`
 }
 type Requirement struct {
-	ID          string   `json:"id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Severity    string   `json:"severity"`
-	Verifier    Verifier `json:"verifier"`
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Severity    string    `json:"severity"`
+	Verifier    Verifier  `json:"verifier"`
+	AppliesTo   AppliesTo `json:"applies_to,omitempty"`
 }
 type Verifier struct {
 	Type                    string            `json:"type"`
@@ -101,6 +102,13 @@ type AssessmentOptions struct {
 	// SubmissionKind distinguishes English tech-spec / ADR prose from source or
 	// IaC snippets. Empty means unspecified (older callers / artifacts).
 	SubmissionKind SubmissionKind
+	// ScopePrefixes mirrors scanner --scope / PR changed-path prefixes. When set,
+	// requirements whose path scope does not intersect are NOT_APPLICABLE by
+	// applicability (unless AssessAll).
+	ScopePrefixes []string
+	// AssessAll disables the applicability filter so the full catalog is evaluated
+	// (corpus CI / binding coverage). IssueSurface semantics still apply.
+	AssessAll bool
 }
 
 // CorpusCoverage reports interpretation/binding/evidence progress beyond the
@@ -543,6 +551,17 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 		for _, r := range a.Requirements {
 			out.CorpusCoverage.InterpretedRequirements++
 			rr := RequirementResult{ADR: a.ID, ADRVersion: a.Version, RequirementID: r.ID, Title: r.Title, Severity: r.Severity, Evidence: []string{}, Findings: []Finding{}}
+			if applicable, why := CheckApplicability(r, files, options); !applicable {
+				out.CorpusCoverage.BoundRequirements++
+				rr.Status = "NOT_APPLICABLE"
+				rr.Reason = why
+				out.Counts[rr.Status]++
+				out.CorpusCoverage.OutcomeCounts[rr.Status]++
+				out.CorpusCoverage.EvidenceComplete++
+				out.CorpusCoverage.AssessmentComplete++
+				out.Requirements = append(out.Requirements, rr)
+				continue
+			}
 			switch r.Verifier.Type {
 			case "go-import-boundary":
 				out.CorpusCoverage.BoundRequirements++

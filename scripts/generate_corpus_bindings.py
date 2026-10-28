@@ -448,6 +448,9 @@ def main() -> int:
         if bind.get("manual"):
             manual += 1
             verifier = {"type": "manual-review"}
+            applies_to = {
+                "submission_kinds": ["tech_spec", "code_snippet"],
+            }
             description = (
                 f"Corpus obligation from {adr_id}: {row['statement_contains']}. "
                 "Requires human review until an automated verifier is bound."
@@ -455,12 +458,18 @@ def main() -> int:
         else:
             name = bind.get("analyzer", "opengrep")
             analyzer_counts[name] = analyzer_counts.get(name, 0) + 1
+            extensions = list(bind["extensions"])
             verifier = {
                 "type": "analyzer-rule",
                 "analyzer": name,
                 "rule_ids": bind["rule_ids"],
                 "source_path_prefixes": ["."],
-                "source_extensions": bind["extensions"],
+                "source_extensions": extensions,
+            }
+            applies_to = {
+                "submission_kinds": ["code_snippet"],
+                "analyzers": [name],
+                "path_globs": [f"**/*{ext if ext.startswith('.') else '.' + ext}" for ext in extensions],
             }
             tool = "OpenGrep" if name == "opengrep" else "Checkov"
             description = (
@@ -480,6 +489,7 @@ def main() -> int:
                         "description": description,
                         "severity": severity,
                         "verifier": verifier,
+                        "applies_to": applies_to,
                     }
                 ],
             }

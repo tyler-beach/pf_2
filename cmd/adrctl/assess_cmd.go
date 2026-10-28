@@ -46,6 +46,8 @@ func runAssessCtx(ctx context.Context, args []string, repoMode bool) error {
 	analyzerSARIFPath := fs.String("analyzer-sarif", "", "comma-separated raw SARIF paths paired 1:1 with --analyzer-evidence")
 	issueSurface := fs.Bool("issue-surface", false, "GitHub-issue/sandbox semantics: manual-review and missing analyzer evidence become NOT_APPLICABLE")
 	submissionKindFlag := fs.String("submission-kind", "", "input shape: tech_spec (ADR/prose) or code_snippet (source/IaC); empty auto-detects")
+	scope := fs.String("scope", "", "comma-separated repository-relative path prefixes (shared with scanner --scope / PR changed paths); empty = full tree")
+	assessAll := fs.Bool("assess-all", false, "evaluate the full catalog without applicability filtering (corpus CI)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -95,6 +97,8 @@ func runAssessCtx(ctx context.Context, args []string, repoMode bool) error {
 		AnalyzerResults: analyzerResults,
 		IssueSurface:    *issueSurface,
 		SubmissionKind:  assessment.ResolveSubmissionKind(explicitKind, hint),
+		ScopePrefixes:   splitScopePrefixes(*scope),
+		AssessAll:       *assessAll,
 	})
 	if err != nil {
 		return fmt.Errorf("assess: %w", err)

@@ -29,6 +29,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -60,6 +74,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -93,6 +121,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -124,6 +166,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -157,6 +213,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -188,6 +258,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -221,6 +305,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -253,6 +351,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -270,6 +382,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -287,6 +405,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -304,6 +428,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -321,6 +451,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -349,6 +485,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -380,6 +528,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -415,6 +575,19 @@
               ".py",
               ".go",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.java"
             ]
           }
         }
@@ -454,6 +627,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -482,6 +670,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -517,6 +717,19 @@
               ".py",
               ".go",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.java"
             ]
           }
         }
@@ -556,6 +769,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -591,6 +819,19 @@
               ".go",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -608,6 +849,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -625,6 +872,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -642,6 +895,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -659,6 +918,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -700,6 +965,23 @@
               ".jsx",
               ".tsx",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
             ]
           }
         }
@@ -743,6 +1025,23 @@
               ".tsx",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -784,6 +1083,23 @@
               ".jsx",
               ".tsx",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
             ]
           }
         }
@@ -827,6 +1143,23 @@
               ".tsx",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -868,6 +1201,23 @@
               ".jsx",
               ".tsx",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
             ]
           }
         }
@@ -911,6 +1261,23 @@
               ".tsx",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -952,6 +1319,23 @@
               ".jsx",
               ".tsx",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
             ]
           }
         }
@@ -995,6 +1379,23 @@
               ".tsx",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -1012,6 +1413,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1029,6 +1436,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1046,6 +1459,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1063,6 +1482,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1091,6 +1516,17 @@
             "source_extensions": [
               ".py"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
+            ]
           }
         }
       ]
@@ -1108,6 +1544,12 @@
           "severity": "error",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1125,6 +1567,12 @@
           "severity": "error",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1157,6 +1605,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -1184,6 +1646,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -1217,6 +1690,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -1248,6 +1735,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -1281,6 +1782,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -1298,6 +1813,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1315,6 +1836,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1332,6 +1859,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1349,6 +1882,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1381,6 +1920,21 @@
               ".ts",
               ".jsx",
               ".tsx"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx"
             ]
           }
         }
@@ -1415,6 +1969,21 @@
               ".jsx",
               ".tsx"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx"
+            ]
           }
         }
       ]
@@ -1447,6 +2016,21 @@
               ".ts",
               ".jsx",
               ".tsx"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx"
             ]
           }
         }
@@ -1481,6 +2065,21 @@
               ".jsx",
               ".tsx"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx"
+            ]
           }
         }
       ]
@@ -1514,6 +2113,21 @@
               ".jsx",
               ".tsx"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx"
+            ]
           }
         }
       ]
@@ -1543,6 +2157,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -1574,6 +2200,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -1604,6 +2242,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -1621,6 +2271,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1638,6 +2294,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1655,6 +2317,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1672,6 +2340,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1702,6 +2376,20 @@
               ".mod",
               ".txt",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
             ]
           }
         }
@@ -1734,6 +2422,20 @@
               ".txt",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -1764,6 +2466,20 @@
               ".mod",
               ".txt",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
             ]
           }
         }
@@ -1796,6 +2512,20 @@
               ".txt",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -1826,6 +2556,20 @@
               ".mod",
               ".txt",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
             ]
           }
         }
@@ -1858,6 +2602,20 @@
               ".txt",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -1888,6 +2646,20 @@
               ".mod",
               ".txt",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
             ]
           }
         }
@@ -1920,6 +2692,20 @@
               ".txt",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -1937,6 +2723,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1954,6 +2746,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1971,6 +2769,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -1988,6 +2792,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2024,6 +2834,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -2056,6 +2882,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -2087,6 +2927,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -2124,6 +2978,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -2155,6 +3025,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -2188,6 +3072,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -2219,6 +3117,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -2252,6 +3164,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -2269,6 +3195,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2286,6 +3218,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2303,6 +3241,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2320,6 +3264,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2348,6 +3298,17 @@
             "source_extensions": [
               ".py"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
+            ]
           }
         }
       ]
@@ -2375,6 +3336,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -2412,6 +3384,24 @@
               ".txt",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.sh",
+              "**/*.bash",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.mod",
+              "**/*.txt",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -2444,6 +3434,21 @@
               ".jsx",
               ".tsx"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.jsx",
+              "**/*.tsx"
+            ]
           }
         }
       ]
@@ -2471,6 +3476,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -2500,6 +3516,17 @@
             "source_extensions": [
               ".py"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
+            ]
           }
         }
       ]
@@ -2527,6 +3554,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -2556,6 +3594,17 @@
             "source_extensions": [
               ".py"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
+            ]
           }
         }
       ]
@@ -2573,6 +3622,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2590,6 +3645,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2607,6 +3668,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2624,6 +3691,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2659,6 +3732,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -2696,6 +3785,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -2726,6 +3831,19 @@
               ".py",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -2763,6 +3881,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -2799,6 +3933,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -2829,6 +3979,19 @@
               ".py",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -2861,6 +4024,19 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -2892,6 +4068,19 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -2909,6 +4098,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2926,6 +4121,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2943,6 +4144,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2960,6 +4167,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -2996,6 +4209,21 @@
               ".js",
               ".ts",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
             ]
           }
         }
@@ -3034,6 +4262,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -3071,6 +4314,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -3102,6 +4360,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -3140,6 +4412,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -3176,6 +4463,21 @@
               ".js",
               ".ts",
               ".java"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
             ]
           }
         }
@@ -3214,6 +4516,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -3251,6 +4568,21 @@
               ".ts",
               ".java"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts",
+              "**/*.java"
+            ]
           }
         }
       ]
@@ -3268,6 +4600,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3285,6 +4623,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3302,6 +4646,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3319,6 +4669,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3353,6 +4709,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -3389,6 +4761,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3423,6 +4811,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3454,6 +4858,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -3471,6 +4889,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3488,6 +4912,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3519,6 +4949,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -3549,6 +4993,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -3586,6 +5044,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3622,6 +5096,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3651,6 +5141,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -3682,6 +5184,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -3699,6 +5213,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3716,6 +5236,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3752,6 +5278,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3781,6 +5323,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -3816,6 +5370,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3849,6 +5419,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -3885,6 +5471,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3920,6 +5522,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -3937,6 +5555,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3954,6 +5578,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -3987,6 +5617,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -4023,6 +5669,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4057,6 +5719,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -4093,6 +5771,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4119,6 +5813,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -4147,6 +5852,17 @@
             "source_extensions": [
               ".py"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
+            ]
           }
         }
       ]
@@ -4164,6 +5880,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4181,6 +5903,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4216,6 +5944,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4242,6 +5986,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -4276,6 +6031,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -4305,6 +6074,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -4339,6 +6120,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -4372,6 +6167,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -4389,6 +6198,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4406,6 +6221,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4438,6 +6259,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -4472,6 +6307,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -4503,6 +6352,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -4530,6 +6391,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -4562,6 +6434,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -4593,6 +6477,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -4610,6 +6506,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4627,6 +6529,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4654,6 +6562,17 @@
             ],
             "source_extensions": [
               ".py"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py"
             ]
           }
         }
@@ -4685,6 +6604,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -4721,6 +6652,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4756,6 +6703,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4789,6 +6752,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -4825,6 +6804,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4842,6 +6837,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4859,6 +6860,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4892,6 +6899,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -4928,6 +6951,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -4945,6 +6984,12 @@
           "severity": "error",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -4975,6 +7020,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -5007,6 +7066,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -5038,6 +7111,20 @@
               ".js",
               ".ts"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
+            ]
           }
         }
       ]
@@ -5055,6 +7142,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5072,6 +7165,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5089,6 +7188,12 @@
           "severity": "error",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5119,6 +7224,20 @@
               ".go",
               ".js",
               ".ts"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go",
+              "**/*.js",
+              "**/*.ts"
             ]
           }
         }
@@ -5153,6 +7272,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -5185,6 +7320,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -5219,6 +7370,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -5252,6 +7419,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -5269,6 +7452,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5286,6 +7475,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5318,6 +7513,22 @@
               ".yaml",
               ".json",
               ".template"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
             ]
           }
         }
@@ -5352,6 +7563,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -5369,6 +7596,12 @@
           "severity": "error",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5401,6 +7634,22 @@
               ".json",
               ".template"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "checkov"
+            ],
+            "path_globs": [
+              "**/*.tf",
+              "**/*.tfvars",
+              "**/*.yml",
+              "**/*.yaml",
+              "**/*.json",
+              "**/*.template"
+            ]
           }
         }
       ]
@@ -5428,6 +7677,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }
@@ -5457,6 +7718,18 @@
               ".py",
               ".go"
             ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
+            ]
           }
         }
       ]
@@ -5474,6 +7747,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5491,6 +7770,12 @@
           "severity": "warning",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5508,6 +7793,12 @@
           "severity": "error",
           "verifier": {
             "type": "manual-review"
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "tech_spec",
+              "code_snippet"
+            ]
           }
         }
       ]
@@ -5535,6 +7826,18 @@
             "source_extensions": [
               ".py",
               ".go"
+            ]
+          },
+          "applies_to": {
+            "submission_kinds": [
+              "code_snippet"
+            ],
+            "analyzers": [
+              "opengrep"
+            ],
+            "path_globs": [
+              "**/*.py",
+              "**/*.go"
             ]
           }
         }

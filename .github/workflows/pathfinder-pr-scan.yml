@@ -281,6 +281,7 @@ jobs:
             --root "$PR_ROOT" \
             --requirements "$REQUIREMENTS" \
             --issue-surface \
+            --scope "$SCOPE" \
             "${evidence_flags[@]}" \
             --report report.md \
             --json-out assessment.json \
