@@ -35,4 +35,23 @@ Pass/deviation assess oracles after Go or analyzer bumps when assessment default
 
 ## Final pin table
 
-_Filled at end of the ladder._
+| Component | From (audit) | To |
+|-----------|--------------|-----|
+| Go toolchain | 1.23 (`go.mod`) | **1.27** + `toolchain go1.27.3` |
+| goldmark | v1.7.8 | **v1.8.6** |
+| workshop `diff` | 8.0.3 | **9.0.0** |
+| workshop `@types/diff` | 7.0.2 | **removed** (diff ships types) |
+| workshop `marked` | 15.0.7 | **18.1.2** |
+| workshop `typescript` | 5.8.2 | **7.0.2** |
+| workshop `vite` | 6.4.5 | **8.3.5** |
+| workshop `uplot` | 1.6.31 | **1.6.32** |
+| workshop `dompurify` / `diff2html` | 3.4.17 / 3.4.56 | unchanged |
+| Node (CI) | 22 | **24** LTS |
+| actions/checkout | v5.1.0 | **v7.0.1** (`3d3c42e…`) |
+| actions/setup-go | v6.5.0 | **v7.0.0** (`b7ad1da…`) |
+| actions/setup-node | v5.0.0 | **v7.1.0** (`949feb2…`) |
+| Pages / upload-artifact | already current | unchanged |
+| OpenGrep | 1.30.0 / SHA `35779bdd…` | **1.33.0** / SHA `25458127…` (linux x86) |
+| Checkov | 3.2.484 | **3.3.30** (BinarySHA256 computed at install) |
+| reviewdog | v0.20.3 | **v0.21.2** |
+| promptfoo | 0.114.7 | **0.125.1** |

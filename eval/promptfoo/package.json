@@ -8,6 +8,6 @@
     "eval:live": "promptfoo eval -c promptfooconfig.live.yaml --no-cache"
   },
   "devDependencies": {
-    "promptfoo": "0.114.7"
+    "promptfoo": "0.125.1"
   }
 }
