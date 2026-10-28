@@ -10,18 +10,77 @@
   },
   "summary": {
     "adr_touched": 200,
-    "adr_assessed": 0,
+    "adr_assessed": 93,
     "requirement_observations": 200,
-    "assessed_observations": 0,
-    "aligned_observations": 0,
+    "assessed_observations": 93,
+    "aligned_observations": 93,
     "deviated_observations": 0,
-    "excluded_observations": 200,
+    "excluded_observations": 107,
     "fail_observations": 0,
-    "indeterminate_observations": 0
+    "indeterminate_observations": 0,
+    "flag_rate": 0,
+    "flag_rate_ci_low": 9.617854757723384e-19,
+    "flag_rate_ci_high": 0.03966750261173514,
+    "top_flag_rate": 0,
+    "top_flag_rate_adr": "ADR-3001",
+    "most_aligned_adr": "ADR-3001",
+    "most_aligned_count": 1
   },
   "leaderboards": {
-    "most_flagging": [],
-    "least_flagging": [],
+    "most_flagging": [
+      "ADR-3001",
+      "ADR-3002",
+      "ADR-3003",
+      "ADR-3004",
+      "ADR-3005",
+      "ADR-3006",
+      "ADR-3007",
+      "ADR-3008",
+      "ADR-3016",
+      "ADR-3019",
+      "ADR-3025",
+      "ADR-3026",
+      "ADR-3027",
+      "ADR-3028",
+      "ADR-3029",
+      "ADR-3030",
+      "ADR-3031",
+      "ADR-3032",
+      "ADR-3040",
+      "ADR-3042",
+      "ADR-3043",
+      "ADR-3044",
+      "ADR-3049",
+      "ADR-3050",
+      "ADR-3051"
+    ],
+    "least_flagging": [
+      "ADR-3001",
+      "ADR-3002",
+      "ADR-3003",
+      "ADR-3004",
+      "ADR-3005",
+      "ADR-3006",
+      "ADR-3007",
+      "ADR-3008",
+      "ADR-3016",
+      "ADR-3019",
+      "ADR-3025",
+      "ADR-3026",
+      "ADR-3027",
+      "ADR-3028",
+      "ADR-3029",
+      "ADR-3030",
+      "ADR-3031",
+      "ADR-3032",
+      "ADR-3040",
+      "ADR-3042",
+      "ADR-3043",
+      "ADR-3044",
+      "ADR-3049",
+      "ADR-3050",
+      "ADR-3051"
+    ],
     "most_fail": [
       "ADR-3001",
       "ADR-3002",
@@ -85,23 +144,23 @@
       "ADR-3006",
       "ADR-3007",
       "ADR-3008",
-      "ADR-3009",
-      "ADR-3010",
-      "ADR-3011",
-      "ADR-3012",
-      "ADR-3013",
-      "ADR-3014",
-      "ADR-3015",
       "ADR-3016",
-      "ADR-3017",
-      "ADR-3018",
       "ADR-3019",
-      "ADR-3020",
-      "ADR-3021",
-      "ADR-3022",
-      "ADR-3023",
-      "ADR-3024",
-      "ADR-3025"
+      "ADR-3025",
+      "ADR-3026",
+      "ADR-3027",
+      "ADR-3028",
+      "ADR-3029",
+      "ADR-3030",
+      "ADR-3031",
+      "ADR-3032",
+      "ADR-3040",
+      "ADR-3042",
+      "ADR-3043",
+      "ADR-3044",
+      "ADR-3049",
+      "ADR-3050",
+      "ADR-3051"
     ]
   },
   "adrs": [
@@ -109,25 +168,43 @@
       "adr_id": "ADR-3001",
       "title": "A01: Object-level authorization check for resource family 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3001-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Object-level authorization check for resource family 1",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -136,25 +213,43 @@
       "adr_id": "ADR-3002",
       "title": "A01: Function-level authorization gate for admin action 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3002-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Function-level authorization gate for admin action 2",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -163,25 +258,43 @@
       "adr_id": "ADR-3003",
       "title": "A01: Direct object reference token for record slot 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3003-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Direct object reference token for record slot 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -190,25 +303,43 @@
       "adr_id": "ADR-3004",
       "title": "A01: Cross-tenant data path for tenancy boundary 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3004-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Cross-tenant data path for tenancy boundary 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -217,25 +348,43 @@
       "adr_id": "ADR-3005",
       "title": "A01: Mass-assignment field pack for form surface 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3005-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Mass-assignment field pack for form surface 5",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -244,25 +393,43 @@
       "adr_id": "ADR-3006",
       "title": "A01: Elevated privilege cookie for session lane 6",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3006-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Elevated privilege cookie for session lane 6",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -271,25 +438,43 @@
       "adr_id": "ADR-3007",
       "title": "A01: CORS reflection allow-list for origin set 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3007-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: CORS reflection allow-list for origin set 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -298,25 +483,43 @@
       "adr_id": "ADR-3008",
       "title": "A01: Directory traversal path join for file lane 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3008-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A01: Directory traversal path join for file lane 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -514,25 +717,43 @@
       "adr_id": "ADR-3016",
       "title": "A02: Cleartext credential log line for channel 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3016-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A02: Cleartext credential log line for channel 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go, rules.pathfinder.owasp-private-key-literal, rules.pathfinder.owasp-slack-token, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -595,25 +816,43 @@
       "adr_id": "ADR-3019",
       "title": "A02: Hard-coded encryption secret for vault slot 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3019-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A02: Hard-coded encryption secret for vault slot 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go, rules.pathfinder.owasp-private-key-literal, rules.pathfinder.owasp-slack-token, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -757,25 +996,43 @@
       "adr_id": "ADR-3025",
       "title": "A03: Dynamic SQL string concat for query family 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3025-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: Dynamic SQL string concat for query family 1",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -784,25 +1041,43 @@
       "adr_id": "ADR-3026",
       "title": "A03: Shell command string for ops helper 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3026-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: Shell command string for ops helper 2",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -811,25 +1086,43 @@
       "adr_id": "ADR-3027",
       "title": "A03: Eval of untrusted input for script lane 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3027-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: Eval of untrusted input for script lane 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -838,25 +1131,43 @@
       "adr_id": "ADR-3028",
       "title": "A03: LDAP filter concat for directory lookup 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3028-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: LDAP filter concat for directory lookup 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -865,25 +1176,43 @@
       "adr_id": "ADR-3029",
       "title": "A03: OS command passthrough for tool wrapper 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3029-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: OS command passthrough for tool wrapper 5",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -892,25 +1221,43 @@
       "adr_id": "ADR-3030",
       "title": "A03: Template injection render for page family 6",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3030-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: Template injection render for page family 6",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -919,25 +1266,43 @@
       "adr_id": "ADR-3031",
       "title": "A03: NoSQL operator injection for document query 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3031-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: NoSQL operator injection for document query 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -946,25 +1311,43 @@
       "adr_id": "ADR-3032",
       "title": "A03: Xpath concat for XML lookup 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3032-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A03: Xpath concat for XML lookup 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1162,25 +1545,43 @@
       "adr_id": "ADR-3040",
       "title": "A04: Unauthenticated state-changing RPC for action 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3040-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A04: Unauthenticated state-changing RPC for action 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1216,25 +1617,43 @@
       "adr_id": "ADR-3042",
       "title": "A04: Security control deferral for launch train 6",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3042-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A04: Security control deferral for launch train 6",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1243,25 +1662,43 @@
       "adr_id": "ADR-3043",
       "title": "A04: Client-only authorization decision for feature 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3043-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A04: Client-only authorization decision for feature 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1270,25 +1707,43 @@
       "adr_id": "ADR-3044",
       "title": "A04: Shared mutable cache key for tenant 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3044-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A04: Shared mutable cache key for tenant 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1405,25 +1860,43 @@
       "adr_id": "ADR-3049",
       "title": "A05: Debug mode configuration flag for environment 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3049-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A05: Debug mode configuration flag for environment 1",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1432,25 +1905,43 @@
       "adr_id": "ADR-3050",
       "title": "A05: Default admin password setting for appliance 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3050-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A05: Default admin password setting for appliance 2",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1459,25 +1950,43 @@
       "adr_id": "ADR-3051",
       "title": "A05: Unnecessary feature toggle for service profile 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3051-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A05: Unnecessary feature toggle for service profile 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1486,25 +1995,43 @@
       "adr_id": "ADR-3052",
       "title": "A05: Security header required key for HTTP profile 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3052-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A05: Security header required key for HTTP profile 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -1513,25 +2040,43 @@
       "adr_id": "ADR-3053",
       "title": "A05: Error verbosity configuration for API family 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3053-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A05: Error verbosity configuration for API family 5",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2053,25 +2598,43 @@
       "adr_id": "ADR-3073",
       "title": "A07: Password minimum length setting for realm 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3073-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Password minimum length setting for realm 1",
+          "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2080,25 +2643,43 @@
       "adr_id": "ADR-3074",
       "title": "A07: Credential stuffing without bot controls for login 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3074-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Credential stuffing without bot controls for login 2",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2107,25 +2688,43 @@
       "adr_id": "ADR-3075",
       "title": "A07: Session fixation accept for auth flow 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3075-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Session fixation accept for auth flow 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2134,25 +2733,43 @@
       "adr_id": "ADR-3076",
       "title": "A07: MFA required key for privileged role 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3076-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: MFA required key for privileged role 4",
+          "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2161,25 +2778,43 @@
       "adr_id": "ADR-3077",
       "title": "A07: Plaintext password recovery channel for user 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3077-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Plaintext password recovery channel for user 5",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2188,25 +2823,43 @@
       "adr_id": "ADR-3078",
       "title": "A07: Long-lived bearer token for SPA session 6",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3078-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Long-lived bearer token for SPA session 6",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2215,25 +2868,43 @@
       "adr_id": "ADR-3079",
       "title": "A07: Knowledge-based auth questions for recovery 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3079-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Knowledge-based auth questions for recovery 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2242,25 +2913,43 @@
       "adr_id": "ADR-3080",
       "title": "A07: Concurrent session unlimited policy for account 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3080-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Concurrent session unlimited policy for account 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2431,25 +3120,43 @@
       "adr_id": "ADR-3087",
       "title": "A08: CI provenance required key for deploy artifact 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3087-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A08: CI provenance required key for deploy artifact 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-curl-pipe-shell, rules.pathfinder.owasp-git-dependency-npm, rules.pathfinder.owasp-git-dependency-gomod within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2458,25 +3165,43 @@
       "adr_id": "ADR-3088",
       "title": "A08: Untrusted plugin import for extension host 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3088-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A08: Untrusted plugin import for extension host 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-untrusted-plugin-import-python, rules.pathfinder.owasp-untrusted-plugin-require-javascript within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2701,25 +3426,43 @@
       "adr_id": "ADR-3097",
       "title": "A09: Security event logging required key for service 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3097-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Security event logging required key for service 1",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2728,25 +3471,43 @@
       "adr_id": "ADR-3098",
       "title": "A09: Log retention days setting for audit lane 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3098-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Log retention days setting for audit lane 2",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2755,25 +3516,43 @@
       "adr_id": "ADR-3099",
       "title": "A09: Silent auth failure path for login family 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3099-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Silent auth failure path for login family 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2782,25 +3561,43 @@
       "adr_id": "ADR-3100",
       "title": "A09: Alerting webhook configuration for detection 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3100-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Alerting webhook configuration for detection 4",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2809,25 +3606,43 @@
       "adr_id": "ADR-3101",
       "title": "A09: Immutable log sink required key for archive 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3101-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Immutable log sink required key for archive 5",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2836,25 +3651,43 @@
       "adr_id": "ADR-3102",
       "title": "A09: PII-rich debug logging for request 6",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3102-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: PII-rich debug logging for request 6",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2863,25 +3696,43 @@
       "adr_id": "ADR-3103",
       "title": "A09: Log shipping disablement for node pool 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3103-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Log shipping disablement for node pool 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -2890,25 +3741,43 @@
       "adr_id": "ADR-3104",
       "title": "A09: Clock skew ignore for audit stamp 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3104-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Clock skew ignore for audit stamp 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3025,25 +3894,43 @@
       "adr_id": "ADR-3109",
       "title": "A10: User-controlled URL fetch for connector 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3109-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: User-controlled URL fetch for connector 1",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3052,25 +3939,43 @@
       "adr_id": "ADR-3110",
       "title": "A10: Raw HTTP redirect follow for webhook 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3110-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: Raw HTTP redirect follow for webhook 2",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3079,25 +3984,43 @@
       "adr_id": "ADR-3111",
       "title": "A10: Link-local address request for probe 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3111-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: Link-local address request for probe 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3106,25 +4029,43 @@
       "adr_id": "ADR-3112",
       "title": "A10: Egress allow-list configuration for fetcher 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3112-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: Egress allow-list configuration for fetcher 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3133,25 +4074,43 @@
       "adr_id": "ADR-3113",
       "title": "A10: File URL scheme open for import job 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3113-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: File URL scheme open for import job 5",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3160,25 +4119,43 @@
       "adr_id": "ADR-3114",
       "title": "A10: DNS rebinding tolerance for preview fetch 6",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3114-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: DNS rebinding tolerance for preview fetch 6",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3187,25 +4164,43 @@
       "adr_id": "ADR-3115",
       "title": "A10: Internal hostname allow for media proxy 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3115-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: Internal hostname allow for media proxy 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3214,25 +4209,43 @@
       "adr_id": "ADR-3116",
       "title": "A10: Webhook callback to RFC1918 for integration 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3116-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A10: Webhook callback to RFC1918 for integration 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3349,25 +4362,43 @@
       "adr_id": "ADR-3201",
       "title": "AWS iam: Wildcard IAM action star for role 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3201-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Wildcard IAM action star for role 1",
+          "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3376,25 +4407,43 @@
       "adr_id": "ADR-3202",
       "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3202-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
+          "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3403,25 +4452,43 @@
       "adr_id": "ADR-3203",
       "title": "AWS iam: IAM Access Analyzer required key for account 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3203-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: IAM Access Analyzer required key for account 3",
+          "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_63 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3430,25 +4497,43 @@
       "adr_id": "ADR-3204",
       "title": "AWS iam: Inline IAM policy sprawl for role 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3204-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Inline IAM policy sprawl for role 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3511,25 +4596,43 @@
       "adr_id": "ADR-3207",
       "title": "AWS iam: Long-term IAM user access key for workload 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3207-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Long-term IAM user access key for workload 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3538,25 +4641,43 @@
       "adr_id": "ADR-3208",
       "title": "AWS iam: Sts assume-role without external ID for partner 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3208-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Sts assume-role without external ID for partner 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3565,25 +4686,43 @@
       "adr_id": "ADR-3209",
       "title": "AWS encryption: KMS CMK required key for data class 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3209-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS encryption: KMS CMK required key for data class 1",
+          "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3592,25 +4731,43 @@
       "adr_id": "ADR-3210",
       "title": "AWS encryption: TLS in transit required key for service link 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3210-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS encryption: TLS in transit required key for service link 2",
+          "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3727,25 +4884,43 @@
       "adr_id": "ADR-3215",
       "title": "AWS encryption: EBS encryption by default setting for account 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3215-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS encryption: EBS encryption by default setting for account 7",
+          "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3781,25 +4956,43 @@
       "adr_id": "ADR-3217",
       "title": "AWS network: Public subnet placement for data store 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3217-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: Public subnet placement for data store 1",
+          "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3808,25 +5001,43 @@
       "adr_id": "ADR-3218",
       "title": "AWS network: VPC flow logs required key for VPC 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3218-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: VPC flow logs required key for VPC 2",
+          "reason": "No finding matched rule(s) CKV2_AWS_11, CKV_AWS_130, CKV_AWS_24 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3835,25 +5046,43 @@
       "adr_id": "ADR-3219",
       "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3219-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3862,25 +5091,43 @@
       "adr_id": "ADR-3220",
       "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3220-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3943,25 +5190,43 @@
       "adr_id": "ADR-3223",
       "title": "AWS network: Peering without least-privilege routes for VPC 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3223-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: Peering without least-privilege routes for VPC 7",
+          "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3970,25 +5235,43 @@
       "adr_id": "ADR-3224",
       "title": "AWS network: Security group reference cycles for tier 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3224-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: Security group reference cycles for tier 8",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -3997,25 +5280,43 @@
       "adr_id": "ADR-3225",
       "title": "AWS logging: CloudTrail multi-region required key for org 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3225-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS logging: CloudTrail multi-region required key for org 1",
+          "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4024,25 +5325,43 @@
       "adr_id": "ADR-3226",
       "title": "AWS logging: CloudTrail log file validation setting for trail 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3226-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS logging: CloudTrail log file validation setting for trail 2",
+          "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4159,25 +5478,43 @@
       "adr_id": "ADR-3231",
       "title": "AWS logging: Config recorder required key for region 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3231-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS logging: Config recorder required key for region 7",
+          "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4213,25 +5550,43 @@
       "adr_id": "ADR-3233",
       "title": "AWS secrets: Hardcoded AWS access key in source for app 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3233-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS secrets: Hardcoded AWS access key in source for app 1",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4267,25 +5622,43 @@
       "adr_id": "ADR-3235",
       "title": "AWS secrets: Plaintext environment secret for Lambda 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3235-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS secrets: Plaintext environment secret for Lambda 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4294,25 +5667,43 @@
       "adr_id": "ADR-3236",
       "title": "AWS secrets: Shared secret across environments for service 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3236-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS secrets: Shared secret across environments for service 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4375,25 +5766,43 @@
       "adr_id": "ADR-3239",
       "title": "AWS secrets: Secrets in AMI or container layer for image 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3239-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS secrets: Secrets in AMI or container layer for image 7",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4402,25 +5811,43 @@
       "adr_id": "ADR-3240",
       "title": "AWS secrets: Unencrypted EBS snapshot share for account 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3240-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS secrets: Unencrypted EBS snapshot share for account 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4645,25 +6072,43 @@
       "adr_id": "ADR-3249",
       "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3249-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4672,25 +6117,43 @@
       "adr_id": "ADR-3250",
       "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3250-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4699,25 +6162,43 @@
       "adr_id": "ADR-3251",
       "title": "AWS security_groups: Security group description required key for SG 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3251-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Security group description required key for SG 3",
+          "reason": "No finding matched rule(s) CKV_AWS_23, CKV_AWS_24, CKV_AWS_25 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4726,25 +6207,43 @@
       "adr_id": "ADR-3252",
       "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3252-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4807,25 +6306,43 @@
       "adr_id": "ADR-3255",
       "title": "AWS security_groups: Database SG attached to public interface for db 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3255-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Database SG attached to public interface for db 7",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4834,25 +6351,43 @@
       "adr_id": "ADR-3256",
       "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3256-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4888,25 +6423,43 @@
       "adr_id": "ADR-3258",
       "title": "AWS root_mfa: Root access key creation for account 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3258-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS root_mfa: Root access key creation for account 2",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4915,25 +6468,43 @@
       "adr_id": "ADR-3259",
       "title": "AWS root_mfa: Daily root console usage for account 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3259-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS root_mfa: Daily root console usage for account 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -4942,25 +6513,43 @@
       "adr_id": "ADR-3260",
       "title": "AWS root_mfa: Root email without monitored inbox for account 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3260-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS root_mfa: Root email without monitored inbox for account 4",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5050,25 +6639,43 @@
       "adr_id": "ADR-3264",
       "title": "AWS root_mfa: Shared root password manager entry for team 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3264-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS root_mfa: Shared root password manager entry for team 8",
+          "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5077,25 +6684,43 @@
       "adr_id": "ADR-3265",
       "title": "AWS backups: AWS Backup plan required key for workload 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3265-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: AWS Backup plan required key for workload 1",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5104,25 +6729,43 @@
       "adr_id": "ADR-3266",
       "title": "AWS backups: Cross-region backup copy setting for vault 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3266-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Cross-region backup copy setting for vault 2",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5131,25 +6774,43 @@
       "adr_id": "ADR-3267",
       "title": "AWS backups: Backup vault policy principal star for vault 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3267-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Backup vault policy principal star for vault 3",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5158,25 +6819,43 @@
       "adr_id": "ADR-3268",
       "title": "AWS backups: Disabled backup vault lock for vault 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3268-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Disabled backup vault lock for vault 4",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5239,25 +6918,43 @@
       "adr_id": "ADR-3271",
       "title": "AWS backups: RDS automated backup retention setting for database 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3271-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: RDS automated backup retention setting for database 7",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5266,25 +6963,43 @@
       "adr_id": "ADR-3272",
       "title": "AWS backups: Manual snapshot without encryption for database 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3272-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Manual snapshot without encryption for database 8",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]
@@ -5320,25 +7035,43 @@
       "adr_id": "ADR-3274",
       "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-025",
+          "submission_id": "WS-CS-025",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3274-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
+          "reason": "No finding matched rule(s) CKV_AWS_79 within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-025"
       ]

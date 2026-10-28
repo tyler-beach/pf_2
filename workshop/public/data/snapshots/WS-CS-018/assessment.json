@@ -1,15 +1,16 @@
 {
   "schema_version": "1",
-  "evidence_mode": "submission",
+  "evidence_mode": "repository",
   "submission_kind": "code_snippet",
   "engine_version": "0.3.0",
-  "verdict": "INDETERMINATE",
-  "coverage_status": "NONE",
-  "applicable_requirement_count": 0,
-  "source_file_count": 1,
+  "verdict": "PASS",
+  "coverage_status": "PARTIAL",
+  "applicable_requirement_count": 35,
+  "source_file_count": 0,
   "requirement_count": 200,
   "counts": {
-    "NOT_APPLICABLE": 200
+    "NOT_APPLICABLE": 165,
+    "PASS": 35
   },
   "runtime_llm_calls": 0,
   "requirements": [
@@ -20,9 +21,11 @@
       "title": "A01: Object-level authorization check for resource family 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3002",
@@ -31,9 +34,11 @@
       "title": "A01: Function-level authorization gate for admin action 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3003",
@@ -42,9 +47,11 @@
       "title": "A01: Direct object reference token for record slot 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3004",
@@ -53,9 +60,11 @@
       "title": "A01: Cross-tenant data path for tenancy boundary 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3005",
@@ -64,9 +73,11 @@
       "title": "A01: Mass-assignment field pack for form surface 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3006",
@@ -75,9 +86,11 @@
       "title": "A01: Elevated privilege cookie for session lane 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3007",
@@ -86,9 +99,11 @@
       "title": "A01: CORS reflection allow-list for origin set 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3008",
@@ -97,9 +112,11 @@
       "title": "A01: Directory traversal path join for file lane 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3009",
@@ -152,9 +169,11 @@
       "title": "A02: TLS minimum version setting for listener 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3014",
@@ -163,9 +182,11 @@
       "title": "A02: Encryption-at-rest required key for datastore 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3015",
@@ -174,9 +195,11 @@
       "title": "A02: MD5 password digest for credential store 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3016",
@@ -185,9 +208,11 @@
       "title": "A02: Cleartext credential log line for channel 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3017",
@@ -196,9 +221,11 @@
       "title": "A02: HSTS max-age configuration for site family 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3018",
@@ -207,9 +234,11 @@
       "title": "A02: Custom crypto protocol for message lane 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3019",
@@ -218,9 +247,11 @@
       "title": "A02: Hard-coded encryption secret for vault slot 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3020",
@@ -229,9 +260,11 @@
       "title": "A02: SHA1 integrity checksum for artifact lane 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3021",
@@ -284,9 +317,11 @@
       "title": "A03: Dynamic SQL string concat for query family 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3026",
@@ -295,9 +330,11 @@
       "title": "A03: Shell command string for ops helper 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3027",
@@ -306,9 +343,11 @@
       "title": "A03: Eval of untrusted input for script lane 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3028",
@@ -317,9 +356,11 @@
       "title": "A03: LDAP filter concat for directory lookup 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3029",
@@ -328,9 +369,11 @@
       "title": "A03: OS command passthrough for tool wrapper 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3030",
@@ -339,9 +382,11 @@
       "title": "A03: Template injection render for page family 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3031",
@@ -350,9 +395,11 @@
       "title": "A03: NoSQL operator injection for document query 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3032",
@@ -361,9 +408,11 @@
       "title": "A03: Xpath concat for XML lookup 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .jsx, .tsx, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3033",
@@ -416,9 +465,11 @@
       "title": "A04: Rate-limit configuration for public route 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3038",
@@ -449,9 +500,11 @@
       "title": "A04: Unauthenticated state-changing RPC for action 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3041",
@@ -460,9 +513,11 @@
       "title": "A04: Account lockout threshold setting for login family 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3042",
@@ -471,9 +526,11 @@
       "title": "A04: Security control deferral for launch train 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3043",
@@ -482,9 +539,11 @@
       "title": "A04: Client-only authorization decision for feature 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3044",
@@ -493,9 +552,11 @@
       "title": "A04: Shared mutable cache key for tenant 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3045",
@@ -548,9 +609,11 @@
       "title": "A05: Debug mode configuration flag for environment 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts, .jsx, .tsx."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3050",
@@ -559,9 +622,11 @@
       "title": "A05: Default admin password setting for appliance 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts, .jsx, .tsx."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3051",
@@ -570,9 +635,11 @@
       "title": "A05: Unnecessary feature toggle for service profile 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts, .jsx, .tsx."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3052",
@@ -581,9 +648,11 @@
       "title": "A05: Security header required key for HTTP profile 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts, .jsx, .tsx."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3053",
@@ -592,9 +661,11 @@
       "title": "A05: Error verbosity configuration for API family 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts, .jsx, .tsx."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3054",
@@ -603,9 +674,11 @@
       "title": "A05: Directory listing enablement for static host 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3055",
@@ -614,9 +687,11 @@
       "title": "A05: Wildcard CORS credential mode for API 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3056",
@@ -625,9 +700,11 @@
       "title": "A05: Cloud metadata exposure path for workload 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3057",
@@ -680,9 +757,11 @@
       "title": "A06: Dependency allow-list configuration for runtime 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3062",
@@ -691,9 +770,11 @@
       "title": "A06: Unpinned transitive import for module set 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3063",
@@ -702,9 +783,11 @@
       "title": "A06: CVE remediation SLA setting for severity 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3064",
@@ -713,9 +796,11 @@
       "title": "A06: End-of-life runtime package for service 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3065",
@@ -724,9 +809,11 @@
       "title": "A06: SBOM required key for release artifact 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3066",
@@ -735,9 +822,11 @@
       "title": "A06: Unmaintained library retention for legacy app 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3067",
@@ -746,9 +835,11 @@
       "title": "A06: Direct Git dependency URL for build 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3068",
@@ -757,9 +848,11 @@
       "title": "A06: Unsigned package install for agent 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3069",
@@ -810,11 +903,13 @@
       "adr_version": 1,
       "requirement_id": "REQ-3073-01",
       "title": "A07: Password minimum length setting for realm 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3074",
@@ -823,9 +918,11 @@
       "title": "A07: Credential stuffing without bot controls for login 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3075",
@@ -834,20 +931,24 @@
       "title": "A07: Session fixation accept for auth flow 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3076",
       "adr_version": 1,
       "requirement_id": "REQ-3076-01",
       "title": "A07: MFA required key for privileged role 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3077",
@@ -856,9 +957,11 @@
       "title": "A07: Plaintext password recovery channel for user 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3078",
@@ -867,9 +970,11 @@
       "title": "A07: Long-lived bearer token for SPA session 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3079",
@@ -878,9 +983,11 @@
       "title": "A07: Knowledge-based auth questions for recovery 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3080",
@@ -889,9 +996,11 @@
       "title": "A07: Concurrent session unlimited policy for account 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3081",
@@ -944,9 +1053,11 @@
       "title": "A08: Unsigned update payload for client 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3086",
@@ -955,20 +1066,24 @@
       "title": "A08: Insecure deserialization gadget for payload 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3087",
       "adr_version": 1,
       "requirement_id": "REQ-3087-01",
       "title": "A08: CI provenance required key for deploy artifact 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-curl-pipe-shell, rules.pathfinder.owasp-git-dependency-npm, rules.pathfinder.owasp-git-dependency-gomod within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3088",
@@ -977,9 +1092,11 @@
       "title": "A08: Untrusted plugin import for extension host 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts, .jsx, .tsx."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3089",
@@ -988,9 +1105,11 @@
       "title": "A08: Auto-execute macro content for document pipe 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3090",
@@ -999,9 +1118,11 @@
       "title": "A08: CDN integrity skip for script include 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3091",
@@ -1010,9 +1131,11 @@
       "title": "A08: Mutable tag deploy reference for release 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3092",
@@ -1021,9 +1144,11 @@
       "title": "A08: Webhook without signature check for integration 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3093",
@@ -1074,22 +1199,26 @@
       "adr_version": 1,
       "requirement_id": "REQ-3097-01",
       "title": "A09: Security event logging required key for service 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3098",
       "adr_version": 1,
       "requirement_id": "REQ-3098-01",
       "title": "A09: Log retention days setting for audit lane 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3099",
@@ -1098,31 +1227,37 @@
       "title": "A09: Silent auth failure path for login family 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3100",
       "adr_version": 1,
       "requirement_id": "REQ-3100-01",
       "title": "A09: Alerting webhook configuration for detection 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3101",
       "adr_version": 1,
       "requirement_id": "REQ-3101-01",
       "title": "A09: Immutable log sink required key for archive 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3102",
@@ -1131,9 +1266,11 @@
       "title": "A09: PII-rich debug logging for request 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3103",
@@ -1142,9 +1279,11 @@
       "title": "A09: Log shipping disablement for node pool 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3104",
@@ -1153,9 +1292,11 @@
       "title": "A09: Clock skew ignore for audit stamp 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3105",
@@ -1208,9 +1349,11 @@
       "title": "A10: User-controlled URL fetch for connector 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3110",
@@ -1219,9 +1362,11 @@
       "title": "A10: Raw HTTP redirect follow for webhook 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3111",
@@ -1230,9 +1375,11 @@
       "title": "A10: Link-local address request for probe 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3112",
@@ -1241,9 +1388,11 @@
       "title": "A10: Egress allow-list configuration for fetcher 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3113",
@@ -1252,9 +1401,11 @@
       "title": "A10: File URL scheme open for import job 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3114",
@@ -1263,9 +1414,11 @@
       "title": "A10: DNS rebinding tolerance for preview fetch 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3115",
@@ -1274,9 +1427,11 @@
       "title": "A10: Internal hostname allow for media proxy 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3116",
@@ -1285,9 +1440,11 @@
       "title": "A10: Webhook callback to RFC1918 for integration 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts, .java."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3117",
@@ -1338,33 +1495,39 @@
       "adr_version": 1,
       "requirement_id": "REQ-3201-01",
       "title": "AWS iam: Wildcard IAM action star for role 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3202",
       "adr_version": 1,
       "requirement_id": "REQ-3202-01",
       "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3203",
       "adr_version": 1,
       "requirement_id": "REQ-3203-01",
       "title": "AWS iam: IAM Access Analyzer required key for account 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_63 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3204",
@@ -1373,9 +1536,11 @@
       "title": "AWS iam: Inline IAM policy sprawl for role 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3205",
@@ -1406,9 +1571,11 @@
       "title": "AWS iam: Long-term IAM user access key for workload 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3208",
@@ -1417,31 +1584,37 @@
       "title": "AWS iam: Sts assume-role without external ID for partner 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3209",
       "adr_version": 1,
       "requirement_id": "REQ-3209-01",
       "title": "AWS encryption: KMS CMK required key for data class 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3210",
       "adr_version": 1,
       "requirement_id": "REQ-3210-01",
       "title": "AWS encryption: TLS in transit required key for service link 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3211",
@@ -1450,9 +1623,11 @@
       "title": "AWS encryption: SSE-S3 demotion for regulated bucket 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3212",
@@ -1461,9 +1636,11 @@
       "title": "AWS encryption: Plaintext Secrets Manager put for secret 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3213",
@@ -1492,11 +1669,13 @@
       "adr_version": 1,
       "requirement_id": "REQ-3215-01",
       "title": "AWS encryption: EBS encryption by default setting for account 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3216",
@@ -1505,53 +1684,63 @@
       "title": "AWS encryption: Disabled RDS encryption flag for database 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3217",
       "adr_version": 1,
       "requirement_id": "REQ-3217-01",
       "title": "AWS network: Public subnet placement for data store 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3218",
       "adr_version": 1,
       "requirement_id": "REQ-3218-01",
       "title": "AWS network: VPC flow logs required key for VPC 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV2_AWS_11, CKV_AWS_130, CKV_AWS_24 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3219",
       "adr_version": 1,
       "requirement_id": "REQ-3219-01",
       "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3220",
       "adr_version": 1,
       "requirement_id": "REQ-3220-01",
       "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3221",
@@ -1580,44 +1769,52 @@
       "adr_version": 1,
       "requirement_id": "REQ-3223-01",
       "title": "AWS network: Peering without least-privilege routes for VPC 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3224",
       "adr_version": 1,
       "requirement_id": "REQ-3224-01",
       "title": "AWS network: Security group reference cycles for tier 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3225",
       "adr_version": 1,
       "requirement_id": "REQ-3225-01",
       "title": "AWS logging: CloudTrail multi-region required key for org 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3226",
       "adr_version": 1,
       "requirement_id": "REQ-3226-01",
       "title": "AWS logging: CloudTrail log file validation setting for trail 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3227",
@@ -1626,9 +1823,11 @@
       "title": "AWS logging: CloudTrail stop-logging permission for role 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3228",
@@ -1637,9 +1836,11 @@
       "title": "AWS logging: S3 access logging disablement for trail bucket 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3229",
@@ -1668,11 +1869,13 @@
       "adr_version": 1,
       "requirement_id": "REQ-3231-01",
       "title": "AWS logging: Config recorder required key for region 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3232",
@@ -1681,9 +1884,11 @@
       "title": "AWS logging: CloudWatch log group without retention for app 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3233",
@@ -1692,9 +1897,11 @@
       "title": "AWS secrets: Hardcoded AWS access key in source for app 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3234",
@@ -1703,9 +1910,11 @@
       "title": "AWS secrets: Secrets Manager rotation required key for secret 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3235",
@@ -1714,9 +1923,11 @@
       "title": "AWS secrets: Plaintext environment secret for Lambda 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3236",
@@ -1725,9 +1936,11 @@
       "title": "AWS secrets: Shared secret across environments for service 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3237",
@@ -1758,9 +1971,11 @@
       "title": "AWS secrets: Secrets in AMI or container layer for image 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3240",
@@ -1769,9 +1984,11 @@
       "title": "AWS secrets: Unencrypted EBS snapshot share for account 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3241",
@@ -1780,9 +1997,11 @@
       "title": "AWS s3: Public ACL grant for bucket 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3242",
@@ -1791,9 +2010,11 @@
       "title": "AWS s3: S3 Block Public Access required key for account 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3243",
@@ -1802,9 +2023,11 @@
       "title": "AWS s3: Public-read canned ACL in SDK put for object 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3244",
@@ -1813,9 +2036,11 @@
       "title": "AWS s3: Bucket policy principal star for bucket 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3245",
@@ -1846,9 +2071,11 @@
       "title": "AWS s3: S3 versioning required key for backup bucket 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3248",
@@ -1857,53 +2084,63 @@
       "title": "AWS s3: Cross-account get without condition for bucket 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3249",
       "adr_version": 1,
       "requirement_id": "REQ-3249-01",
       "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3250",
       "adr_version": 1,
       "requirement_id": "REQ-3250-01",
       "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3251",
       "adr_version": 1,
       "requirement_id": "REQ-3251-01",
       "title": "AWS security_groups: Security group description required key for SG 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_23, CKV_AWS_24, CKV_AWS_25 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3252",
       "adr_version": 1,
       "requirement_id": "REQ-3252-01",
       "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3253",
@@ -1932,22 +2169,26 @@
       "adr_version": 1,
       "requirement_id": "REQ-3255-01",
       "title": "AWS security_groups: Database SG attached to public interface for db 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3256",
       "adr_version": 1,
       "requirement_id": "REQ-3256-01",
       "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3257",
@@ -1967,9 +2208,11 @@
       "title": "AWS root_mfa: Root access key creation for account 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3259",
@@ -1978,9 +2221,11 @@
       "title": "AWS root_mfa: Daily root console usage for account 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3260",
@@ -1989,9 +2234,11 @@
       "title": "AWS root_mfa: Root email without monitored inbox for account 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3261",
@@ -2033,53 +2280,63 @@
       "title": "AWS root_mfa: Shared root password manager entry for team 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go, .js, .ts."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3265",
       "adr_version": 1,
       "requirement_id": "REQ-3265-01",
       "title": "AWS backups: AWS Backup plan required key for workload 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3266",
       "adr_version": 1,
       "requirement_id": "REQ-3266-01",
       "title": "AWS backups: Cross-region backup copy setting for vault 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3267",
       "adr_version": 1,
       "requirement_id": "REQ-3267-01",
       "title": "AWS backups: Backup vault policy principal star for vault 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3268",
       "adr_version": 1,
       "requirement_id": "REQ-3268-01",
       "title": "AWS backups: Disabled backup vault lock for vault 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3269",
@@ -2108,22 +2365,26 @@
       "adr_version": 1,
       "requirement_id": "REQ-3271-01",
       "title": "AWS backups: RDS automated backup retention setting for database 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3272",
       "adr_version": 1,
       "requirement_id": "REQ-3272-01",
       "title": "AWS backups: Manual snapshot without encryption for database 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3273",
@@ -2141,11 +2402,13 @@
       "adr_version": 1,
       "requirement_id": "REQ-3274-01",
       "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633; 2 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_79 within 2 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3275",
@@ -2154,9 +2417,11 @@
       "title": "AWS tagging_compute: Admin IAM instance profile for web ASG 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3276",
@@ -2165,9 +2430,11 @@
       "title": "AWS tagging_compute: Public EC2 with elastic IP for app 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3277",
@@ -2209,9 +2476,513 @@
       "title": "AWS tagging_compute: User-data containing secrets for launch template 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .py, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
+    }
+  ],
+  "analyzer_results": [
+    {
+      "schema_version": "1",
+      "sarif_version": "2.1.0",
+      "status": "COMPLETE",
+      "analyzers": [
+        {
+          "name": "opengrep",
+          "version": "1.30.0"
+        }
+      ],
+      "configuration_path": "rules/pathfinder-security.yml",
+      "configuration_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "binary_sha256": "0f5bc3dec09d995c61331a4017b856ede508f90d95b018d95f1dc6166be89fdd",
+      "rule_set_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "input_sha256": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+      "raw_output_sha256": "4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826",
+      "scanned_paths": [
+        "rules/checkov.yml",
+        "snippet_01.yml"
+      ],
+      "findings": []
+    },
+    {
+      "schema_version": "1",
+      "sarif_version": "2.1.0",
+      "status": "COMPLETE",
+      "analyzers": [
+        {
+          "name": "checkov",
+          "version": "3.2.484"
+        }
+      ],
+      "configuration_path": "rules/checkov.yml",
+      "configuration_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "binary_sha256": "312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893",
+      "rule_set_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "input_sha256": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+      "raw_output_sha256": "aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+      "scanned_paths": [
+        "rules/pathfinder-security.yml",
+        "snippet_01.yml"
+      ],
+      "findings": [
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_21",
+          "message": "The default namespace should not be used",
+          "path": "snippet_01.yml",
+          "start_line": 1,
+          "level": "error",
+          "fingerprint": "490b82ceb78914fd455c2a549f4a13d423405745904d1dffcb5ad7fbc3bede87"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_21",
+          "message": "The default namespace should not be used",
+          "path": "snippet_01.yml",
+          "start_line": 17,
+          "level": "error",
+          "fingerprint": "7ccf4de5ae3e1c403266b7bb23a5bbe94cf7988837e1b89c2d0b9033fa272369"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_21",
+          "message": "The default namespace should not be used",
+          "path": "snippet_01.yml",
+          "start_line": 40,
+          "level": "error",
+          "fingerprint": "51852efeb2af27c82f00427661f05f711b12ba38c40f89b622a3a0929422134f"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_23",
+          "message": "Minimize the admission of root containers",
+          "path": "snippet_01.yml",
+          "start_line": 40,
+          "level": "error",
+          "fingerprint": "a1ec84ef98c45f828b638b8d132830166f6c012a6ecaead170cef3142ea61cfc"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_29",
+          "message": "Apply security context to your pods and containers",
+          "path": "snippet_01.yml",
+          "start_line": 40,
+          "level": "error",
+          "fingerprint": "e630ef77d7264678073f8ce0e8bba8198cc215d7dfc31a04202fe3f38447fc84"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_31",
+          "message": "Ensure that the seccomp profile is set to docker/default or runtime/default",
+          "path": "snippet_01.yml",
+          "start_line": 40,
+          "level": "error",
+          "fingerprint": "c8d28abc518da835f26813f6388fd88390993f83ba6aa3b3acc8281a52a3cb85"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_38",
+          "message": "Ensure that Service Account Tokens are only mounted where necessary",
+          "path": "snippet_01.yml",
+          "start_line": 40,
+          "level": "error",
+          "fingerprint": "9b7e443eded490d4c352a9c2fac5a72b3e64457eef02715a5ca1d59b2a6a1d66"
+        },
+        {
+          "analyzer": "checkov",
+          "analyzer_version": "3.2.484",
+          "rule_id": "CKV_K8S_40",
+          "message": "Containers should run as a high UID to avoid host conflict",
+          "path": "snippet_01.yml",
+          "start_line": 40,
+          "level": "error",
+          "fingerprint": "9289f840581129749e1e84f471fd2e8a6fff34a1c779480c8b459d7335beffd5"
+        }
+      ]
+    }
+  ],
+  "evidence_bundles": [
+    {
+      "schema_version": "1.0",
+      "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+      "records": [],
+      "scan_completeness": "COMPLETE",
+      "producers": [
+        {
+          "name": "opengrep",
+          "version": "1.30.0"
+        }
+      ],
+      "input_sha256": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+      "raw_output_sha256": "4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826",
+      "configuration_path": "rules/pathfinder-security.yml",
+      "configuration_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "binary_sha256": "0f5bc3dec09d995c61331a4017b856ede508f90d95b018d95f1dc6166be89fdd",
+      "rule_set_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "scanned_paths": [
+        "rules/checkov.yml",
+        "snippet_01.yml"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+      "records": [
+        {
+          "schema_version": "1.0",
+          "evidence_id": "490b82ceb78914fd455c2a549f4a13d423405745904d1dffcb5ad7fbc3bede87",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_21",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 1
+          },
+          "finding": {
+            "id": "490b82ceb78914fd455c2a549f4a13d423405745904d1dffcb5ad7fbc3bede87",
+            "rule_id": "CKV_K8S_21",
+            "severity": "error",
+            "message": "The default namespace should not be used"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "51852efeb2af27c82f00427661f05f711b12ba38c40f89b622a3a0929422134f",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_21",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 40
+          },
+          "finding": {
+            "id": "51852efeb2af27c82f00427661f05f711b12ba38c40f89b622a3a0929422134f",
+            "rule_id": "CKV_K8S_21",
+            "severity": "error",
+            "message": "The default namespace should not be used"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "7ccf4de5ae3e1c403266b7bb23a5bbe94cf7988837e1b89c2d0b9033fa272369",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_21",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 17
+          },
+          "finding": {
+            "id": "7ccf4de5ae3e1c403266b7bb23a5bbe94cf7988837e1b89c2d0b9033fa272369",
+            "rule_id": "CKV_K8S_21",
+            "severity": "error",
+            "message": "The default namespace should not be used"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "9289f840581129749e1e84f471fd2e8a6fff34a1c779480c8b459d7335beffd5",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_40",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 40
+          },
+          "finding": {
+            "id": "9289f840581129749e1e84f471fd2e8a6fff34a1c779480c8b459d7335beffd5",
+            "rule_id": "CKV_K8S_40",
+            "severity": "error",
+            "message": "Containers should run as a high UID to avoid host conflict"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "9b7e443eded490d4c352a9c2fac5a72b3e64457eef02715a5ca1d59b2a6a1d66",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_38",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 40
+          },
+          "finding": {
+            "id": "9b7e443eded490d4c352a9c2fac5a72b3e64457eef02715a5ca1d59b2a6a1d66",
+            "rule_id": "CKV_K8S_38",
+            "severity": "error",
+            "message": "Ensure that Service Account Tokens are only mounted where necessary"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "a1ec84ef98c45f828b638b8d132830166f6c012a6ecaead170cef3142ea61cfc",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_23",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 40
+          },
+          "finding": {
+            "id": "a1ec84ef98c45f828b638b8d132830166f6c012a6ecaead170cef3142ea61cfc",
+            "rule_id": "CKV_K8S_23",
+            "severity": "error",
+            "message": "Minimize the admission of root containers"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "c8d28abc518da835f26813f6388fd88390993f83ba6aa3b3acc8281a52a3cb85",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_31",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 40
+          },
+          "finding": {
+            "id": "c8d28abc518da835f26813f6388fd88390993f83ba6aa3b3acc8281a52a3cb85",
+            "rule_id": "CKV_K8S_31",
+            "severity": "error",
+            "message": "Ensure that the seccomp profile is set to docker/default or runtime/default"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        },
+        {
+          "schema_version": "1.0",
+          "evidence_id": "e630ef77d7264678073f8ce0e8bba8198cc215d7dfc31a04202fe3f38447fc84",
+          "revision": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+          "analysis_run_id": "scan-2",
+          "producer": {
+            "analyzer": "checkov",
+            "version": "3.2.484",
+            "adapter_version": "opengrep-sarif",
+            "rule_id": "CKV_K8S_29",
+            "ruleset_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "config_digest": "sha256:99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+            "binary_digest": "sha256:312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893"
+          },
+          "kind": "scanner_finding",
+          "artifact": {
+            "path": "snippet_01.yml",
+            "start_line": 40
+          },
+          "finding": {
+            "id": "e630ef77d7264678073f8ce0e8bba8198cc215d7dfc31a04202fe3f38447fc84",
+            "rule_id": "CKV_K8S_29",
+            "severity": "error",
+            "message": "Apply security context to your pods and containers"
+          },
+          "status": "observed",
+          "provenance": {
+            "raw_artifact_sha256": "sha256:aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+            "extraction_method": "sarif-normalize"
+          },
+          "scope": {
+            "declared": [
+              "."
+            ],
+            "analyzed_files": 2,
+            "scanned_paths": [
+              "rules/pathfinder-security.yml",
+              "snippet_01.yml"
+            ]
+          }
+        }
+      ],
+      "scan_completeness": "COMPLETE",
+      "producers": [
+        {
+          "name": "checkov",
+          "version": "3.2.484"
+        }
+      ],
+      "input_sha256": "a4edb496cc1a0062d15daa41e4ce8391309cd8f7e46336c6dd735baf5db525fd",
+      "raw_output_sha256": "aff91ab95f8eed9efd3efaa20c6aff6a5c3ae5abd0c8a68676baf719ca9f8633",
+      "configuration_path": "rules/checkov.yml",
+      "configuration_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "binary_sha256": "312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893",
+      "rule_set_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "scanned_paths": [
+        "rules/pathfinder-security.yml",
+        "snippet_01.yml"
+      ]
     }
   ],
   "corpus_coverage": {
@@ -2222,11 +2993,9 @@
     "evidence_complete": 200,
     "assessment_complete": 200,
     "outcome_counts": {
-      "NOT_APPLICABLE": 200
+      "NOT_APPLICABLE": 165,
+      "PASS": 35
     }
   },
-  "source_snapshot_sha256": "a68cb02adcbfdc9f58ee19711498b688389b3a0d4cb1a59ab4ea321942485b46",
-  "unassessed_source_files": [
-    "zookeeper.yaml (yaml)"
-  ]
+  "source_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }

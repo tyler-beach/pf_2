@@ -2,6 +2,11 @@
 # Emit one calibrated workshop snapshot per submission (unique runs), then merge
 # into the workshop Pages data dir. Reuses testdata/workshop-submissions/results.
 #
+# Prefer refreshing assessments first with applicable-evidence + scanners:
+#   ./scripts/assess_workshop_submissions.sh   # OpenGrep/Checkov when OPENGREP_BIN/CHECKOV_BIN set
+# then:
+#   scripts/emit_unique_workshop_runs.sh [--wipe] [--data-dir workshop/public/data]
+#
 # Usage:
 #   scripts/emit_unique_workshop_runs.sh [--wipe] [--data-dir workshop/public/data]
 set -euo pipefail

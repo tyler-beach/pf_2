@@ -1,16 +1,219 @@
 {
   "schema_version": "workshop-submission-results-v1",
-  "run_id": "workshop-submissions-20261028T021536Z",
-  "timestamp": "2026-10-28T02:15:43.447092+00:00",
+  "run_id": "workshop-submissions-20261028T123446Z",
+  "timestamp": "2026-10-28T12:40:49.742622+00:00",
+  "scanner": {
+    "scanners_ready": true,
+    "with_analyzer_evidence": 23,
+    "assess_only_applicability": 27,
+    "sandbox_snippets_total": 29,
+    "notes": [
+      {
+        "id": "WS-TS-001",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-002",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-003",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-004",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-005",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-006",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-007",
+        "mode": "assess_only",
+        "why": [
+          "tech_spec_analyzer_na"
+        ]
+      },
+      {
+        "id": "WS-TS-008",
+        "mode": "assess_only",
+        "why": [
+          "tech_spec_analyzer_na"
+        ]
+      },
+      {
+        "id": "WS-TS-009",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-010",
+        "mode": "assess_only",
+        "why": [
+          "tech_spec_analyzer_na"
+        ]
+      },
+      {
+        "id": "WS-TS-011",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-012",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-013",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-014",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-015",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-016",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-017",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-018",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-019",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-020",
+        "mode": "assess_only",
+        "why": [
+          "tech_spec_analyzer_na"
+        ]
+      },
+      {
+        "id": "WS-TS-021",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-022",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-023",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-024",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-TS-025",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "id": "WS-CS-008",
+        "mode": "assess_only",
+        "why": [
+          "opengrep_incomplete"
+        ]
+      },
+      {
+        "id": "WS-CS-021",
+        "mode": "assess_only",
+        "why": [
+          "no_sandbox_snippets"
+        ]
+      },
+      {
+        "global": "Submissions without extractable fences (typical tech_spec prose) stay assess-only; analyzer rules for missing extensions remain NOT_APPLICABLE by applicability."
+      }
+    ]
+  },
   "counts": {
     "total": 50,
     "tech_spec": 25,
-    "code_snippet": 25
+    "code_snippet": 25,
+    "with_analyzer_evidence": 23,
+    "assess_only_applicability": 27,
+    "applicable_gt_zero": 23
   },
   "verdicts": {
-    "PASS": 0,
+    "PASS": 23,
     "FAIL": 0,
-    "INDETERMINATE": 50
+    "INDETERMINATE": 27
   },
   "submissions": [
     {
@@ -28,7 +231,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-001/assessment.json"
     },
     {
@@ -46,7 +252,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-002/assessment.json"
     },
     {
@@ -64,7 +273,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-003/assessment.json"
     },
     {
@@ -82,7 +294,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-004/assessment.json"
     },
     {
@@ -100,7 +315,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-005/assessment.json"
     },
     {
@@ -118,7 +336,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-006/assessment.json"
     },
     {
@@ -136,7 +357,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-007/assessment.json"
     },
     {
@@ -154,7 +378,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-008/assessment.json"
     },
     {
@@ -172,7 +399,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-009/assessment.json"
     },
     {
@@ -190,7 +420,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 2,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-010/assessment.json"
     },
     {
@@ -209,7 +442,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-011/assessment.json"
     },
     {
@@ -227,7 +463,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-012/assessment.json"
     },
     {
@@ -245,7 +484,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-013/assessment.json"
     },
     {
@@ -264,7 +506,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-014/assessment.json"
     },
     {
@@ -283,7 +528,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-015/assessment.json"
     },
     {
@@ -301,7 +549,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-016/assessment.json"
     },
     {
@@ -320,7 +571,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-017/assessment.json"
     },
     {
@@ -338,7 +592,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-018/assessment.json"
     },
     {
@@ -356,7 +613,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-019/assessment.json"
     },
     {
@@ -374,7 +634,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-020/assessment.json"
     },
     {
@@ -392,7 +655,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-021/assessment.json"
     },
     {
@@ -410,7 +676,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-022/assessment.json"
     },
     {
@@ -429,7 +698,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-023/assessment.json"
     },
     {
@@ -447,7 +719,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-024/assessment.json"
     },
     {
@@ -465,7 +740,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-TS-025/assessment.json"
     },
     {
@@ -481,10 +759,13 @@
       "source_url": "https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/examples/complete/main.tf",
       "repo": "terraform-aws-modules/terraform-aws-security-group",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-001/assessment.json"
     },
     {
@@ -501,10 +782,13 @@
       "source_url": "https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/modules/iam-policy/main.tf",
       "repo": "terraform-aws-modules/terraform-aws-iam",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-002/assessment.json"
     },
     {
@@ -520,10 +804,13 @@
       "source_url": "https://github.com/terraform-aws-modules/terraform-aws-s3-bucket/blob/master/main.tf",
       "repo": "terraform-aws-modules/terraform-aws-s3-bucket",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-003/assessment.json"
     },
     {
@@ -538,10 +825,13 @@
       "source_url": "https://github.com/nodejs/docker-node/blob/main/22/bookworm/Dockerfile",
       "repo": "nodejs/docker-node",
       "license": "MIT",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-004/assessment.json"
     },
     {
@@ -556,10 +846,13 @@
       "source_url": "https://github.com/actions/starter-workflows/blob/main/ci/go.yml",
       "repo": "actions/starter-workflows",
       "license": "MIT",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-005/assessment.json"
     },
     {
@@ -575,10 +868,13 @@
       "source_url": "https://github.com/golang-jwt/jwt/blob/main/parser.go",
       "repo": "golang-jwt/jwt",
       "license": "MIT",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 77,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-006/assessment.json"
     },
     {
@@ -594,10 +890,13 @@
       "source_url": "https://github.com/encode/django-rest-framework/blob/master/rest_framework/authentication.py",
       "repo": "encode/django-rest-framework",
       "license": "BSD-3-Clause",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 126,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-007/assessment.json"
     },
     {
@@ -616,7 +915,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-008/assessment.json"
     },
     {
@@ -632,10 +934,13 @@
       "source_url": "https://github.com/go-chi/jwtauth/blob/master/jwtauth.go",
       "repo": "go-chi/jwtauth",
       "license": "MIT",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 77,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-009/assessment.json"
     },
     {
@@ -651,10 +956,13 @@
       "source_url": "https://github.com/falcosecurity/rules/blob/main/rules/falco_rules.yaml",
       "repo": "falcosecurity/rules",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-010/assessment.json"
     },
     {
@@ -669,10 +977,13 @@
       "source_url": "https://github.com/docker/awesome-compose/blob/master/nginx-golang-mysql/compose.yaml",
       "repo": "docker/awesome-compose",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-011/assessment.json"
     },
     {
@@ -688,10 +999,13 @@
       "source_url": "https://github.com/golang/oauth2/blob/master/oauth2.go",
       "repo": "golang/oauth2",
       "license": "BSD-3-Clause",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 77,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-012/assessment.json"
     },
     {
@@ -707,10 +1021,13 @@
       "source_url": "https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus.yml",
       "repo": "prometheus/prometheus",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-013/assessment.json"
     },
     {
@@ -725,10 +1042,13 @@
       "source_url": "https://github.com/open-policy-agent/gatekeeper/blob/master/demo/basic/templates/k8srequiredlabels_template.yaml",
       "repo": "open-policy-agent/gatekeeper",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-014/assessment.json"
     },
     {
@@ -744,10 +1064,13 @@
       "source_url": "https://github.com/pallets/flask/blob/main/examples/tutorial/flaskr/auth.py",
       "repo": "pallets/flask",
       "license": "BSD-3-Clause",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 126,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-015/assessment.json"
     },
     {
@@ -762,10 +1085,13 @@
       "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/controllers/nginx-deployment.yaml",
       "repo": "kubernetes/website",
       "license": "CC-BY-4.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-016/assessment.json"
     },
     {
@@ -780,10 +1106,13 @@
       "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/service/networking/example-ingress.yaml",
       "repo": "kubernetes/website",
       "license": "CC-BY-4.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-017/assessment.json"
     },
     {
@@ -798,10 +1127,13 @@
       "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/application/zookeeper/zookeeper.yaml",
       "repo": "kubernetes/website",
       "license": "CC-BY-4.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-018/assessment.json"
     },
     {
@@ -817,10 +1149,13 @@
       "source_url": "https://github.com/terraform-aws-modules/terraform-aws-vpc/blob/master/examples/simple/main.tf",
       "repo": "terraform-aws-modules/terraform-aws-vpc",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-019/assessment.json"
     },
     {
@@ -836,10 +1171,13 @@
       "source_url": "https://github.com/bridgecrewio/checkov/blob/main/tests/terraform/checks/resource/aws/example_SecurityGroupUnrestrictedIngress22/main.tf",
       "repo": "bridgecrewio/checkov",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-020/assessment.json"
     },
     {
@@ -858,7 +1196,10 @@
       "verdict": "INDETERMINATE",
       "coverage_status": "NONE",
       "requirement_count": 200,
+      "applicable_requirement_count": 0,
       "runtime_llm_calls": 0,
+      "assess_mode": "assess_only",
+      "sandbox_snippets": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-021/assessment.json"
     },
     {
@@ -873,10 +1214,13 @@
       "source_url": "https://github.com/zaproxy/zaproxy/blob/main/docker/zap-baseline.py",
       "repo": "zaproxy/zaproxy",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 126,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-022/assessment.json"
     },
     {
@@ -892,10 +1236,13 @@
       "source_url": "https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/eks-auto-mode/main.tf",
       "repo": "terraform-aws-modules/terraform-aws-eks",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-023/assessment.json"
     },
     {
@@ -911,10 +1258,13 @@
       "source_url": "https://github.com/terraform-aws-modules/terraform-aws-rds/blob/master/examples/complete-postgres/main.tf",
       "repo": "terraform-aws-modules/terraform-aws-rds",
       "license": "Apache-2.0",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 35,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-024/assessment.json"
     },
     {
@@ -930,10 +1280,13 @@
       "source_url": "https://github.com/expressjs/express/blob/master/examples/auth/index.js",
       "repo": "expressjs/express",
       "license": "MIT",
-      "verdict": "INDETERMINATE",
-      "coverage_status": "NONE",
+      "verdict": "PASS",
+      "coverage_status": "PARTIAL",
       "requirement_count": 200,
+      "applicable_requirement_count": 93,
       "runtime_llm_calls": 0,
+      "assess_mode": "analyzer_evidence",
+      "sandbox_snippets": 1,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-025/assessment.json"
     }
   ]

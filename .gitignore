@@ -15,5 +15,8 @@ npm-debug.log*
 # Local workshop snapshots / PR-scan E2E outs
 /workshop-snapshot/
 testdata/pr-scan/known-fail/out/
+# Regenerable sandbox scans from assess_workshop_submissions.sh
+testdata/workshop-submissions/results/*/sandbox/
+testdata/workshop-submissions/results/*/analyzer-evidence/
 /adr/llm-obligation-proposals.json
 /adr/llm-obligation-proposals.md

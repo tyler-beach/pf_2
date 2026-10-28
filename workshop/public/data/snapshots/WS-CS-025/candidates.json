@@ -12,7 +12,7 @@
       "modality": "INFORMATIONAL",
       "kind": "workshop_submission",
       "pattern_hint": "workshop.submission",
-      "statement": "[ADR Assessment] Express.js auth example [code_snippet] — assessed verdict INDETERMINATE (coverage NONE)",
+      "statement": "[ADR Assessment] Express.js auth example [code_snippet] — assessed verdict PASS (coverage PARTIAL)",
       "source_path": "code_snippet/WS-CS-025.md",
       "source_line_start": 0,
       "source_line_end": 0,

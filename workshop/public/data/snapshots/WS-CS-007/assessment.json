@@ -1,15 +1,16 @@
 {
   "schema_version": "1",
-  "evidence_mode": "submission",
+  "evidence_mode": "repository",
   "submission_kind": "code_snippet",
   "engine_version": "0.3.0",
-  "verdict": "INDETERMINATE",
-  "coverage_status": "NONE",
-  "applicable_requirement_count": 0,
-  "source_file_count": 1,
+  "verdict": "PASS",
+  "coverage_status": "PARTIAL",
+  "applicable_requirement_count": 126,
+  "source_file_count": 0,
   "requirement_count": 200,
   "counts": {
-    "NOT_APPLICABLE": 200
+    "NOT_APPLICABLE": 74,
+    "PASS": 126
   },
   "runtime_llm_calls": 0,
   "requirements": [
@@ -18,88 +19,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3001-01",
       "title": "A01: Object-level authorization check for resource family 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3002",
       "adr_version": 1,
       "requirement_id": "REQ-3002-01",
       "title": "A01: Function-level authorization gate for admin action 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3003",
       "adr_version": 1,
       "requirement_id": "REQ-3003-01",
       "title": "A01: Direct object reference token for record slot 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3004",
       "adr_version": 1,
       "requirement_id": "REQ-3004-01",
       "title": "A01: Cross-tenant data path for tenancy boundary 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3005",
       "adr_version": 1,
       "requirement_id": "REQ-3005-01",
       "title": "A01: Mass-assignment field pack for form surface 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3006",
       "adr_version": 1,
       "requirement_id": "REQ-3006-01",
       "title": "A01: Elevated privilege cookie for session lane 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3007",
       "adr_version": 1,
       "requirement_id": "REQ-3007-01",
       "title": "A01: CORS reflection allow-list for origin set 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3008",
       "adr_version": 1,
       "requirement_id": "REQ-3008-01",
       "title": "A01: Directory traversal path join for file lane 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3009",
@@ -150,88 +167,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3013-01",
       "title": "A02: TLS minimum version setting for listener 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3014",
       "adr_version": 1,
       "requirement_id": "REQ-3014-01",
       "title": "A02: Encryption-at-rest required key for datastore 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-md5-python, rules.pathfinder.owasp-md5-go, rules.pathfinder.owasp-sha1-python, rules.pathfinder.owasp-sha1-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3015",
       "adr_version": 1,
       "requirement_id": "REQ-3015-01",
       "title": "A02: MD5 password digest for credential store 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-md5-python, rules.pathfinder.owasp-sha1-python, rules.pathfinder.owasp-md5-go, rules.pathfinder.owasp-sha1-go, rules.pathfinder.owasp-des-java, rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3016",
       "adr_version": 1,
       "requirement_id": "REQ-3016-01",
       "title": "A02: Cleartext credential log line for channel 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go, rules.pathfinder.owasp-private-key-literal, rules.pathfinder.owasp-slack-token, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3017",
       "adr_version": 1,
       "requirement_id": "REQ-3017-01",
       "title": "A02: HSTS max-age configuration for site family 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3018",
       "adr_version": 1,
       "requirement_id": "REQ-3018-01",
       "title": "A02: Custom crypto protocol for message lane 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-md5-python, rules.pathfinder.owasp-sha1-python, rules.pathfinder.owasp-md5-go, rules.pathfinder.owasp-sha1-go, rules.pathfinder.owasp-des-java, rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3019",
       "adr_version": 1,
       "requirement_id": "REQ-3019-01",
       "title": "A02: Hard-coded encryption secret for vault slot 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go, rules.pathfinder.owasp-private-key-literal, rules.pathfinder.owasp-slack-token, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3020",
       "adr_version": 1,
       "requirement_id": "REQ-3020-01",
       "title": "A02: SHA1 integrity checksum for artifact lane 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-md5-python, rules.pathfinder.owasp-sha1-python, rules.pathfinder.owasp-md5-go, rules.pathfinder.owasp-sha1-go, rules.pathfinder.owasp-des-java, rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3021",
@@ -282,88 +315,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3025-01",
       "title": "A03: Dynamic SQL string concat for query family 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3026",
       "adr_version": 1,
       "requirement_id": "REQ-3026-01",
       "title": "A03: Shell command string for ops helper 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3027",
       "adr_version": 1,
       "requirement_id": "REQ-3027-01",
       "title": "A03: Eval of untrusted input for script lane 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3028",
       "adr_version": 1,
       "requirement_id": "REQ-3028-01",
       "title": "A03: LDAP filter concat for directory lookup 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3029",
       "adr_version": 1,
       "requirement_id": "REQ-3029-01",
       "title": "A03: OS command passthrough for tool wrapper 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3030",
       "adr_version": 1,
       "requirement_id": "REQ-3030-01",
       "title": "A03: Template injection render for page family 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3031",
       "adr_version": 1,
       "requirement_id": "REQ-3031-01",
       "title": "A03: NoSQL operator injection for document query 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3032",
       "adr_version": 1,
       "requirement_id": "REQ-3032-01",
       "title": "A03: Xpath concat for XML lookup 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-sql-string-concat-python, rules.pathfinder.owasp-sql-format-go, rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.owasp-os-system-python, rules.pathfinder.owasp-subprocess-shell-python, rules.pathfinder.owasp-raw-query-java, rules.pathfinder.go-shell-command, rules.pathfinder.python-dynamic-eval, rules.pathfinder.no-dynamic-eval, rules.pathfinder.java-runtime-exec within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3033",
@@ -414,11 +463,13 @@
       "adr_version": 1,
       "requirement_id": "REQ-3037-01",
       "title": "A04: Rate-limit configuration for public route 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-rate-limit-disabled-python, rules.pathfinder.owasp-lockout-disabled-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3038",
@@ -447,55 +498,65 @@
       "adr_version": 1,
       "requirement_id": "REQ-3040-01",
       "title": "A04: Unauthenticated state-changing RPC for action 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3041",
       "adr_version": 1,
       "requirement_id": "REQ-3041-01",
       "title": "A04: Account lockout threshold setting for login family 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-rate-limit-disabled-python, rules.pathfinder.owasp-lockout-disabled-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3042",
       "adr_version": 1,
       "requirement_id": "REQ-3042-01",
       "title": "A04: Security control deferral for launch train 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3043",
       "adr_version": 1,
       "requirement_id": "REQ-3043-01",
       "title": "A04: Client-only authorization decision for feature 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3044",
       "adr_version": 1,
       "requirement_id": "REQ-3044-01",
       "title": "A04: Shared mutable cache key for tenant 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-child-process-exec-node, rules.pathfinder.go-shell-command, rules.pathfinder.owasp-os-system-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3045",
@@ -546,88 +607,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3049-01",
       "title": "A05: Debug mode configuration flag for environment 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3050",
       "adr_version": 1,
       "requirement_id": "REQ-3050-01",
       "title": "A05: Default admin password setting for appliance 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3051",
       "adr_version": 1,
       "requirement_id": "REQ-3051-01",
       "title": "A05: Unnecessary feature toggle for service profile 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3052",
       "adr_version": 1,
       "requirement_id": "REQ-3052-01",
       "title": "A05: Security header required key for HTTP profile 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3053",
       "adr_version": 1,
       "requirement_id": "REQ-3053-01",
       "title": "A05: Error verbosity configuration for API family 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-debug-mode-python, rules.pathfinder.owasp-debug-mode-javascript, rules.pathfinder.owasp-hardcoded-password-assign-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3054",
       "adr_version": 1,
       "requirement_id": "REQ-3054-01",
       "title": "A05: Directory listing enablement for static host 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3055",
       "adr_version": 1,
       "requirement_id": "REQ-3055-01",
       "title": "A05: Wildcard CORS credential mode for API 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3056",
       "adr_version": 1,
       "requirement_id": "REQ-3056-01",
       "title": "A05: Cloud metadata exposure path for workload 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3057",
@@ -680,9 +757,11 @@
       "title": "A06: Dependency allow-list configuration for runtime 1",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3062",
@@ -691,9 +770,11 @@
       "title": "A06: Unpinned transitive import for module set 2",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3063",
@@ -702,9 +783,11 @@
       "title": "A06: CVE remediation SLA setting for severity 3",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3064",
@@ -713,9 +796,11 @@
       "title": "A06: End-of-life runtime package for service 4",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3065",
@@ -724,9 +809,11 @@
       "title": "A06: SBOM required key for release artifact 5",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3066",
@@ -735,9 +822,11 @@
       "title": "A06: Unmaintained library retention for legacy app 6",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3067",
@@ -746,9 +835,11 @@
       "title": "A06: Direct Git dependency URL for build 7",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3068",
@@ -757,9 +848,11 @@
       "title": "A06: Unsigned package install for agent 8",
       "status": "NOT_APPLICABLE",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Verified \"opengrep\" inventory contains 2 source path(s), but none match scope . and source extensions .json, .mod, .txt, .go."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "The completed repository inventory confirms this rule's declared source scope and extensions are not present in this snapshot."
     },
     {
       "adr_id": "ADR-3069",
@@ -810,88 +903,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3073-01",
       "title": "A07: Password minimum length setting for realm 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3074",
       "adr_version": 1,
       "requirement_id": "REQ-3074-01",
       "title": "A07: Credential stuffing without bot controls for login 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3075",
       "adr_version": 1,
       "requirement_id": "REQ-3075-01",
       "title": "A07: Session fixation accept for auth flow 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3076",
       "adr_version": 1,
       "requirement_id": "REQ-3076-01",
       "title": "A07: MFA required key for privileged role 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3077",
       "adr_version": 1,
       "requirement_id": "REQ-3077-01",
       "title": "A07: Plaintext password recovery channel for user 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3078",
       "adr_version": 1,
       "requirement_id": "REQ-3078-01",
       "title": "A07: Long-lived bearer token for SPA session 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3079",
       "adr_version": 1,
       "requirement_id": "REQ-3079-01",
       "title": "A07: Knowledge-based auth questions for recovery 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3080",
       "adr_version": 1,
       "requirement_id": "REQ-3080-01",
       "title": "A07: Concurrent session unlimited policy for account 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-password-assign-python, rules.pathfinder.owasp-hardcoded-api-key-javascript, rules.pathfinder.owasp-hardcoded-bearer-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3081",
@@ -942,88 +1051,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3085-01",
       "title": "A08: Unsigned update payload for client 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-pickle-loads-python, rules.pathfinder.owasp-yaml-unsafe-load-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3086",
       "adr_version": 1,
       "requirement_id": "REQ-3086-01",
       "title": "A08: Insecure deserialization gadget for payload 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-pickle-loads-python, rules.pathfinder.owasp-yaml-unsafe-load-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3087",
       "adr_version": 1,
       "requirement_id": "REQ-3087-01",
       "title": "A08: CI provenance required key for deploy artifact 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-curl-pipe-shell, rules.pathfinder.owasp-git-dependency-npm, rules.pathfinder.owasp-git-dependency-gomod within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3088",
       "adr_version": 1,
       "requirement_id": "REQ-3088-01",
       "title": "A08: Untrusted plugin import for extension host 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-untrusted-plugin-import-python, rules.pathfinder.owasp-untrusted-plugin-require-javascript within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3089",
       "adr_version": 1,
       "requirement_id": "REQ-3089-01",
       "title": "A08: Auto-execute macro content for document pipe 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-pickle-loads-python, rules.pathfinder.owasp-yaml-unsafe-load-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3090",
       "adr_version": 1,
       "requirement_id": "REQ-3090-01",
       "title": "A08: CDN integrity skip for script include 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-pickle-loads-python, rules.pathfinder.owasp-yaml-unsafe-load-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3091",
       "adr_version": 1,
       "requirement_id": "REQ-3091-01",
       "title": "A08: Mutable tag deploy reference for release 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-pickle-loads-python, rules.pathfinder.owasp-yaml-unsafe-load-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3092",
       "adr_version": 1,
       "requirement_id": "REQ-3092-01",
       "title": "A08: Webhook without signature check for integration 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-pickle-loads-python, rules.pathfinder.owasp-yaml-unsafe-load-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3093",
@@ -1074,88 +1199,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3097-01",
       "title": "A09: Security event logging required key for service 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3098",
       "adr_version": 1,
       "requirement_id": "REQ-3098-01",
       "title": "A09: Log retention days setting for audit lane 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3099",
       "adr_version": 1,
       "requirement_id": "REQ-3099-01",
       "title": "A09: Silent auth failure path for login family 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3100",
       "adr_version": 1,
       "requirement_id": "REQ-3100-01",
       "title": "A09: Alerting webhook configuration for detection 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3101",
       "adr_version": 1,
       "requirement_id": "REQ-3101-01",
       "title": "A09: Immutable log sink required key for archive 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3102",
       "adr_version": 1,
       "requirement_id": "REQ-3102-01",
       "title": "A09: PII-rich debug logging for request 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3103",
       "adr_version": 1,
       "requirement_id": "REQ-3103-01",
       "title": "A09: Log shipping disablement for node pool 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3104",
       "adr_version": 1,
       "requirement_id": "REQ-3104-01",
       "title": "A09: Clock skew ignore for audit stamp 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-log-secret-python, rules.pathfinder.owasp-log-secret-javascript, rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3105",
@@ -1206,88 +1347,104 @@
       "adr_version": 1,
       "requirement_id": "REQ-3109-01",
       "title": "A10: User-controlled URL fetch for connector 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3110",
       "adr_version": 1,
       "requirement_id": "REQ-3110-01",
       "title": "A10: Raw HTTP redirect follow for webhook 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3111",
       "adr_version": 1,
       "requirement_id": "REQ-3111-01",
       "title": "A10: Link-local address request for probe 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3112",
       "adr_version": 1,
       "requirement_id": "REQ-3112-01",
       "title": "A10: Egress allow-list configuration for fetcher 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3113",
       "adr_version": 1,
       "requirement_id": "REQ-3113-01",
       "title": "A10: File URL scheme open for import job 5",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3114",
       "adr_version": 1,
       "requirement_id": "REQ-3114-01",
       "title": "A10: DNS rebinding tolerance for preview fetch 6",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3115",
       "adr_version": 1,
       "requirement_id": "REQ-3115-01",
       "title": "A10: Internal hostname allow for media proxy 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3116",
       "adr_version": 1,
       "requirement_id": "REQ-3116-01",
       "title": "A10: Webhook callback to RFC1918 for integration 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-ssrf-http-get-python, rules.pathfinder.owasp-ssrf-urlopen-python, rules.pathfinder.owasp-ssrf-http-get-go, rules.pathfinder.owasp-ssrf-fetch-javascript, rules.pathfinder.owasp-ssrf-axios-javascript, rules.pathfinder.owasp-ssrf-httpurl-java, rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3117",
@@ -1338,44 +1495,52 @@
       "adr_version": 1,
       "requirement_id": "REQ-3201-01",
       "title": "AWS iam: Wildcard IAM action star for role 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3202",
       "adr_version": 1,
       "requirement_id": "REQ-3202-01",
       "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3203",
       "adr_version": 1,
       "requirement_id": "REQ-3203-01",
       "title": "AWS iam: IAM Access Analyzer required key for account 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_63 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3204",
       "adr_version": 1,
       "requirement_id": "REQ-3204-01",
       "title": "AWS iam: Inline IAM policy sprawl for role 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3205",
@@ -1404,66 +1569,78 @@
       "adr_version": 1,
       "requirement_id": "REQ-3207-01",
       "title": "AWS iam: Long-term IAM user access key for workload 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3208",
       "adr_version": 1,
       "requirement_id": "REQ-3208-01",
       "title": "AWS iam: Sts assume-role without external ID for partner 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3209",
       "adr_version": 1,
       "requirement_id": "REQ-3209-01",
       "title": "AWS encryption: KMS CMK required key for data class 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3210",
       "adr_version": 1,
       "requirement_id": "REQ-3210-01",
       "title": "AWS encryption: TLS in transit required key for service link 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3211",
       "adr_version": 1,
       "requirement_id": "REQ-3211-01",
       "title": "AWS encryption: SSE-S3 demotion for regulated bucket 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-disable-s3-encryption-python, rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3212",
       "adr_version": 1,
       "requirement_id": "REQ-3212-01",
       "title": "AWS encryption: Plaintext Secrets Manager put for secret 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-disable-s3-encryption-python, rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3213",
@@ -1492,66 +1669,78 @@
       "adr_version": 1,
       "requirement_id": "REQ-3215-01",
       "title": "AWS encryption: EBS encryption by default setting for account 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3216",
       "adr_version": 1,
       "requirement_id": "REQ-3216-01",
       "title": "AWS encryption: Disabled RDS encryption flag for database 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-disable-s3-encryption-python, rules.pathfinder.owasp-insecure-tls-python, rules.pathfinder.owasp-insecure-skip-verify-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3217",
       "adr_version": 1,
       "requirement_id": "REQ-3217-01",
       "title": "AWS network: Public subnet placement for data store 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3218",
       "adr_version": 1,
       "requirement_id": "REQ-3218-01",
       "title": "AWS network: VPC flow logs required key for VPC 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV2_AWS_11, CKV_AWS_130, CKV_AWS_24 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3219",
       "adr_version": 1,
       "requirement_id": "REQ-3219-01",
       "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3220",
       "adr_version": 1,
       "requirement_id": "REQ-3220-01",
       "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3221",
@@ -1580,66 +1769,78 @@
       "adr_version": 1,
       "requirement_id": "REQ-3223-01",
       "title": "AWS network: Peering without least-privilege routes for VPC 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3224",
       "adr_version": 1,
       "requirement_id": "REQ-3224-01",
       "title": "AWS network: Security group reference cycles for tier 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3225",
       "adr_version": 1,
       "requirement_id": "REQ-3225-01",
       "title": "AWS logging: CloudTrail multi-region required key for org 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3226",
       "adr_version": 1,
       "requirement_id": "REQ-3226-01",
       "title": "AWS logging: CloudTrail log file validation setting for trail 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3227",
       "adr_version": 1,
       "requirement_id": "REQ-3227-01",
       "title": "AWS logging: CloudTrail stop-logging permission for role 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3228",
       "adr_version": 1,
       "requirement_id": "REQ-3228-01",
       "title": "AWS logging: S3 access logging disablement for trail bucket 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3229",
@@ -1668,66 +1869,78 @@
       "adr_version": 1,
       "requirement_id": "REQ-3231-01",
       "title": "AWS logging: Config recorder required key for region 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3232",
       "adr_version": 1,
       "requirement_id": "REQ-3232-01",
       "title": "AWS logging: CloudWatch log group without retention for app 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-cloudtrail-stop-logging within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3233",
       "adr_version": 1,
       "requirement_id": "REQ-3233-01",
       "title": "AWS secrets: Hardcoded AWS access key in source for app 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3234",
       "adr_version": 1,
       "requirement_id": "REQ-3234-01",
       "title": "AWS secrets: Secrets Manager rotation required key for secret 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3235",
       "adr_version": 1,
       "requirement_id": "REQ-3235-01",
       "title": "AWS secrets: Plaintext environment secret for Lambda 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3236",
       "adr_version": 1,
       "requirement_id": "REQ-3236-01",
       "title": "AWS secrets: Shared secret across environments for service 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3237",
@@ -1756,66 +1969,78 @@
       "adr_version": 1,
       "requirement_id": "REQ-3239-01",
       "title": "AWS secrets: Secrets in AMI or container layer for image 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3240",
       "adr_version": 1,
       "requirement_id": "REQ-3240-01",
       "title": "AWS secrets: Unencrypted EBS snapshot share for account 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.owasp-hardcoded-aws-key, rules.pathfinder.aws-hardcoded-secret-env-python, rules.pathfinder.aws-setenv-secret-go, rules.pathfinder.owasp-private-key-literal within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3241",
       "adr_version": 1,
       "requirement_id": "REQ-3241-01",
       "title": "AWS s3: Public ACL grant for bucket 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.aws-s3-public-read-write-python, rules.pathfinder.aws-put-bucket-acl-public-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3242",
       "adr_version": 1,
       "requirement_id": "REQ-3242-01",
       "title": "AWS s3: S3 Block Public Access required key for account 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-write-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3243",
       "adr_version": 1,
       "requirement_id": "REQ-3243-01",
       "title": "AWS s3: Public-read canned ACL in SDK put for object 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.aws-s3-public-read-write-python, rules.pathfinder.aws-put-bucket-acl-public-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3244",
       "adr_version": 1,
       "requirement_id": "REQ-3244-01",
       "title": "AWS s3: Bucket policy principal star for bucket 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.aws-s3-public-read-write-python, rules.pathfinder.aws-put-bucket-acl-public-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3245",
@@ -1844,66 +2069,78 @@
       "adr_version": 1,
       "requirement_id": "REQ-3247-01",
       "title": "AWS s3: S3 versioning required key for backup bucket 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-write-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3248",
       "adr_version": 1,
       "requirement_id": "REQ-3248-01",
       "title": "AWS s3: Cross-account get without condition for bucket 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-s3-public-read-acl-python, rules.pathfinder.aws-s3-public-read-acl-go, rules.pathfinder.aws-s3-public-read-write-python, rules.pathfinder.aws-put-bucket-acl-public-python within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3249",
       "adr_version": 1,
       "requirement_id": "REQ-3249-01",
       "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3250",
       "adr_version": 1,
       "requirement_id": "REQ-3250-01",
       "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3251",
       "adr_version": 1,
       "requirement_id": "REQ-3251-01",
       "title": "AWS security_groups: Security group description required key for SG 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_23, CKV_AWS_24, CKV_AWS_25 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3252",
       "adr_version": 1,
       "requirement_id": "REQ-3252-01",
       "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3253",
@@ -1932,22 +2169,26 @@
       "adr_version": 1,
       "requirement_id": "REQ-3255-01",
       "title": "AWS security_groups: Database SG attached to public interface for db 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3256",
       "adr_version": 1,
       "requirement_id": "REQ-3256-01",
       "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3257",
@@ -1965,33 +2206,39 @@
       "adr_version": 1,
       "requirement_id": "REQ-3258-01",
       "title": "AWS root_mfa: Root access key creation for account 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3259",
       "adr_version": 1,
       "requirement_id": "REQ-3259-01",
       "title": "AWS root_mfa: Daily root console usage for account 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3260",
       "adr_version": 1,
       "requirement_id": "REQ-3260-01",
       "title": "AWS root_mfa: Root email without monitored inbox for account 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3261",
@@ -2031,55 +2278,65 @@
       "adr_version": 1,
       "requirement_id": "REQ-3264-01",
       "title": "AWS root_mfa: Shared root password manager entry for team 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-iam-create-access-key, rules.pathfinder.owasp-hardcoded-aws-key within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3265",
       "adr_version": 1,
       "requirement_id": "REQ-3265-01",
       "title": "AWS backups: AWS Backup plan required key for workload 1",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3266",
       "adr_version": 1,
       "requirement_id": "REQ-3266-01",
       "title": "AWS backups: Cross-region backup copy setting for vault 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3267",
       "adr_version": 1,
       "requirement_id": "REQ-3267-01",
       "title": "AWS backups: Backup vault policy principal star for vault 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3268",
       "adr_version": 1,
       "requirement_id": "REQ-3268-01",
       "title": "AWS backups: Disabled backup vault lock for vault 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3269",
@@ -2108,22 +2365,26 @@
       "adr_version": 1,
       "requirement_id": "REQ-3271-01",
       "title": "AWS backups: RDS automated backup retention setting for database 7",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3272",
       "adr_version": 1,
       "requirement_id": "REQ-3272-01",
       "title": "AWS backups: Manual snapshot without encryption for database 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3273",
@@ -2141,33 +2402,39 @@
       "adr_version": 1,
       "requirement_id": "REQ-3274-01",
       "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer checkov version 3.2.484 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930 and raw-output SHA-256 6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) CKV_AWS_79 within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3275",
       "adr_version": 1,
       "requirement_id": "REQ-3275-01",
       "title": "AWS tagging_compute: Admin IAM instance profile for web ASG 3",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3276",
       "adr_version": 1,
       "requirement_id": "REQ-3276-01",
       "title": "AWS tagging_compute: Public EC2 with elastic IP for app 4",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
     },
     {
       "adr_id": "ADR-3277",
@@ -2207,11 +2474,105 @@
       "adr_version": 1,
       "requirement_id": "REQ-3280-01",
       "title": "AWS tagging_compute: User-data containing secrets for launch template 8",
-      "status": "NOT_APPLICABLE",
+      "status": "PASS",
       "severity": "error",
-      "evidence": [],
+      "evidence": [
+        "Analyzer opengrep version 1.30.0 completed against input SHA-256 379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb with configuration SHA-256 ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0 and raw-output SHA-256 4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826; 1 discovered source path(s) matched scope."
+      ],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "No finding matched rule(s) rules.pathfinder.aws-imds-v1-token-skip within 1 source path(s) in scope."
+    }
+  ],
+  "analyzer_results": [
+    {
+      "schema_version": "1",
+      "sarif_version": "2.1.0",
+      "status": "COMPLETE",
+      "analyzers": [
+        {
+          "name": "opengrep",
+          "version": "1.30.0"
+        }
+      ],
+      "configuration_path": "rules/pathfinder-security.yml",
+      "configuration_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "binary_sha256": "0f5bc3dec09d995c61331a4017b856ede508f90d95b018d95f1dc6166be89fdd",
+      "rule_set_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "input_sha256": "379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb",
+      "raw_output_sha256": "4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826",
+      "scanned_paths": [
+        "rules/checkov.yml",
+        "snippet_01.py"
+      ],
+      "findings": []
+    },
+    {
+      "schema_version": "1",
+      "sarif_version": "2.1.0",
+      "status": "COMPLETE",
+      "analyzers": [
+        {
+          "name": "checkov",
+          "version": "3.2.484"
+        }
+      ],
+      "configuration_path": "rules/checkov.yml",
+      "configuration_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "binary_sha256": "312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893",
+      "rule_set_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "input_sha256": "379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb",
+      "raw_output_sha256": "6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de",
+      "scanned_paths": [
+        "rules/pathfinder-security.yml",
+        "snippet_01.py"
+      ],
+      "findings": []
+    }
+  ],
+  "evidence_bundles": [
+    {
+      "schema_version": "1.0",
+      "revision": "379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb",
+      "records": [],
+      "scan_completeness": "COMPLETE",
+      "producers": [
+        {
+          "name": "opengrep",
+          "version": "1.30.0"
+        }
+      ],
+      "input_sha256": "379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb",
+      "raw_output_sha256": "4f7b442af8283ca9a266687e0c275ad4137fafa56370f74468613868a8cb6826",
+      "configuration_path": "rules/pathfinder-security.yml",
+      "configuration_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "binary_sha256": "0f5bc3dec09d995c61331a4017b856ede508f90d95b018d95f1dc6166be89fdd",
+      "rule_set_sha256": "ee24e3b82fc06d3d1b3ecd886da85087b335dc59090294e9b0f4bc914acfe1e0",
+      "scanned_paths": [
+        "rules/checkov.yml",
+        "snippet_01.py"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "revision": "379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb",
+      "records": [],
+      "scan_completeness": "COMPLETE",
+      "producers": [
+        {
+          "name": "checkov",
+          "version": "3.2.484"
+        }
+      ],
+      "input_sha256": "379cbbb871beb57d0fe663cee2785a9eebc20cfc85d1f1f18d29cb7c31dc4fcb",
+      "raw_output_sha256": "6c6188f6a58d1c04fe9527789f334912169c783e9381c4ccbe68527c402e21de",
+      "configuration_path": "rules/checkov.yml",
+      "configuration_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "binary_sha256": "312e95e66f52a46104697d86a84a9e507ef9e9cdc695034fbacf61e903cb7893",
+      "rule_set_sha256": "99b52e2d90d64c5fb3508602542c1953ec4193f911de821970bd6f8256c87930",
+      "scanned_paths": [
+        "rules/pathfinder-security.yml",
+        "snippet_01.py"
+      ]
     }
   ],
   "corpus_coverage": {
@@ -2222,11 +2583,9 @@
     "evidence_complete": 200,
     "assessment_complete": 200,
     "outcome_counts": {
-      "NOT_APPLICABLE": 200
+      "NOT_APPLICABLE": 74,
+      "PASS": 126
     }
   },
-  "source_snapshot_sha256": "30213a2c557fddae0771c48a325083952dc726ab228e3a5dd055215e890a3f76",
-  "unassessed_source_files": [
-    "authentication.py (python)"
-  ]
+  "source_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }

@@ -1,0 +1,14 @@
+{
+  "id": "WS-CS-022",
+  "mode": "analyzer_evidence",
+  "sandbox_snippets": 1,
+  "scanners_ready": true,
+  "scope": ".",
+  "applicable_requirement_count": 126,
+  "verdict": "PASS",
+  "coverage_status": "PARTIAL",
+  "counts": {
+    "NOT_APPLICABLE": 74,
+    "PASS": 126
+  }
+}

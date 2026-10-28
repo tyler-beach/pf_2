@@ -154,7 +154,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3013-01"
     },
     {
       "adr_id": "ADR-3014",
@@ -165,7 +165,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3014-01"
     },
     {
       "adr_id": "ADR-3015",
@@ -176,7 +176,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3015-01"
     },
     {
       "adr_id": "ADR-3016",
@@ -198,7 +198,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3017-01"
     },
     {
       "adr_id": "ADR-3018",
@@ -209,7 +209,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3018-01"
     },
     {
       "adr_id": "ADR-3019",
@@ -231,7 +231,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3020-01"
     },
     {
       "adr_id": "ADR-3021",
@@ -418,7 +418,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3037-01"
     },
     {
       "adr_id": "ADR-3038",
@@ -462,7 +462,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3041-01"
     },
     {
       "adr_id": "ADR-3042",
@@ -605,7 +605,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3054-01"
     },
     {
       "adr_id": "ADR-3055",
@@ -616,7 +616,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3055-01"
     },
     {
       "adr_id": "ADR-3056",
@@ -627,7 +627,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3056-01"
     },
     {
       "adr_id": "ADR-3057",
@@ -682,7 +682,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3061-01"
     },
     {
       "adr_id": "ADR-3062",
@@ -693,7 +693,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3062-01"
     },
     {
       "adr_id": "ADR-3063",
@@ -704,7 +704,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3063-01"
     },
     {
       "adr_id": "ADR-3064",
@@ -715,7 +715,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3064-01"
     },
     {
       "adr_id": "ADR-3065",
@@ -726,7 +726,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3065-01"
     },
     {
       "adr_id": "ADR-3066",
@@ -737,7 +737,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3066-01"
     },
     {
       "adr_id": "ADR-3067",
@@ -748,7 +748,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3067-01"
     },
     {
       "adr_id": "ADR-3068",
@@ -759,7 +759,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3068-01"
     },
     {
       "adr_id": "ADR-3069",
@@ -814,7 +814,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3073-01"
     },
     {
       "adr_id": "ADR-3074",
@@ -847,7 +847,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3076-01"
     },
     {
       "adr_id": "ADR-3077",
@@ -946,7 +946,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3085-01"
     },
     {
       "adr_id": "ADR-3086",
@@ -957,7 +957,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3086-01"
     },
     {
       "adr_id": "ADR-3087",
@@ -968,7 +968,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3087-01"
     },
     {
       "adr_id": "ADR-3088",
@@ -990,7 +990,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3089-01"
     },
     {
       "adr_id": "ADR-3090",
@@ -1001,7 +1001,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3090-01"
     },
     {
       "adr_id": "ADR-3091",
@@ -1012,7 +1012,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3091-01"
     },
     {
       "adr_id": "ADR-3092",
@@ -1023,7 +1023,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3092-01"
     },
     {
       "adr_id": "ADR-3093",
@@ -1078,7 +1078,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3097-01"
     },
     {
       "adr_id": "ADR-3098",
@@ -1089,7 +1089,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3098-01"
     },
     {
       "adr_id": "ADR-3099",
@@ -1111,7 +1111,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3100-01"
     },
     {
       "adr_id": "ADR-3101",
@@ -1122,7 +1122,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3101-01"
     },
     {
       "adr_id": "ADR-3102",
@@ -1342,7 +1342,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3201-01"
     },
     {
       "adr_id": "ADR-3202",
@@ -1353,7 +1353,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3202-01"
     },
     {
       "adr_id": "ADR-3203",
@@ -1364,7 +1364,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3203-01"
     },
     {
       "adr_id": "ADR-3204",
@@ -1430,7 +1430,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3209-01"
     },
     {
       "adr_id": "ADR-3210",
@@ -1441,7 +1441,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3210-01"
     },
     {
       "adr_id": "ADR-3211",
@@ -1452,7 +1452,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3211-01"
     },
     {
       "adr_id": "ADR-3212",
@@ -1463,7 +1463,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3212-01"
     },
     {
       "adr_id": "ADR-3213",
@@ -1496,7 +1496,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3215-01"
     },
     {
       "adr_id": "ADR-3216",
@@ -1507,7 +1507,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3216-01"
     },
     {
       "adr_id": "ADR-3217",
@@ -1518,7 +1518,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3217-01"
     },
     {
       "adr_id": "ADR-3218",
@@ -1529,7 +1529,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3218-01"
     },
     {
       "adr_id": "ADR-3219",
@@ -1540,7 +1540,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3219-01"
     },
     {
       "adr_id": "ADR-3220",
@@ -1551,7 +1551,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3220-01"
     },
     {
       "adr_id": "ADR-3221",
@@ -1584,7 +1584,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3223-01"
     },
     {
       "adr_id": "ADR-3224",
@@ -1595,7 +1595,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3224-01"
     },
     {
       "adr_id": "ADR-3225",
@@ -1606,7 +1606,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3225-01"
     },
     {
       "adr_id": "ADR-3226",
@@ -1617,7 +1617,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3226-01"
     },
     {
       "adr_id": "ADR-3227",
@@ -1628,7 +1628,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3227-01"
     },
     {
       "adr_id": "ADR-3228",
@@ -1639,7 +1639,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3228-01"
     },
     {
       "adr_id": "ADR-3229",
@@ -1672,7 +1672,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3231-01"
     },
     {
       "adr_id": "ADR-3232",
@@ -1683,7 +1683,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3232-01"
     },
     {
       "adr_id": "ADR-3233",
@@ -1705,7 +1705,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3234-01"
     },
     {
       "adr_id": "ADR-3235",
@@ -1782,7 +1782,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3241-01"
     },
     {
       "adr_id": "ADR-3242",
@@ -1793,7 +1793,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3242-01"
     },
     {
       "adr_id": "ADR-3243",
@@ -1804,7 +1804,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3243-01"
     },
     {
       "adr_id": "ADR-3244",
@@ -1815,7 +1815,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3244-01"
     },
     {
       "adr_id": "ADR-3245",
@@ -1848,7 +1848,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3247-01"
     },
     {
       "adr_id": "ADR-3248",
@@ -1859,7 +1859,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3248-01"
     },
     {
       "adr_id": "ADR-3249",
@@ -1870,7 +1870,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3249-01"
     },
     {
       "adr_id": "ADR-3250",
@@ -1881,7 +1881,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3250-01"
     },
     {
       "adr_id": "ADR-3251",
@@ -1892,7 +1892,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3251-01"
     },
     {
       "adr_id": "ADR-3252",
@@ -1903,7 +1903,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3252-01"
     },
     {
       "adr_id": "ADR-3253",
@@ -1936,7 +1936,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3255-01"
     },
     {
       "adr_id": "ADR-3256",
@@ -1947,7 +1947,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3256-01"
     },
     {
       "adr_id": "ADR-3257",
@@ -2046,7 +2046,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3265-01"
     },
     {
       "adr_id": "ADR-3266",
@@ -2057,7 +2057,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3266-01"
     },
     {
       "adr_id": "ADR-3267",
@@ -2068,7 +2068,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3267-01"
     },
     {
       "adr_id": "ADR-3268",
@@ -2079,7 +2079,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3268-01"
     },
     {
       "adr_id": "ADR-3269",
@@ -2112,7 +2112,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3271-01"
     },
     {
       "adr_id": "ADR-3272",
@@ -2123,7 +2123,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3272-01"
     },
     {
       "adr_id": "ADR-3273",
@@ -2145,7 +2145,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3274-01"
     },
     {
       "adr_id": "ADR-3275",
@@ -2156,7 +2156,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3275-01"
     },
     {
       "adr_id": "ADR-3276",
@@ -2167,7 +2167,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3276-01"
     },
     {
       "adr_id": "ADR-3277",
@@ -2211,7 +2211,7 @@
       "severity": "error",
       "evidence": [],
       "findings": [],
-      "reason": "Repository analyzer rules are not run against issue-submitted snippets; assess a repository snapshot to evaluate this rule."
+      "reason": "Not applicable by applicability filter: no submitted/scoped paths match analyzer rule extensions/prefixes for REQ-3280-01"
     }
   ],
   "corpus_coverage": {

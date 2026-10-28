@@ -25,8 +25,8 @@ Do not claim calibrated meaning when method falls back to heuristic.
 
 Workshop `adr_flagging.json` only shows `assessed > 0` when assessments produce PASS/FAIL (not all-N/A). After Epic 2:
 
-1. Re-assess submissions **with** OpenGrep/Checkov evidence (issue sandbox / PR-scan path), not fence-only `adrctl assess` without scanners.
-2. `./scripts/assess_workshop_submissions.sh` then `python3 scripts/workshop_publish_data.py --snapshot … --data-dir workshop/public/data`.
-3. Confirm `#/adr-flags` leaderboards show non-zero aligned/deviate for those `run_id`s.
+1. Re-assess submissions **with** OpenGrep/Checkov evidence when binaries are available (`OPENGREP_BIN` / `CHECKOV_BIN`, optional SHA env). `./scripts/assess_workshop_submissions.sh` extracts fences, scans, then `assess-repo --issue-surface --submission-kind --scope` (no `--assess-all`). Without scanners, the same script still re-emits **assess-only with applicability filtering** — better than the pre-epic EVIDENCE_MISSING flood, but analyzer-backed rows stay N/A (typical for prose `tech_spec`).
+2. Emit unique runs: `./scripts/emit_unique_workshop_runs.sh --wipe`, or publish the batch snapshot via `python3 scripts/workshop_publish_data.py --snapshot testdata/workshop-submissions/workshop-snapshot --data-dir workshop/public/data`.
+3. Confirm `#/adr-flags` leaderboards show non-zero aligned/deviate for analyzer-backed `run_id`s (`results/index.json` → `counts.applicable_gt_zero` / `with_analyzer_evidence`).
 
 PR-scan summaries deep-link to `#/runs?run_id=<GITHUB_RUN_ID>` and `#/submissions`.

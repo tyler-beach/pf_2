@@ -1,0 +1,13 @@
+{
+  "id": "WS-TS-013",
+  "mode": "assess_only",
+  "sandbox_snippets": 0,
+  "scanners_ready": true,
+  "scope": ".",
+  "applicable_requirement_count": 0,
+  "verdict": "INDETERMINATE",
+  "coverage_status": "NONE",
+  "counts": {
+    "NOT_APPLICABLE": 200
+  }
+}

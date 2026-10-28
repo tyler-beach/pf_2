@@ -19,13 +19,17 @@ Excerpts are workshop-sized (tens of lines) from public MIT/Apache/BSD (and a fe
 ## Assess all 50
 
 ```bash
+# Optional: pin scanners (auto-detected under ~/.cache/pathfinder-tools when present)
+# export OPENGREP_BIN=... OPENGREP_SHA256=... CHECKOV_BIN=... CHECKOV_SHA256=...
 ./scripts/assess_workshop_submissions.sh
 ```
 
+When OpenGrep + Checkov are available, code fences are extracted to a sandbox, scanned, and assessed with `--issue-surface` / `--submission-kind` / `--scope` (applicable-evidence path). Prose-only `tech_spec` submissions and scanner-less environments fall back to assess-only applicability filtering (analyzer rows N/A — not a pre-epic flood).
+
 Outputs:
 
-- `results/<id>/{issue.md,assessment.json,report.md,results.sarif,meta.json}`
-- `results/index.json` / `results/submissions.json` (kind counts + verdicts)
+- `results/<id>/{issue.md,assessment.json,report.md,results.sarif,meta.json,assess_meta.json}` (+ `sandbox/` / `analyzer-evidence/` when scanned)
+- `results/index.json` / `results/submissions.json` (kind counts, verdicts, `assess_mode`, applicable counts)
 - `results/candidates.json` (kind-tagged candidates for workshop KPIs)
 - `workshop-snapshot/` ready for `scripts/workshop_publish_data.py`
 

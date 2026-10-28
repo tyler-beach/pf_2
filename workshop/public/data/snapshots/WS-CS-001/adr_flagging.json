@@ -10,18 +10,77 @@
   },
   "summary": {
     "adr_touched": 200,
-    "adr_assessed": 0,
+    "adr_assessed": 35,
     "requirement_observations": 200,
-    "assessed_observations": 0,
-    "aligned_observations": 0,
+    "assessed_observations": 35,
+    "aligned_observations": 35,
     "deviated_observations": 0,
-    "excluded_observations": 200,
+    "excluded_observations": 165,
     "fail_observations": 0,
-    "indeterminate_observations": 0
+    "indeterminate_observations": 0,
+    "flag_rate": 0,
+    "flag_rate_ci_low": 4.7829596131123235e-18,
+    "flag_rate_ci_high": 0.09890099232440404,
+    "top_flag_rate": 0,
+    "top_flag_rate_adr": "ADR-3073",
+    "most_aligned_adr": "ADR-3073",
+    "most_aligned_count": 1
   },
   "leaderboards": {
-    "most_flagging": [],
-    "least_flagging": [],
+    "most_flagging": [
+      "ADR-3073",
+      "ADR-3076",
+      "ADR-3087",
+      "ADR-3097",
+      "ADR-3098",
+      "ADR-3100",
+      "ADR-3101",
+      "ADR-3201",
+      "ADR-3202",
+      "ADR-3203",
+      "ADR-3209",
+      "ADR-3210",
+      "ADR-3215",
+      "ADR-3217",
+      "ADR-3218",
+      "ADR-3219",
+      "ADR-3220",
+      "ADR-3223",
+      "ADR-3224",
+      "ADR-3225",
+      "ADR-3226",
+      "ADR-3231",
+      "ADR-3249",
+      "ADR-3250",
+      "ADR-3251"
+    ],
+    "least_flagging": [
+      "ADR-3073",
+      "ADR-3076",
+      "ADR-3087",
+      "ADR-3097",
+      "ADR-3098",
+      "ADR-3100",
+      "ADR-3101",
+      "ADR-3201",
+      "ADR-3202",
+      "ADR-3203",
+      "ADR-3209",
+      "ADR-3210",
+      "ADR-3215",
+      "ADR-3217",
+      "ADR-3218",
+      "ADR-3219",
+      "ADR-3220",
+      "ADR-3223",
+      "ADR-3224",
+      "ADR-3225",
+      "ADR-3226",
+      "ADR-3231",
+      "ADR-3249",
+      "ADR-3250",
+      "ADR-3251"
+    ],
     "most_fail": [
       "ADR-3001",
       "ADR-3002",
@@ -77,31 +136,31 @@
       "ADR-3025"
     ],
     "most_aligned": [
-      "ADR-3001",
-      "ADR-3002",
-      "ADR-3003",
-      "ADR-3004",
-      "ADR-3005",
-      "ADR-3006",
-      "ADR-3007",
-      "ADR-3008",
-      "ADR-3009",
-      "ADR-3010",
-      "ADR-3011",
-      "ADR-3012",
-      "ADR-3013",
-      "ADR-3014",
-      "ADR-3015",
-      "ADR-3016",
-      "ADR-3017",
-      "ADR-3018",
-      "ADR-3019",
-      "ADR-3020",
-      "ADR-3021",
-      "ADR-3022",
-      "ADR-3023",
-      "ADR-3024",
-      "ADR-3025"
+      "ADR-3073",
+      "ADR-3076",
+      "ADR-3087",
+      "ADR-3097",
+      "ADR-3098",
+      "ADR-3100",
+      "ADR-3101",
+      "ADR-3201",
+      "ADR-3202",
+      "ADR-3203",
+      "ADR-3209",
+      "ADR-3210",
+      "ADR-3215",
+      "ADR-3217",
+      "ADR-3218",
+      "ADR-3219",
+      "ADR-3220",
+      "ADR-3223",
+      "ADR-3224",
+      "ADR-3225",
+      "ADR-3226",
+      "ADR-3231",
+      "ADR-3249",
+      "ADR-3250",
+      "ADR-3251"
     ]
   },
   "adrs": [
@@ -2053,25 +2112,43 @@
       "adr_id": "ADR-3073",
       "title": "A07: Password minimum length setting for realm 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3073-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: Password minimum length setting for realm 1",
+          "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -2134,25 +2211,43 @@
       "adr_id": "ADR-3076",
       "title": "A07: MFA required key for privileged role 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3076-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A07: MFA required key for privileged role 4",
+          "reason": "No finding matched rule(s) CKV_AWS_10, CKV_AWS_11, CKV_AWS_12, CKV_AWS_14, CKV_AWS_15 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -2431,25 +2526,43 @@
       "adr_id": "ADR-3087",
       "title": "A08: CI provenance required key for deploy artifact 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3087-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A08: CI provenance required key for deploy artifact 3",
+          "reason": "No finding matched rule(s) rules.pathfinder.owasp-curl-pipe-shell, rules.pathfinder.owasp-git-dependency-npm, rules.pathfinder.owasp-git-dependency-gomod within 1 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -2701,25 +2814,43 @@
       "adr_id": "ADR-3097",
       "title": "A09: Security event logging required key for service 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3097-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Security event logging required key for service 1",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -2728,25 +2859,43 @@
       "adr_id": "ADR-3098",
       "title": "A09: Log retention days setting for audit lane 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3098-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Log retention days setting for audit lane 2",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -2782,25 +2931,43 @@
       "adr_id": "ADR-3100",
       "title": "A09: Alerting webhook configuration for detection 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3100-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Alerting webhook configuration for detection 4",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -2809,25 +2976,43 @@
       "adr_id": "ADR-3101",
       "title": "A09: Immutable log sink required key for archive 5",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3101-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "A09: Immutable log sink required key for archive 5",
+          "reason": "No finding matched rule(s) CKV_AWS_66, CKV_AWS_67, CKV_AWS_76, CKV_AWS_143, CKV_AWS_252 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3349,25 +3534,43 @@
       "adr_id": "ADR-3201",
       "title": "AWS iam: Wildcard IAM action star for role 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3201-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Wildcard IAM action star for role 1",
+          "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3376,25 +3579,43 @@
       "adr_id": "ADR-3202",
       "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3202-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: Resource star on sensitive IAM policy for role 2",
+          "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_49, CKV_AWS_63 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3403,25 +3624,43 @@
       "adr_id": "ADR-3203",
       "title": "AWS iam: IAM Access Analyzer required key for account 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3203-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS iam: IAM Access Analyzer required key for account 3",
+          "reason": "No finding matched rule(s) CKV_AWS_40, CKV_AWS_1, CKV_AWS_63 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3565,25 +3804,43 @@
       "adr_id": "ADR-3209",
       "title": "AWS encryption: KMS CMK required key for data class 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3209-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS encryption: KMS CMK required key for data class 1",
+          "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3592,25 +3849,43 @@
       "adr_id": "ADR-3210",
       "title": "AWS encryption: TLS in transit required key for service link 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3210-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS encryption: TLS in transit required key for service link 2",
+          "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3727,25 +4002,43 @@
       "adr_id": "ADR-3215",
       "title": "AWS encryption: EBS encryption by default setting for account 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3215-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS encryption: EBS encryption by default setting for account 7",
+          "reason": "No finding matched rule(s) CKV_AWS_3, CKV_AWS_8, CKV_AWS_16, CKV_AWS_145, CKV_AWS_35 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3781,25 +4074,43 @@
       "adr_id": "ADR-3217",
       "title": "AWS network: Public subnet placement for data store 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3217-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: Public subnet placement for data store 1",
+          "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3808,25 +4119,43 @@
       "adr_id": "ADR-3218",
       "title": "AWS network: VPC flow logs required key for VPC 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3218-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: VPC flow logs required key for VPC 2",
+          "reason": "No finding matched rule(s) CKV2_AWS_11, CKV_AWS_130, CKV_AWS_24 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3835,25 +4164,43 @@
       "adr_id": "ADR-3219",
       "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3219-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: 0.0.0.0/0 SSH ingress for security group 3",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3862,25 +4209,43 @@
       "adr_id": "ADR-3220",
       "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3220-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: NACL allow-all ephemeral rule for VPC 4",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3943,25 +4308,43 @@
       "adr_id": "ADR-3223",
       "title": "AWS network: Peering without least-privilege routes for VPC 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3223-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: Peering without least-privilege routes for VPC 7",
+          "reason": "No finding matched rule(s) CKV_AWS_130, CKV2_AWS_11, CKV_AWS_24 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3970,25 +4353,43 @@
       "adr_id": "ADR-3224",
       "title": "AWS network: Security group reference cycles for tier 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3224-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS network: Security group reference cycles for tier 8",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_23, CKV2_AWS_11, CKV_AWS_130 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -3997,25 +4398,43 @@
       "adr_id": "ADR-3225",
       "title": "AWS logging: CloudTrail multi-region required key for org 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3225-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS logging: CloudTrail multi-region required key for org 1",
+          "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4024,25 +4443,43 @@
       "adr_id": "ADR-3226",
       "title": "AWS logging: CloudTrail log file validation setting for trail 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3226-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS logging: CloudTrail log file validation setting for trail 2",
+          "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4159,25 +4596,43 @@
       "adr_id": "ADR-3231",
       "title": "AWS logging: Config recorder required key for region 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3231-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS logging: Config recorder required key for region 7",
+          "reason": "No finding matched rule(s) CKV_AWS_67, CKV_AWS_36, CKV_AWS_66, CKV_AWS_338 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4645,25 +5100,43 @@
       "adr_id": "ADR-3249",
       "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3249-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: 0.0.0.0/0 on port 3389 for security group 1",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4672,25 +5145,43 @@
       "adr_id": "ADR-3250",
       "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3250-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Unrestricted egress 0.0.0.0/0 for sensitive tier 2",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4699,25 +5190,43 @@
       "adr_id": "ADR-3251",
       "title": "AWS security_groups: Security group description required key for SG 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3251-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Security group description required key for SG 3",
+          "reason": "No finding matched rule(s) CKV_AWS_23, CKV_AWS_24, CKV_AWS_25 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4726,25 +5235,43 @@
       "adr_id": "ADR-3252",
       "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3252-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups:  overlapping world-open rules for alb SG 4",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4807,25 +5334,43 @@
       "adr_id": "ADR-3255",
       "title": "AWS security_groups: Database SG attached to public interface for db 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3255-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Database SG attached to public interface for db 7",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -4834,25 +5379,43 @@
       "adr_id": "ADR-3256",
       "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3256-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS security_groups: Self-referencing SG with all ports for tier 8",
+          "reason": "No finding matched rule(s) CKV_AWS_24, CKV_AWS_25, CKV_AWS_23, CKV_AWS_277 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5077,25 +5640,43 @@
       "adr_id": "ADR-3265",
       "title": "AWS backups: AWS Backup plan required key for workload 1",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3265-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: AWS Backup plan required key for workload 1",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5104,25 +5685,43 @@
       "adr_id": "ADR-3266",
       "title": "AWS backups: Cross-region backup copy setting for vault 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3266-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Cross-region backup copy setting for vault 2",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5131,25 +5730,43 @@
       "adr_id": "ADR-3267",
       "title": "AWS backups: Backup vault policy principal star for vault 3",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3267-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Backup vault policy principal star for vault 3",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5158,25 +5775,43 @@
       "adr_id": "ADR-3268",
       "title": "AWS backups: Disabled backup vault lock for vault 4",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3268-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Disabled backup vault lock for vault 4",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5239,25 +5874,43 @@
       "adr_id": "ADR-3271",
       "title": "AWS backups: RDS automated backup retention setting for database 7",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3271-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: RDS automated backup retention setting for database 7",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5266,25 +5919,43 @@
       "adr_id": "ADR-3272",
       "title": "AWS backups: Manual snapshot without encryption for database 8",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3272-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS backups: Manual snapshot without encryption for database 8",
+          "reason": "No finding matched rule(s) CKV_AWS_166, CKV_AWS_16 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
@@ -5320,25 +5991,43 @@
       "adr_id": "ADR-3274",
       "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
       "counts": {
-        "NOT_APPLICABLE": 1
+        "PASS": 1
       },
-      "assessed": 0,
-      "aligned": 0,
+      "assessed": 1,
+      "aligned": 1,
       "deviated": 0,
-      "excluded": 1,
+      "excluded": 0,
       "fail_count": 0,
       "indeterminate_count": 0,
+      "flag_rate": 0,
+      "flag_rate_ci_low": 1.4007334359109492e-17,
+      "flag_rate_ci_high": 0.7934506856227626,
       "by_submission_kind": {
         "code_snippet": {
           "counts": {
-            "NOT_APPLICABLE": 1
+            "PASS": 1
           },
-          "assessed": 0,
-          "aligned": 0,
+          "assessed": 1,
+          "aligned": 1,
           "deviated": 0,
-          "excluded": 1
+          "excluded": 0,
+          "flag_rate": 0,
+          "flag_rate_ci_low": 1.4007334359109492e-17,
+          "flag_rate_ci_high": 0.7934506856227626
         }
       },
+      "aligned_runs": [
+        {
+          "run_id": "WS-CS-001",
+          "submission_id": "WS-CS-001",
+          "submission_kind": "code_snippet",
+          "requirement_id": "REQ-3274-01",
+          "status": "PASS",
+          "alignment": "aligned",
+          "title": "AWS tagging_compute: Instance metadata hop limit setting for ASG 2",
+          "reason": "No finding matched rule(s) CKV_AWS_79 within 2 source path(s) in scope."
+        }
+      ],
       "run_ids": [
         "WS-CS-001"
       ]
