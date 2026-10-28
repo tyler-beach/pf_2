@@ -1,7 +1,7 @@
 {
   "schema_version": "workshop-submission-results-v1",
-  "run_id": "workshop-submissions-20261028T015800Z",
-  "timestamp": "2026-10-28T01:58:07.506060+00:00",
+  "run_id": "workshop-submissions-20261028T021536Z",
+  "timestamp": "2026-10-28T02:15:43.447092+00:00",
   "counts": {
     "total": 50,
     "tech_spec": 25,
@@ -936,10 +936,5 @@
       "runtime_llm_calls": 0,
       "assessment_path": "testdata/workshop-submissions/results/WS-CS-025/assessment.json"
     }
-  ],
-  "count": 50,
-  "kind_counts": {
-    "tech_spec": 25,
-    "code_snippet": 25
-  }
+  ]
 }

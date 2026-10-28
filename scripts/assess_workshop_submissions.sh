@@ -125,6 +125,8 @@ for sub in results["submissions"]:
         band = "low"
     elif sub.get("verdict") == "PASS":
         band = "high"
+    # Batch rollup rows are not extract-calibrated; mark heuristic so KPIs stay honest.
+    score = {"high": 0.85, "medium": 0.55, "low": 0.25}.get(band, 0.5)
     cands["candidates"].append({
         "id": f"sub-{sub['id']}",
         "adr_id": sub["id"],
@@ -134,7 +136,9 @@ for sub in results["submissions"]:
         "submission_kind": sub["submission_kind"],
         "pattern_hint": "workshop.submission",
         "confidence": band,
-        "confidence_score": 0.5,
+        "confidence_score": score,
+        "confidence_p": score,
+        "confidence_method": "heuristic",
         "approval_status": "pending_review",
         "enforcement_mode": "review_required",
         "executable": False,

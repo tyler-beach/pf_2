@@ -6,9 +6,16 @@
   "documents_with_candidates": 17,
   "candidate_count": 63,
   "confidence_summary": {
-    "high": 0,
-    "medium": 24,
-    "low": 39
+    "high": 35,
+    "medium": 0,
+    "low": 28
+  },
+  "calibration": {
+    "method": "platt_conformal",
+    "coverage": 0.9,
+    "gold_example_count": 81,
+    "params_version": "v1",
+    "exchangeability_note": "Assumes future candidates are exchangeable with gold calibration examples (same extract process / corpus family). Distribution shift (new domains, parsers, or the 50-submissions pack) requires refit."
   },
   "candidates": [
     {
@@ -32,8 +39,14 @@
         "non_decision_section",
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.15,
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -58,8 +71,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "high",
       "confidence_score": 0.45,
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -85,10 +104,17 @@
       "review_hints": [
         "non_decision_section"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.65,
+      "confidence_p": 0.0069,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
-        "non_decision_section"
+        "non_decision_section",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -111,11 +137,18 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -138,11 +171,18 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -162,8 +202,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -186,8 +232,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -221,12 +273,19 @@
       ],
       "confidence": "low",
       "confidence_score": 0.05,
+      "confidence_p": 0.3632,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
         "non_decision_section",
         "compound_statement",
-        "conditional_scope"
+        "conditional_scope",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -251,8 +310,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.15,
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -277,10 +342,20 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.6,
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
       "escalation_reasons": [
-        "manual_review_pattern_hint"
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -306,10 +381,17 @@
       ],
       "confidence": "low",
       "confidence_score": 0.3,
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -332,11 +414,18 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -359,11 +448,18 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -387,8 +483,14 @@
         "non_decision_section",
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.15,
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -416,8 +518,14 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -447,11 +555,18 @@
       ],
       "confidence": "low",
       "confidence_score": 0.05,
+      "confidence_p": 0.1355,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
         "non_decision_section",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -475,8 +590,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -504,8 +625,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -529,8 +656,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "high",
       "confidence_score": 0.45,
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -556,8 +689,14 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -585,11 +724,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -612,8 +758,14 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -640,11 +792,18 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -667,8 +826,14 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9997,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -701,12 +866,19 @@
       ],
       "confidence": "low",
       "confidence_score": 0,
+      "confidence_p": 0.2448,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
         "ambiguity_flags",
         "subjective_or_underspecified",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -726,8 +898,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "high",
       "confidence_score": 0.7,
+      "confidence_p": 0.9999,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality"
       ]
@@ -749,8 +927,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "high",
       "confidence_score": 0.45,
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -773,8 +957,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -797,8 +987,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -821,10 +1017,20 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.6,
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
       "escalation_reasons": [
-        "manual_review_pattern_hint"
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -847,8 +1053,14 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -879,10 +1091,17 @@
       ],
       "confidence": "low",
       "confidence_score": 0.3,
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -902,8 +1121,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "high",
       "confidence_score": 0.45,
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -930,11 +1155,18 @@
         "non_decision_section",
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.55,
+      "confidence_p": 0.0043,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "non_decision_section",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -959,9 +1191,16 @@
       ],
       "confidence": "low",
       "confidence_score": 0.4,
+      "confidence_p": 0.0035,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "non_decision_section"
+        "non_decision_section",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -981,10 +1220,20 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.6,
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
       "escalation_reasons": [
-        "manual_review_pattern_hint"
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1008,11 +1257,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1036,11 +1292,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1063,8 +1326,14 @@
       "review_hints": [
         "non_decision_section"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9496,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -1094,10 +1363,17 @@
       ],
       "confidence": "low",
       "confidence_score": 0.3,
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1121,8 +1397,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1146,8 +1428,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1170,8 +1458,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1194,8 +1488,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1218,8 +1518,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1242,8 +1548,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1270,8 +1582,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1299,8 +1617,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1328,8 +1652,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1357,8 +1687,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1391,10 +1727,17 @@
       ],
       "confidence": "low",
       "confidence_score": 0.4,
+      "confidence_p": 0.0292,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement",
-        "conditional_scope"
+        "conditional_scope",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1419,8 +1762,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9997,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -1445,8 +1794,14 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.35,
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1474,8 +1829,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1503,11 +1864,18 @@
       "review_hints": [
         "compound_or_conjoined"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1532,11 +1900,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1563,10 +1938,17 @@
       ],
       "confidence": "low",
       "confidence_score": 0.35,
+      "confidence_p": 0.0038,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "subjective_or_underspecified",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1590,8 +1972,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1619,8 +2007,14 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "low",
+      "confidence": "high",
       "confidence_score": 0.25,
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ],
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1648,11 +2042,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1676,11 +2077,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1700,10 +2108,20 @@
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.6,
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ],
       "escalation_reasons": [
-        "manual_review_pattern_hint"
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
       ]
     },
     {
@@ -1727,11 +2145,18 @@
         "compound_or_conjoined",
         "split_from_compound"
       ],
-      "confidence": "medium",
+      "confidence": "low",
       "confidence_score": 0.5,
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ],
       "escalation_reasons": [
         "manual_review_pattern_hint",
-        "compound_statement"
+        "compound_statement",
+        "calibrated_p_below_medium"
       ]
     }
   ]

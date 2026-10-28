@@ -212,9 +212,7 @@ func Emit(opts EmitOptions) (Latest, error) {
 			}
 			sumP += c.ConfidenceP
 			cm := c.ConfidenceMethod
-			if cm == "" {
-				cm = method
-			}
+			// Empty method is heuristic; do not inherit batch-level method for counts.
 			if cm == calibration.MethodPlattConformal {
 				calibrated++
 			} else {
