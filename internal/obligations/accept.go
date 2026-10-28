@@ -126,11 +126,10 @@ func AcceptAssistProposal(index Index, catalog assessment.Catalog, registry Regi
 	return next, coverage, found, nil
 }
 
-// AssistAcceptRate computes approved/(approved+rejected) among proposal parents
-// that have a non-pending latest review. Returns ok=false when denominator is 0.
-func AssistAcceptRate(proposals ProposalIndex, registry Registry) (rate float64, ok bool) {
+// assistDecisionCounts returns approved and rejected counts among proposal parents
+// that have a non-pending latest review.
+func assistDecisionCounts(proposals ProposalIndex, registry Registry) (approved, rejected int) {
 	latest := latestRecords(registry)
-	approved, rejected := 0, 0
 	seen := map[string]bool{}
 	for _, p := range proposals.Proposals {
 		parent := strings.TrimSpace(p.ParentCandidateID)
@@ -149,9 +148,33 @@ func AssistAcceptRate(proposals ProposalIndex, registry Registry) (rate float64,
 			rejected++
 		}
 	}
+	return approved, rejected
+}
+
+// AssistAcceptRate computes approved/(approved+rejected) among proposal parents
+// that have a non-pending latest review. Returns ok=false when denominator is 0.
+func AssistAcceptRate(proposals ProposalIndex, registry Registry) (rate float64, ok bool) {
+	approved, rejected := assistDecisionCounts(proposals, registry)
 	denom := approved + rejected
 	if denom == 0 {
 		return 0, false
 	}
 	return float64(approved) / float64(denom), true
+}
+
+// AssistRejectRate computes rejected/(approved+rejected) among proposal parents
+// that have a non-pending latest review. Returns ok=false when denominator is 0.
+func AssistRejectRate(proposals ProposalIndex, registry Registry) (rate float64, ok bool) {
+	approved, rejected := assistDecisionCounts(proposals, registry)
+	denom := approved + rejected
+	if denom == 0 {
+		return 0, false
+	}
+	return float64(rejected) / float64(denom), true
+}
+
+// AssistDecisionTotals returns raw approved/rejected counts for cost-per-outcome KPIs.
+func AssistDecisionTotals(proposals ProposalIndex, registry Registry) (approved, rejected int, ok bool) {
+	approved, rejected = assistDecisionCounts(proposals, registry)
+	return approved, rejected, approved+rejected > 0
 }

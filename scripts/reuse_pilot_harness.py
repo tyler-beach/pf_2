@@ -26,11 +26,16 @@ def score(labels: dict, candidates: list[dict]) -> dict:
     modalities: Counter[str] = Counter()
     confidence_counts: Counter[str] = Counter()
     by_band_precision = defaultdict(lambda: {"matched": 0, "fp": 0})
+    by_kind = defaultdict(lambda: {"matched": 0, "fp": 0, "matched_markers": set()})
     expected_by_band: dict[str, set[str]] = defaultdict(set)
+    expected_by_kind: dict[str, set[str]] = defaultdict(set)
     matched_by_band: dict[str, set[str]] = defaultdict(set)
     for item in labels.get("expected_candidates", []):
         band = (item.get("confidence_band") or "low").lower()
         expected_by_band[band].add(item["statement_contains"])
+        kind = (item.get("submission_kind") or "").strip()
+        if kind:
+            expected_by_kind[kind].add(item["statement_contains"])
     escalate_expected = 0
     escalate_observed = 0
     escalate_expected_markers = {
@@ -42,6 +47,7 @@ def score(labels: dict, candidates: list[dict]) -> dict:
     for candidate in candidates:
         statement = candidate.get("statement", "")
         band = (candidate.get("confidence") or "low").lower()
+        kind = (candidate.get("submission_kind") or "").strip() or "unspecified"
         confidence_counts[band] += 1
         pattern_counts[candidate.get("pattern_hint", "")] += 1
         modalities[candidate.get("modality", "")] += 1
@@ -59,10 +65,13 @@ def score(labels: dict, candidates: list[dict]) -> dict:
             if candidate.get("kind") != "exception_candidate":
                 false_positives += 1
                 by_band_precision[band]["fp"] += 1
+                by_kind[kind]["fp"] += 1
             continue
         matched_markers.add(hit_marker)
         matched_candidates += 1
         by_band_precision[band]["matched"] += 1
+        by_kind[kind]["matched"] += 1
+        by_kind[kind]["matched_markers"].add(hit_marker)
         label_band = (hit_meta.get("confidence_band") or "low").lower()
         matched_by_band[label_band].add(hit_marker)
         if hit_marker in escalate_expected_markers:
@@ -95,6 +104,24 @@ def score(labels: dict, candidates: list[dict]) -> dict:
             "recall": round(hit / max(len(markers), 1), 4),
         }
 
+    by_submission_kind = {}
+    for kind, stats in by_kind.items():
+        total = stats["matched"] + stats["fp"]
+        expected_markers = expected_by_kind.get(kind) or set()
+        # When labels omit submission_kind, fall back to precision-only kind split.
+        kind_recall = None
+        if expected_markers:
+            kind_recall = round(
+                len(stats["matched_markers"] & expected_markers) / max(len(expected_markers), 1),
+                4,
+            )
+        by_submission_kind[kind] = {
+            "matched_candidates": stats["matched"],
+            "false_positives": stats["fp"],
+            "precision": round(stats["matched"] / max(total, 1), 4),
+            "recall": kind_recall,
+        }
+
     expected_escalate_labels = len(escalate_expected_markers)
     return {
         "expected_candidates": expected_count,
@@ -110,6 +137,7 @@ def score(labels: dict, candidates: list[dict]) -> dict:
         "confidence_counts": dict(confidence_counts),
         "precision_by_confidence": band_metrics,
         "recall_by_confidence": recall_by_confidence,
+        "by_submission_kind": by_submission_kind,
         "escalation_rate": round(escalate_observed / max(len(candidates), 1), 4),
         "escalation_expected_labels": expected_escalate_labels,
         "escalation_observed_low": escalate_observed,

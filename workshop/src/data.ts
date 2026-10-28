@@ -396,6 +396,34 @@ export async function loadADRFlagging(): Promise<ADRFlaggingReport | null> {
   return loadLinkJSON<ADRFlaggingReport>('adr_flagging');
 }
 
+export type RuleHitRow = {
+  rule_id: string;
+  analyzer?: string;
+  hit_count: number;
+  flag_count: number;
+  adr_count?: number;
+  sample_adrs?: string[];
+};
+
+export type RuleHitsReport = {
+  schema_version: string;
+  run_id?: string;
+  summary: {
+    distinct_rules: number;
+    hit_total: number;
+    flag_total: number;
+    top_rule_id?: string;
+    top_hit_count?: number;
+    top_flag_rule_id?: string;
+    top_flag_count?: number;
+  };
+  rules: RuleHitRow[];
+};
+
+export async function loadRuleHits(): Promise<RuleHitsReport | null> {
+  return loadLinkJSON<RuleHitsReport>('rule_hits');
+}
+
 export function previousRun(runs: MetricsRow[], runId: string): MetricsRow | undefined {
   const idx = runs.findIndex((r) => r.run.run_id === runId);
   if (idx <= 0) {

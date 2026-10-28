@@ -1,3 +1,5 @@
+import { bindKpiHelp, kpiHelpControl, kpiLabel } from './kpi-help';
+
 export function escapeHTML(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -39,13 +41,15 @@ export type Metric = {
   hint?: string;
   cls?: string;
   href?: string;
+  /** When set, renders an accessible KPI help control next to the label. */
+  kpi?: string;
 };
 
 export function metricsRow(items: Metric[]): string {
-  return `<div class="metrics">${items
+  const html = `<div class="metrics">${items
     .map((m) => {
       const cls = safeClass(m.cls);
-      const body = `<div class="label">${escapeHTML(m.label)}</div><div class="value${cls ? ` ${cls}` : ''}" title="${escapeHTML(m.value)}">${escapeHTML(m.value)}</div>${
+      const body = `<div class="label">${m.kpi ? kpiLabel(m.label, m.kpi) : escapeHTML(m.label)}</div><div class="value${cls ? ` ${cls}` : ''}" title="${escapeHTML(m.value)}">${escapeHTML(m.value)}</div>${
         m.hint ? `<div class="hint" title="${escapeHTML(m.hint)}">${escapeHTML(m.hint)}</div>` : ''
       }`;
       const href = safeHref(m.href);
@@ -54,47 +58,28 @@ export function metricsRow(items: Metric[]): string {
         : `<div class="metric">${body}</div>`;
     })
     .join('')}</div>`;
+  return html;
 }
 
 /** DOM-safe metrics strip — prefer this over metricsRow + innerHTML. */
 export function mountMetricsRow(parent: HTMLElement, items: Metric[]): HTMLElement {
-  const row = document.createElement('div');
-  row.className = 'metrics';
-  for (const m of items) {
-    const href = safeHref(m.href);
-    const cell = document.createElement(href ? 'a' : 'div');
-    cell.className = 'metric';
-    if (href && cell instanceof HTMLAnchorElement) cell.href = href;
-
-    const label = document.createElement('div');
-    label.className = 'label';
-    label.textContent = m.label;
-    cell.appendChild(label);
-
-    const value = document.createElement('div');
-    value.className = 'value';
-    const cls = safeClass(m.cls);
-    if (cls) value.classList.add(cls);
-    value.textContent = m.value;
-    value.title = m.value;
-    cell.appendChild(value);
-
-    if (m.hint) {
-      const hint = document.createElement('div');
-      hint.className = 'hint';
-      hint.textContent = m.hint;
-      hint.title = m.hint;
-      cell.appendChild(hint);
-    }
-    row.appendChild(cell);
-  }
+  const wrap = document.createElement('div');
+  wrap.innerHTML = metricsRow(items);
+  const row = wrap.firstElementChild as HTMLElement;
   parent.appendChild(row);
+  bindKpiHelp(row);
   return row;
 }
 
-export function statusItem(label: string, value: string, kind: 'ok' | 'warn' | 'bad' | '' = ''): string {
+export function statusItem(
+  label: string,
+  value: string,
+  kind: 'ok' | 'warn' | 'bad' | '' = '',
+  kpi?: string,
+): string {
   const cls = safeClass(kind);
-  return `<span class="item"><span class="dot${cls ? ` ${cls}` : ''}"></span>${escapeHTML(label)} <strong${cls ? ` class="${cls}"` : ''}>${escapeHTML(value)}</strong></span>`;
+  const lab = kpi ? kpiLabel(label, kpi) : escapeHTML(label);
+  return `<span class="item"><span class="dot${cls ? ` ${cls}` : ''}"></span>${lab} <strong${cls ? ` class="${cls}"` : ''}>${escapeHTML(value)}</strong></span>`;
 }
 
 export function tag(text: string, kind = ''): string {
@@ -222,12 +207,12 @@ function openChartHelpPop(root: ParentNode, btn: HTMLButtonElement, pop: HTMLEle
   btn.setAttribute('aria-expanded', 'true');
 }
 
-/** Wire chart ℹ controls; safe to call after each view paint. */
+/** Wire chart ℹ controls; safe to call after each view paint. Also binds KPI help. */
 export function bindChartHelp(root: ParentNode = document): void {
-  root.querySelectorAll<HTMLButtonElement>('.chart-help-btn').forEach((btn) => {
+  root.querySelectorAll<HTMLButtonElement>('.chart-help-btn:not(.kpi-help-btn)').forEach((btn) => {
     if (btn.dataset.bound === '1') return;
     btn.dataset.bound = '1';
-    const pop = btn.parentElement?.querySelector<HTMLElement>('.chart-help-pop');
+    const pop = btn.parentElement?.querySelector<HTMLElement>('.chart-help-pop:not(.kpi-help-pop)');
     if (!pop) return;
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -241,12 +226,13 @@ export function bindChartHelp(root: ParentNode = document): void {
       }
     });
   });
+  bindKpiHelp(root);
   const doc = root instanceof Document ? root : root.ownerDocument || document;
   if ((doc as Document & { __pfChartHelpDoc?: boolean }).__pfChartHelpDoc) return;
   (doc as Document & { __pfChartHelpDoc?: boolean }).__pfChartHelpDoc = true;
   doc.addEventListener('click', (e) => {
     const t = e.target as HTMLElement | null;
-    if (t?.closest?.('.chart-head')) return;
+    if (t?.closest?.('.chart-head, .kpi-help')) return;
     doc.querySelectorAll<HTMLElement>('.chart-help-pop:not([hidden])').forEach((pop) => {
       const btn = pop.parentElement?.querySelector<HTMLButtonElement>('.chart-help-btn');
       if (btn) closeChartHelpPop(btn, pop);
@@ -260,6 +246,8 @@ export function bindChartHelp(root: ParentNode = document): void {
     });
   });
 }
+
+export { bindKpiHelp, kpiHelpControl, kpiLabel } from './kpi-help';
 
 export function drawerField(label: string, valueHTML: string, wrap = false): string {
   return `<dt>${escapeHTML(label)}</dt><dd class="${wrap ? 'wrap' : ''}">${valueHTML}</dd>`;
@@ -594,18 +582,30 @@ const LOWER_BETTER_EXACT = new Set([
   'kpi.invariant.llm_calls',
   'kpi.assess.unbound',
   'kpi.assess.stale',
+  'kpi.assess.na_rate',
+  'kpi.assess.fail_share',
+  'kpi.assess.indeterminate_share',
   'kpi.review.backlog',
   'kpi.review.pending_high',
   'kpi.review.pending_medium',
   'kpi.review.pending_low',
+  'kpi.review.reject_rate',
   'kpi.evidence.gap_rate',
+  'kpi.evidence.gap_rate.tech_spec',
+  'kpi.evidence.gap_rate.code_snippet',
+  'kpi.harness.fp_rate',
+  'kpi.harness.false_positives',
   'kpi.assist.cost_usd',
   'kpi.assist.prompt_tokens',
   'kpi.assist.completion_tokens',
+  'kpi.cost.per_accepted_proposal',
+  'kpi.cost.per_fail',
   'kpi.adr.flag_rate',
   'kpi.adr.fail_count',
   'kpi.adr.indeterminate_count',
   'kpi.adr.top_flag_rate',
+  'kpi.submission.unspecified_rate',
+  'kpi.publish.age_minutes',
 ]);
 
 const NEUTRAL_EXACT = new Set([
@@ -937,7 +937,7 @@ export function renderCompareSummaryStrip(summary: CompareSummary): string {
     ? `<div class="compare-callouts">${summary.callouts
         .map((c) => {
           const cls = compareDirectionClass(c.direction);
-          return `<span class="compare-callout compare-callout-${cls}" title="${escapeHTML(c.key)}"><span class="compare-callout-k">${escapeHTML(c.shortLabel)}</span> <span class="compare-callout-d">${escapeHTML(c.deltaLabel)}</span></span>`;
+          return `<span class="compare-callout compare-callout-${cls}" title="${escapeHTML(c.key)}"><span class="compare-callout-k">${escapeHTML(c.shortLabel)}${kpiHelpControl(c.key, c.shortLabel)}</span> <span class="compare-callout-d">${escapeHTML(c.deltaLabel)}</span></span>`;
         })
         .join('')}</div>`
     : `<p class="muted compare-callouts-empty">No headline KPI shifts between these runs.</p>`;

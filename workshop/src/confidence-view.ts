@@ -160,19 +160,38 @@ export async function renderConfidence(app: HTMLElement) {
     <h2>Overview</h2>
     <p class="muted">Calibrated P(correct) vs heuristic triage for the active run.</p>
     ${metricsRow([
-      { label: 'Method', value: method, href: '#/docs/confidence' },
-      { label: 'Coverage target', value: coverage != null ? `${Math.round(coverage * 100)}%` : '—' },
-      { label: 'Mean P(correct)', value: fmt(m['kpi.confidence.mean_p']), cls: method.includes('platt') ? 'ok' : '' },
+      { label: 'Method', value: method, href: '#/docs/confidence', kpi: 'kpi.confidence.method' },
+      { label: 'Coverage target', value: coverage != null ? `${Math.round(coverage * 100)}%` : '—', kpi: 'kpi.confidence.coverage_target' },
+      { label: 'Mean P(correct)', value: fmt(m['kpi.confidence.mean_p']), cls: method.includes('platt') ? 'ok' : '', kpi: 'kpi.confidence.mean_p' },
       {
         label: 'Escalation ±CI',
         value: fmtCI(num(m, 'kpi.escalation.rate'), num(m, 'kpi.escalation.rate.ci_low'), num(m, 'kpi.escalation.rate.ci_high')),
         href: '#/metrics?focus=escalation',
+        kpi: 'kpi.escalation.rate',
       },
-      { label: 'High / med / low', value: `${fmt(m.confidence_high)} / ${fmt(m.confidence_medium)} / ${fmt(m.confidence_low)}` },
+      { label: 'Params version', value: fmt(m['kpi.confidence.params_version'] ?? cal?.params_version), kpi: 'kpi.confidence.params_version' },
+      { label: 'Gold size', value: fmt(m['kpi.confidence.gold_size'] ?? cal?.gold_example_count), kpi: 'kpi.confidence.gold_size' },
+      { label: 'Empirical coverage', value: fmt(m['kpi.confidence.empirical_coverage']), kpi: 'kpi.confidence.empirical_coverage' },
+      {
+        label: 'Coverage gap',
+        value: fmt(m['kpi.confidence.coverage_gap']),
+        kpi: 'kpi.confidence.coverage_gap',
+        hint: 'empirical − target',
+      },
+    ])}
+    <h2>Calibration drift</h2>
+    <p class="muted">Track params version, gold size, and prediction-set coverage vs the conformal target.</p>
+    ${metricsRow([
+      { label: 'High / med / low', value: `${fmt(m.confidence_high)} / ${fmt(m.confidence_medium)} / ${fmt(m.confidence_low)}`, kpi: 'confidence_high' },
       {
         label: 'Calibrated / heuristic',
         value: `${fmt(m['kpi.confidence.calibrated_count'])} / ${fmt(m['kpi.confidence.heuristic_count'])}`,
+        kpi: 'kpi.confidence.calibrated_count',
       },
+      { label: 'Mean P tech_spec', value: fmt(m['kpi.confidence.mean_p.tech_spec']), kpi: 'kpi.confidence.mean_p.tech_spec' },
+      { label: 'Mean P code', value: fmt(m['kpi.confidence.mean_p.code_snippet']), kpi: 'kpi.confidence.mean_p.code_snippet' },
+      { label: 'Unspecified kind', value: fmt(m['kpi.submission.unspecified_rate']), kpi: 'kpi.submission.unspecified_rate' },
+      { label: 'FP rate', value: fmt(m['kpi.harness.fp_rate']), kpi: 'kpi.harness.fp_rate', href: '#/metrics?focus=harness' },
     ])}
     <div class="spark-grid conf-grid">
       <div>${chartHeading('Band mix across runs', HELP.bandMix)}<div class="chart" id="conf-band-chart"></div></div>

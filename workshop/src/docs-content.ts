@@ -310,6 +310,39 @@ export const DOC_SECTIONS: DocSection[] = [
 <p>Routes: Overview, Metrics, <a href="#/confidence">Confidence</a>, <a href="#/adr-flags">ADR Flagging</a>, Pipeline, Sample, ADRs, Candidates, Proposals, Assess, Costs, Runs, Evals, Corpus, Docs.</p>`,
   },
   {
+    id: 'assess-outcomes',
+    title: 'Assess outcomes & binding funnel',
+    group: 'Operator reference',
+    summary: 'N/A rate, PASS/FAIL/IND shares, and inventory→bound→evidence-complete rates.',
+    body: `
+<p>Dashboard: <a href="#/assess">Assess</a> · <a href="#/metrics?focus=assess">Metrics → assess</a>. Emitted from assessment <code>counts</code> / <code>corpus_coverage</code>.</p>
+<h3>Outcome mix</h3>
+<ul>
+  <li><code>kpi.assess.na_rate</code> — NOT_APPLICABLE / requirement_count (issue-surface batches are often high N/A).</li>
+  <li><code>kpi.assess.applicable_count</code> — non-N/A requirements (denominator for shares).</li>
+  <li><code>kpi.assess.pass_share</code> / <code>fail_share</code> / <code>indeterminate_share</code> / <code>warn_share</code> — among applicable only.</li>
+  <li><code>kpi.assess.submission_kind</code> — <code>tech_spec</code>, <code>code_snippet</code>, or <code>mixed</code> for multi-kind batches.</li>
+</ul>
+<h3>Corpus coverage funnel</h3>
+<p><code>kpi.assess.funnel.*</code> stages: inventory → accepted → interpreted → bound → evidence_complete (counts + rates vs inventory). Binding covered/unbound/stale remain separate obligation-coverage KPIs — not “green estate.”</p>
+<p>Related: <a href="#/docs/statuses">Statuses</a> · <a href="#/docs/kpis">KPI glossary</a> · <a href="#/docs/adr-flagging">ADR flagging</a>.</p>`,
+  },
+  {
+    id: 'rule-hits',
+    title: 'Rule / analyzer hit rates',
+    group: 'Operator reference',
+    summary: 'OpenGrep/Checkov rule_id hit and flag counts from assessment findings.',
+    body: `
+<p>Artifact: <code>rule_hits.json</code> from <code>adrctl workshop-emit</code>. UI table on <a href="#/adr-flags">ADR Flagging</a>; summary KPIs <code>kpi.rule.*</code> on Metrics · assess.</p>
+<ul>
+  <li><strong>Hit</strong> — a finding with a non-empty <code>rule_id</code>.</li>
+  <li><strong>Flag</strong> — a hit on a requirement classified as deviate (FAIL/WARN/INDETERMINATE/…).</li>
+  <li><code>kpi.rule.top_rule_id</code> / <code>top_flag_rule_id</code> — hottest rules by hits / deviate-linked hits.</li>
+</ul>
+<p>Issue-surface assessments often have zero analyzer findings (rules N/A); repository assess runs populate this table.</p>
+<p>Related: <a href="#/docs/opengrep">OpenGrep</a> · <a href="#/docs/checkov">Checkov</a> · <a href="#/docs/adr-flagging">ADR flagging</a>.</p>`,
+  },
+  {
     id: 'adr-flagging',
     title: 'ADR flagging analytics',
     group: 'Operator reference',
@@ -383,13 +416,16 @@ export const DOC_SECTIONS: DocSection[] = [
     body: `
 <ul>
   <li><code>kpi.invariant.llm_calls</code> must be <strong>0</strong> on assess paths.</li>
-  <li>Confidence / escalation / harness precision-recall measure extract quality. See <a href="#/docs/confidence">Confidence scoring</a> for calibrated P vs heuristic vs conformal.</li>
-  <li>Wilson intervals: <code>kpi.*.ci_low</code> / <code>ci_high</code> (95%) on escalation, shares, harness precision when counts exist. Dashboard: <a href="#/confidence">Confidence</a>.</li>
-  <li><code>kpi.assess.submission_kind</code> and <code>kpi.submission.*_count</code> / <code>kpi.escalation.rate.{tech_spec,code_snippet}</code> split trends for English tech specs vs code/IaC.</li>
-  <li>Assist cost &amp; proposal counts measure batch assist — not compliance.</li>
+  <li>Confidence / escalation / harness precision-recall measure extract quality. See <a href="#/docs/confidence">Confidence scoring</a> for calibrated P vs heuristic vs conformal (params version, gold size, empirical coverage).</li>
+  <li>Wilson intervals: <code>kpi.*.ci_low</code> / <code>ci_high</code> (95%) on escalation, band shares (incl. medium), harness precision when counts exist. Dashboard: <a href="#/confidence">Confidence</a>.</li>
+  <li><code>kpi.assess.submission_kind</code> (<code>tech_spec</code> / <code>code_snippet</code> / <code>mixed</code>) and kind-split mean_p / gap / harness P/R. See <a href="#/docs/assess-outcomes">Assess outcomes</a>.</li>
+  <li>Assess outcome mix: <code>kpi.assess.na_rate</code>, applicable count, PASS/FAIL/IND/WARN shares; funnel <code>kpi.assess.funnel.*</code>.</li>
+  <li>Assist cost, <code>kpi.cost.per_accepted_proposal</code>, reject rate — batch assist economics, not compliance.</li>
   <li>Promptfoo pass rate is assist regression only.</li>
   <li>Assess covered / unbound / stale track binding completeness, not “green estate.”</li>
-  <li><code>kpi.adr.*</code> — ADR flagging rollup (aligned=PASS, deviate=FAIL/WARN/INDETERMINATE/…, N/A excluded). Dashboard: <a href="#/adr-flags">ADR Flagging</a>. See <a href="#/docs/adr-flagging">ADR flagging analytics</a>.</li>
+  <li><code>kpi.adr.*</code> — ADR flagging. <code>kpi.rule.*</code> — analyzer hit rates (<a href="#/docs/rule-hits">Rule hits</a>). Dashboard: <a href="#/adr-flags">ADR Flagging</a>.</li>
+  <li>Publish freshness SLO: Overview tile + <code>latest.slo.publish_freshness_*</code>.</li>
+  <li>Every metric tile has an ℹ control with What / Why / How and a Docs link.</li>
 </ul>
 <p>Authoritative definitions: repository <code>docs/kpi-dictionary.md</code>. Charts: <a href="#/metrics">Metrics</a> · <a href="#/confidence">Confidence</a> · <a href="#/adr-flags">ADR Flagging</a>.</p>`,
   },

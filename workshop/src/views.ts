@@ -31,7 +31,9 @@ import { getQueryValue, readListQuery, setQuery, writeListQuery } from './hash';
 import { queryParam, setSelectedRunId } from './session';
 import {
   bindChartHelp,
+  bindKpiHelp,
   bindCopyButtons,
+  kpiHelpControl,
   bindExpandControls,
   bindPager,
   bindSlashSearch,
@@ -271,15 +273,17 @@ export async function renderHome(app: HTMLElement) {
     : '';
 
   const age = dataAge(ctx.manifest?.updated_at || latest.run.timestamp);
+  const freshOk = !age.stale;
   const attention = triage.map((t, i) => ({ ...t, rank: i + 1 }));
   app.innerHTML = `
     ${!ctx.artifactsFromSnapshot ? `<div class="banner warn">Metrics for <code>${escapeHTML(ctx.runId)}</code>; detailed artifacts fall back to the latest snapshot.</div>` : ''}
     ${age.stale ? staleBanner(age.label, 'Treat assess/assist figures as historical until Workshop Publish refreshes.') : ''}
     <div class="status-row">
-      ${statusItem('Assess LLM', sloLLM ? '0 calls' : 'invariant broken', sloLLM ? 'ok' : 'bad')}
-      ${statusItem('Promptfoo', sloPF ? 'offline pass' : 'check', sloPF ? 'ok' : 'warn')}
-      ${statusItem('Verdict', String(m['kpi.assess.verdict'] || '—'), m['kpi.assess.verdict'] === 'PASS' ? 'ok' : 'warn')}
-      ${statusItem('Assist cost', fmtUSD(m['kpi.assist.cost_usd']), '')}
+      ${statusItem('Assess LLM', sloLLM ? '0 calls' : 'invariant broken', sloLLM ? 'ok' : 'bad', 'kpi.invariant.llm_calls')}
+      ${statusItem('Promptfoo', sloPF ? 'offline pass' : 'check', sloPF ? 'ok' : 'warn', 'kpi.promptfoo.pass_rate')}
+      ${statusItem('Verdict', String(m['kpi.assess.verdict'] || '—'), m['kpi.assess.verdict'] === 'PASS' ? 'ok' : 'warn', 'kpi.assess.verdict')}
+      ${statusItem('Publish', freshOk ? age.label : `stale · ${age.label}`, freshOk ? 'ok' : 'warn', 'kpi.publish.age_minutes')}
+      ${statusItem('Assist cost', fmtUSD(m['kpi.assist.cost_usd']), '', 'kpi.assist.cost_usd')}
     </div>
     <p class="run-meta">
       Viewing <code>${escapeHTML(latest.run.run_id)}</code>
@@ -288,11 +292,12 @@ export async function renderHome(app: HTMLElement) {
       ${ctx.manifest?.updated_at ? `· published ${escapeHTML(ctx.manifest.updated_at)}` : ''}
     </p>
     ${metricsRow([
-      { label: 'Candidates', value: fmt(m.candidate_total), href: '#/candidates' },
-      { label: 'High / med / low', value: `${fmt(m.confidence_high)} / ${fmt(m.confidence_medium)} / ${fmt(m.confidence_low)}`, href: '#/candidates?band=low' },
-      { label: 'Escalation', value: fmt(m['kpi.escalation.rate']), href: '#/metrics?focus=escalation' },
-      { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']), href: '#/proposals' },
-      { label: 'Corpus', value: fmt(m['kpi.corpus.size']), href: '#/corpus' },
+      { label: 'Candidates', value: fmt(m.candidate_total), href: '#/candidates', kpi: 'candidate_total' },
+      { label: 'High / med / low', value: `${fmt(m.confidence_high)} / ${fmt(m.confidence_medium)} / ${fmt(m.confidence_low)}`, href: '#/candidates?band=low', kpi: 'confidence_high' },
+      { label: 'Escalation', value: fmt(m['kpi.escalation.rate']), href: '#/metrics?focus=escalation', kpi: 'kpi.escalation.rate' },
+      { label: 'N/A rate', value: fmt(m['kpi.assess.na_rate']), href: '#/metrics?focus=assess', kpi: 'kpi.assess.na_rate' },
+      { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']), href: '#/proposals', kpi: 'kpi.assist.proposal_count' },
+      { label: 'Corpus', value: fmt(m['kpi.corpus.size']), href: '#/corpus', kpi: 'kpi.corpus.size' },
     ])}
     <h2>Attention queue</h2>
     <div class="inbox">
@@ -373,63 +378,72 @@ export async function renderMetrics(app: HTMLElement) {
     .sort()
     .map((key) => ({ key, value: m[key] }));
 
-  const focusMetrics: Record<MetricTab, Array<{ label: string; value: string; hint?: string; cls?: string }>> = {
+  const focusMetrics: Record<MetricTab, Array<{ label: string; value: string; hint?: string; cls?: string; kpi?: string }>> = {
     all: [
-      { label: 'Escalation', value: fmt(m['kpi.escalation.rate']) },
-      { label: 'Precision', value: fmt(m['kpi.harness.precision']) },
-      { label: 'Recall', value: fmt(m['kpi.harness.recall']) },
-      { label: 'Accept rate', value: fmt(m['kpi.review.accept_rate']) },
-      { label: 'Assist cost', value: fmtUSD(m['kpi.assist.cost_usd']) },
-      { label: 'Promptfoo', value: fmt(m['kpi.promptfoo.pass_rate']) },
+      { label: 'Escalation', value: fmt(m['kpi.escalation.rate']), kpi: 'kpi.escalation.rate' },
+      { label: 'N/A rate', value: fmt(m['kpi.assess.na_rate']), kpi: 'kpi.assess.na_rate' },
+      { label: 'Precision', value: fmt(m['kpi.harness.precision']), kpi: 'kpi.harness.precision' },
+      { label: 'FP rate', value: fmt(m['kpi.harness.fp_rate']), kpi: 'kpi.harness.fp_rate' },
+      { label: 'Accept rate', value: fmt(m['kpi.review.accept_rate']), kpi: 'kpi.review.accept_rate' },
+      { label: 'Assist cost', value: fmtUSD(m['kpi.assist.cost_usd']), kpi: 'kpi.assist.cost_usd' },
+      { label: 'Cost / accepted', value: fmtUSD(m['kpi.cost.per_accepted_proposal']), kpi: 'kpi.cost.per_accepted_proposal' },
+      { label: 'Promptfoo', value: fmt(m['kpi.promptfoo.pass_rate']), kpi: 'kpi.promptfoo.pass_rate' },
     ],
     confidence: [
-      { label: 'High share ±', value: `${fmt(m['kpi.confidence.share.high'] ?? (Number(m.candidate_total) ? Number(m.confidence_high) / Number(m.candidate_total) : null))}${m['kpi.confidence.share.high.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.high.ci_low'])}–${fmt(m['kpi.confidence.share.high.ci_high'])}]` : ''}` },
-      { label: 'Medium share', value: fmt(m['kpi.confidence.share.medium']) },
-      { label: 'Low share ±', value: `${fmt(m['kpi.confidence.share.low'] ?? m['kpi.escalation.rate'])}${m['kpi.confidence.share.low.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.low.ci_low'])}–${fmt(m['kpi.confidence.share.low.ci_high'])}]` : ''}` },
-      { label: 'Mean P', value: fmt(m['kpi.confidence.mean_p']) },
-      { label: 'Method', value: fmt(m['kpi.confidence.method']) },
-      { label: 'High / med / low', value: `${fmt(m.confidence_high)} / ${fmt(m.confidence_medium)} / ${fmt(m.confidence_low)}` },
+      { label: 'High share ±', value: `${fmt(m['kpi.confidence.share.high'] ?? (Number(m.candidate_total) ? Number(m.confidence_high) / Number(m.candidate_total) : null))}${m['kpi.confidence.share.high.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.high.ci_low'])}–${fmt(m['kpi.confidence.share.high.ci_high'])}]` : ''}`, kpi: 'kpi.confidence.share.high' },
+      { label: 'Medium share ±', value: `${fmt(m['kpi.confidence.share.medium'])}${m['kpi.confidence.share.medium.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.medium.ci_low'])}–${fmt(m['kpi.confidence.share.medium.ci_high'])}]` : ''}`, kpi: 'kpi.confidence.share.medium' },
+      { label: 'Low share ±', value: `${fmt(m['kpi.confidence.share.low'] ?? m['kpi.escalation.rate'])}${m['kpi.confidence.share.low.ci_low'] != null ? ` [${fmt(m['kpi.confidence.share.low.ci_low'])}–${fmt(m['kpi.confidence.share.low.ci_high'])}]` : ''}`, kpi: 'kpi.confidence.share.low' },
+      { label: 'Mean P', value: fmt(m['kpi.confidence.mean_p']), kpi: 'kpi.confidence.mean_p' },
+      { label: 'Params ver', value: fmt(m['kpi.confidence.params_version']), kpi: 'kpi.confidence.params_version' },
+      { label: 'Gold size', value: fmt(m['kpi.confidence.gold_size']), kpi: 'kpi.confidence.gold_size' },
+      { label: 'Empirical cov', value: fmt(m['kpi.confidence.empirical_coverage']), kpi: 'kpi.confidence.empirical_coverage' },
+      { label: 'Method', value: fmt(m['kpi.confidence.method']), kpi: 'kpi.confidence.method' },
     ],
     escalation: [
-      { label: 'Escalation ±CI', value: `${fmt(m['kpi.escalation.rate'])}${m['kpi.escalation.rate.ci_low'] != null ? ` [${fmt(m['kpi.escalation.rate.ci_low'])}–${fmt(m['kpi.escalation.rate.ci_high'])}]` : ''}` },
-      { label: 'Escalation tech-spec', value: fmt(m['kpi.escalation.rate.tech_spec']) },
-      { label: 'Escalation code', value: fmt(m['kpi.escalation.rate.code_snippet']) },
-      { label: 'Low candidates', value: fmt(m.confidence_low) },
-      { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']) },
-      { label: 'Evidence gap', value: fmt(m['kpi.evidence.gap_rate']) },
+      { label: 'Escalation ±CI', value: `${fmt(m['kpi.escalation.rate'])}${m['kpi.escalation.rate.ci_low'] != null ? ` [${fmt(m['kpi.escalation.rate.ci_low'])}–${fmt(m['kpi.escalation.rate.ci_high'])}]` : ''}`, kpi: 'kpi.escalation.rate' },
+      { label: 'Escalation tech-spec', value: fmt(m['kpi.escalation.rate.tech_spec']), kpi: 'kpi.escalation.rate.tech_spec' },
+      { label: 'Escalation code', value: fmt(m['kpi.escalation.rate.code_snippet']), kpi: 'kpi.escalation.rate.code_snippet' },
+      { label: 'Evidence gap', value: fmt(m['kpi.evidence.gap_rate']), kpi: 'kpi.evidence.gap_rate' },
+      { label: 'Gap tech-spec', value: fmt(m['kpi.evidence.gap_rate.tech_spec']), kpi: 'kpi.evidence.gap_rate.tech_spec' },
+      { label: 'Gap code', value: fmt(m['kpi.evidence.gap_rate.code_snippet']), kpi: 'kpi.evidence.gap_rate.code_snippet' },
+      { label: 'Unspecified kind', value: fmt(m['kpi.submission.unspecified_rate']), kpi: 'kpi.submission.unspecified_rate' },
     ],
     harness: [
-      { label: 'Precision', value: fmt(m['kpi.harness.precision']) },
-      { label: 'Recall', value: fmt(m['kpi.harness.recall']) },
-      { label: 'Recall high', value: fmt(m['kpi.harness.recall.high']) },
-      { label: 'Recall med', value: fmt(m['kpi.harness.recall.medium']) },
-      { label: 'Recall low', value: fmt(m['kpi.harness.recall.low']) },
-      { label: 'Corpus', value: fmt(m['kpi.corpus.size']) },
+      { label: 'Precision', value: fmt(m['kpi.harness.precision']), kpi: 'kpi.harness.precision' },
+      { label: 'Recall', value: fmt(m['kpi.harness.recall']), kpi: 'kpi.harness.recall' },
+      { label: 'FP rate', value: fmt(m['kpi.harness.fp_rate']), kpi: 'kpi.harness.fp_rate' },
+      { label: 'False positives', value: fmt(m['kpi.harness.false_positives']), kpi: 'kpi.harness.false_positives' },
+      { label: 'P tech / code', value: `${fmt(m['kpi.harness.precision.tech_spec'])} / ${fmt(m['kpi.harness.precision.code_snippet'])}`, kpi: 'kpi.harness.precision.tech_spec' },
+      { label: 'R tech / code', value: `${fmt(m['kpi.harness.recall.tech_spec'])} / ${fmt(m['kpi.harness.recall.code_snippet'])}`, kpi: 'kpi.harness.recall.tech_spec' },
+      { label: 'P by band H/M/L', value: `${fmt(m['kpi.harness.precision.high'])} / ${fmt(m['kpi.harness.precision.medium'])} / ${fmt(m['kpi.harness.precision.low'])}`, kpi: 'kpi.harness.precision.high' },
+      { label: 'Corpus', value: fmt(m['kpi.corpus.size']), kpi: 'kpi.corpus.size' },
     ],
     review: [
-      { label: 'Backlog', value: fmt(m['kpi.review.backlog']) },
-      { label: 'Pending high', value: fmt(m['kpi.review.pending_high']) },
-      { label: 'Pending med', value: fmt(m['kpi.review.pending_medium']) },
-      { label: 'Pending low', value: fmt(m['kpi.review.pending_low']) },
-      { label: 'Accept rate', value: fmt(m['kpi.review.accept_rate']) },
+      { label: 'Backlog', value: fmt(m['kpi.review.backlog']), kpi: 'kpi.review.backlog' },
+      { label: 'Pending high', value: fmt(m['kpi.review.pending_high']), kpi: 'kpi.review.pending_high' },
+      { label: 'Pending med', value: fmt(m['kpi.review.pending_medium']), kpi: 'kpi.review.pending_medium' },
+      { label: 'Pending low', value: fmt(m['kpi.review.pending_low']), kpi: 'kpi.review.pending_low' },
+      { label: 'Accept rate', value: fmt(m['kpi.review.accept_rate']), kpi: 'kpi.review.accept_rate' },
+      { label: 'Reject rate', value: fmt(m['kpi.review.reject_rate']), kpi: 'kpi.review.reject_rate' },
     ],
     assist: [
-      { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']) },
-      { label: 'Cost', value: fmtUSD(m['kpi.assist.cost_usd']) },
-      { label: 'Prompt tokens', value: fmt(m['kpi.assist.prompt_tokens']) },
-      { label: 'Completion', value: fmt(m['kpi.assist.completion_tokens']) },
-      { label: 'Provider', value: fmt(m['kpi.assist.provider']) },
-      { label: 'Model', value: fmt(m['kpi.assist.model']) },
+      { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']), kpi: 'kpi.assist.proposal_count' },
+      { label: 'Cost', value: fmtUSD(m['kpi.assist.cost_usd']), kpi: 'kpi.assist.cost_usd' },
+      { label: 'Cost / accepted', value: fmtUSD(m['kpi.cost.per_accepted_proposal']), kpi: 'kpi.cost.per_accepted_proposal' },
+      { label: 'Cost / FAIL', value: fmtUSD(m['kpi.cost.per_fail']), kpi: 'kpi.cost.per_fail' },
+      { label: 'Prompt tokens', value: fmt(m['kpi.assist.prompt_tokens']), kpi: 'kpi.assist.prompt_tokens' },
+      { label: 'Model', value: fmt(m['kpi.assist.model']), kpi: 'kpi.assist.model' },
     ],
     assess: [
-      { label: 'Verdict', value: fmt(m['kpi.assess.verdict']) },
-      { label: 'Submission', value: fmt(m['kpi.assess.submission_kind'] || 'unspecified') },
-      { label: 'Tech-spec cands', value: fmt(m['kpi.submission.tech_spec_count']) },
-      { label: 'Code-snippet cands', value: fmt(m['kpi.submission.code_snippet_count']) },
-      { label: 'LLM calls', value: fmt(m['kpi.invariant.llm_calls']), cls: Number(m['kpi.invariant.llm_calls'] || 0) === 0 ? 'ok' : 'bad' },
-      { label: 'Covered', value: fmt(m['kpi.assess.covered']) },
-      { label: 'Unbound', value: fmt(m['kpi.assess.unbound']) },
-      { label: 'Stale', value: fmt(m['kpi.assess.stale']) },
+      { label: 'Verdict', value: fmt(m['kpi.assess.verdict']), kpi: 'kpi.assess.verdict' },
+      { label: 'Submission', value: fmt(m['kpi.assess.submission_kind'] || 'unspecified'), kpi: 'kpi.assess.submission_kind' },
+      { label: 'N/A rate', value: fmt(m['kpi.assess.na_rate']), kpi: 'kpi.assess.na_rate' },
+      { label: 'Applicable', value: fmt(m['kpi.assess.applicable_count']), kpi: 'kpi.assess.applicable_count' },
+      { label: 'PASS / FAIL / IND', value: `${fmt(m['kpi.assess.pass_share'])} / ${fmt(m['kpi.assess.fail_share'])} / ${fmt(m['kpi.assess.indeterminate_share'])}`, kpi: 'kpi.assess.pass_share' },
+      { label: 'Bound rate', value: fmt(m['kpi.assess.funnel.bound_rate']), kpi: 'kpi.assess.funnel.bound_rate' },
+      { label: 'Evidence-complete', value: fmt(m['kpi.assess.funnel.evidence_complete_rate']), kpi: 'kpi.assess.funnel.evidence_complete_rate' },
+      { label: 'Rule hits', value: fmt(m['kpi.rule.hit_total']), kpi: 'kpi.rule.hit_total' },
+      { label: 'LLM calls', value: fmt(m['kpi.invariant.llm_calls']), cls: Number(m['kpi.invariant.llm_calls'] || 0) === 0 ? 'ok' : 'bad', kpi: 'kpi.invariant.llm_calls' },
     ],
   };
 
@@ -536,7 +550,7 @@ export async function renderMetrics(app: HTMLElement) {
           .map((r) => {
             const shown = fmt(r.value);
             return `<tr data-row data-key="${escapeHTML(r.key)}">
-              <td><code class="id" title="${escapeHTML(r.key)}">${escapeHTML(r.key)}</code></td>
+              <td><span class="kpi-th"><code class="id" title="${escapeHTML(r.key)}">${escapeHTML(r.key)}</code>${kpiHelpControl(r.key)}</span></td>
               <td class="num truncate" title="${escapeHTML(shown)}">${escapeHTML(shown)}</td>
               <td>${copyControl(shown, 'Copy')}</td>
             </tr>`;
@@ -545,6 +559,7 @@ export async function renderMetrics(app: HTMLElement) {
       : filterEmpty(metricRows.length ? 'No metrics match this filter.' : 'No metrics in latest.json.');
     pagerEl.innerHTML = renderPager(slice);
     bindCopyButtons(tbody);
+    bindKpiHelp(tbody);
     bindPager(pagerEl, () => ({ page, pageSize }), (next) => {
       page = next.page;
       pageSize = next.pageSize;
@@ -1605,20 +1620,23 @@ export async function renderAssess(app: HTMLElement) {
   `);
   const llm = assessment?.runtime_llm_calls ?? Number(latest?.metrics['kpi.invariant.llm_calls'] ?? 0);
   const statusBands = ['all', 'FAIL', 'PASS', 'REVIEW_REQUIRED', 'NOT_APPLICABLE', 'EVIDENCE_MISSING', 'INDETERMINATE'] as const;
+  const am = latest?.metrics || {};
   app.innerHTML = `
     <div class="status-row">
-      ${statusItem('Verdict', String(assessment?.verdict || latest?.metrics['kpi.assess.verdict'] || '—'), assessment?.verdict === 'PASS' || latest?.metrics['kpi.assess.verdict'] === 'PASS' ? 'ok' : 'warn')}
-      ${statusItem('Runtime LLM calls', fmt(llm), llm === 0 ? 'ok' : 'bad')}
-      ${statusItem('Coverage', String(assessment?.coverage_status || '—'), '')}
-      ${statusItem('Conf. method', String(latest?.metrics['kpi.confidence.method'] || '—'), '')}
+      ${statusItem('Verdict', String(assessment?.verdict || am['kpi.assess.verdict'] || '—'), assessment?.verdict === 'PASS' || am['kpi.assess.verdict'] === 'PASS' ? 'ok' : 'warn', 'kpi.assess.verdict')}
+      ${statusItem('Runtime LLM calls', fmt(llm), llm === 0 ? 'ok' : 'bad', 'kpi.invariant.llm_calls')}
+      ${statusItem('N/A rate', fmt(am['kpi.assess.na_rate']), '', 'kpi.assess.na_rate')}
+      ${statusItem('Conf. method', String(am['kpi.confidence.method'] || '—'), '', 'kpi.confidence.method')}
     </div>
     ${metricsRow([
-      { label: 'Covered', value: fmt(latest?.metrics['kpi.assess.covered']), href: '#/assess?band=PASS' },
-      { label: 'Unbound', value: fmt(latest?.metrics['kpi.assess.unbound']), href: '#/docs/obligations' },
-      { label: 'Stale', value: fmt(latest?.metrics['kpi.assess.stale']), href: '#/docs/obligations' },
+      { label: 'Applicable', value: fmt(am['kpi.assess.applicable_count']), kpi: 'kpi.assess.applicable_count' },
+      { label: 'PASS share', value: fmt(am['kpi.assess.pass_share']), kpi: 'kpi.assess.pass_share' },
+      { label: 'FAIL share', value: fmt(am['kpi.assess.fail_share']), kpi: 'kpi.assess.fail_share', cls: Number(am['kpi.assess.fail_share'] || 0) > 0 ? 'warn' : '' },
+      { label: 'IND share', value: fmt(am['kpi.assess.indeterminate_share']), kpi: 'kpi.assess.indeterminate_share' },
+      { label: 'Bound rate', value: fmt(am['kpi.assess.funnel.bound_rate']), kpi: 'kpi.assess.funnel.bound_rate', href: '#/metrics?focus=assess' },
+      { label: 'Evidence-complete', value: fmt(am['kpi.assess.funnel.evidence_complete_rate']), kpi: 'kpi.assess.funnel.evidence_complete_rate' },
+      { label: 'Covered', value: fmt(am['kpi.assess.covered']), href: '#/assess?band=PASS', kpi: 'kpi.assess.covered' },
       { label: 'Failing reqs', value: fmt(failing.length), cls: failing.length ? 'warn' : 'ok', href: '#/assess?band=FAIL' },
-      { label: 'Mean P', value: fmt(latest?.metrics['kpi.confidence.mean_p']), href: '#/confidence' },
-      { label: 'Escalation ±', value: `${fmt(latest?.metrics['kpi.escalation.rate'])}${latest?.metrics['kpi.escalation.rate.ci_low'] != null ? ` [${fmt(latest?.metrics['kpi.escalation.rate.ci_low'])}–${fmt(latest?.metrics['kpi.escalation.rate.ci_high'])}]` : ''}`, href: '#/confidence' },
     ])}
     <div class="toolbar">
       <div class="seg" id="assess-band">
@@ -1644,6 +1662,7 @@ export async function renderAssess(app: HTMLElement) {
     <h2>Assessment artifact</h2>
     <div class="artifact"><pre>${escapeHTML(JSON.stringify(assessment || latest?.metrics || {}, null, 2))}</pre></div>
   `;
+  bindChartHelp(app);
 
   let band = state.band && state.band !== 'all' ? state.band : 'all';
   let page = state.page;
@@ -1802,12 +1821,14 @@ export async function renderCosts(app: HTMLElement) {
   const m = latest?.metrics || {};
   app.innerHTML = `
     ${metricsRow([
-      { label: 'Mode', value: fmt(latest?.run.provider_mode || m['kpi.assist.provider'] || 'offline') },
-      { label: 'Model', value: fmt(m['kpi.assist.model'] || proposals?.model) },
-      { label: 'Est. cost', value: fmtUSD(m['kpi.assist.cost_usd'] ?? proposals?.estimated_cost_usd ?? costs?.estimated_cost_usd) },
-      { label: 'Prompt tokens', value: fmt(m['kpi.assist.prompt_tokens'] ?? proposals?.prompt_tokens) },
-      { label: 'Completion', value: fmt(m['kpi.assist.completion_tokens'] ?? proposals?.completion_tokens) },
-      { label: 'Assess LLM', value: fmt(m['kpi.invariant.llm_calls']), cls: 'ok', hint: 'must stay 0' },
+      { label: 'Mode', value: fmt(latest?.run.provider_mode || m['kpi.assist.provider'] || 'offline'), kpi: 'kpi.assist.provider' },
+      { label: 'Model', value: fmt(m['kpi.assist.model'] || proposals?.model), kpi: 'kpi.assist.model' },
+      { label: 'Est. cost', value: fmtUSD(m['kpi.assist.cost_usd'] ?? proposals?.estimated_cost_usd ?? costs?.estimated_cost_usd), kpi: 'kpi.assist.cost_usd' },
+      { label: 'Cost / accepted', value: fmtUSD(m['kpi.cost.per_accepted_proposal']), kpi: 'kpi.cost.per_accepted_proposal' },
+      { label: 'Cost / FAIL', value: fmtUSD(m['kpi.cost.per_fail']), kpi: 'kpi.cost.per_fail' },
+      { label: 'Reject rate', value: fmt(m['kpi.review.reject_rate']), kpi: 'kpi.review.reject_rate' },
+      { label: 'Prompt tokens', value: fmt(m['kpi.assist.prompt_tokens'] ?? proposals?.prompt_tokens), kpi: 'kpi.assist.prompt_tokens' },
+      { label: 'Assess LLM', value: fmt(m['kpi.invariant.llm_calls']), cls: 'ok', hint: 'must stay 0', kpi: 'kpi.invariant.llm_calls' },
     ])}
     ${chartHeading('Cost over runs', CHART_HELP.costOverRuns, 'h2')}
     <div id="cost-chart" class="chart"></div>
@@ -2352,6 +2373,7 @@ export async function renderRuns(app: HTMLElement) {
       </div>
     </div>`;
 
+    bindKpiHelp(out);
     document.getElementById('run-compare-changes')?.addEventListener('change', (e) => {
       compareChangesOnly = (e.target as HTMLInputElement).checked;
       doCompare();

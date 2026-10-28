@@ -3,6 +3,7 @@ import {
   loadActiveContext,
   loadADRFlagging,
   loadLinkJSON,
+  loadRuleHits,
   type ADRFlaggingReport,
   type ADRFlaggingRow,
 } from './data';
@@ -362,7 +363,7 @@ export async function renderADRFlags(app: HTMLElement) {
 
   const state = readListQuery({ sort: 'flag_rate', dir: 'desc', band: 'most' });
   const boardParam = getQueryValue('board') || state.band || 'most';
-  const [ctx, reportRaw, assessment] = await Promise.all([
+  const [ctx, reportRaw, assessment, ruleHits] = await Promise.all([
     loadActiveContext(),
     loadADRFlagging(),
     loadLinkJSON<{
@@ -376,6 +377,7 @@ export async function renderADRFlags(app: HTMLElement) {
         findings?: Array<{ rule_id?: string; analyzer?: string; path?: string; message?: string }>;
       }>;
     }>('assessment'),
+    loadRuleHits(),
   ]);
   const report =
     reportRaw ||
@@ -413,7 +415,7 @@ export async function renderADRFlags(app: HTMLElement) {
     <h2>Overview</h2>
     <p class="muted">Requirement observations rolled per ADR. Flag rate uses assessed only (excludes NOT_APPLICABLE).</p>
     ${metricsRow([
-      { label: 'ADRs touched', value: fmt(s?.adr_touched ?? m['kpi.adr.touched']), href: '#/adrs' },
+      { label: 'ADRs touched', value: fmt(s?.adr_touched ?? m['kpi.adr.touched']), href: '#/adrs', kpi: 'kpi.adr.touched' },
       {
         label: 'Flag rate ±',
         value: fmtCI(
@@ -422,27 +424,31 @@ export async function renderADRFlags(app: HTMLElement) {
           num(s?.flag_rate_ci_high ?? m['kpi.adr.flag_rate.ci_high']),
         ),
         cls: (s?.flag_rate || 0) > 0 ? 'warn' : 'ok',
+        kpi: 'kpi.adr.flag_rate',
       },
       {
         label: 'Top flag rate',
         value: s?.top_flag_rate_adr ? `${s.top_flag_rate_adr} ${fmt(s.top_flag_rate)}` : '—',
         href: s?.top_flag_rate_adr ? `#/adr-flags?q=${encodeURIComponent(s.top_flag_rate_adr)}` : undefined,
+        kpi: 'kpi.adr.top_flag_rate',
       },
       {
         label: 'Most FAIL',
         value: s?.most_fail_adr ? `${s.most_fail_adr} (${fmt(s.most_fail_count)})` : '—',
         href: s?.most_fail_adr ? `#/adrs/${encodeURIComponent(s.most_fail_adr)}` : undefined,
         cls: (s?.most_fail_count || 0) > 0 ? 'bad' : '',
+        kpi: 'kpi.adr.most_fail',
       },
       {
         label: 'Most aligned',
         value: s?.most_aligned_adr ? `${s.most_aligned_adr} (${fmt(s.most_aligned_count)})` : '—',
         href: s?.most_aligned_adr ? `#/adrs/${encodeURIComponent(s.most_aligned_adr)}` : undefined,
         cls: 'ok',
+        kpi: 'kpi.adr.most_aligned',
       },
-      { label: 'Assessed ADRs', value: fmt(s?.adr_assessed ?? m['kpi.adr.assessed']) },
-      { label: 'Excluded obs', value: fmt(s?.excluded_observations) },
-      { label: 'FAIL obs', value: fmt(s?.fail_observations ?? m['kpi.adr.fail_count']), cls: (s?.fail_observations || 0) ? 'bad' : '' },
+      { label: 'Assessed ADRs', value: fmt(s?.adr_assessed ?? m['kpi.adr.assessed']), kpi: 'kpi.adr.assessed' },
+      { label: 'Rule hits', value: fmt(ruleHits?.summary.hit_total ?? m['kpi.rule.hit_total']), kpi: 'kpi.rule.hit_total', href: '#/docs/rule-hits' },
+      { label: 'FAIL obs', value: fmt(s?.fail_observations ?? m['kpi.adr.fail_count']), cls: (s?.fail_observations || 0) ? 'bad' : '', kpi: 'kpi.adr.fail_count' },
     ])}
 
     <div class="toolbar">
@@ -475,6 +481,46 @@ export async function renderADRFlags(app: HTMLElement) {
       </table>
     </div>
     <div id="adrf-pager"></div>
+    <h2>Rule / analyzer hits</h2>
+    <p class="muted">OpenGrep/Checkov <code>rule_id</code> hits from findings. Flag count = hits on deviate requirements. Artifact: <code>rule_hits.json</code>.</p>
+    ${metricsRow([
+      { label: 'Distinct rules', value: fmt(ruleHits?.summary.distinct_rules ?? m['kpi.rule.distinct_count']), kpi: 'kpi.rule.distinct_count' },
+      { label: 'Hit total', value: fmt(ruleHits?.summary.hit_total ?? m['kpi.rule.hit_total']), kpi: 'kpi.rule.hit_total' },
+      { label: 'Flag total', value: fmt(ruleHits?.summary.flag_total ?? m['kpi.rule.flag_total']), kpi: 'kpi.rule.flag_total' },
+      {
+        label: 'Top rule',
+        value: ruleHits?.summary.top_rule_id
+          ? `${ruleHits.summary.top_rule_id} (${fmt(ruleHits.summary.top_hit_count)})`
+          : fmt(m['kpi.rule.top_rule_id']),
+        kpi: 'kpi.rule.top_rule_id',
+      },
+    ])}
+    <div class="table-wrap sticky-head" style="max-height:320px;overflow:auto">
+      <table class="dense">
+        <thead>
+          <tr>
+            <th>rule_id</th><th>analyzer</th><th class="num">hits</th><th class="num">flags</th><th class="num">ADRs</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            (ruleHits?.rules || [])
+              .slice(0, 40)
+              .map(
+                (r) => `<tr>
+              <td><code>${escapeHTML(r.rule_id)}</code></td>
+              <td>${escapeHTML(r.analyzer || '—')}</td>
+              <td class="num">${fmt(r.hit_count)}</td>
+              <td class="num">${fmt(r.flag_count)}</td>
+              <td class="num">${fmt(r.adr_count)}</td>
+            </tr>`,
+              )
+              .join('') || `<tr><td colspan="5" class="muted">No rule findings in this snapshot (common on issue-surface N/A batches).</td></tr>`
+          }
+        </tbody>
+      </table>
+    </div>
+
     <details style="margin-top:1rem">
       <summary>Definitions &amp; KPI keys</summary>
       <ul>
@@ -490,6 +536,7 @@ export async function renderADRFlags(app: HTMLElement) {
           'kpi.adr.top_flag_rate / kpi.adr.top_flag_rate_adr',
           'kpi.adr.fail_count / pass_count / indeterminate_count',
           'kpi.adr.most_fail / most_aligned',
+          'kpi.rule.* + artifact: rule_hits.json',
           'artifact: adr_flagging.json',
         ].join('\n'),
       )}</pre>
