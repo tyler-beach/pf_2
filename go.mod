@@ -1,5 +1,7 @@
 module github.com/tyler-beach/pf_2
 
-go 1.23
+go 1.27
 
-require github.com/yuin/goldmark v1.7.8
+toolchain go1.27.3
+
+require github.com/yuin/goldmark v1.8.6

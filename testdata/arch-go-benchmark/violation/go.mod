@@ -1,3 +1,3 @@
 module example.com/pathfinder-arch-go-fixture
 
-go 1.23
+go 1.27
