@@ -49,6 +49,12 @@ def main() -> int:
 
     write_json(data_dir / "latest.json", latest)
 
+    # Promote SPA docs that ship beside the snapshot so Sample/Pipeline stay available at data root.
+    for name in ("sample-journey.json", "pipeline.json", "corpus.json"):
+        src = dest / name
+        if src.is_file():
+            shutil.copy2(src, data_dir / name)
+
     row = {"run": run, "metrics": metrics}
     runs_path = data_dir / "metrics" / "runs.jsonl"
     runs_path.parent.mkdir(parents=True, exist_ok=True)
@@ -87,10 +93,17 @@ def main() -> int:
         for old in snaps[: max(0, len(snaps) - args.retain_snapshots)]:
             shutil.rmtree(old)
 
+    snapshots: list[dict[str, str]] = []
+    if snap_root.exists():
+        for p in sorted([x for x in snap_root.iterdir() if x.is_dir()], key=lambda x: x.name):
+            if (p / "latest.json").is_file():
+                snapshots.append({"run_id": p.name, "path": f"snapshots/{p.name}"})
+
     manifest = {
         "latest_run_id": run_id,
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "data_sha": hashlib.sha256((data_dir / "latest.json").read_bytes()).hexdigest(),
+        "snapshots": snapshots,
     }
     write_json(data_dir / "manifest.json", manifest)
     print(json.dumps(manifest, indent=2))

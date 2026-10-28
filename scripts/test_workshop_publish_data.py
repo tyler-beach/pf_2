@@ -30,10 +30,16 @@ class WorkshopPublishDataTest(unittest.TestCase):
             self.assertTrue((data / "manifest.json").exists())
             self.assertTrue((data / "metrics" / "runs.jsonl").exists())
             self.assertTrue((data / "snapshots" / "fixture-001" / "latest.json").exists())
+            self.assertTrue((data / "snapshots" / "fixture-001" / "sample-journey.json").exists())
+            self.assertTrue((data / "sample-journey.json").exists())
             row = json.loads((data / "metrics" / "runs.jsonl").read_text(encoding="utf-8").splitlines()[0])
             self.assertEqual(row["run"]["run_id"], "fixture-001")
             manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["latest_run_id"], "fixture-001")
+            self.assertEqual(
+                manifest.get("snapshots"),
+                [{"run_id": "fixture-001", "path": "snapshots/fixture-001"}],
+            )
 
 
 if __name__ == "__main__":

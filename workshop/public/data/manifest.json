@@ -3,7 +3,17 @@
   "updated_at": "2026-10-27T12:00:00Z",
   "data_sha": "4748da0f47aea05e576f02e2e836a151b10e1c4f6a5e866d99279eeca0e58fa5",
   "snapshots": [
-    { "run_id": "fixture-001", "path": "snapshots/fixture-001" },
-    { "run_id": "fixture-live-example", "path": "snapshots/fixture-live-example" }
+    {
+      "run_id": "fixture-000",
+      "path": "snapshots/fixture-000"
+    },
+    {
+      "run_id": "fixture-001",
+      "path": "snapshots/fixture-001"
+    },
+    {
+      "run_id": "fixture-live-example",
+      "path": "snapshots/fixture-live-example"
+    }
   ]
 }

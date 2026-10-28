@@ -81,7 +81,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: 'repo-ci',
-    title: 'Repository CI &amp; PR gates',
+    title: 'Repository CI & PR gates',
     group: 'Pipelines',
     summary: 'Live catalog, OpenGrep fixtures, Checkov IaC proof, reviewdog.',
     body: `
@@ -127,7 +127,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: 'statuses',
-    title: 'Statuses &amp; verdicts',
+    title: 'Statuses & verdicts',
     group: 'Assessment engine',
     summary: 'How requirement outcomes roll up.',
     body: `
@@ -198,7 +198,7 @@ export const DOC_SECTIONS: DocSection[] = [
   {
     id: 'corpus',
     title: 'OWASP + AWS corpus',
-    group: 'Corpus &amp; patterns',
+    group: 'Corpus & patterns',
     summary: '200 MADRs with RFC 2119 Decision language.',
     body: `
 <ul>
@@ -212,7 +212,7 @@ export const DOC_SECTIONS: DocSection[] = [
   {
     id: 'patterns',
     title: 'Pattern catalog',
-    group: 'Corpus &amp; patterns',
+    group: 'Corpus & patterns',
     summary: 'Reusable verifier families.',
     body: `
 <p>Patterns declare allowed verifier types, inputs, applicability, and blind spots. Examples:</p>
@@ -241,7 +241,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: 'assist',
-    title: 'Batch LLM assist &amp; Promptfoo',
+    title: 'Batch LLM assist & Promptfoo',
     group: 'Governance',
     summary: 'Offline by default; proposals never auto-approve.',
     body: `
@@ -302,7 +302,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><strong>Run picker</strong> (top bar) selects which snapshot KPIs/artifacts load (localStorage). Age turns warn when publish data is stale.</li>
   <li><strong>Overview</strong> attention queue deep-links into filtered Candidates / Proposals / Assess; sparklines show recent run trends.</li>
   <li><strong>Hash query state</strong> — shareable filters: <code>q</code>, <code>band</code>, <code>page</code>, <code>rows</code>, <code>sort</code>, <code>dir</code>; Runs compare uses <code>a</code>/<code>b</code>; Proposals parent filter uses <code>parent</code>. Example: <a href="#/candidates?band=low&amp;sort=confidence"><code>#/candidates?band=low</code></a>.</li>
-  <li><strong>Keyboard</strong>: <kbd>/</kbd> focuses search, <kbd>j</kbd>/<kbd>k</kbd> or arrows move rows, <kbd>Enter</kbd> activates, <kbd>o</kbd> or Space expands drawer detail, <kbd>Esc</kbd> closes drawer / blurs search.</li>
+  <li><strong>Keyboard</strong>: <kbd>/</kbd> focuses search, <kbd>j</kbd>/<kbd>k</kbd> or arrows move rows, <kbd>Enter</kbd> activates (opens details on Proposals/Assess), <kbd>o</kbd> or Space expands the detail drawer, or use the visible <strong>Details</strong> control. <kbd>Esc</kbd> closes drawer / blurs search.</li>
   <li><strong>Sort</strong> — click or Enter/Space on column headers.</li>
   <li><strong>Export</strong> — Copy TSV / Markdown / failing checklist for Issues.</li>
   <li><strong>Docs</strong> route as <code>#/docs/:section</code> (this page).</li>
@@ -348,7 +348,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: 'limitations',
-    title: 'Limitations &amp; honesty',
+    title: 'Limitations & honesty',
     group: 'Operator reference',
     summary: 'What Pathfinder does not claim.',
     body: `

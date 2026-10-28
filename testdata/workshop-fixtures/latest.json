@@ -32,7 +32,8 @@
     "candidates": "candidates.json",
     "proposals": "proposals.json",
     "promptfoo": "promptfoo.json",
-    "assessment": "assessment.json"
+    "assessment": "assessment.json",
+    "sample-journey": "sample-journey.json"
   },
   "summary": "workflow=fixture; verdict=PASS; candidates=4 (high=2 medium=1 low=1); proposals=1"
 }

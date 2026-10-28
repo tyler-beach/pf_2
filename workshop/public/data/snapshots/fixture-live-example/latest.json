@@ -50,7 +50,8 @@
     "candidates": "candidates.json",
     "proposals": "proposals.json",
     "promptfoo": "promptfoo.json",
-    "assessment": "assessment.json"
+    "assessment": "assessment.json",
+    "sample-journey": "sample-journey.json"
   },
   "summary": "workflow=LLM Assist; verdict=PASS; candidates=4; proposals=3; cost\u22480.000648"
 }

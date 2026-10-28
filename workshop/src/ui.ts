@@ -126,6 +126,21 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
+/** Brief label flash after clipboard write (export buttons, copy controls). */
+export function flashButtonLabel(btn: HTMLElement, label: string, ms = 1200) {
+  const prev = btn.textContent;
+  btn.textContent = label;
+  window.setTimeout(() => {
+    if (btn.textContent === label) btn.textContent = prev;
+  }, ms);
+}
+
+export async function copyWithButtonFeedback(btn: HTMLElement, text: string): Promise<boolean> {
+  const ok = await copyText(text);
+  flashButtonLabel(btn, ok ? 'Copied' : 'Failed');
+  return ok;
+}
+
 export function copyControl(text: string, label = 'Copy'): string {
   return `<button type="button" class="btn copy-btn" data-copy="${escapeHTML(encodeURIComponent(text))}">${escapeHTML(label)}</button>`;
 }
@@ -141,12 +156,129 @@ export function bindCopyButtons(root: ParentNode = document) {
       } catch {
         /* keep raw */
       }
-      const ok = await copyText(raw);
-      const prev = btn.textContent;
-      btn.textContent = ok ? 'Copied' : 'Failed';
-      setTimeout(() => {
-        btn.textContent = prev;
-      }, 1200);
+      await copyWithButtonFeedback(btn, raw);
+    });
+  });
+}
+
+/** Visible row expand affordance — pairs with `[data-expand]` click handlers / `o` · Space. */
+export function expandControl(id: string, label = 'Details'): string {
+  return `<button type="button" class="btn expand-btn" data-expand="${escapeHTML(id)}" title="Expand details (o)" aria-label="${escapeHTML(label)}">
+    <span class="expand-chevron" aria-hidden="true">▸</span>
+    <span class="expand-label">${escapeHTML(label)}</span>
+  </button>`;
+}
+
+/** Copy for chart info affordance — measures / how to use / what “good” looks like. */
+export type ChartHelpCopy = {
+  measures: string;
+  use: string;
+  good: string;
+};
+
+let chartHelpSeq = 0;
+
+/** Chart title + keyboard-accessible ℹ popover (click / Enter / Space; Esc closes). */
+export function chartHeading(title: string, help: ChartHelpCopy, level: 'h2' | 'h3' = 'h3'): string {
+  const id = `chart-help-${++chartHelpSeq}`;
+  const tag = level === 'h2' ? 'h2' : 'h3';
+  return `<div class="chart-head">
+    <${tag} class="chart-title">${escapeHTML(title)}</${tag}>
+    <button type="button" class="chart-help-btn" aria-expanded="false" aria-controls="${id}" title="About this chart" aria-label="About ${escapeHTML(title)} chart">ℹ</button>
+    <div class="chart-help-pop" id="${id}" role="region" aria-label="About ${escapeHTML(title)}" hidden>
+      <p><span class="chart-help-k">Measures</span> ${escapeHTML(help.measures)}</p>
+      <p><span class="chart-help-k">How to use</span> ${escapeHTML(help.use)}</p>
+      <p><span class="chart-help-k">Good trend</span> ${escapeHTML(help.good)}</p>
+    </div>
+  </div>`;
+}
+
+/** DOM mount of chartHeading — prefer when building with createElement. */
+export function mountChartHeading(
+  parent: HTMLElement,
+  title: string,
+  help: ChartHelpCopy,
+  level: 'h2' | 'h3' = 'h2',
+): HTMLElement {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = chartHeading(title, help, level);
+  const el = wrap.firstElementChild as HTMLElement;
+  parent.appendChild(el);
+  return el;
+}
+
+function closeChartHelpPop(btn: HTMLButtonElement, pop: HTMLElement) {
+  pop.hidden = true;
+  btn.setAttribute('aria-expanded', 'false');
+}
+
+function openChartHelpPop(root: ParentNode, btn: HTMLButtonElement, pop: HTMLElement) {
+  root.querySelectorAll<HTMLElement>('.chart-help-pop').forEach((other) => {
+    if (other === pop || other.hidden) return;
+    const otherBtn = other.parentElement?.querySelector<HTMLButtonElement>('.chart-help-btn');
+    if (otherBtn) closeChartHelpPop(otherBtn, other);
+  });
+  pop.hidden = false;
+  btn.setAttribute('aria-expanded', 'true');
+}
+
+/** Wire chart ℹ controls; safe to call after each view paint. */
+export function bindChartHelp(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLButtonElement>('.chart-help-btn').forEach((btn) => {
+    if (btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    const pop = btn.parentElement?.querySelector<HTMLElement>('.chart-help-pop');
+    if (!pop) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (pop.hidden) openChartHelpPop(root, btn, pop);
+      else closeChartHelpPop(btn, pop);
+    });
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !pop.hidden) {
+        e.preventDefault();
+        closeChartHelpPop(btn, pop);
+      }
+    });
+  });
+  const doc = root instanceof Document ? root : root.ownerDocument || document;
+  if ((doc as Document & { __pfChartHelpDoc?: boolean }).__pfChartHelpDoc) return;
+  (doc as Document & { __pfChartHelpDoc?: boolean }).__pfChartHelpDoc = true;
+  doc.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement | null;
+    if (t?.closest?.('.chart-head')) return;
+    doc.querySelectorAll<HTMLElement>('.chart-help-pop:not([hidden])').forEach((pop) => {
+      const btn = pop.parentElement?.querySelector<HTMLButtonElement>('.chart-help-btn');
+      if (btn) closeChartHelpPop(btn, pop);
+    });
+  });
+  doc.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    doc.querySelectorAll<HTMLElement>('.chart-help-pop:not([hidden])').forEach((pop) => {
+      const btn = pop.parentElement?.querySelector<HTMLButtonElement>('.chart-help-btn');
+      if (btn) closeChartHelpPop(btn, pop);
+    });
+  });
+}
+
+export function drawerField(label: string, valueHTML: string, wrap = false): string {
+  return `<dt>${escapeHTML(label)}</dt><dd class="${wrap ? 'wrap' : ''}">${valueHTML}</dd>`;
+}
+
+export function drawerBlock(title: string, bodyHTML: string): string {
+  return `<section class="drawer-block"><h3>${escapeHTML(title)}</h3>${bodyHTML}</section>`;
+}
+
+/** Wire `[data-expand]` controls/cells; returns true when a handler ran. */
+export function bindExpandControls(
+  root: ParentNode,
+  onExpand: (id: string, el: HTMLElement) => void,
+): void {
+  root.querySelectorAll<HTMLElement>('[data-expand]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = el.dataset.expand || '';
+      if (id) onExpand(id, el);
     });
   });
 }
@@ -230,18 +362,18 @@ export function entityLinks(items: Array<{ href: string; label: string; faint?: 
     .join('')}</span>`;
 }
 
-export function openDrawer(opts: { title: string; bodyHTML: string; meta?: string }) {
+export function openDrawer(opts: { title: string; bodyHTML: string; meta?: string; wide?: boolean }) {
   closeDrawer();
   const root = document.createElement('div');
   root.id = 'drawer-root';
-  root.className = 'drawer-root';
+  root.className = `drawer-root${opts.wide ? ' wide' : ''}`;
   root.innerHTML = `
     <div class="drawer-backdrop" data-drawer-close></div>
-    <aside class="drawer" role="dialog" aria-modal="true" aria-label="${escapeHTML(opts.title)}">
+    <aside class="drawer" role="dialog" aria-modal="true" tabindex="-1" aria-label="${escapeHTML(opts.title)}">
       <header class="drawer-head">
-        <div>
-          <h2>${escapeHTML(opts.title)}</h2>
-          ${opts.meta ? `<p class="muted">${escapeHTML(opts.meta)}</p>` : ''}
+        <div class="drawer-head-text">
+          <h2 title="${escapeHTML(opts.title)}">${escapeHTML(opts.title)}</h2>
+          ${opts.meta ? `<p class="muted" title="${escapeHTML(opts.meta)}">${escapeHTML(opts.meta)}</p>` : ''}
         </div>
         <button type="button" class="btn" data-drawer-close>Close</button>
       </header>
@@ -416,4 +548,391 @@ export function tile(label: string, value: string, opts?: { cls?: string; sub?: 
 
 export function pill(text: string, kind = ''): string {
   return tag(text, kind);
+}
+
+/** KPI compare: whether an increase from A→B is desirable. */
+export type MetricPolarity = 'higher' | 'lower' | 'verdict' | 'neutral' | 'unknown';
+
+/** Direction of B relative to A for a single metric. */
+export type CompareDirection = 'better' | 'worse' | 'neutral' | 'unknown' | 'unchanged';
+
+export type MetricCompareRow = {
+  key: string;
+  a: unknown;
+  b: unknown;
+  changed: boolean;
+  polarity: MetricPolarity;
+  direction: CompareDirection;
+  /** Which side is preferred when direction is better/worse. */
+  winner: 'a' | 'b' | null;
+  deltaLabel: string;
+  shortLabel: string;
+};
+
+const HIGHER_BETTER_EXACT = new Set([
+  'confidence_high',
+  'kpi.confidence.share.high',
+  'kpi.harness.precision',
+  'kpi.harness.recall',
+  'kpi.harness.recall.high',
+  'kpi.harness.recall.medium',
+  'kpi.harness.recall.low',
+  'kpi.review.accept_rate',
+  'kpi.promptfoo.pass_rate',
+  'kpi.assess.covered',
+  'kpi.corpus.size',
+]);
+
+const LOWER_BETTER_EXACT = new Set([
+  'confidence_low',
+  'kpi.confidence.share.low',
+  'kpi.escalation.rate',
+  'kpi.invariant.llm_calls',
+  'kpi.assess.unbound',
+  'kpi.assess.stale',
+  'kpi.review.backlog',
+  'kpi.review.pending_high',
+  'kpi.review.pending_medium',
+  'kpi.review.pending_low',
+  'kpi.evidence.gap_rate',
+  'kpi.assist.cost_usd',
+  'kpi.assist.prompt_tokens',
+  'kpi.assist.completion_tokens',
+]);
+
+const NEUTRAL_EXACT = new Set([
+  'candidate_total',
+  'confidence_medium',
+  'kpi.confidence.share.medium',
+  'kpi.assist.proposal_count',
+  'schema_version',
+]);
+
+const UNKNOWN_EXACT = new Set([
+  'kpi.assist.provider',
+  'kpi.assist.model',
+  'promptfoo_mode',
+]);
+
+const COMPARE_CALLOUT_KEYS = [
+  'kpi.assess.verdict',
+  'kpi.escalation.rate',
+  'confidence_high',
+  'confidence_low',
+  'kpi.confidence.share.high',
+  'kpi.confidence.share.low',
+  'kpi.assist.cost_usd',
+  'kpi.harness.precision',
+  'kpi.harness.recall',
+] as const;
+
+const COMPARE_SHORT: Record<string, string> = {
+  'kpi.assess.verdict': 'Verdict',
+  'kpi.escalation.rate': 'Escalation',
+  confidence_high: 'Confidence high',
+  confidence_low: 'Confidence low',
+  'kpi.confidence.share.high': 'High share',
+  'kpi.confidence.share.low': 'Low share',
+  'kpi.assist.cost_usd': 'Assist cost',
+  'kpi.harness.precision': 'Precision',
+  'kpi.harness.recall': 'Recall',
+  'kpi.assist.model': 'Model',
+  'kpi.assist.provider': 'Provider',
+  'kpi.invariant.llm_calls': 'Assess LLM',
+  'kpi.promptfoo.pass_rate': 'Promptfoo',
+};
+
+export function metricPolarity(key: string): MetricPolarity {
+  if (key === 'kpi.assess.verdict') return 'verdict';
+  if (HIGHER_BETTER_EXACT.has(key)) return 'higher';
+  if (LOWER_BETTER_EXACT.has(key)) return 'lower';
+  if (NEUTRAL_EXACT.has(key)) return 'neutral';
+  if (UNKNOWN_EXACT.has(key)) return 'unknown';
+  if (key.startsWith('kpi.harness.')) return 'higher';
+  if (key.startsWith('kpi.review.pending')) return 'lower';
+  if (key.includes('cost') || key.endsWith('_tokens')) return 'lower';
+  if (key.includes('precision') || key.includes('recall') || key.includes('pass_rate') || key.includes('accept_rate')) {
+    return 'higher';
+  }
+  if (key.includes('escalation') || key.includes('gap_rate') || key.includes('unbound') || key.includes('stale')) {
+    return 'lower';
+  }
+  if (key.includes('provider') || key.includes('model') || key.endsWith('_mode')) return 'unknown';
+  return 'neutral';
+}
+
+export function compareShortLabel(key: string): string {
+  return COMPARE_SHORT[key] || key.replace(/^kpi\./, '');
+}
+
+function isMissing(v: unknown): boolean {
+  return v == null || v === '';
+}
+
+function asFiniteNumber(v: unknown): number | null {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v))) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function verdictRank(v: unknown): number | null {
+  if (isMissing(v)) return null;
+  const s = String(v).toUpperCase();
+  if (s === 'PASS') return 2;
+  if (s === 'WARN' || s === 'WARNING') return 1;
+  if (s === 'FAIL') return 0;
+  return null;
+}
+
+function formatSignedDelta(delta: number, isUsd: boolean, isRateLike: boolean): string {
+  const sign = delta > 0 ? '+' : '';
+  if (isUsd) {
+    const abs = Math.abs(delta);
+    const body = abs < 0.01 && abs !== 0 ? abs.toFixed(5) : abs.toFixed(4);
+    return `${sign}$${body}`;
+  }
+  if (Number.isInteger(delta)) return `${sign}${delta}`;
+  if (isRateLike && Math.abs(delta) < 1) {
+    const pct = delta * 100;
+    const pctStr = `${pct > 0 ? '+' : ''}${pct.toFixed(Math.abs(pct) >= 10 ? 1 : 2)}%`;
+    return `${sign}${delta.toFixed(3)} (${pctStr} pts)`;
+  }
+  return `${sign}${delta.toFixed(3)}`;
+}
+
+function formatPctChange(a: number, b: number): string | null {
+  if (a === 0) return null;
+  const pct = ((b - a) / Math.abs(a)) * 100;
+  if (!Number.isFinite(pct)) return null;
+  const sign = pct > 0 ? '+' : '';
+  return `${sign}${pct.toFixed(Math.abs(pct) >= 10 ? 0 : 1)}%`;
+}
+
+/** Classify A→B for one metric key and build a human delta label. */
+export function classifyMetricCompare(key: string, a: unknown, b: unknown): MetricCompareRow {
+  const polarity = metricPolarity(key);
+  const shortLabel = compareShortLabel(key);
+  const aMiss = isMissing(a);
+  const bMiss = isMissing(b);
+  const same = JSON.stringify(a) === JSON.stringify(b);
+
+  if (same || (aMiss && bMiss)) {
+    return {
+      key,
+      a,
+      b,
+      changed: false,
+      polarity,
+      direction: 'unchanged',
+      winner: null,
+      deltaLabel: '—',
+      shortLabel,
+    };
+  }
+
+  if (aMiss !== bMiss) {
+    return {
+      key,
+      a,
+      b,
+      changed: true,
+      polarity,
+      direction: polarity === 'neutral' ? 'neutral' : 'unknown',
+      winner: null,
+      deltaLabel: aMiss ? 'new' : 'removed',
+      shortLabel,
+    };
+  }
+
+  const aN = asFiniteNumber(a);
+  const bN = asFiniteNumber(b);
+  if (aN != null && bN != null) {
+    const delta = bN - aN;
+    if (delta === 0) {
+      return {
+        key,
+        a,
+        b,
+        changed: false,
+        polarity,
+        direction: 'unchanged',
+        winner: null,
+        deltaLabel: '—',
+        shortLabel,
+      };
+    }
+    const isUsd = key.includes('cost_usd') || key.endsWith('.cost');
+    const isRateLike =
+      key.includes('rate') ||
+      key.includes('share') ||
+      key.includes('precision') ||
+      key.includes('recall') ||
+      (Math.abs(aN) <= 1 && Math.abs(bN) <= 1 && !Number.isInteger(aN) && !Number.isInteger(bN));
+    let deltaLabel = formatSignedDelta(delta, isUsd, isRateLike);
+    if (!isRateLike) {
+      const pct = formatPctChange(aN, bN);
+      if (pct) deltaLabel = `${deltaLabel} · ${pct}`;
+    }
+
+    let direction: CompareDirection = 'neutral';
+    let winner: 'a' | 'b' | null = null;
+    if (polarity === 'higher') {
+      direction = delta > 0 ? 'better' : 'worse';
+      winner = delta > 0 ? 'b' : 'a';
+    } else if (polarity === 'lower') {
+      direction = delta < 0 ? 'better' : 'worse';
+      winner = delta < 0 ? 'b' : 'a';
+    } else if (polarity === 'unknown') {
+      direction = 'unknown';
+    } else {
+      direction = 'neutral';
+    }
+    return { key, a, b, changed: true, polarity, direction, winner, deltaLabel, shortLabel };
+  }
+
+  if (polarity === 'verdict') {
+    const ra = verdictRank(a);
+    const rb = verdictRank(b);
+    if (ra != null && rb != null && ra !== rb) {
+      const better = rb > ra;
+      return {
+        key,
+        a,
+        b,
+        changed: true,
+        polarity,
+        direction: better ? 'better' : 'worse',
+        winner: better ? 'b' : 'a',
+        deltaLabel: `${fmt(a)} → ${fmt(b)}`,
+        shortLabel,
+      };
+    }
+    return {
+      key,
+      a,
+      b,
+      changed: true,
+      polarity,
+      direction: 'unknown',
+      winner: null,
+      deltaLabel: `${fmt(a)} → ${fmt(b)}`,
+      shortLabel,
+    };
+  }
+
+  // String / mixed changes (model, provider, modes, etc.)
+  return {
+    key,
+    a,
+    b,
+    changed: true,
+    polarity,
+    direction: polarity === 'neutral' ? 'neutral' : 'unknown',
+    winner: null,
+    deltaLabel: `${fmt(a)} → ${fmt(b)}`,
+    shortLabel,
+  };
+}
+
+export function buildMetricCompareRows(
+  aMetrics: Record<string, unknown>,
+  bMetrics: Record<string, unknown>,
+): MetricCompareRow[] {
+  const keys = [...new Set([...Object.keys(aMetrics), ...Object.keys(bMetrics)])].sort();
+  return keys.map((k) => classifyMetricCompare(k, aMetrics[k], bMetrics[k]));
+}
+
+export type CompareSummary = {
+  improved: number;
+  regressed: number;
+  unchanged: number;
+  neutral: number;
+  unknown: number;
+  callouts: MetricCompareRow[];
+};
+
+export function summarizeMetricCompare(rows: MetricCompareRow[]): CompareSummary {
+  let improved = 0;
+  let regressed = 0;
+  let unchanged = 0;
+  let neutral = 0;
+  let unknown = 0;
+  for (const r of rows) {
+    if (r.direction === 'better') improved += 1;
+    else if (r.direction === 'worse') regressed += 1;
+    else if (r.direction === 'unchanged') unchanged += 1;
+    else if (r.direction === 'neutral') neutral += 1;
+    else unknown += 1;
+  }
+  const byKey = new Map(rows.map((r) => [r.key, r]));
+  const callouts = COMPARE_CALLOUT_KEYS.map((k) => byKey.get(k))
+    .filter((r): r is MetricCompareRow => !!r && r.changed)
+    .slice(0, 6);
+  return { improved, regressed, unchanged, neutral, unknown, callouts };
+}
+
+export function compareDirectionClass(direction: CompareDirection): string {
+  if (direction === 'better') return 'better';
+  if (direction === 'worse') return 'worse';
+  if (direction === 'unchanged') return 'same';
+  if (direction === 'neutral') return 'neutral';
+  return 'unknown';
+}
+
+/** Render value cell with optional winner/loser pill. */
+export function compareValueCell(value: unknown, side: 'a' | 'b', row: MetricCompareRow): string {
+  const text = escapeHTML(fmt(value));
+  if (!row.changed) {
+    return `<td class="num compare-cell compare-same"><span class="compare-val">${text}</span></td>`;
+  }
+  const isWinner = row.winner === side;
+  const isLoser = row.winner != null && row.winner !== side;
+  let tone = 'compare-changed';
+  if (isWinner) tone = 'compare-better';
+  else if (isLoser) tone = 'compare-worse';
+  else if (row.direction === 'neutral') tone = 'compare-neutral';
+  else tone = 'compare-unknown';
+  return `<td class="num compare-cell ${tone}"><span class="compare-pill">${text}</span></td>`;
+}
+
+export function compareDeltaCell(row: MetricCompareRow): string {
+  const cls = compareDirectionClass(row.direction);
+  const tip =
+    row.polarity === 'higher'
+      ? 'Higher is better'
+      : row.polarity === 'lower'
+        ? 'Lower is better'
+        : row.polarity === 'verdict'
+          ? 'PASS better than FAIL'
+          : row.polarity === 'unknown'
+            ? 'Informational change'
+            : 'No preferred direction';
+  return `<td class="num compare-delta compare-delta-${cls}" title="${escapeHTML(tip)}"><span class="compare-delta-chip compare-delta-chip-${cls}">${escapeHTML(row.deltaLabel)}</span></td>`;
+}
+
+export function renderCompareSummaryStrip(summary: CompareSummary): string {
+  const chips = [
+    `<span class="compare-stat compare-stat-better"><strong>${summary.improved}</strong> improved</span>`,
+    `<span class="compare-stat compare-stat-worse"><strong>${summary.regressed}</strong> regressed</span>`,
+    `<span class="compare-stat compare-stat-same"><strong>${summary.unchanged}</strong> unchanged</span>`,
+  ];
+  if (summary.neutral) chips.push(`<span class="compare-stat compare-stat-neutral"><strong>${summary.neutral}</strong> neutral</span>`);
+  if (summary.unknown) chips.push(`<span class="compare-stat compare-stat-unknown"><strong>${summary.unknown}</strong> info</span>`);
+
+  const callouts = summary.callouts.length
+    ? `<div class="compare-callouts">${summary.callouts
+        .map((c) => {
+          const cls = compareDirectionClass(c.direction);
+          return `<span class="compare-callout compare-callout-${cls}" title="${escapeHTML(c.key)}"><span class="compare-callout-k">${escapeHTML(c.shortLabel)}</span> <span class="compare-callout-d">${escapeHTML(c.deltaLabel)}</span></span>`;
+        })
+        .join('')}</div>`
+    : `<p class="muted compare-callouts-empty">No headline KPI shifts between these runs.</p>`;
+
+  return `<div class="compare-summary" role="status">
+    <div class="compare-stats">${chips.join('')}</div>
+    ${callouts}
+  </div>`;
 }

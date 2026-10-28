@@ -146,9 +146,24 @@ export function githubBlobURL(repoPath: string): string {
 
 export const loadManifest = () => fetchJSON<Manifest>('manifest.json');
 export const loadPipeline = () => fetchJSON<{ steps: PipelineStep[] }>('pipeline.json');
-export const loadSampleJourney = () =>
-  fetchJSON<{ steps: SampleStep[]; artifacts: Record<string, unknown> }>('sample-journey.json');
 export const loadCorpusIndex = () => fetchJSON<CorpusIndex>('corpus.json');
+
+/** Prefer the selected run snapshot, then any snapshot that ships a journey, then root. */
+export async function loadSampleJourney(): Promise<{
+  steps: SampleStep[];
+  artifacts: Record<string, unknown>;
+} | null> {
+  type Journey = { steps: SampleStep[]; artifacts: Record<string, unknown> };
+  const fromActive = await loadLinkJSON<Journey>('sample-journey');
+  if (fromActive?.steps?.length) return fromActive;
+  const manifest = await loadManifest();
+  for (const snap of manifest?.snapshots || []) {
+    const prefix = `${snap.path.replace(/\/$/, '')}/`;
+    const j = await fetchJSON<Journey>(`${prefix}sample-journey.json`);
+    if (j?.steps?.length) return j;
+  }
+  return fetchJSON<Journey>('sample-journey.json');
+}
 
 export async function loadRuns(): Promise<MetricsRow[]> {
   const text = await fetchText('metrics/runs.jsonl');
