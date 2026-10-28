@@ -1,83 +1,16 @@
 package analyzer
 
 import (
-	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"hash"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
-
-// CommandResult keeps the exit code separate from launch/cancellation errors.
-// OpenGrep may use exit code 1 to report findings; other non-zero codes are
-// treated as execution failures.
-type CommandResult struct {
-	ExitCode int
-	Stdout   []byte
-	Stderr   []byte
-}
-
-// CommandRunner is injectable so command construction, cancellation, and exit
-// handling can be tested without installing or executing an analyzer binary.
-type CommandRunner interface {
-	Run(ctx context.Context, binary string, args []string, dir string) (CommandResult, error)
-}
-
-type ExecCommandRunner struct {
-	// HomeDir is an isolated scratch directory for configuration/cache lookups.
-	// OpenGrepScanner creates and removes it around each scan.
-	HomeDir string
-}
-
-func (r ExecCommandRunner) Run(ctx context.Context, binary string, args []string, dir string) (CommandResult, error) {
-	cmd := exec.CommandContext(ctx, binary, args...)
-	cmd.Dir = dir
-	cmd.Env = scannerEnvironment()
-	if r.HomeDir != "" {
-		cmd.Env = append(cmd.Env, "HOME="+r.HomeDir)
-	}
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	result := CommandResult{Stdout: stdout.Bytes(), Stderr: stderr.Bytes()}
-	if err == nil {
-		result.ExitCode = 0
-		return result, nil
-	}
-	if ctx.Err() != nil {
-		result.ExitCode = -1
-		return result, fmt.Errorf("analyzer command cancelled: %w; stderr: %s", ctx.Err(), truncate(stderr.String(), 4096))
-	}
-	var exitError *exec.ExitError
-	if errors.As(err, &exitError) {
-		result.ExitCode = exitError.ExitCode()
-		return result, nil
-	}
-	result.ExitCode = -1
-	return result, fmt.Errorf("could not start analyzer %q: %w; stderr: %s", binary, err, truncate(stderr.String(), 4096))
-}
-
-// scannerEnvironment deliberately excludes ambient credentials such as
-// GITHUB_TOKEN, cloud credentials, and API keys from analyzer subprocesses.
-func scannerEnvironment() []string {
-	var env []string
-	for _, name := range []string{"PATH", "TMPDIR", "TEMP", "TMP", "SystemRoot", "WINDIR"} {
-		if value := os.Getenv(name); value != "" {
-			env = append(env, name+"="+value)
-		}
-	}
-	env = append(env, "LANG=C.UTF-8", "LC_ALL=C.UTF-8", "NO_COLOR=1")
-	sort.Strings(env)
-	return env
-}
 
 // OpenGrepScanner runs a version-pinned OpenGrep CLI and normalizes SARIF 2.1.0.
 // ConfigPath must point to a rule file inside Root; the scanner is run without a
@@ -99,35 +32,6 @@ type OpenGrepScanner struct {
 	MaxFileBytes           int64
 	Timeout                time.Duration
 	Runner                 CommandRunner
-}
-
-// ResolveExecutable finds an executable through PATH when necessary and
-// resolves symlinks to the immutable file whose bytes will be hashed/executed.
-func ResolveExecutable(binary string) (string, error) {
-	binary = strings.TrimSpace(binary)
-	if binary == "" {
-		return "", fmt.Errorf("analyzer executable path is required")
-	}
-	resolved, err := exec.LookPath(binary)
-	if err != nil {
-		return "", fmt.Errorf("resolve analyzer executable: %w", err)
-	}
-	resolved, err = filepath.Abs(resolved)
-	if err != nil {
-		return "", fmt.Errorf("resolve analyzer executable path: %w", err)
-	}
-	resolved, err = filepath.EvalSymlinks(resolved)
-	if err != nil {
-		return "", fmt.Errorf("resolve analyzer executable symlinks: %w", err)
-	}
-	info, err := os.Stat(resolved)
-	if err != nil {
-		return "", fmt.Errorf("inspect analyzer executable: %w", err)
-	}
-	if !info.Mode().IsRegular() {
-		return "", fmt.Errorf("analyzer executable is not a regular file")
-	}
-	return resolved, nil
 }
 
 func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, error) {
@@ -171,20 +75,10 @@ func (s OpenGrepScanner) Scan(ctx context.Context, root string) (ScanResult, err
 	binarySHA256 := ""
 	binaryDigestVerified := false
 	if strings.TrimSpace(s.BinarySHA256) != "" {
-		expected := strings.ToLower(strings.TrimSpace(s.BinarySHA256))
-		if !validPlanSHA256(expected) {
-			return out, fmt.Errorf("expected OpenGrep binary SHA-256 is invalid")
-		}
-		resolvedBinary, resolveErr := ResolveExecutable(binary)
-		if resolveErr != nil {
-			return out, resolveErr
-		}
-		actual, hashErr := HashFileCached(resolvedBinary)
-		if hashErr != nil {
-			return out, fmt.Errorf("hash OpenGrep executable: %w", hashErr)
-		}
-		if actual != expected {
-			return out, fmt.Errorf("OpenGrep binary SHA-256 mismatch: expected %s but found %s", expected, actual)
+		// Pin the executable path and digest before any CommandRunner call.
+		resolvedBinary, actual, verifyErr := VerifyBinary(binary, s.BinarySHA256)
+		if verifyErr != nil {
+			return out, verifyErr
 		}
 		binary, binarySHA256 = resolvedBinary, actual
 		binaryDigestVerified = true

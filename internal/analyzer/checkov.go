@@ -65,20 +65,10 @@ func (s CheckovScanner) Scan(ctx context.Context, root string) (ScanResult, erro
 	binarySHA256 := ""
 	binaryDigestVerified := false
 	if strings.TrimSpace(s.BinarySHA256) != "" {
-		expected := strings.ToLower(strings.TrimSpace(s.BinarySHA256))
-		if !validPlanSHA256(expected) {
-			return out, fmt.Errorf("expected Checkov binary SHA-256 is invalid")
-		}
-		resolvedBinary, resolveErr := ResolveExecutable(binary)
-		if resolveErr != nil {
-			return out, resolveErr
-		}
-		actual, hashErr := HashFileCached(resolvedBinary)
-		if hashErr != nil {
-			return out, fmt.Errorf("hash Checkov executable: %w", hashErr)
-		}
-		if actual != expected {
-			return out, fmt.Errorf("Checkov binary SHA-256 mismatch: expected %s but found %s", expected, actual)
+		// Pin the executable path and digest before any CommandRunner call.
+		resolvedBinary, actual, verifyErr := VerifyBinary(binary, s.BinarySHA256)
+		if verifyErr != nil {
+			return out, verifyErr
 		}
 		binary, binarySHA256 = resolvedBinary, actual
 		binaryDigestVerified = true

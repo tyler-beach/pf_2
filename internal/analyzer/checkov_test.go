@@ -96,6 +96,25 @@ func TestCheckovScannerRunsPinnedCLIAndNormalizesEvidence(t *testing.T) {
 	}
 }
 
+func TestCheckovScannerRejectsBinaryDigestMismatchBeforeExecution(t *testing.T) {
+	root := prepareCheckovFixture(t)
+	binary := filepath.Join(t.TempDir(), "fake-checkov")
+	if err := os.WriteFile(binary, []byte("#!/bin/sh\nexit 0\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	runner := &checkovFakeRunner{sarif: []byte(checkovFixtureSARIF)}
+	_, err := (CheckovScanner{
+		Binary: binary, BinarySHA256: strings.Repeat("f", 64),
+		Version: "3.2.484", ConfigPath: "rules/checkov.yml", Runner: runner,
+	}).Scan(context.Background(), root)
+	if err == nil || !strings.Contains(err.Error(), "binary SHA-256 mismatch") {
+		t.Fatalf("expected binary integrity failure, got %v", err)
+	}
+	if len(runner.calls) != 0 {
+		t.Fatalf("unverified binary was executed: %+v", runner.calls)
+	}
+}
+
 func TestNormalizeCheckovRuleID(t *testing.T) {
 	cases := map[string]string{
 		"CKV_AWS_24":                     "CKV_AWS_24",
