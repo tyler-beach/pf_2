@@ -54,4 +54,4 @@ Pass/deviation assess oracles after Go or analyzer bumps when assessment default
 | OpenGrep | 1.30.0 / SHA `35779bdd…` | **1.33.0** / SHA `25458127…` (linux x86) |
 | Checkov | 3.2.484 | **3.3.30** (BinarySHA256 computed at install) |
 | reviewdog | v0.20.3 | **v0.21.2** |
-| promptfoo | 0.114.7 | **0.125.1** |
+| promptfoo | 0.114.7 | **0.125.1** (lockfile regenerated; prior damaged lock omitted `fast-safe-stringify` and broke `npm ci` / offline eval) |
