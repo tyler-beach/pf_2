@@ -14,3 +14,5 @@ func RunUserCommand() error {
 	cmd := exec.Command("sh", "-c", "echo intentional-pathfinder-fail-fixture")
 	return cmd.Run()
 }
+
+// e2e marker: pathfinder-pr-scan known-FAIL fixture (2026-10-28T12:53:02Z)
