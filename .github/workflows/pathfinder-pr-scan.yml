@@ -365,26 +365,40 @@ jobs:
             --json-out analyzer-evidence/checkov.json \
             --sarif-out analyzer-evidence/checkov.sarif &
           ck_pid=$!
-          wait "$og_pid" || true
-          wait "$ck_pid" || true
+          wait "$og_pid"
+          og_rc=$?
+          wait "$ck_pid"
+          ck_rc=$?
           set -e
 
+          # Only attach evidence from scanners that completed successfully.
+          # Failed JSON on disk must not poison assess-repo verification.
           evidence_flags=()
-          if [[ -f analyzer-evidence/opengrep.json && -f analyzer-evidence/checkov.json ]]; then
+          og_ok=false
+          ck_ok=false
+          if [[ "$og_rc" -eq 0 && -f analyzer-evidence/opengrep.json ]]; then og_ok=true; fi
+          if [[ "$ck_rc" -eq 0 && -f analyzer-evidence/checkov.json ]]; then ck_ok=true; fi
+          if [[ "$og_ok" == true && "$ck_ok" == true ]]; then
             evidence_flags=(
               --analyzer-evidence analyzer-evidence/opengrep.json,analyzer-evidence/checkov.json
               --analyzer-sarif analyzer-evidence/opengrep.sarif,analyzer-evidence/checkov.sarif
             )
-          elif [[ -f analyzer-evidence/opengrep.json ]]; then
+          elif [[ "$og_ok" == true ]]; then
             evidence_flags=(
               --analyzer-evidence analyzer-evidence/opengrep.json
               --analyzer-sarif analyzer-evidence/opengrep.sarif
             )
-          elif [[ -f analyzer-evidence/checkov.json ]]; then
+          elif [[ "$ck_ok" == true ]]; then
             evidence_flags=(
               --analyzer-evidence analyzer-evidence/checkov.json
               --analyzer-sarif analyzer-evidence/checkov.sarif
             )
+          fi
+          if [[ "$og_rc" -ne 0 ]]; then
+            echo "::warning::OpenGrep scan exited $og_rc; continuing without its evidence"
+          fi
+          if [[ "$ck_rc" -ne 0 ]]; then
+            echo "::warning::Checkov scan exited $ck_rc; continuing without its evidence"
           fi
 
           "$ADRCTL" assess-repo \

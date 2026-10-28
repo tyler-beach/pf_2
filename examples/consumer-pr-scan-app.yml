@@ -24,8 +24,12 @@ on:
         type: boolean
         default: false
 
+# Match reusable GITHUB_TOKEN needs (install token still preferred for writes).
 permissions:
   contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
 
 jobs:
   mint-app-token:
