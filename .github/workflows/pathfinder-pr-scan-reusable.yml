@@ -94,13 +94,8 @@ jobs:
         run: |
           set -euo pipefail
           go run ./cmd/adrctl parse-pr-url "$PR_URL" > "$RUNNER_TEMP/pr-ref.json"
-          reporters="$(REPORTERS_CSV="$REPORTERS_CSV" python3 -c 'import json,os
-raw=os.environ.get("REPORTERS_CSV","")
-parts=[p.strip() for p in raw.split(",") if p.strip()]
-allowed={"github-pr-review","github-pr-check","github-check","github-pr-annotations","local"}
-bad=[p for p in parts if p not in allowed]
-assert not bad, bad
-print(json.dumps(parts))')"
+          # Keep the Python one-liner indented inside the block scalar (multiline -c broke YAML).
+          reporters="$(REPORTERS_CSV="$REPORTERS_CSV" python3 -c 'import json,os; raw=os.environ.get("REPORTERS_CSV",""); parts=[p.strip() for p in raw.split(",") if p.strip()]; allowed={"github-pr-review","github-pr-check","github-check","github-pr-annotations","local"}; bad=[p for p in parts if p not in allowed]; assert not bad, bad; print(json.dumps(parts))')"
           upload_sarif="${UPLOAD_SARIF}"
           if [[ "$reporters" == "[]" && "$upload_sarif" != "true" ]]; then
             echo "::error::Provide at least one reporter or upload_sarif=true"
