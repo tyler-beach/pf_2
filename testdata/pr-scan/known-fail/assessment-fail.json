@@ -1,0 +1,61 @@
+{
+  "schema_version": "1",
+  "evidence_mode": "repository",
+  "submission_kind": "code_snippet",
+  "engine_version": "0.3.0",
+  "verdict": "FAIL",
+  "coverage_status": "PARTIAL",
+  "applicable_requirement_count": 1,
+  "source_file_count": 1,
+  "requirement_count": 3,
+  "counts": {
+    "FAIL": 1,
+    "NOT_APPLICABLE": 2
+  },
+  "runtime_llm_calls": 0,
+  "requirements": [
+    {
+      "adr_id": "ADR-003",
+      "adr_version": 1,
+      "requirement_id": "REQ-003-01",
+      "title": "Application code must not invoke shells with dynamic command strings",
+      "status": "FAIL",
+      "severity": "error",
+      "evidence": ["OpenGrep matched pathfinder.go-shell-command"],
+      "findings": [
+        {
+          "rule_id": "rules.pathfinder.go-shell-command",
+          "path": "internal/bad/shell.go",
+          "line": 8,
+          "column": 2,
+          "message": "Avoid composing shell commands with untrusted input",
+          "analyzer": "opengrep",
+          "fingerprint": "pr-scan-known-fail-shell"
+        }
+      ],
+      "reason": "Found 1 shell-composition finding(s)."
+    },
+    {
+      "adr_id": "ADR-NA",
+      "adr_version": 1,
+      "requirement_id": "REQ-NA-01",
+      "title": "Not applicable filler",
+      "status": "NOT_APPLICABLE",
+      "severity": "info",
+      "evidence": [],
+      "findings": [],
+      "reason": "Not applicable by applicability filter: demo N/A row"
+    },
+    {
+      "adr_id": "ADR-PASS",
+      "adr_version": 1,
+      "requirement_id": "REQ-PASS-01",
+      "title": "Pass filler",
+      "status": "PASS",
+      "severity": "error",
+      "evidence": ["clean"],
+      "findings": [],
+      "reason": "No findings"
+    }
+  ]
+}

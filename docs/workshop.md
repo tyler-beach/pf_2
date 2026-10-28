@@ -66,7 +66,7 @@ See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance ve
 
 ## PR URL scan (reviewdog + Security)
 
-Workshop docs include **PR URL scan** (`#/docs/pr-scan`). Operator guide: [pr-scan.md](pr-scan.md). Issue template: **Pathfinder PR scan (reviewdog + Security)**.
+Workshop docs include **PR URL scan** (`#/docs/pr-scan`). Operator guide: [pr-scan.md](pr-scan.md). Issue template: **Pathfinder PR scan (reviewdog + Security)**, or **Actions → Pathfinder PR Scan → Run workflow** (`pr_url` + feedback flags). Secrets matrix: `PATHFINDER_REVIEW_TOKEN` / `PATHFINDER_SARIF_TOKEN`. Stable check name: `pathfinder-pr-scan`. Local fixture E2E: `./scripts/pr_scan_local_e2e.sh`.
 
 ## Follow-on (not this iteration)
 

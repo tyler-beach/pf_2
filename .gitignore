@@ -12,7 +12,8 @@ workshop/dist/
 eval/promptfoo/output/
 npm-debug.log*
 
-# Local workshop snapshots
+# Local workshop snapshots / PR-scan E2E outs
 /workshop-snapshot/
+testdata/pr-scan/known-fail/out/
 /adr/llm-obligation-proposals.json
 /adr/llm-obligation-proposals.md

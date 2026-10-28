@@ -3,26 +3,81 @@ name: Pathfinder PR Scan
 on:
   issues:
     types: [opened, edited, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_url:
+        description: Full GitHub PR URL (same-repo or cross-repo with PATHFINDER_REVIEW_TOKEN)
+        required: true
+        type: string
+      github_pr_review:
+        description: reviewdog github-pr-review (inline comments)
+        required: false
+        type: boolean
+        default: true
+      github_pr_check:
+        description: reviewdog github-pr-check (Checks API)
+        required: false
+        type: boolean
+        default: true
+      github_check:
+        description: reviewdog github-check (commit Check Run)
+        required: false
+        type: boolean
+        default: false
+      github_pr_annotations:
+        description: reviewdog github-pr-annotations
+        required: false
+        type: boolean
+        default: false
+      local_reporter:
+        description: reviewdog local (artifact only)
+        required: false
+        type: boolean
+        default: false
+      upload_sarif:
+        description: Upload Security SARIF to code scanning
+        required: false
+        type: boolean
+        default: false
+      filter_mode:
+        description: reviewdog filter-mode
+        required: false
+        type: choice
+        options: [added, diff_context, file, nofilter]
+        default: added
+      catalog:
+        description: Requirement catalog
+        required: false
+        type: choice
+        options: [corpus, live]
+        default: corpus
+      fail_level:
+        description: reviewdog fail-level
+        required: false
+        type: choice
+        options: [none, any, info, warning, error]
+        default: none
 
 permissions:
   contents: read
   issues: write
 
 concurrency:
-  group: pathfinder-pr-scan-${{ github.event.issue.number }}
+  group: pathfinder-pr-scan-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   scan:
-    # Title/label trigger alone is attacker-controlled on public repos. Gate on
-    # trusted authors so PATHFINDER_* tokens cannot be confused-deputied via issues.
+    # Issues: title/label alone is attacker-controlled — gate on trusted authors.
+    # workflow_dispatch: only repo actors with Actions write can run (no issue gate).
     if: >-
-      (startsWith(github.event.issue.title, '[Pathfinder PR Scan]') ||
-       contains(join(github.event.issue.labels.*.name, ','), 'pathfinder-pr-scan')) &&
-      (github.event.issue.author_association == 'OWNER' ||
-       github.event.issue.author_association == 'MEMBER' ||
-       github.event.issue.author_association == 'COLLABORATOR' ||
-       github.event.issue.author_association == 'MANNEQUIN')
+      github.event_name == 'workflow_dispatch' ||
+      ((startsWith(github.event.issue.title, '[Pathfinder PR Scan]') ||
+        contains(join(github.event.issue.labels.*.name, ','), 'pathfinder-pr-scan')) &&
+       (github.event.issue.author_association == 'OWNER' ||
+        github.event.issue.author_association == 'MEMBER' ||
+        github.event.issue.author_association == 'COLLABORATOR' ||
+        github.event.issue.author_association == 'MANNEQUIN'))
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -42,14 +97,63 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Parse issue form
+      - name: Parse scan request (issue form or workflow_dispatch)
         id: parse
         env:
+          EVENT_NAME: ${{ github.event_name }}
           ISSUE_BODY: ${{ github.event.issue.body }}
+          DISPATCH_PR_URL: ${{ inputs.pr_url }}
+          DISPATCH_FILTER: ${{ inputs.filter_mode }}
+          DISPATCH_CATALOG: ${{ inputs.catalog }}
+          DISPATCH_FAIL: ${{ inputs.fail_level }}
+          DISPATCH_SARIF: ${{ inputs.upload_sarif }}
+          DISPATCH_PR_REVIEW: ${{ inputs.github_pr_review }}
+          DISPATCH_PR_CHECK: ${{ inputs.github_pr_check }}
+          DISPATCH_CHECK: ${{ inputs.github_check }}
+          DISPATCH_ANNOTATIONS: ${{ inputs.github_pr_annotations }}
+          DISPATCH_LOCAL: ${{ inputs.local_reporter }}
         run: |
           set -euo pipefail
-          printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/issue-body.md"
-          go run ./cmd/adrctl parse-pr-scan-issue --body "$RUNNER_TEMP/issue-body.md" > "$RUNNER_TEMP/pr-scan-request.json"
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            reporters='[]'
+            add_reporter() {
+              local flag="$1" name="$2"
+              if [[ "$flag" == "true" ]]; then
+                reporters="$(jq -c --arg r "$name" '. + [$r]' <<<"$reporters")"
+              fi
+            }
+            add_reporter "${DISPATCH_PR_REVIEW:-false}" "github-pr-review"
+            add_reporter "${DISPATCH_PR_CHECK:-false}" "github-pr-check"
+            add_reporter "${DISPATCH_CHECK:-false}" "github-check"
+            add_reporter "${DISPATCH_ANNOTATIONS:-false}" "github-pr-annotations"
+            add_reporter "${DISPATCH_LOCAL:-false}" "local"
+            upload_sarif="${DISPATCH_SARIF:-false}"
+            if [[ "$reporters" == "[]" && "$upload_sarif" != "true" ]]; then
+              echo "::error::Select at least one reviewdog reporter and/or upload_sarif"
+              exit 1
+            fi
+            go run ./cmd/adrctl parse-pr-url "$DISPATCH_PR_URL" > "$RUNNER_TEMP/pr-ref.json"
+            jq -n \
+              --arg url "$DISPATCH_PR_URL" \
+              --slurpfile pr "$RUNNER_TEMP/pr-ref.json" \
+              --argjson reporters "$reporters" \
+              --argjson upload "$upload_sarif" \
+              --arg filter "${DISPATCH_FILTER:-added}" \
+              --arg catalog "${DISPATCH_CATALOG:-corpus}" \
+              --arg fail "${DISPATCH_FAIL:-none}" \
+              '{
+                PRURL: $url,
+                PR: $pr[0],
+                Reporters: $reporters,
+                UploadSARIF: $upload,
+                FilterMode: $filter,
+                Catalog: $catalog,
+                FailLevel: $fail
+              }' > "$RUNNER_TEMP/pr-scan-request.json"
+          else
+            printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/issue-body.md"
+            go run ./cmd/adrctl parse-pr-scan-issue --body "$RUNNER_TEMP/issue-body.md" > "$RUNNER_TEMP/pr-scan-request.json"
+          fi
           cat "$RUNNER_TEMP/pr-scan-request.json"
 
           owner="$(jq -r '.PR.Owner' "$RUNNER_TEMP/pr-scan-request.json")"
@@ -357,8 +461,9 @@ jobs:
               reviewdog -f=rdjson -reporter=local -filter-mode="$FILTER" -fail-level=none < pathfinder.rdjson \
                 | tee "$GITHUB_WORKSPACE/reviewdog-local.txt" || true
             else
+              # Stable check/annotation name for branch protection & docs.
               reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" -fail-level="$FAIL_LEVEL" \
-                -name=pathfinder < pathfinder.rdjson || true
+                -name=pathfinder-pr-scan < pathfinder.rdjson || true
             fi
             echo "::endgroup::"
           done
@@ -383,7 +488,7 @@ jobs:
             --tool Pathfinder
 
       - name: Comment status on scan issue
-        if: always()
+        if: always() && github.event_name == 'issues'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_URL: ${{ steps.pr.outputs.html_url }}
@@ -397,8 +502,10 @@ jobs:
 
           - **Target:** ${PR_URL:-unknown}
           - **Head:** \`${HEAD_SHA:-unknown}\`
+          - **reviewdog check name:** \`pathfinder-pr-scan\`
           - **reviewdog reporters:** \`${REPORTERS}\`
           - **Security SARIF upload:** \`${UPLOAD_SARIF}\`
+          - **Workshop dig-in:** https://tyler-beach.github.io/pf_2/#/runs?run_id=${GITHUB_RUN_ID}
           - **Workflow:** ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
           Artifacts (rdjson / security SARIF / assessment) are uploaded with this run.
@@ -409,7 +516,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: pathfinder-pr-scan-${{ github.event.issue.number }}
+          name: pathfinder-pr-scan-${{ github.event.issue.number || github.run_id }}
           path: |
             assessment.json
             report.md
