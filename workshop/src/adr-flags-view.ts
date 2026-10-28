@@ -405,8 +405,21 @@ export async function renderADRFlags(app: HTMLElement) {
     ['aligned', 'Most aligned'],
   ] as const;
 
+  const allExcluded =
+    Number(s?.adr_touched || 0) > 0 &&
+    Number(s?.adr_assessed || 0) === 0 &&
+    Number(s?.excluded_observations || 0) > 0;
   app.innerHTML = `
     ${age.stale ? staleBanner(age.label, 'ADR flagging rollup may lag until Workshop Publish refreshes.') : ''}
+    ${
+      allExcluded
+        ? `<div class="banner warn" role="status">
+            <strong>All observations excluded (N/A).</strong>
+            ${fmt(s?.excluded_observations)} requirement rows touched ${fmt(s?.adr_touched)} ADRs but none entered the flag-rate denominator —
+            typical for issue-surface / sandbox assessments. Dig into <a href="#/submissions">Submissions</a> or <a href="#/docs/adr-flagging">definitions</a>; do not treat empty boards as “all aligned.”
+          </div>`
+        : ''
+    }
     <p class="run-meta">Active run <code>${escapeHTML(report.run_id || ctx.runId || '—')}</code>
       · schema <code>${escapeHTML(report.schema_version)}</code>
       · <a href="#/docs/adr-flagging">Aligned vs deviate</a>

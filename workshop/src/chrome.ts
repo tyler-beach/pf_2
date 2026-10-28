@@ -6,6 +6,7 @@ let bound = false;
 
 export async function renderChrome() {
   const picker = document.getElementById('run-picker') as HTMLSelectElement | null;
+  const latestBtn = document.getElementById('run-latest') as HTMLButtonElement | null;
   const ageEl = document.getElementById('data-age');
   const publish = document.getElementById('dispatch-publish') as HTMLAnchorElement | null;
   const assist = document.getElementById('dispatch-assist') as HTMLAnchorElement | null;
@@ -16,6 +17,7 @@ export async function renderChrome() {
   if (ctx.manifest?.latest_run_id) ids.add(ctx.manifest.latest_run_id);
   for (const r of runs) ids.add(r.run.run_id);
   for (const s of ctx.manifest?.snapshots || []) ids.add(s.run_id);
+  const latestId = ctx.manifest?.latest_run_id || '';
 
   if (picker) {
     picker.innerHTML = [...ids]
@@ -25,6 +27,16 @@ export async function renderChrome() {
         return `<option value="${escapeHTML(id)}" ${id === selected ? 'selected' : ''}>${escapeHTML(label)}</option>`;
       })
       .join('') || `<option value="${escapeHTML(selected)}">${escapeHTML(selected)}</option>`;
+  }
+
+  if (latestBtn) {
+    const onLatest = Boolean(latestId && selected === latestId && !getSelectedRunId());
+    latestBtn.disabled = !latestId || onLatest;
+    latestBtn.title = onLatest
+      ? 'Already viewing the latest published run'
+      : latestId
+        ? `Clear sticky selection → ${latestId}`
+        : 'No latest run in manifest';
   }
 
   if (ageEl) {
@@ -44,6 +56,9 @@ export async function renderChrome() {
     bound = true;
     picker.addEventListener('change', () => {
       setSelectedRunId(picker.value);
+    });
+    latestBtn?.addEventListener('click', () => {
+      setSelectedRunId(null);
     });
   }
 }

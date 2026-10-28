@@ -290,6 +290,34 @@ export function loadingState(label = 'Loading snapshot…'): string {
   </div>`;
 }
 
+/** Honest callout when issue-surface / sandbox leaves nearly everything NOT_APPLICABLE. */
+export function issueSurfaceBanner(opts: {
+  naRate?: unknown;
+  adrAssessed?: unknown;
+  adrTouched?: unknown;
+  workshopBatch?: { total?: number; verdicts?: Record<string, number> } | null;
+}): string {
+  const na = Number(opts.naRate);
+  const assessed = Number(opts.adrAssessed);
+  const touched = Number(opts.adrTouched);
+  const batch = opts.workshopBatch;
+  const allInd =
+    batch &&
+    Number(batch.total || 0) > 0 &&
+    Number(batch.verdicts?.INDETERMINATE || 0) === Number(batch.total || 0);
+  const heavyNA = Number.isFinite(na) && na >= 0.9;
+  const noAssessed = Number.isFinite(touched) && touched > 0 && Number.isFinite(assessed) && assessed === 0;
+  if (!heavyNA && !noAssessed && !allInd) return '';
+  return `<div class="banner warn" role="status">
+    <strong>Issue-surface honesty.</strong>
+    Analyzer rules are largely <code>NOT_APPLICABLE</code> on GitHub-issue / sandbox evidence — N/A is excluded from flag rate and must not be read as PASS.
+    ${allInd ? ` Workshop batch: all ${escapeHTML(String(batch?.total))} submissions rolled up as INDETERMINATE.` : ''}
+    <a href="#/docs/statuses">Status docs</a>
+    · <a href="#/submissions">Submissions</a>
+    · <a href="#/sample">Sample journey</a>
+  </div>`;
+}
+
 export function staleBanner(label: string, detail?: string): string {
   return `<div class="banner warn stale-banner" role="status">
     <strong>Stale data</strong> — ${escapeHTML(label)}

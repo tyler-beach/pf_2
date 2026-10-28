@@ -1,4 +1,4 @@
-import { getSelectedRunId } from './session';
+import { getSelectedRunId, setSelectedRunId } from './session';
 
 export type MetricsRow = {
   run: {
@@ -310,6 +310,15 @@ async function resolvePrefix(runId: string, manifest: Manifest | null): Promise<
 
 export async function loadActiveContext(): Promise<ActiveContext> {
   const [manifest, runs, rootLatest] = await Promise.all([loadManifest(), loadRuns(), fetchJSON<Latest>('latest.json')]);
+  const known = new Set<string>();
+  if (manifest?.latest_run_id) known.add(manifest.latest_run_id);
+  for (const r of runs) known.add(r.run.run_id);
+  for (const s of manifest?.snapshots || []) known.add(s.run_id);
+  const sticky = getSelectedRunId();
+  // Drop stale localStorage picks (e.g. wiped fixtures) so partners land on latest evidence.
+  if (sticky && known.size && !known.has(sticky)) {
+    setSelectedRunId(null);
+  }
   const preferred =
     getSelectedRunId() ||
     manifest?.latest_run_id ||
@@ -342,7 +351,16 @@ export async function loadActiveContext(): Promise<ActiveContext> {
   };
 }
 
-export async function loadLinkJSON<T>(key: string): Promise<T | null> {
+/**
+ * Load a JSON artifact for the active run.
+ * When viewing a snapshot, do NOT fall back to root/fixture files for evidence keys —
+ * that caused false triage (e.g. fixture proposals on a workshop batch run).
+ * Pass allowRootFallback for shared SPA docs (rare; prefer dedicated loaders).
+ */
+export async function loadLinkJSON<T>(
+  key: string,
+  opts?: { allowRootFallback?: boolean },
+): Promise<T | null> {
   const ctx = await loadActiveContext();
   if (ctx.prefix) {
     const fromSnap = await fetchJSON<T>(`${ctx.prefix}${key}.json`);
@@ -353,6 +371,7 @@ export async function loadLinkJSON<T>(key: string): Promise<T | null> {
       const nested = await fetchJSON<T>(`${ctx.prefix}${rel}`);
       if (nested) return nested;
     }
+    if (!opts?.allowRootFallback) return null;
   }
   const rootLatest = await fetchJSON<Latest>('latest.json');
   const rel = rootLatest?.links?.[key];

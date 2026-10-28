@@ -54,6 +54,7 @@ import {
   filterEmpty,
   fmt,
   fmtUSD,
+  issueSurfaceBanner,
   metricsRow,
   mountChartHeading,
   mountMetricsRow,
@@ -178,6 +179,7 @@ export async function renderHome(app: HTMLElement) {
     loadLinkJSON<{
       verdict?: string;
       runtime_llm_calls?: number;
+      workshop_batch?: { total?: number; verdicts?: Record<string, number> };
       requirements?: Array<{ requirement_id: string; status: string; title?: string }>;
     }>('assessment'),
   ]);
@@ -193,6 +195,7 @@ export async function renderHome(app: HTMLElement) {
   const sloPF = latest.slo.promptfoo_offline_pass !== false;
   const steps = pipeline?.steps || [];
   const low = (candidates?.candidates || []).filter((c) => c.confidence === 'low');
+  // Snapshot-scoped only (loadLinkJSON no longer bleeds fixture proposals into other runs).
   const pendingProps = (proposals?.proposals || []).filter((p) => p.approval_status === 'pending_review');
   const failing = (assessment?.requirements || []).filter((r) => r.status === 'FAIL' || r.status === 'REVIEW_REQUIRED');
 
@@ -243,6 +246,19 @@ export async function renderHome(app: HTMLElement) {
       href: '#/assess',
     });
   }
+  const naRate = Number(m['kpi.assess.na_rate']);
+  if (
+    (Number.isFinite(naRate) && naRate >= 0.9) ||
+    (Number(m['kpi.adr.touched'] || 0) > 0 && Number(m['kpi.adr.assessed'] || 0) === 0) ||
+    assessment?.workshop_batch
+  ) {
+    triage.push({
+      sev: 'warn',
+      label: 'Issue-surface',
+      msg: 'High N/A / excluded observations — dig into Submissions, not empty Assess rows',
+      href: '#/submissions',
+    });
+  }
   if (sloPF === false || (m['kpi.promptfoo.pass_rate'] != null && Number(m['kpi.promptfoo.pass_rate']) < 1)) {
     triage.push({ sev: 'warn', label: 'Evals', msg: 'Promptfoo offline pass rate needs attention', href: '#/evals' });
   }
@@ -278,6 +294,12 @@ export async function renderHome(app: HTMLElement) {
   app.innerHTML = `
     ${!ctx.artifactsFromSnapshot ? `<div class="banner warn">Metrics for <code>${escapeHTML(ctx.runId)}</code>; detailed artifacts fall back to the latest snapshot.</div>` : ''}
     ${age.stale ? staleBanner(age.label, 'Treat assess/assist figures as historical until Workshop Publish refreshes.') : ''}
+    ${issueSurfaceBanner({
+      naRate: m['kpi.assess.na_rate'],
+      adrAssessed: m['kpi.adr.assessed'],
+      adrTouched: m['kpi.adr.touched'],
+      workshopBatch: assessment?.workshop_batch,
+    })}
     <div class="status-row">
       ${statusItem('Assess LLM', sloLLM ? '0 calls' : 'invariant broken', sloLLM ? 'ok' : 'bad', 'kpi.invariant.llm_calls')}
       ${statusItem('Promptfoo', sloPF ? 'offline pass' : 'check', sloPF ? 'ok' : 'warn', 'kpi.promptfoo.pass_rate')}
@@ -1070,6 +1092,7 @@ export async function renderCandidates(app: HTMLElement) {
         }
         <div class="drawer-actions entity-links">
           <a href="#/adrs/${escapeHTML(c.adr_id)}">ADR</a>
+          ${/^WS-/.test(c.adr_id) ? `<a href="#/submissions?q=${encodeURIComponent(c.adr_id)}">Submission</a>` : ''}
           ${prop ? `<a href="#/proposals?parent=${escapeHTML(c.id)}">Proposal</a>` : ''}
           <a href="#/assess">Assess</a>
         </div>`,
@@ -1196,7 +1219,7 @@ export async function renderCandidates(app: HTMLElement) {
 
 export async function renderSubmissions(app: HTMLElement) {
   setCrumb('Submissions');
-  setPurpose('Workshop body of evidence: 50 issue-shaped submissions with explicit submission_kind (25 tech_spec / 25 code_snippet).');
+  setPurpose('Workshop body of evidence: issue-shaped submissions with explicit submission_kind. Enter/Details digs into verdict + candidates.');
   const state = readListQuery({ kind: 'all', sort: 'id', dir: 'asc' });
   const data = await loadLinkJSON<{
     schema_version?: string;
@@ -1208,6 +1231,9 @@ export async function renderSubmissions(app: HTMLElement) {
       submission_kind: string;
       domains?: string[];
       verdict?: string;
+      coverage_status?: string;
+      requirement_count?: number;
+      runtime_llm_calls?: number;
       source_url?: string;
       repo?: string;
       path?: string;
@@ -1215,6 +1241,7 @@ export async function renderSubmissions(app: HTMLElement) {
     }>;
   }>('submissions');
   const rows = data?.submissions || [];
+  const byId = new Map(rows.map((r) => [r.id, r]));
   const kindTag = (k: string) => tag(k || 'unspecified', k === 'tech_spec' ? 'ok' : k === 'code_snippet' ? 'warn' : '');
 
   app.innerHTML = `
@@ -1249,6 +1276,7 @@ export async function renderSubmissions(app: HTMLElement) {
   let pageSize = state.pageSize;
   let sort = state.sort || 'id';
   let dir: 'asc' | 'desc' = state.dir;
+  let unbindKeys: (() => void) | undefined;
   const tbody = document.getElementById('sub-body')!;
   const thead = document.getElementById('sub-head')!;
   const pagerEl = document.getElementById('sub-pager')!;
@@ -1272,12 +1300,43 @@ export async function renderSubmissions(app: HTMLElement) {
 
   const syncHash = (replace = true) => writeListQuery({ q: searchEl.value.trim(), page, pageSize, sort, dir, kind }, { replace });
 
+  const openSub = (r: (typeof rows)[number]) => {
+    const vSev = r.verdict === 'PASS' ? 'ok' : r.verdict === 'FAIL' ? 'bad' : 'warn';
+    openDrawer({
+      title: r.id,
+      meta: `${r.submission_kind} · ${r.verdict || '—'} · ${r.coverage_status || '—'}`,
+      wide: true,
+      bodyHTML: `
+        <dl class="kv">
+          ${drawerField('ID', `<span class="cell-inline"><code class="id">${escapeHTML(r.id)}</code>${copyControl(r.id, 'Copy')}</span>`, true)}
+          ${drawerField('Kind', kindTag(r.submission_kind))}
+          ${drawerField('Verdict', r.verdict ? tag(r.verdict, vSev) : '—')}
+          ${drawerField('Coverage', escapeHTML(r.coverage_status || '—'))}
+          ${drawerField('Requirements', fmt(r.requirement_count))}
+          ${drawerField('Runtime LLM', fmt(r.runtime_llm_calls ?? 0))}
+          ${drawerField('Repo', r.source_url ? `<a href="${escapeHTML(r.source_url)}" target="_blank" rel="noopener">${escapeHTML(r.repo || r.source_url)}</a>` : escapeHTML(r.repo || '—'), true)}
+          ${drawerField('Path', `<code>${escapeHTML(r.path || '—')}</code>`, true)}
+          ${drawerField('License', escapeHTML(r.license || '—'))}
+          ${drawerField('Domains', escapeHTML((r.domains || []).join(', ') || '—'), true)}
+        </dl>
+        ${drawerBlock('Title', `<p class="drawer-prose">${escapeHTML(r.title)}</p>`)}
+        <div class="drawer-actions entity-links">
+          <a href="#/candidates?q=${encodeURIComponent(r.id)}">Candidates for ${escapeHTML(r.id)}</a>
+          <a href="#/runs?q=${encodeURIComponent(r.id)}">Runs matching id</a>
+          <a href="#/docs/statuses">Status docs</a>
+          ${r.source_url ? `<a href="${escapeHTML(r.source_url)}" target="_blank" rel="noopener">Source</a>` : ''}
+        </div>`,
+    });
+    bindCopyButtons(document.getElementById('drawer-root') || document);
+  };
+
   const paint = () => {
+    unbindKeys?.();
     const list = filtered();
     const slice = slicePage(list, page, pageSize);
     page = slice.page;
     pageSize = slice.pageSize;
-    thead.innerHTML = `${sortHeader('ID', 'id', sort, dir)}${sortHeader('Kind', 'kind', sort, dir)}${sortHeader('Title', 'title', sort, dir)}${sortHeader('Verdict', 'verdict', sort, dir)}${sortHeader('Repo', 'repo', sort, dir)}<th>Domains</th>`;
+    thead.innerHTML = `<th class="col-expand" scope="col"><span class="sr-only">Details</span></th>${sortHeader('ID', 'id', sort, dir)}${sortHeader('Kind', 'kind', sort, dir)}${sortHeader('Title', 'title', sort, dir)}${sortHeader('Verdict', 'verdict', sort, dir)}${sortHeader('Repo', 'repo', sort, dir)}<th>Domains</th>`;
     bindSortHeaders(thead, (key, nextDir) => {
       sort = key;
       dir = nextDir;
@@ -1290,10 +1349,11 @@ export async function renderSubmissions(app: HTMLElement) {
     } else {
       tbody.innerHTML = slice.items
         .map(
-          (r) => `<tr>
+          (r) => `<tr data-row data-id="${escapeHTML(r.id)}">
+            <td class="col-expand">${expandControl(r.id)}</td>
             <td class="col-id"><code class="id">${escapeHTML(r.id)}</code></td>
             <td>${kindTag(r.submission_kind)}</td>
-            <td class="truncate" title="${escapeHTML(r.title)}">${escapeHTML(r.title)}</td>
+            <td class="truncate expand-cell" title="${escapeHTML(r.title)}" data-expand="${escapeHTML(r.id)}">${escapeHTML(r.title)}</td>
             <td>${r.verdict ? tag(r.verdict, r.verdict === 'PASS' ? 'ok' : r.verdict === 'FAIL' ? 'bad' : 'warn') : '<span class="faint">—</span>'}</td>
             <td class="truncate">${r.source_url ? `<a href="${escapeHTML(r.source_url)}" target="_blank" rel="noopener">${escapeHTML(r.repo || r.source_url)}</a>` : escapeHTML(r.repo || '—')}</td>
             <td class="truncate">${escapeHTML((r.domains || []).join(', ') || '—')}</td>
@@ -1307,6 +1367,20 @@ export async function renderSubmissions(app: HTMLElement) {
       pageSize = next.pageSize;
       syncHash();
       paint();
+    });
+    bindExpandControls(tbody, (id) => {
+      const r = byId.get(id);
+      if (r) openSub(r);
+    });
+    unbindKeys = bindTableKeyboard(tbody, {
+      onActivate: (row) => {
+        const r = byId.get(row.dataset.id || '');
+        if (r) openSub(r);
+      },
+      onExpand: (row) => {
+        const r = byId.get(row.dataset.id || '');
+        if (r) openSub(r);
+      },
     });
     syncHash(true);
   };
@@ -1327,7 +1401,7 @@ export async function renderSubmissions(app: HTMLElement) {
     paint();
   });
   bindSlashSearch(searchEl);
-  setTopActions(`<a class="btn" href="#/candidates">Candidates</a>`);
+  setTopActions(`<a class="btn" href="#/candidates">Candidates</a><a class="btn" href="#/assess">Assess</a>`);
   paint();
 }
 
@@ -1600,11 +1674,20 @@ export async function renderAssess(app: HTMLElement) {
     verdict?: string;
     runtime_llm_calls?: number;
     coverage_status?: string;
+    submission_kind?: string;
+    workshop_batch?: {
+      run_id?: string;
+      total?: number;
+      tech_spec_count?: number;
+      code_snippet_count?: number;
+      verdicts?: Record<string, number>;
+    };
     requirements?: Array<{ requirement_id: string; status: string; title?: string }>;
   }>('assessment');
   const latest = await loadLatest();
   const reqs = assessment?.requirements || [];
   const failing = reqs.filter((r) => r.status === 'FAIL' || r.status === 'REVIEW_REQUIRED');
+  const batch = assessment?.workshop_batch;
   const body = [
     '## Assessment follow-up',
     '',
@@ -1616,17 +1699,36 @@ export async function renderAssess(app: HTMLElement) {
   setTopActions(`
     <a class="btn" href="#/confidence">Confidence</a>
     <a class="btn" href="#/docs/statuses">Status docs</a>
+    <a class="btn" href="#/submissions">Submissions</a>
     <a class="btn primary" href="${issueURL('[ADR Assessment] Follow-up from workshop', body)}">Open follow-up issue</a>
   `);
   const llm = assessment?.runtime_llm_calls ?? Number(latest?.metrics['kpi.invariant.llm_calls'] ?? 0);
   const statusBands = ['all', 'FAIL', 'PASS', 'REVIEW_REQUIRED', 'NOT_APPLICABLE', 'EVIDENCE_MISSING', 'INDETERMINATE'] as const;
   const am = latest?.metrics || {};
+  const batchPanel =
+    batch && !reqs.length
+      ? `<div class="banner" role="status">
+          <strong>Workshop batch rollup</strong> — requirement rows live on each submission, not this aggregate artifact.
+          ${fmt(batch.total)} submissions
+          (${fmt(batch.tech_spec_count)} tech_spec / ${fmt(batch.code_snippet_count)} code_snippet):
+          PASS ${fmt(batch.verdicts?.PASS)} · FAIL ${fmt(batch.verdicts?.FAIL)} · INDETERMINATE ${fmt(batch.verdicts?.INDETERMINATE)}.
+          <a href="#/submissions">Open Submissions →</a>
+        </div>`
+      : '';
   app.innerHTML = `
+    ${issueSurfaceBanner({
+      naRate: am['kpi.assess.na_rate'],
+      adrAssessed: am['kpi.adr.assessed'],
+      adrTouched: am['kpi.adr.touched'],
+      workshopBatch: batch,
+    })}
+    ${batchPanel}
     <div class="status-row">
       ${statusItem('Verdict', String(assessment?.verdict || am['kpi.assess.verdict'] || '—'), assessment?.verdict === 'PASS' || am['kpi.assess.verdict'] === 'PASS' ? 'ok' : 'warn', 'kpi.assess.verdict')}
       ${statusItem('Runtime LLM calls', fmt(llm), llm === 0 ? 'ok' : 'bad', 'kpi.invariant.llm_calls')}
       ${statusItem('N/A rate', fmt(am['kpi.assess.na_rate']), '', 'kpi.assess.na_rate')}
       ${statusItem('Conf. method', String(am['kpi.confidence.method'] || '—'), '', 'kpi.confidence.method')}
+      ${assessment?.submission_kind ? statusItem('Kind', assessment.submission_kind, '', 'kpi.assess.submission_kind') : ''}
     </div>
     ${metricsRow([
       { label: 'Applicable', value: fmt(am['kpi.assess.applicable_count']), kpi: 'kpi.assess.applicable_count' },
@@ -1751,7 +1853,13 @@ export async function renderAssess(app: HTMLElement) {
             </tr>`;
           })
           .join('')
-      : filterEmpty(reqs.length ? 'No requirements match this filter.' : 'No requirements in assessment artifact.');
+      : filterEmpty(
+          reqs.length
+            ? 'No requirements match this filter.'
+            : batch
+              ? 'Batch rollup has no requirement rows — open Submissions for per-submission assessments.'
+              : 'No requirements in this run’s assessment artifact (not falling back to another run).',
+        );
     pagerEl.innerHTML = renderPager(slice);
     bindPager(pagerEl, () => ({ page, pageSize }), (next) => {
       page = next.page;
@@ -1819,9 +1927,19 @@ export async function renderCosts(app: HTMLElement) {
     loadRuns(),
   ]);
   const m = latest?.metrics || {};
+  const hasAssist =
+    costs != null ||
+    proposals != null ||
+    m['kpi.assist.cost_usd'] != null ||
+    m['kpi.assist.proposal_count'] != null;
   app.innerHTML = `
+    ${
+      hasAssist
+        ? ''
+        : `<div class="banner" role="status">No assist cost artifact on this run (not borrowing another snapshot). <a href="${workflowDispatchURL('llm-assist.yml')}">Dispatch LLM assist</a> or compare runs that include proposals.</div>`
+    }
     ${metricsRow([
-      { label: 'Mode', value: fmt(latest?.run.provider_mode || m['kpi.assist.provider'] || 'offline'), kpi: 'kpi.assist.provider' },
+      { label: 'Mode', value: fmt(latest?.run.provider_mode || m['kpi.assist.provider'] || (hasAssist ? 'offline' : '—')), kpi: 'kpi.assist.provider' },
       { label: 'Model', value: fmt(m['kpi.assist.model'] || proposals?.model), kpi: 'kpi.assist.model' },
       { label: 'Est. cost', value: fmtUSD(m['kpi.assist.cost_usd'] ?? proposals?.estimated_cost_usd ?? costs?.estimated_cost_usd), kpi: 'kpi.assist.cost_usd' },
       { label: 'Cost / accepted', value: fmtUSD(m['kpi.cost.per_accepted_proposal']), kpi: 'kpi.cost.per_accepted_proposal' },
@@ -1836,9 +1954,10 @@ export async function renderCosts(app: HTMLElement) {
     <div class="artifact"><pre>${escapeHTML(
       JSON.stringify(
         costs || {
-          pricing_note:
-            proposals?.cost_pricing_note ||
-            'offline=0; live uses gpt-4o-mini list rates ($0.15/1M input, $0.60/1M output)',
+          pricing_note: hasAssist
+            ? proposals?.cost_pricing_note ||
+              'offline=0; live uses gpt-4o-mini list rates ($0.15/1M input, $0.60/1M output)'
+            : 'No costs.json on this run — assist spend is absent, not $0 by inheritance.',
         },
         null,
         2,
@@ -2389,13 +2508,19 @@ export async function renderEvals(app: HTMLElement) {
   const pf = await loadLinkJSON<Record<string, unknown>>('promptfoo');
   const latest = await loadLatest();
   setTopActions(`<a class="btn primary" href="${workflowDispatchURL('llm-assist.yml')}">Dispatch LLM assist</a>`);
+  const hasPF = pf != null || latest?.metrics['kpi.promptfoo.pass_rate'] != null;
   app.innerHTML = `
+    ${
+      hasPF
+        ? ''
+        : `<div class="banner" role="status">No Promptfoo artifact on this run. Evals are assist-regression only — <a href="${workflowDispatchURL('llm-assist.yml')}">dispatch assist</a> or open a run that published <code>promptfoo.json</code>.</div>`
+    }
     ${metricsRow([
       { label: 'Pass rate', value: fmt(latest?.metrics['kpi.promptfoo.pass_rate'] ?? pf?.pass_rate) },
       { label: 'Mode', value: fmt(latest?.metrics.promptfoo_mode ?? pf?.mode) },
     ])}
     <h2>Latest Promptfoo summary</h2>
-    <div class="artifact"><pre>${escapeHTML(JSON.stringify(pf || {}, null, 2))}</pre></div>
+    <div class="artifact"><pre>${escapeHTML(JSON.stringify(pf || { note: 'absent on this snapshot' }, null, 2))}</pre></div>
   `;
 }
 
