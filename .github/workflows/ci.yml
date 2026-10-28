@@ -114,8 +114,9 @@ jobs:
           set -euo pipefail
           fixture_root="$RUNNER_TEMP/pathfinder-opengrep-fixtures"
           mkdir -p "$fixture_root/vulnerable/rules" "$fixture_root/clean/rules"
-          cp testdata/analyzer-fixtures/vulnerable/* "$fixture_root/vulnerable/"
-          cp testdata/analyzer-fixtures/clean/* "$fixture_root/clean/"
+          # Copy language fixtures only; IaC lives under iac/ and is exercised by Checkov.
+          find testdata/analyzer-fixtures/vulnerable -maxdepth 1 -type f -exec cp {} "$fixture_root/vulnerable/" \;
+          find testdata/analyzer-fixtures/clean -maxdepth 1 -type f -exec cp {} "$fixture_root/clean/" \;
           cp rules/pathfinder-security.yml "$fixture_root/vulnerable/rules/pathfinder-security.yml"
           cp rules/pathfinder-security.yml "$fixture_root/clean/rules/pathfinder-security.yml"
 
