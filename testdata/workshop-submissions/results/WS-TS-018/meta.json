@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-018",
+  "title": "[ADR Assessment] Grafana k8s-inspired backend architecture [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "platform",
+    "apis"
+  ],
+  "path": "tech_spec/WS-TS-018.md",
+  "source_url": "https://github.com/grafana/grafana/blob/main/contribute/architecture/k8s-inspired-backend-arch.md",
+  "repo": "grafana/grafana",
+  "source_path": "contribute/architecture/k8s-inspired-backend-arch.md",
+  "license": "AGPL-3.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "56713207b713"
+}

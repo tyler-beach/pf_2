@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-019",
+  "title": "[ADR Assessment] containerd garbage collection [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "reliability",
+    "runtime"
+  ],
+  "path": "tech_spec/WS-TS-019.md",
+  "source_url": "https://github.com/containerd/containerd/blob/main/docs/garbage-collection.md",
+  "repo": "containerd/containerd",
+  "source_path": "docs/garbage-collection.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "eba558bddf1d"
+}

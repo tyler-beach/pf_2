@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-006",
+  "title": "[ADR Assessment] golang-jwt parser fragment [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "auth",
+    "go",
+    "apis"
+  ],
+  "path": "code_snippet/WS-CS-006.md",
+  "source_url": "https://github.com/golang-jwt/jwt/blob/main/parser.go",
+  "repo": "golang-jwt/jwt",
+  "source_path": "parser.go",
+  "license": "MIT",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "d31f04ac04e7",
+  "language": "go"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "WS-CS-002",
+  "title": "[ADR Assessment] Terraform IAM policy module [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "auth",
+    "iam"
+  ],
+  "path": "code_snippet/WS-CS-002.md",
+  "source_url": "https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/modules/iam-policy/main.tf",
+  "repo": "terraform-aws-modules/terraform-aws-iam",
+  "source_path": "modules/iam-policy/main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "074cac22c2bf",
+  "language": "hcl"
+}

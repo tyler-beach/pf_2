@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-025",
+  "title": "[ADR Assessment] Tekton pipeline auth documentation [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "ci",
+    "auth"
+  ],
+  "path": "tech_spec/WS-TS-025.md",
+  "source_url": "https://github.com/tektoncd/pipeline/blob/main/docs/auth.md",
+  "repo": "tektoncd/pipeline",
+  "source_path": "docs/auth.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "6c9115ff1d0a"
+}

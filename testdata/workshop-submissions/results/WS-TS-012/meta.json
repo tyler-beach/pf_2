@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-012",
+  "title": "[ADR Assessment] Kubernetes SIG Architecture charter [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "architecture",
+    "governance"
+  ],
+  "path": "tech_spec/WS-TS-012.md",
+  "source_url": "https://github.com/kubernetes/community/blob/master/sig-architecture/README.md",
+  "repo": "kubernetes/community",
+  "source_path": "sig-architecture/README.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "3cfc3c03b992"
+}

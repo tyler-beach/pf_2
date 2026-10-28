@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-001",
+  "title": "[ADR Assessment] Terraform AWS security group example [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "networking"
+  ],
+  "path": "code_snippet/WS-CS-001.md",
+  "source_url": "https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/examples/complete/main.tf",
+  "repo": "terraform-aws-modules/terraform-aws-security-group",
+  "source_path": "examples/complete/main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "8b31fe3d4c72",
+  "language": "hcl"
+}

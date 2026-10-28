@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-012",
+  "title": "[ADR Assessment] golang.org/x/oauth2 client fragment [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "auth",
+    "go",
+    "apis"
+  ],
+  "path": "code_snippet/WS-CS-012.md",
+  "source_url": "https://github.com/golang/oauth2/blob/master/oauth2.go",
+  "repo": "golang/oauth2",
+  "source_path": "oauth2.go",
+  "license": "BSD-3-Clause",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "728c0e6d3f64",
+  "language": "go"
+}

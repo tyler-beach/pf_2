@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-004",
+  "title": "[ADR Assessment] MADR: YAML front matter metadata [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "architecture",
+    "metadata"
+  ],
+  "path": "tech_spec/WS-TS-004.md",
+  "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0013-use-yaml-front-matter-for-meta-data.md",
+  "repo": "adr/madr",
+  "source_path": "docs/decisions/0013-use-yaml-front-matter-for-meta-data.md",
+  "license": "MIT",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "99d185a2dcf2"
+}

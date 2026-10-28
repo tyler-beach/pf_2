@@ -1,0 +1,17 @@
+{
+  "id": "WS-CS-004",
+  "title": "[ADR Assessment] Official Node.js Docker image Dockerfile [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "docker",
+    "runtime"
+  ],
+  "path": "code_snippet/WS-CS-004.md",
+  "source_url": "https://github.com/nodejs/docker-node/blob/main/22/bookworm/Dockerfile",
+  "repo": "nodejs/docker-node",
+  "source_path": "22/bookworm/Dockerfile",
+  "license": "MIT",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "36e1f43cc195",
+  "language": "dockerfile"
+}

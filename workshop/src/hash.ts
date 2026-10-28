@@ -44,6 +44,8 @@ export type ListQueryState = {
   sort: string;
   dir: 'asc' | 'desc';
   band: string;
+  /** tech_spec | code_snippet | all */
+  kind: string;
 };
 
 export function readListQuery(defaults?: Partial<ListQueryState>): ListQueryState {
@@ -54,6 +56,7 @@ export function readListQuery(defaults?: Partial<ListQueryState>): ListQueryStat
     sort: '',
     dir: 'asc',
     band: 'all',
+    kind: 'all',
     ...defaults,
   };
   const dir = getQueryValue('dir');
@@ -64,6 +67,7 @@ export function readListQuery(defaults?: Partial<ListQueryState>): ListQueryStat
     sort: getQueryValue('sort') ?? d.sort,
     dir: dir === 'desc' ? 'desc' : dir === 'asc' ? 'asc' : d.dir,
     band: getQueryValue('band') ?? d.band,
+    kind: getQueryValue('kind') ?? d.kind,
   };
 }
 
@@ -76,6 +80,7 @@ export function writeListQuery(state: Partial<ListQueryState>, opts?: { replace?
       sort: state.sort || null,
       dir: state.sort ? state.dir || 'asc' : null,
       band: state.band && state.band !== 'all' ? state.band : null,
+      kind: state.kind && state.kind !== 'all' ? state.kind : null,
     },
     opts,
   );

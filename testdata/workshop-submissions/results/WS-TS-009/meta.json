@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-009",
+  "title": "[ADR Assessment] Backstage: Plugin package structure [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "platform",
+    "modularity"
+  ],
+  "path": "tech_spec/WS-TS-009.md",
+  "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr011-plugin-package-structure.md",
+  "repo": "backstage/backstage",
+  "source_path": "docs/architecture-decisions/adr011-plugin-package-structure.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "435589c8feae"
+}

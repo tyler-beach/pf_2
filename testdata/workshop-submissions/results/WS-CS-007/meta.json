@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-007",
+  "title": "[ADR Assessment] Django REST framework authentication [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "auth",
+    "python",
+    "apis"
+  ],
+  "path": "code_snippet/WS-CS-007.md",
+  "source_url": "https://github.com/encode/django-rest-framework/blob/master/rest_framework/authentication.py",
+  "repo": "encode/django-rest-framework",
+  "source_path": "rest_framework/authentication.py",
+  "license": "BSD-3-Clause",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "135824bd3fe5",
+  "language": "python"
+}

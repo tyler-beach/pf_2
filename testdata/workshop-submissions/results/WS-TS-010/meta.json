@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-010",
+  "title": "[ADR Assessment] Backstage: Use fetch [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "networking",
+    "apis"
+  ],
+  "path": "tech_spec/WS-TS-010.md",
+  "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr014-use-fetch.md",
+  "repo": "backstage/backstage",
+  "source_path": "docs/architecture-decisions/adr014-use-fetch.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "94bf101126a1"
+}

@@ -851,9 +851,9 @@ async function renderADRDetail(app: HTMLElement, id: string) {
 
 export async function renderCandidates(app: HTMLElement) {
   setCrumb('Candidates');
-  setPurpose('Filter extracted obligations by confidence band. / search · j/k · Enter opens ADR · o/Space/Details expands.');
+  setPurpose('Filter by confidence band and submission_kind (tech_spec vs code_snippet). / search · j/k · Enter opens ADR · o/Space/Details expands.');
   const focusId = queryParam('id');
-  const state = readListQuery({ band: 'all', sort: 'confidence', dir: 'asc', q: focusId || '' });
+  const state = readListQuery({ band: 'all', kind: 'all', sort: 'confidence', dir: 'asc', q: focusId || '' });
   const [data, proposals] = await Promise.all([
     loadLinkJSON<{
       candidates?: Array<{
@@ -863,6 +863,7 @@ export async function renderCandidates(app: HTMLElement) {
         escalation_reasons?: string[];
         statement: string;
         pattern_hint: string;
+        submission_kind?: string;
         source_path?: string;
         source_line_start?: number;
         source_line_end?: number;
@@ -875,9 +876,12 @@ export async function renderCandidates(app: HTMLElement) {
   const propByParent = new Map<string, string>();
   for (const p of proposals?.proposals || []) propByParent.set(p.parent_candidate_id, p.proposal_id);
   const byId = new Map(rows.map((c) => [c.id, c]));
+  const kindLabel = (k?: string) => (k === 'tech_spec' ? 'tech_spec' : k === 'code_snippet' ? 'code_snippet' : 'unspecified');
+  const kindTag = (k?: string) =>
+    tag(kindLabel(k), k === 'tech_spec' ? 'ok' : k === 'code_snippet' ? 'warn' : '');
 
   const checklistFor = (list: typeof rows) =>
-    ['## Pathfinder candidate checklist', '', ...list.map((c) => `- [ ] ${c.id} (${c.adr_id}): ${c.statement}`)].join('\n');
+    ['## Pathfinder candidate checklist', '', ...list.map((c) => `- [ ] ${c.id} (${c.adr_id}) [${kindLabel(c.submission_kind)}]: ${c.statement}`)].join('\n');
 
   app.innerHTML = `
     ${metricsRow([
@@ -885,11 +889,22 @@ export async function renderCandidates(app: HTMLElement) {
       { label: 'High', value: fmt(data?.confidence_summary?.high ?? rows.filter((c) => c.confidence === 'high').length), cls: 'ok' },
       { label: 'Medium', value: fmt(data?.confidence_summary?.medium ?? rows.filter((c) => c.confidence === 'medium').length) },
       { label: 'Low', value: fmt(data?.confidence_summary?.low ?? rows.filter((c) => c.confidence === 'low').length), cls: 'warn' },
+      { label: 'Tech-spec', value: fmt(rows.filter((c) => c.submission_kind === 'tech_spec').length), href: '#/candidates?kind=tech_spec' },
+      { label: 'Code-snippet', value: fmt(rows.filter((c) => c.submission_kind === 'code_snippet').length), href: '#/candidates?kind=code_snippet' },
     ])}
     <div class="toolbar">
       <div class="seg" id="band-seg">
         ${['all', 'high', 'medium', 'low']
           .map((b) => `<button type="button" data-band="${b}" class="${state.band === b ? 'active' : ''}">${b[0].toUpperCase()}${b.slice(1)}</button>`)
+          .join('')}
+      </div>
+      <div class="seg" id="kind-seg">
+        ${[
+          ['all', 'All kinds'],
+          ['tech_spec', 'tech_spec'],
+          ['code_snippet', 'code_snippet'],
+        ]
+          .map(([k, label]) => `<button type="button" data-kind="${k}" class="${state.kind === k ? 'active' : ''}">${escapeHTML(label)}</button>`)
           .join('')}
       </div>
       <input class="search" id="cand-q" placeholder="Search id or statement (/)" value="${escapeHTML(state.q)}" />
@@ -908,6 +923,7 @@ export async function renderCandidates(app: HTMLElement) {
   `;
 
   let band = state.band;
+  let kind = state.kind || 'all';
   let page = state.page;
   let pageSize = state.pageSize;
   let sort = state.sort || 'confidence';
@@ -923,22 +939,25 @@ export async function renderCandidates(app: HTMLElement) {
     const q = (searchEl?.value || '').toLowerCase().trim();
     const list = rows.filter((c) => {
       if (band !== 'all' && c.confidence !== band) return false;
+      if (kind === 'tech_spec' && c.submission_kind !== 'tech_spec') return false;
+      if (kind === 'code_snippet' && c.submission_kind !== 'code_snippet') return false;
       if (focusId && !q && c.id === focusId) return true;
       if (!q) return true;
-      return `${c.id} ${c.statement} ${c.pattern_hint} ${c.adr_id}`.toLowerCase().includes(q);
+      return `${c.id} ${c.statement} ${c.pattern_hint} ${c.adr_id} ${c.submission_kind || ''}`.toLowerCase().includes(q);
     });
     return sortBy(list, sort, dir, (c, key) => {
       if (key === 'confidence') return c.confidence;
       if (key === 'adr') return c.adr_id;
       if (key === 'pattern') return c.pattern_hint;
       if (key === 'statement') return c.statement;
+      if (key === 'kind') return c.submission_kind || '';
       if (key === 'id') return c.id;
       return '';
     });
   };
 
   const syncHash = (replace = true) => {
-    writeListQuery({ q: searchEl.value.trim(), page, pageSize, sort, dir, band }, { replace });
+    writeListQuery({ q: searchEl.value.trim(), page, pageSize, sort, dir, band, kind }, { replace });
   };
 
   const expand = (c: (typeof rows)[number]) => {
@@ -953,12 +972,13 @@ export async function renderCandidates(app: HTMLElement) {
       .join(' · ');
     openDrawer({
       title: c.id,
-      meta: `${c.adr_id} · ${c.confidence} · ${c.pattern_hint}`,
+      meta: `${c.adr_id} · ${c.confidence} · ${kindLabel(c.submission_kind)} · ${c.pattern_hint}`,
       wide: true,
       bodyHTML: `
         <dl class="kv">
           ${drawerField('ID', `<span class="cell-inline"><code class="id">${escapeHTML(c.id)}</code>${copyControl(c.id, 'Copy')}</span>`, true)}
           ${drawerField('ADR', `<a class="id" href="#/adrs/${escapeHTML(c.adr_id)}">${escapeHTML(c.adr_id)}</a>`)}
+          ${drawerField('Kind', kindTag(c.submission_kind))}
           ${drawerField('Band', tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : ''))}
           ${drawerField('Pattern', `<code class="id">${escapeHTML(c.pattern_hint)}</code>`, true)}
           ${drawerField('Source', `<code>${escapeHTML(sourceBits)}</code>`, true)}
@@ -988,7 +1008,7 @@ export async function renderCandidates(app: HTMLElement) {
     const slice = slicePage(list, page, pageSize);
     page = slice.page;
     pageSize = slice.pageSize;
-    thead.innerHTML = `<th class="col-expand" scope="col"><span class="sr-only">Details</span></th>${sortHeader('ID', 'id', sort, dir)}${sortHeader('ADR', 'adr', sort, dir)}${sortHeader('Band', 'confidence', sort, dir)}<th>Links</th>${sortHeader('Pattern', 'pattern', sort, dir)}${sortHeader('Statement', 'statement', sort, dir)}`;
+    thead.innerHTML = `<th class="col-expand" scope="col"><span class="sr-only">Details</span></th>${sortHeader('ID', 'id', sort, dir)}${sortHeader('ADR', 'adr', sort, dir)}${sortHeader('Kind', 'kind', sort, dir)}${sortHeader('Band', 'confidence', sort, dir)}<th>Links</th>${sortHeader('Pattern', 'pattern', sort, dir)}${sortHeader('Statement', 'statement', sort, dir)}`;
     bindSortHeaders(thead, (key, nextDir) => {
       sort = key;
       dir = nextDir;
@@ -1006,6 +1026,7 @@ export async function renderCandidates(app: HTMLElement) {
             <td class="col-expand">${expandControl(c.id)}</td>
             <td class="col-id"><span class="cell-inline"><code class="id" title="${escapeHTML(c.id)}">${escapeHTML(c.id)}</code>${copyControl(c.id, 'Copy')}</span></td>
             <td class="col-adr"><a class="id" href="#/adrs/${escapeHTML(c.adr_id)}" title="${escapeHTML(c.adr_id)}">${escapeHTML(c.adr_id)}</a></td>
+            <td class="col-kind">${kindTag(c.submission_kind)}</td>
             <td class="col-band">${tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : '')}</td>
             <td class="col-links">${entityLinks([
               { href: `#/adrs/${c.adr_id}`, label: 'ADR' },
@@ -1055,6 +1076,16 @@ export async function renderCandidates(app: HTMLElement) {
       paint();
     });
   });
+  document.querySelectorAll('#kind-seg button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#kind-seg button').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      kind = (btn as HTMLElement).dataset.kind || 'all';
+      page = 1;
+      syncHash(false);
+      paint();
+    });
+  });
   searchEl?.addEventListener('input', () => {
     page = 1;
     syncHash(true);
@@ -1065,8 +1096,8 @@ export async function renderCandidates(app: HTMLElement) {
     await copyWithButtonFeedback(
       e.currentTarget as HTMLButtonElement,
       toTSV(
-        ['id', 'adr_id', 'confidence', 'pattern', 'statement'],
-        list.map((c) => [c.id, c.adr_id, c.confidence, c.pattern_hint, c.statement]),
+        ['id', 'adr_id', 'submission_kind', 'confidence', 'pattern', 'statement'],
+        list.map((c) => [c.id, c.adr_id, kindLabel(c.submission_kind), c.confidence, c.pattern_hint, c.statement]),
       ),
     );
   });
@@ -1075,8 +1106,8 @@ export async function renderCandidates(app: HTMLElement) {
     await copyWithButtonFeedback(
       e.currentTarget as HTMLButtonElement,
       toMarkdownTable(
-        ['ID', 'ADR', 'Band', 'Pattern', 'Statement'],
-        list.map((c) => [c.id, c.adr_id, c.confidence, c.pattern_hint, c.statement]),
+        ['ID', 'ADR', 'Kind', 'Band', 'Pattern', 'Statement'],
+        list.map((c) => [c.id, c.adr_id, kindLabel(c.submission_kind), c.confidence, c.pattern_hint, c.statement]),
       ),
     );
   });
@@ -1084,7 +1115,144 @@ export async function renderCandidates(app: HTMLElement) {
     await copyWithButtonFeedback(e.currentTarget as HTMLButtonElement, checklistFor(filtered()));
   });
   bindSlashSearch(searchEl);
-  setTopActions('');
+  setTopActions(`<a class="btn" href="#/submissions">Submissions</a>`);
+  paint();
+}
+
+export async function renderSubmissions(app: HTMLElement) {
+  setCrumb('Submissions');
+  setPurpose('Workshop body of evidence: 50 issue-shaped submissions with explicit submission_kind (25 tech_spec / 25 code_snippet).');
+  const state = readListQuery({ kind: 'all', sort: 'id', dir: 'asc' });
+  const data = await loadLinkJSON<{
+    schema_version?: string;
+    count?: number;
+    kind_counts?: { tech_spec?: number; code_snippet?: number };
+    submissions?: Array<{
+      id: string;
+      title: string;
+      submission_kind: string;
+      domains?: string[];
+      verdict?: string;
+      source_url?: string;
+      repo?: string;
+      path?: string;
+      license?: string;
+    }>;
+  }>('submissions');
+  const rows = data?.submissions || [];
+  const kindTag = (k: string) => tag(k || 'unspecified', k === 'tech_spec' ? 'ok' : k === 'code_snippet' ? 'warn' : '');
+
+  app.innerHTML = `
+    ${metricsRow([
+      { label: 'Total', value: fmt(data?.count ?? rows.length) },
+      { label: 'tech_spec', value: fmt(data?.kind_counts?.tech_spec ?? rows.filter((r) => r.submission_kind === 'tech_spec').length), href: '#/submissions?kind=tech_spec' },
+      { label: 'code_snippet', value: fmt(data?.kind_counts?.code_snippet ?? rows.filter((r) => r.submission_kind === 'code_snippet').length), href: '#/submissions?kind=code_snippet' },
+    ])}
+    <div class="toolbar">
+      <div class="seg" id="sub-kind-seg">
+        ${[
+          ['all', 'All kinds'],
+          ['tech_spec', 'tech_spec'],
+          ['code_snippet', 'code_snippet'],
+        ]
+          .map(([k, label]) => `<button type="button" data-kind="${k}" class="${state.kind === k ? 'active' : ''}">${escapeHTML(label)}</button>`)
+          .join('')}
+      </div>
+      <input class="search" id="sub-q" placeholder="Search id, title, repo (/)" value="${escapeHTML(state.q)}" />
+    </div>
+    <div class="table-wrap sticky-head">
+      <table class="dense" id="sub-table">
+        <thead><tr id="sub-head"></tr></thead>
+        <tbody id="sub-body"></tbody>
+      </table>
+    </div>
+    <div id="sub-pager"></div>
+  `;
+
+  let kind = state.kind || 'all';
+  let page = state.page;
+  let pageSize = state.pageSize;
+  let sort = state.sort || 'id';
+  let dir: 'asc' | 'desc' = state.dir;
+  const tbody = document.getElementById('sub-body')!;
+  const thead = document.getElementById('sub-head')!;
+  const pagerEl = document.getElementById('sub-pager')!;
+  const searchEl = document.getElementById('sub-q') as HTMLInputElement;
+
+  const filtered = () => {
+    const q = (searchEl?.value || '').toLowerCase().trim();
+    const list = rows.filter((r) => {
+      if (kind !== 'all' && r.submission_kind !== kind) return false;
+      if (!q) return true;
+      return `${r.id} ${r.title} ${r.repo || ''} ${(r.domains || []).join(' ')} ${r.verdict || ''}`.toLowerCase().includes(q);
+    });
+    return sortBy(list, sort, dir, (r, key) => {
+      if (key === 'kind') return r.submission_kind;
+      if (key === 'title') return r.title;
+      if (key === 'verdict') return r.verdict || '';
+      if (key === 'repo') return r.repo || '';
+      return r.id;
+    });
+  };
+
+  const syncHash = (replace = true) => writeListQuery({ q: searchEl.value.trim(), page, pageSize, sort, dir, kind }, { replace });
+
+  const paint = () => {
+    const list = filtered();
+    const slice = slicePage(list, page, pageSize);
+    page = slice.page;
+    pageSize = slice.pageSize;
+    thead.innerHTML = `${sortHeader('ID', 'id', sort, dir)}${sortHeader('Kind', 'kind', sort, dir)}${sortHeader('Title', 'title', sort, dir)}${sortHeader('Verdict', 'verdict', sort, dir)}${sortHeader('Repo', 'repo', sort, dir)}<th>Domains</th>`;
+    bindSortHeaders(thead, (key, nextDir) => {
+      sort = key;
+      dir = nextDir;
+      page = 1;
+      syncHash();
+      paint();
+    });
+    if (!slice.items.length) {
+      tbody.innerHTML = filterEmpty(rows.length ? 'No submissions match this filter.' : 'No submissions.json in this snapshot. Run scripts/assess_workshop_submissions.sh.');
+    } else {
+      tbody.innerHTML = slice.items
+        .map(
+          (r) => `<tr>
+            <td class="col-id"><code class="id">${escapeHTML(r.id)}</code></td>
+            <td>${kindTag(r.submission_kind)}</td>
+            <td class="truncate" title="${escapeHTML(r.title)}">${escapeHTML(r.title)}</td>
+            <td>${r.verdict ? tag(r.verdict, r.verdict === 'PASS' ? 'ok' : r.verdict === 'FAIL' ? 'bad' : 'warn') : '<span class="faint">—</span>'}</td>
+            <td class="truncate">${r.source_url ? `<a href="${escapeHTML(r.source_url)}" target="_blank" rel="noopener">${escapeHTML(r.repo || r.source_url)}</a>` : escapeHTML(r.repo || '—')}</td>
+            <td class="truncate">${escapeHTML((r.domains || []).join(', ') || '—')}</td>
+          </tr>`,
+        )
+        .join('');
+    }
+    pagerEl.innerHTML = renderPager(slice);
+    bindPager(pagerEl, () => ({ page, pageSize }), (next) => {
+      page = next.page;
+      pageSize = next.pageSize;
+      syncHash();
+      paint();
+    });
+    syncHash(true);
+  };
+
+  document.querySelectorAll('#sub-kind-seg button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#sub-kind-seg button').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      kind = (btn as HTMLElement).dataset.kind || 'all';
+      page = 1;
+      syncHash(false);
+      paint();
+    });
+  });
+  searchEl?.addEventListener('input', () => {
+    page = 1;
+    syncHash(true);
+    paint();
+  });
+  bindSlashSearch(searchEl);
+  setTopActions(`<a class="btn" href="#/candidates">Candidates</a>`);
   paint();
 }
 

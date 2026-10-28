@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-003",
+  "title": "[ADR Assessment] MADR: Add status field [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "architecture",
+    "process"
+  ],
+  "path": "tech_spec/WS-TS-003.md",
+  "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0008-add-status-field.md",
+  "repo": "adr/madr",
+  "source_path": "docs/decisions/0008-add-status-field.md",
+  "license": "MIT",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "fc43304e65a2"
+}

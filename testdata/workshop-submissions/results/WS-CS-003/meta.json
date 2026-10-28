@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-003",
+  "title": "[ADR Assessment] Terraform S3 bucket module fragment [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "data"
+  ],
+  "path": "code_snippet/WS-CS-003.md",
+  "source_url": "https://github.com/terraform-aws-modules/terraform-aws-s3-bucket/blob/master/main.tf",
+  "repo": "terraform-aws-modules/terraform-aws-s3-bucket",
+  "source_path": "main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "3a457bf824d2",
+  "language": "hcl"
+}

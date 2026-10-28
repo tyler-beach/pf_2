@@ -1,0 +1,17 @@
+{
+  "id": "WS-CS-018",
+  "title": "[ADR Assessment] ZooKeeper YAML (incl. PDB patterns) [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "k8s",
+    "reliability"
+  ],
+  "path": "code_snippet/WS-CS-018.md",
+  "source_url": "https://github.com/kubernetes/website/blob/main/content/en/examples/application/zookeeper/zookeeper.yaml",
+  "repo": "kubernetes/website",
+  "source_path": "content/en/examples/application/zookeeper/zookeeper.yaml",
+  "license": "CC-BY-4.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "829f5d68473f",
+  "language": "yaml"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-013",
+  "title": "[ADR Assessment] Argo CD operator architecture [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "gitops",
+    "reliability"
+  ],
+  "path": "tech_spec/WS-TS-013.md",
+  "source_url": "https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/architecture.md",
+  "repo": "argoproj/argo-cd",
+  "source_path": "docs/operator-manual/architecture.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "47546ccaa380"
+}

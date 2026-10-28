@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-020",
+  "title": "[ADR Assessment] Checkov SG unrestricted ingress22 fixture [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "security"
+  ],
+  "path": "code_snippet/WS-CS-020.md",
+  "source_url": "https://github.com/bridgecrewio/checkov/blob/main/tests/terraform/checks/resource/aws/example_SecurityGroupUnrestrictedIngress22/main.tf",
+  "repo": "bridgecrewio/checkov",
+  "source_path": "tests/terraform/checks/resource/aws/example_SecurityGroupUnrestrictedIngress22/main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "674cd55b3fea",
+  "language": "hcl"
+}

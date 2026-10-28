@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-008",
+  "title": "[ADR Assessment] Backstage: Entity references [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "platform",
+    "apis"
+  ],
+  "path": "tech_spec/WS-TS-008.md",
+  "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr009-entity-references.md",
+  "repo": "backstage/backstage",
+  "source_path": "docs/architecture-decisions/adr009-entity-references.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "1894ad15682e"
+}

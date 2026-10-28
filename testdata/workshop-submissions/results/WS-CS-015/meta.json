@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-015",
+  "title": "[ADR Assessment] Flask tutorial auth blueprint [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "auth",
+    "python",
+    "apis"
+  ],
+  "path": "code_snippet/WS-CS-015.md",
+  "source_url": "https://github.com/pallets/flask/blob/main/examples/tutorial/flaskr/auth.py",
+  "repo": "pallets/flask",
+  "source_path": "examples/tutorial/flaskr/auth.py",
+  "license": "BSD-3-Clause",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "c2297aa7c286",
+  "language": "python"
+}

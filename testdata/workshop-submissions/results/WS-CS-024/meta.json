@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-024",
+  "title": "[ADR Assessment] Terraform RDS Postgres complete example [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "data"
+  ],
+  "path": "code_snippet/WS-CS-024.md",
+  "source_url": "https://github.com/terraform-aws-modules/terraform-aws-rds/blob/master/examples/complete-postgres/main.tf",
+  "repo": "terraform-aws-modules/terraform-aws-rds",
+  "source_path": "examples/complete-postgres/main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "100f30ef2965",
+  "language": "hcl"
+}

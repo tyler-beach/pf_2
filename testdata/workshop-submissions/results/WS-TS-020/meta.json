@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-020",
+  "title": "[ADR Assessment] containerd image verification [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "security",
+    "supply-chain"
+  ],
+  "path": "tech_spec/WS-TS-020.md",
+  "source_url": "https://github.com/containerd/containerd/blob/main/docs/image-verification.md",
+  "repo": "containerd/containerd",
+  "source_path": "docs/image-verification.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "561c4d612afd"
+}

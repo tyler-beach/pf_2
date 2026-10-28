@@ -16,6 +16,7 @@ import {
   renderProposals,
   renderRuns,
   renderSample,
+  renderSubmissions,
 } from './views';
 
 const navGroups: Array<{ label: string; items: Array<[string, string]> }> = [
@@ -32,6 +33,7 @@ const navGroups: Array<{ label: string; items: Array<[string, string]> }> = [
     label: 'Evidence',
     items: [
       ['/adrs', 'ADRs'],
+      ['/submissions', 'Submissions'],
       ['/candidates', 'Candidates'],
       ['/proposals', 'Proposals'],
       ['/assess', 'Assess'],
@@ -103,6 +105,9 @@ async function render() {
       break;
     case '/adrs':
       await renderADRs(app, rest[0]);
+      break;
+    case '/submissions':
+      await renderSubmissions(app);
       break;
     case '/candidates':
       await renderCandidates(app);

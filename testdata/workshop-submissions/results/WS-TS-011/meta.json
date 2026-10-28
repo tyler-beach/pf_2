@@ -1,0 +1,17 @@
+{
+  "id": "WS-TS-011",
+  "title": "[ADR Assessment] Prometheus storage architecture [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "reliability",
+    "data",
+    "observability"
+  ],
+  "path": "tech_spec/WS-TS-011.md",
+  "source_url": "https://github.com/prometheus/prometheus/blob/main/docs/storage.md",
+  "repo": "prometheus/prometheus",
+  "source_path": "docs/storage.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "3ba315e1df33"
+}

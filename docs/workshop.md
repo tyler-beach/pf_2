@@ -61,3 +61,16 @@ See [kpi-dictionary.md](kpi-dictionary.md). **Promptfoo scores ≠ compliance ve
 ## Follow-on (not this iteration)
 
 Joern / CPG adapters when **≥10** accepted ADRs require cross-file data-flow evidence OpenGrep cannot supply (`N=10`). AWS comes after the GitHub workshop proves product value.
+
+## Workshop submissions body of evidence
+
+`testdata/workshop-submissions/` holds **50** real third-party excerpts (25 `tech_spec` + 25 `code_snippet`) with provenance metadata. Assess and publish:
+
+```bash
+./scripts/assess_workshop_submissions.sh
+python3 scripts/workshop_publish_data.py \
+  --snapshot testdata/workshop-submissions/workshop-snapshot \
+  --data-dir workshop/public/data
+```
+
+Workshop UI: **Submissions** (`#/submissions`) and Candidates kind filter (`#/candidates?kind=tech_spec`).

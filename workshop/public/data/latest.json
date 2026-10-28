@@ -1,57 +1,40 @@
 {
-  "schema_version": "workshop-snapshot-v1",
-  "run": {
-    "run_id": "fixture-001",
-    "workflow": "fixture",
-    "git_sha": "0000000",
-    "timestamp": "2026-10-27T12:00:00Z",
-    "provider_mode": "offline"
+  "links": {
+    "assessment": "assessment.json",
+    "candidates": "candidates.json",
+    "submissions": "submissions.json"
   },
   "metrics": {
-    "schema_version": "workshop-metrics-v1",
-    "candidate_total": 4,
-    "confidence_high": 2,
-    "confidence_medium": 1,
-    "confidence_low": 1,
-    "kpi.confidence.share.high": 0.5,
-    "kpi.confidence.share.medium": 0.25,
-    "kpi.confidence.share.low": 0.25,
-    "kpi.escalation.rate": 0.25,
-    "kpi.harness.precision": 0.8,
-    "kpi.harness.recall": 0.75,
-    "kpi.harness.recall.high": 0.9,
-    "kpi.harness.recall.medium": 0.7,
-    "kpi.harness.recall.low": 0.55,
-    "kpi.review.backlog": 1,
-    "kpi.review.pending_low": 1,
-    "kpi.review.accept_rate": 1,
-    "kpi.assess.verdict": "PASS",
-    "kpi.assess.covered": 3,
-    "kpi.assess.unbound": 0,
-    "kpi.assess.stale": 0,
+    "candidate_total": 113,
+    "confidence_high": 0,
+    "confidence_low": 39,
+    "confidence_medium": 74,
+    "kpi.assess.submission_kind": "",
+    "kpi.assess.verdict": "INDETERMINATE",
+    "kpi.confidence.share.high": 0,
+    "kpi.confidence.share.low": 0.34513274336283184,
+    "kpi.confidence.share.medium": 0.6548672566371682,
+    "kpi.corpus.size": 200,
+    "kpi.escalation.rate": 0.34513274336283184,
+    "kpi.escalation.rate.code_snippet": 0,
+    "kpi.escalation.rate.tech_spec": 0.4431818181818182,
+    "kpi.evidence.gap_rate": 0.5309734513274337,
     "kpi.invariant.llm_calls": 0,
-    "kpi.assist.proposal_count": 1,
-    "kpi.assist.prompt_tokens": 0,
-    "kpi.assist.completion_tokens": 0,
-    "kpi.assist.cost_usd": 0,
-    "kpi.assist.provider": "offline-fixture",
-    "kpi.assist.model": "offline-replay",
-    "kpi.promptfoo.pass_rate": 1,
-    "promptfoo_mode": "offline",
-    "kpi.evidence.gap_rate": 0.5,
-    "kpi.corpus.size": 100
+    "kpi.submission.code_snippet_count": 25,
+    "kpi.submission.tech_spec_count": 25,
+    "schema_version": "workshop-metrics-v1"
   },
+  "run": {
+    "git_sha": "0ec31054ae70c5b167a0c510a823bdda571cd663",
+    "run_id": "workshop-submissions-20261028T015800Z",
+    "timestamp": "2026-10-28T01:58:07Z",
+    "workflow": "Workshop Submissions Batch"
+  },
+  "schema_version": "workshop-snapshot-v1",
   "slo": {
     "assess_runtime_llm_calls_zero": true,
-    "promptfoo_offline_pass": true,
-    "high_confidence_share": 0.5
+    "high_confidence_share": 0,
+    "promptfoo_offline_pass": true
   },
-  "links": {
-    "candidates": "candidates.json",
-    "proposals": "proposals.json",
-    "promptfoo": "promptfoo.json",
-    "assessment": "assessment.json",
-    "sample-journey": "sample-journey.json"
-  },
-  "summary": "workflow=fixture; verdict=PASS; candidates=4 (high=2 medium=1 low=1); proposals=1"
+  "summary": "Workshop submissions batch: 25 tech_spec + 25 code_snippet assessed."
 }

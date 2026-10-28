@@ -1,19 +1,23 @@
 {
-  "latest_run_id": "fixture-001",
-  "updated_at": "2026-10-27T12:00:00Z",
-  "data_sha": "4748da0f47aea05e576f02e2e836a151b10e1c4f6a5e866d99279eeca0e58fa5",
+  "data_sha": "bf2e94c01a94bc1536e3a5c9f6b2f7901dafc8448923a655b2c5bb8c2354f6fa",
+  "latest_run_id": "workshop-submissions-20261028T015800Z",
   "snapshots": [
     {
-      "run_id": "fixture-000",
-      "path": "snapshots/fixture-000"
+      "path": "snapshots/fixture-000",
+      "run_id": "fixture-000"
     },
     {
-      "run_id": "fixture-001",
-      "path": "snapshots/fixture-001"
+      "path": "snapshots/fixture-001",
+      "run_id": "fixture-001"
     },
     {
-      "run_id": "fixture-live-example",
-      "path": "snapshots/fixture-live-example"
+      "path": "snapshots/fixture-live-example",
+      "run_id": "fixture-live-example"
+    },
+    {
+      "path": "snapshots/workshop-submissions-20261028T015800Z",
+      "run_id": "workshop-submissions-20261028T015800Z"
     }
-  ]
+  ],
+  "updated_at": "2026-10-28T02:00:01.540068+00:00"
 }

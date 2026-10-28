@@ -1,0 +1,1296 @@
+{
+  "schema_version": "1",
+  "source_root": "/tmp/ws-adr-extract/adrs",
+  "documents": [
+    {
+      "id": "WS-TS-001",
+      "title": "MADR: Use Markdown ADRs [tech_spec]",
+      "source_path": "WS-TS-001.md",
+      "source_sha256": "e89f0df6e7c95b3733364ec8f16ee03b9ccf77e68e37c6d47cc5bc1048d8b67c",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: architecture, process."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "parent: Decisions\nnav_order: 0",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 23,
+          "text": "nav_order: 0\n---"
+        },
+        {
+          "heading": "Context and Problem Statement",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 30,
+          "text": "We want to record architectural decisions made in this project independent whether decisions concern the architecture (\"architectural decision record\"), the code, or other fields.\nWhich format and structure should these records follow?"
+        },
+        {
+          "heading": "Considered Options",
+          "level": 2,
+          "start_line": 31,
+          "end_line": 38,
+          "text": "* [MADR](https://adr.github.io/madr/) 4.0.0 – The Markdown Architectural Decision Records\n* [Michael Nygard's template](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions) – The first incarnation of the term \"ADR\"\n* [Sustainable Architectural Decisions](https://www.infoq.com/articles/sustainable-architectural-design-decisions) – The Y-Statements\n* Other templates listed at \u003chttps://github.com/joelparkerhenderson/architecture_decision_record\u003e\n* Formless – No conventions for file format and structure"
+        },
+        {
+          "heading": "Decision Outcome",
+          "level": 2,
+          "start_line": 39,
+          "end_line": 51,
+          "text": "Chosen option: \"MADR 4.0.0\", because\n\n* Implicit assumptions should be made explicit.\n  Design documentation is important to enable people understanding the decisions later on.\n  See also [\"A rational design process: How and why to fake it\"](https://doi.org/10.1109/TSE.1986.6312940).\n* MADR allows for structured capturing of any decision.\n* The MADR format is lean and fits our development style.\n* The MADR structure is comprehensible and facilitates usage \u0026 maintenance.\n* The MADR project is vivid."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-002",
+      "title": "MADR: CC0 or MIT license [tech_spec]",
+      "source_path": "WS-TS-002.md",
+      "source_sha256": "c895ffd6447b521673d06e3251f7012d1b3fbe231376bb0930d51e5e070d88ac",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: compliance, licensing."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "parent: Decisions\nnav_order: 1",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 23,
+          "text": "nav_order: 1\n---"
+        },
+        {
+          "heading": "Context and Problem Statement",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 33,
+          "text": "Everything needs to be licensed, otherwise the default copyright laws apply.\nFor instance, in Germany that means users may not alter anything without explicitly asking for permission.\nFor more information see \u003chttps://help.github.com/articles/licensing-a-repository/\u003e.\n\nWe want to have MADR used without any hassle and that users can just go ahead and write MADRs."
+        },
+        {
+          "heading": "Considered Options",
+          "level": 2,
+          "start_line": 34,
+          "end_line": 42,
+          "text": "* [CC0](https://creativecommons.org/share-your-work/public-domain/cc0/)\n* BSD3\n* MIT\n* Dual license with MIT and CC0\n* No license\n* Other open source licenses"
+        },
+        {
+          "heading": "Decision Outcome",
+          "level": 2,
+          "start_line": 43,
+          "end_line": 46,
+          "text": "Chosen option: \"Dual license with MIT and CC0\", because this lets users choose whether CC0 or MIT fits better on their work."
+        },
+        {
+          "heading": "Pros and Cons of the Options",
+          "level": 2,
+          "start_line": 47,
+          "end_line": 70,
+          "text": "### CC0\n\n* Good, because this license donates the content to \"public domain\" and does so as legally as possible.\n* Bad, because it does not contain attribution - and [attribution is important](https://opensource.stackexchange.com/a/9126/5671).\n\n### BSD3\n\n* Bad, because it [is unclear whether it can be used for documentation](https://opensource.stackexchange.com/a/9545/5671)\n\n### MIT\n\n* Good, because it [explicitly may be used for documentation](https://opensource.stackexchange.com/a/9545/5671)\n* Good, because it is lean.\n\n### Dual license with MIT and CC0\n\nWith the SPDX identifier `MIT OR CC0-1.0`, the receiver of the documents can decide which license thay want to use.\n\n* Good, because offers freedom at the receiver\n* Bad, because dual licensing is not widely known"
+        },
+        {
+          "heading": "CC0",
+          "level": 3,
+          "start_line": 49,
+          "end_line": 53,
+          "text": "* Good, because this license donates the content to \"public domain\" and does so as legally as possible.\n* Bad, because it does not contain attribution - and [attribution is important](https://opensource.stackexchange.com/a/9126/5671)."
+        },
+        {
+          "heading": "BSD3",
+          "level": 3,
+          "start_line": 54,
+          "end_line": 57,
+          "text": "* Bad, because it [is unclear whether it can be used for documentation](https://opensource.stackexchange.com/a/9545/5671)"
+        },
+        {
+          "heading": "MIT",
+          "level": 3,
+          "start_line": 58,
+          "end_line": 62,
+          "text": "* Good, because it [explicitly may be used for documentation](https://opensource.stackexchange.com/a/9545/5671)\n* Good, because it is lean."
+        },
+        {
+          "heading": "Dual license with MIT and CC0",
+          "level": 3,
+          "start_line": 63,
+          "end_line": 70,
+          "text": "With the SPDX identifier `MIT OR CC0-1.0`, the receiver of the documents can decide which license thay want to use.\n\n* Good, because offers freedom at the receiver\n* Bad, because dual licensing is not widely known"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-003",
+      "title": "MADR: Add status field [tech_spec]",
+      "source_path": "WS-TS-003.md",
+      "source_sha256": "fda5a5602eca38b09154bddc5f36aa64d820b40094f268e49982dd4dc67f12e4",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: architecture, process."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "parent: Decisions\nnav_order: 8",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 23,
+          "text": "nav_order: 8\n---"
+        },
+        {
+          "heading": "Context and Problem Statement",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 31,
+          "text": "Technical Story: \u003chttps://github.com/adr/madr/issues/2\u003e\n\nADRs have a status. Should this be tracked? And if it should, how should we track it?"
+        },
+        {
+          "heading": "Considered Options",
+          "level": 2,
+          "start_line": 32,
+          "end_line": 40,
+          "text": "* Use YAML front matter\n* Use badge\n* Use text line\n* Use separate heading\n* Use table\n* Do not add status"
+        },
+        {
+          "heading": "Decision Outcome",
+          "level": 2,
+          "start_line": 41,
+          "end_line": 44,
+          "text": "Chosen option: \"Use YAML front matter\", because comes out best (see below)."
+        },
+        {
+          "heading": "Pros and Cons of the Options",
+          "level": 2,
+          "start_line": 45,
+          "end_line": 76,
+          "text": "### Use YAML front matter\n\nExample:\n\n```markdown\n---\nparent: Decisions\nnav_order: 3\nstatus: on hold\n---\n# Write own MADR tooling\n```\n\n* Good, because YAML front matter is supported by most Markdown parsers\n\n### Use badge\n\n#### Examples\n\n* ![Example \"Use Angular\" with \"status: accepted\"](0008-example-badge.png)\n* [![Example \"status: superseded\"](https://img.shields.io/badge/status-superseeded_by_ADR_0001-orange.svg?style=flat-square)](https://github.com/adr/madr/blob/develop/docs/decisions/0001-use-CC0-or-MIT-as-license.md)\n\n---\n\n* Good, because plain markdown\n* Good, because looks good\n* Bad, because hard to read in markdown source\n* Bad, because relies on the online service \u003chttps://shields.io\u003e or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)"
+        },
+        {
+          "heading": "Use YAML front matter",
+          "level": 3,
+          "start_line": 47,
+          "end_line": 61,
+          "text": "Example:\n\n```markdown\n---\nparent: Decisions\nnav_order: 3\nstatus: on hold\n---\n# Write own MADR tooling\n```\n\n* Good, because YAML front matter is supported by most Markdown parsers"
+        },
+        {
+          "heading": "Use badge",
+          "level": 3,
+          "start_line": 62,
+          "end_line": 76,
+          "text": "#### Examples\n\n* ![Example \"Use Angular\" with \"status: accepted\"](0008-example-badge.png)\n* [![Example \"status: superseded\"](https://img.shields.io/badge/status-superseeded_by_ADR_0001-orange.svg?style=flat-square)](https://github.com/adr/madr/blob/develop/docs/decisions/0001-use-CC0-or-MIT-as-license.md)\n\n---\n\n* Good, because plain markdown\n* Good, because looks good\n* Bad, because hard to read in markdown source\n* Bad, because relies on the online service \u003chttps://shields.io\u003e or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)"
+        },
+        {
+          "heading": "Examples",
+          "level": 4,
+          "start_line": 64,
+          "end_line": 76,
+          "text": "* ![Example \"Use Angular\" with \"status: accepted\"](0008-example-badge.png)\n* [![Example \"status: superseded\"](https://img.shields.io/badge/status-superseeded_by_ADR_0001-orange.svg?style=flat-square)](https://github.com/adr/madr/blob/develop/docs/decisions/0001-use-CC0-or-MIT-as-license.md)\n\n---\n\n* Good, because plain markdown\n* Good, because looks good\n* Bad, because hard to read in markdown source\n* Bad, because relies on the online service \u003chttps://shields.io\u003e or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-004",
+      "title": "MADR: YAML front matter metadata [tech_spec]",
+      "source_path": "WS-TS-004.md",
+      "source_sha256": "3ed0c937bafa8da90fb388f5aef5227440990dbcc1a50f7fb9f99d4201b3d1b3",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: architecture, metadata."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "parent: Decisions\nnav_order: 13",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 23,
+          "text": "nav_order: 13\n---"
+        },
+        {
+          "heading": "Context and Problem Statement",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 31,
+          "text": "MADR offers the fields \"Status\", \"Decision Maker(s)\", and \"Date\".\nThese are a kind of metadata fields.\nShould this data be included in the ADR directly, or should it be separated somehow?"
+        },
+        {
+          "heading": "Decision Drivers",
+          "level": 2,
+          "start_line": 32,
+          "end_line": 36,
+          "text": "* Easy to read\n* Easy to write"
+        },
+        {
+          "heading": "Considered Options",
+          "level": 2,
+          "start_line": 37,
+          "end_line": 41,
+          "text": "* Use YAML front matter\n* Use plain Markdown everywhere"
+        },
+        {
+          "heading": "Decision Outcome",
+          "level": 2,
+          "start_line": 42,
+          "end_line": 45,
+          "text": "Chosen option: \"Use YAML front matter\", because comes out best (see below)."
+        },
+        {
+          "heading": "Pros and Cons of the Options",
+          "level": 2,
+          "start_line": 46,
+          "end_line": 76,
+          "text": "### Use YAML front matter\n\nExample:\n\n```markdown\n---\nstatus: accepted\ndecision-makers:\ndate:\n---\n\n### Context and problem statement\n\nWe want to record architectural decisions made in this project.\nWhich format and structure should these records follow?\n```\n\nRendered output:\n\n![adr-013 rendered output](0013-example.png)\n\n* Good, because it shortens the body (essence of the ADR)\n* Good, because tools can handle it more easily\n* Good, because indicates the lower importance of the data\n* Bad, because pretends to be more accurate than it can be (e.g., possible status values)\n* Bad, because rendering not standardized\n* Bad, because not all Markdown parsers can parse it"
+        },
+        {
+          "heading": "Use YAML front matter",
+          "level": 3,
+          "start_line": 48,
+          "end_line": 76,
+          "text": "Example:\n\n```markdown\n---\nstatus: accepted\ndecision-makers:\ndate:\n---\n\n### Context and problem statement\n\nWe want to record architectural decisions made in this project.\nWhich format and structure should these records follow?\n```\n\nRendered output:\n\n![adr-013 rendered output](0013-example.png)\n\n* Good, because it shortens the body (essence of the ADR)\n* Good, because tools can handle it more easily\n* Good, because indicates the lower importance of the data\n* Bad, because pretends to be more accurate than it can be (e.g., possible status values)\n* Bad, because rendering not standardized\n* Bad, because not all Markdown parsers can parse it"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-005",
+      "title": "Backstage: Add ADR log [tech_spec]",
+      "source_path": "WS-TS-005.md",
+      "source_sha256": "62c922516b7545c988edca2d5317c7cbe44f75782a833e48135f7a5a6ca2b6e2",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: platform, process."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "id: adrs-adr001\ntitle: 'ADR001: Architecture Decision Record (ADR) log'\ndescription: Architecture Decision Record (ADR) logs as a reference point for the team",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 25,
+          "text": "title: 'ADR001: Architecture Decision Record (ADR) log'\ndescription: Architecture Decision Record (ADR) logs as a reference point for the team\n---"
+        },
+        {
+          "heading": "Decision",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 29,
+          "text": "A decision was made to store ADRs in a log in the project repository."
+        },
+        {
+          "heading": "Discussion",
+          "level": 2,
+          "start_line": 30,
+          "end_line": 35,
+          "text": "There is a need to store big decisions made in a log as a reference point for\nthe team, help with onboarding new members, and give context to others interested\nin the project."
+        },
+        {
+          "heading": "Risks",
+          "level": 2,
+          "start_line": 36,
+          "end_line": 40,
+          "text": "People stop adding ADRs to the log and context gets lost."
+        }
+      ],
+      "decision_text": "A decision was made to store ADRs in a log in the project repository."
+    },
+    {
+      "id": "WS-TS-006",
+      "title": "Backstage: Default catalog file format [tech_spec]",
+      "source_path": "WS-TS-006.md",
+      "source_sha256": "d25dfbae1a876b0e45208edc850a65e61ec16e6d1b2308f9b2078ff69d006344",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: platform, data."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "id: adrs-adr002\ntitle: 'ADR002: Default Software Catalog File Format'\ndescription: Architecture Decision Record (ADR) log on Default Software Catalog File Format",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 25,
+          "text": "title: 'ADR002: Default Software Catalog File Format'\ndescription: Architecture Decision Record (ADR) log on Default Software Catalog File Format\n---"
+        },
+        {
+          "heading": "Background",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 62,
+          "text": "Backstage comes with software catalog functionality that you can use to track\nall your software components and more. It can be powered by data from various\nsources, and one of them that is included with the package is a custom database\nbacked catalog. It has the ability to keep itself updated automatically based on\nthe contents of little descriptor files in your version control system of\nchoice. Developers create these files and maintain them side by side with their\ncode, and the catalog system reacts accordingly.\n\nThis ADR describes the default format of these descriptor files.\n\n### Inspiration\n\nInternally at Spotify, a homegrown software catalog system is used heavily and\nforms a core part of Backstage and other important pieces of the infrastructure.\nThe user experience, learnings, and certain pieces of metadata from that catalog\nare being carried over to the open source effort.\n\nThe file format described herein also draws heavy inspiration from the\n[kubernetes object format](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/).\n\n### Core Concepts\n\nThere are a number of descriptor files, all of whose locations (e.g., within a\nversion control system) are registered with the software catalog. The method of\nregistration is not covered in this document; it could happen either manually\ninside Backstage, or by push events from a CI/CD pipelines, or by webhook\ntriggers from the version control system, etc.\n\nEach file describes one or more entities in accordance with the\n[Backstage System Model](https://github.com/backstage/backstage/issues/390). All\nof these entities have a common structure and nomenclature, and they are stored\nin the software catalog from which they then can be queried.\n\nEntities have distinct names, and they may reference each other by those names."
+        },
+        {
+          "heading": "Inspiration",
+          "level": 3,
+          "start_line": 38,
+          "end_line": 47,
+          "text": "Internally at Spotify, a homegrown software catalog system is used heavily and\nforms a core part of Backstage and other important pieces of the infrastructure.\nThe user experience, learnings, and certain pieces of metadata from that catalog\nare being carried over to the open source effort.\n\nThe file format described herein also draws heavy inspiration from the\n[kubernetes object format](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)."
+        },
+        {
+          "heading": "Core Concepts",
+          "level": 3,
+          "start_line": 48,
+          "end_line": 62,
+          "text": "There are a number of descriptor files, all of whose locations (e.g., within a\nversion control system) are registered with the software catalog. The method of\nregistration is not covered in this document; it could happen either manually\ninside Backstage, or by push events from a CI/CD pipelines, or by webhook\ntriggers from the version control system, etc.\n\nEach file describes one or more entities in accordance with the\n[Backstage System Model](https://github.com/backstage/backstage/issues/390). All\nof these entities have a common structure and nomenclature, and they are stored\nin the software catalog from which they then can be queried.\n\nEntities have distinct names, and they may reference each other by those names."
+        },
+        {
+          "heading": "Format",
+          "level": 2,
+          "start_line": 63,
+          "end_line": 76,
+          "text": "Descriptor files use the [YAML](https://yaml.org/spec/1.2/spec.html) format.\nThey may be written by hand or created using automated tools. Each file may\nconsist of several YAML documents (separated by `---`), where each document\ndescribes a single entity.\n\nThis is an example entity definition with some mocked data.\n\n```yaml\n---\napiVersion: backstage.io/v1alpha1"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-007",
+      "title": "Backstage: Catalog core entities [tech_spec]",
+      "source_path": "WS-TS-007.md",
+      "source_sha256": "daa88dd0d499459952d6b9e148f095eacf4d081f7639b2d4e91e3039e95b1438",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: platform, data."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "id: adrs-adr005\ntitle: 'ADR005: Catalog Core Entities'\ndescription: Architecture Decision Record (ADR) log on Catalog Core Entities",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 25,
+          "text": "title: 'ADR005: Catalog Core Entities'\ndescription: Architecture Decision Record (ADR) log on Catalog Core Entities\n---"
+        },
+        {
+          "heading": "Context",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 30,
+          "text": "We want to standardize on a few core entities that we are tracking in the\nBackstage catalog. This allows us to build specific plugins around them."
+        },
+        {
+          "heading": "Decision",
+          "level": 2,
+          "start_line": 31,
+          "end_line": 76,
+          "text": "Backstage should eventually support the following core entities:\n\n- **Components** are individual pieces of software\n- **APIs** are the boundaries between different components\n- **Resources** are physical or virtual infrastructure needed to operate a\n  component\n\n![Catalog Core Entities](../assets/architecture-decisions/catalog-core-entities.png)\n\nFor now, we'll start by only implementing support for the Component entity in\nthe Backstage catalog. This can later be extended to APIs, Resources and other\npotentially useful entities.\n\n### Component\n\nA component is a piece of software, for example a mobile application feature,\nweb site, backend service or data pipeline (list not exhaustive). A component\ncan be tracked in source control, or use some existing open source or commercial\nsoftware. It can implement APIs for other components to consume. In turn it\nmight depend on APIs implemented by other components, or resources that are\nattached to it at runtime.\n\nComponent entities are typically defined in YAML descriptor files next to the\ncode of the component, and could look like this (actual schema will evolve):\n\n```yaml\napiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: my-component-name\nspec:\n  type: service\n```\n\n### API\n\nAPIs form an abstraction that allows large software ecosystems to scale. Thus,\nAPIs are a first class citizen in the Backstage model and the primary way to\ndiscover existing functionality in the ecosystem.\n\nAPIs are implemented by components and make their boundaries explicit. They\nmight be defined using an RPC IDL (e.g. in Protobuf, GraphQL or similar), a data"
+        },
+        {
+          "heading": "Component",
+          "level": 3,
+          "start_line": 46,
+          "end_line": 66,
+          "text": "A component is a piece of software, for example a mobile application feature,\nweb site, backend service or data pipeline (list not exhaustive). A component\ncan be tracked in source control, or use some existing open source or commercial\nsoftware. It can implement APIs for other components to consume. In turn it\nmight depend on APIs implemented by other components, or resources that are\nattached to it at runtime.\n\nComponent entities are typically defined in YAML descriptor files next to the\ncode of the component, and could look like this (actual schema will evolve):\n\n```yaml\napiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: my-component-name\nspec:\n  type: service\n```"
+        },
+        {
+          "heading": "API",
+          "level": 3,
+          "start_line": 67,
+          "end_line": 76,
+          "text": "APIs form an abstraction that allows large software ecosystems to scale. Thus,\nAPIs are a first class citizen in the Backstage model and the primary way to\ndiscover existing functionality in the ecosystem.\n\nAPIs are implemented by components and make their boundaries explicit. They\nmight be defined using an RPC IDL (e.g. in Protobuf, GraphQL or similar), a data"
+        }
+      ],
+      "decision_text": "Backstage should eventually support the following core entities:\n\n- **Components** are individual pieces of software\n- **APIs** are the boundaries between different components\n- **Resources** are physical or virtual infrastructure needed to operate a\n  component\n\n![Catalog Core Entities](../assets/architecture-decisions/catalog-core-entities.png)\n\nFor now, we'll start by only implementing support for the Component entity in\nthe Backstage catalog. This can later be extended to APIs, Resources and other\npotentially useful entities.\n\n### Component\n\nA component is a piece of software, for example a mobile application feature,\nweb site, backend service or data pipeline (list not exhaustive). A component\ncan be tracked in source control, or use some existing open source or commercial\nsoftware. It can implement APIs for other components to consume. In turn it\nmight depend on APIs implemented by other components, or resources that are\nattached to it at runtime.\n\nComponent entities are typically defined in YAML descriptor files next to the\ncode of the component, and could look like this (actual schema will evolve):\n\n```yaml\napiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: my-component-name\nspec:\n  type: service\n```\n\n### API\n\nAPIs form an abstraction that allows large software ecosystems to scale. Thus,\nAPIs are a first class citizen in the Backstage model and the primary way to\ndiscover existing functionality in the ecosystem.\n\nAPIs are implemented by components and make their boundaries explicit. They\nmight be defined using an RPC IDL (e.g. in Protobuf, GraphQL or similar), a data"
+    },
+    {
+      "id": "WS-TS-008",
+      "title": "Backstage: Entity references [tech_spec]",
+      "source_path": "WS-TS-008.md",
+      "source_sha256": "bcaff1d6545a007191b3f98f547ecd9b6ac3833f82b9b3a6e9e0bae5b44023b2",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: platform, apis."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "id: adrs-adr009\ntitle: 'ADR009: Entity References'\ndescription: Architecture Decision Record (ADR) log on Entity References",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 25,
+          "text": "title: 'ADR009: Entity References'\ndescription: Architecture Decision Record (ADR) log on Entity References\n---"
+        },
+        {
+          "heading": "Background",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 37,
+          "text": "While the spec for the catalog file format is well described in\n[ADR002](./adr002-default-catalog-file-format.md), guidance was not provided as\nto how one is expected to express references to other entities in the catalog.\nThere was also some confusion on how to reference entities in URLs in the\nBackstage frontend.\n\nFollowing discussion in\n[Issue 1947](https://github.com/backstage/backstage/issues/1947), a decision was\nmade."
+        },
+        {
+          "heading": "Entity References in YAML files",
+          "level": 2,
+          "start_line": 38,
+          "end_line": 72,
+          "text": "The textual format, as written by humans, to reference entities by name is on\nthe following form, where square brackets denote optionality:\n\n```text\n[\u003ckind\u003e:][\u003cnamespace\u003e/]\u003cname\u003e\n```\n\nThat is, it is composed of between one and three parts in this specific order,\nwithout any additional encoding, with those exact separator characters.\nOptionality of `kind` and `namespace` are contextual, and they may or may not\nhave default contextual fallback values.\n\nWhen that format is insufficient or when machine made interchange formats wish\nto express such relations in a more expressive form, a nested structure on the\nfollowing form can be used:\n\n```yaml\nkind: \u003ckind\u003e\nnamespace: \u003cnamespace\u003e\nname: \u003cname\u003e\n```\n\nOf these, only `name` is always required. Optionality of `kind` and `namespace`\nare contextual, and they may or may not have default contextual fallback values.\nAll other possible key values in this structure are reserved for future use.\n\nA system or user wanting to express a full entity name that is always valid\nshall supply the entire triplet, whether using the string form or the compound\nform.\n\nA full description of the format can be found\n[in the documentation](https://backstage.io/docs/features/software-catalog/references)."
+        },
+        {
+          "heading": "Entity References in URLs",
+          "level": 2,
+          "start_line": 73,
+          "end_line": 75,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-009",
+      "title": "Backstage: Plugin package structure [tech_spec]",
+      "source_path": "WS-TS-009.md",
+      "source_sha256": "3821fbaebc37224fef6939619dbef3081dc647fc87838c4c8ecd381a0ffb490e",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: platform, modularity."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "id: adrs-adr011\ntitle: 'ADR011: Plugin Package Structure'\ndescription: Architecture Decision Record (ADR) for Plugin Package Structure",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 25,
+          "text": "title: 'ADR011: Plugin Package Structure'\ndescription: Architecture Decision Record (ADR) for Plugin Package Structure\n---"
+        },
+        {
+          "heading": "Context",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 45,
+          "text": "A core feature of Backstage is the extensibility via plugins. Even most of the core features\nare implemented as plugins. A plugin consists of one or multiple packages in the\n`plugins/` directory. Up till now, we have a simple conventions for naming\nplugin packages: Plugins are named `x`, with the option of having a related\nbackend plugin called `x-backend` (where `x` is the plugin name, like `catalog`\nor `techdocs`). There is a need for sharing code between the frontend and\nbackend of a plugin, between backend plugins, or components and hooks between\ndifferent frontend plugins\n([some examples](https://github.com/backstage/backstage/issues/3655#issuecomment-758166746)).\nThis results in emerging plugin packages with shared code, like\n`packages/catalog-client` or `packages/techdocs-common`.\n\n\u003e There is a common phrase in software development:\n\u003e [Naming things is hard](https://martinfowler.com/bliki/TwoHardThings.html)\n\nTo keep the contributed plugins consistent, this Architecture Decision Record\nprovides rules for naming plugin packages."
+        },
+        {
+          "heading": "Decision",
+          "level": 2,
+          "start_line": 46,
+          "end_line": 72,
+          "text": "We will place all plugin related code in the `plugins/` directory. The\n`packages/` directory is reserved for core package of Backstage.\n\nWe follow this structure for plugin packages (where `x` is the plugin name, for\nexample `catalog` or `techdocs`):\n\n- `x`: Contains the main frontend code of the plugin.\n- `x-module-\u003cname\u003e`: Contains optional modules related to the frontend plugin\n  package.\n- `x-backend`: Contains the main backend code of the plugin.\n- `x-backend-module-\u003cname\u003e`: Contains optional modules related to the backend\n  plugin package.\n- `x-react`: Contains shared widgets, hooks and similar that both the plugin\n  itself (`x`) and third-party frontend plugins can depend on.\n- `x-node`: Contains utilities for backends that both the plugin backend itself\n  (`x-backend`) and third-party backend plugins can depend on.\n- `x-common`: An isomorphic package with platform agnostic models, clients, and\n  utilities that all packages above or any third-party plugin package can depend\n  on.\n\nWe prefix the package names with `@backstage/plugin-`.\n\nThis structure is based on a\n[suggestion in issue #3655](https://github.com/backstage/backstage/issues/3655#issuecomment-758166746)."
+        },
+        {
+          "heading": "Consequences",
+          "level": 2,
+          "start_line": 73,
+          "end_line": 75,
+          "text": ""
+        }
+      ],
+      "decision_text": "We will place all plugin related code in the `plugins/` directory. The\n`packages/` directory is reserved for core package of Backstage.\n\nWe follow this structure for plugin packages (where `x` is the plugin name, for\nexample `catalog` or `techdocs`):\n\n- `x`: Contains the main frontend code of the plugin.\n- `x-module-\u003cname\u003e`: Contains optional modules related to the frontend plugin\n  package.\n- `x-backend`: Contains the main backend code of the plugin.\n- `x-backend-module-\u003cname\u003e`: Contains optional modules related to the backend\n  plugin package.\n- `x-react`: Contains shared widgets, hooks and similar that both the plugin\n  itself (`x`) and third-party frontend plugins can depend on.\n- `x-node`: Contains utilities for backends that both the plugin backend itself\n  (`x-backend`) and third-party backend plugins can depend on.\n- `x-common`: An isomorphic package with platform agnostic models, clients, and\n  utilities that all packages above or any third-party plugin package can depend\n  on.\n\nWe prefix the package names with `@backstage/plugin-`.\n\nThis structure is based on a\n[suggestion in issue #3655](https://github.com/backstage/backstage/issues/3655#issuecomment-758166746)."
+    },
+    {
+      "id": "WS-TS-010",
+      "title": "Backstage: Use fetch [tech_spec]",
+      "source_path": "WS-TS-010.md",
+      "source_sha256": "a57f40385d3beaa2c9109eb32bffc9f85cb66f393b6d86860ce5440f6a9c6757",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: networking, apis."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "id: adrs-adr014\ntitle: 'ADR014: Proper use of HTTP fetching libraries'\ndescription: Architecture Decision Record (ADR) for the proper use of fetchApiRef, native fetch, and cross-fetch for data fetching.",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 25,
+          "text": "title: 'ADR014: Proper use of HTTP fetching libraries'\ndescription: Architecture Decision Record (ADR) for the proper use of fetchApiRef, native fetch, and cross-fetch for data fetching.\n---"
+        },
+        {
+          "heading": "Context",
+          "level": 2,
+          "start_line": 26,
+          "end_line": 35,
+          "text": "Until now we have been recommending the use of `node-fetch` in Node.js contexts\nthrough [ADR013](./adr013-use-node-fetch.md). Since then, Backstage has had its\nminimum requirements upgraded to Node.js 20 or newer. The Node.js platform has\nestablished a stable, reliable `undici` based native `fetch` in these versions.\nAdditionally, there are [some issues](https://github.com/backstage/backstage/issues/24590)\nwith using third party libraries that only appeared in newer versions of\nNode.js."
+        },
+        {
+          "heading": "Decision",
+          "level": 2,
+          "start_line": 36,
+          "end_line": 76,
+          "text": "All code that is executed in Node.js (including backend and CLIs) should use the\nnative `fetch` for HTTP data fetching, and `typeof fetch` as the TypeScript type\nin code where a `fetch` implementation can be injected or is referred to.\nExample:\n\n```ts\nimport { ResponseError } from '@backstage/errors';\n\n// this is implicitly global.fetch\nconst response = await fetch('https://example.com/api/v1/users.json');\nif (!response.ok) {\n  throw await ResponseError.fromResponse(response);\n}\nconst users = await response.json();\n```\n\nFrontend plugins and packages should prefer to use the\n[`fetchApiRef`](https://backstage.io/api/stable/variables/_backstage_core-plugin-api.index.fetchApiRef.html).\n\n```ts\nimport { useApi } from '@backstage/core-plugin-api';\n\n// Inside some React component...\nconst { fetch } = useApi(fetchApiRef);\n\nconst response = await fetch('https://example.com/api/v1/users.json');\nif (!response.ok) {\n  throw await ResponseError.fromResponse(response);\n}\nconst users = await response.json();\n```\n\nIsomorphic packages should have a dependency on the `cross-fetch` package for\nmocking and type definitions. Preferably, classes and functions in isomorphic\npackages should accept an argument of type `typeof fetch` to let callers supply\ntheir preferred implementation of `fetch`. This lets them adorn the calls with\nauth or other information, and track metrics etc, in a cross-platform way."
+        }
+      ],
+      "decision_text": "All code that is executed in Node.js (including backend and CLIs) should use the\nnative `fetch` for HTTP data fetching, and `typeof fetch` as the TypeScript type\nin code where a `fetch` implementation can be injected or is referred to.\nExample:\n\n```ts\nimport { ResponseError } from '@backstage/errors';\n\n// this is implicitly global.fetch\nconst response = await fetch('https://example.com/api/v1/users.json');\nif (!response.ok) {\n  throw await ResponseError.fromResponse(response);\n}\nconst users = await response.json();\n```\n\nFrontend plugins and packages should prefer to use the\n[`fetchApiRef`](https://backstage.io/api/stable/variables/_backstage_core-plugin-api.index.fetchApiRef.html).\n\n```ts\nimport { useApi } from '@backstage/core-plugin-api';\n\n// Inside some React component...\nconst { fetch } = useApi(fetchApiRef);\n\nconst response = await fetch('https://example.com/api/v1/users.json');\nif (!response.ok) {\n  throw await ResponseError.fromResponse(response);\n}\nconst users = await response.json();\n```\n\nIsomorphic packages should have a dependency on the `cross-fetch` package for\nmocking and type definitions. Preferably, classes and functions in isomorphic\npackages should accept an argument of type `typeof fetch` to let callers supply\ntheir preferred implementation of `fetch`. This lets them adorn the calls with\nauth or other information, and track metrics etc, in a cross-platform way."
+    },
+    {
+      "id": "WS-TS-011",
+      "title": "Prometheus storage architecture [tech_spec]",
+      "source_path": "WS-TS-011.md",
+      "source_sha256": "62db541b220c7b54590a428af7cc40dddbc2f4ba62798aa39159adf0d5a62089",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: reliability, data, observability."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "title: Storage\nsort_rank: 5",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 26,
+          "text": "sort_rank: 5\n---\n\nPrometheus includes a local on-disk time series database, but also optionally integrates with remote storage systems."
+        },
+        {
+          "heading": "Local storage",
+          "level": 2,
+          "start_line": 27,
+          "end_line": 76,
+          "text": "Prometheus's local time series database stores data in a custom, highly efficient format on local storage.\n\n### On-disk layout\n\nIngested samples are grouped into two-hour blocks. Each block consists of a directory that \ncontains a chunks subdirectory with all the time series samples for that time window, \na metadata file,  and an index file (which maps metric names and labels to the time series \nin the chunks directory). The samples in the chunks directory are organized into one \nor more segment files, each up to 512 MB by default. When series are deleted via the API, \nthe deletion records are stored in separate tombstone files rather than being immediately \nremoved from the chunk segments.\n\nThe current block for incoming samples is kept in memory and is not fully\npersisted. It is secured against crashes by a write-ahead log (WAL) that can be\nreplayed when the Prometheus server restarts. Write-ahead log files are stored\nin the `wal` directory in 128MB segments. These files contain raw data that\nhas not yet been compacted; thus they are significantly larger than regular block\nfiles. Prometheus will retain a minimum of three write-ahead log files.\nHigh-traffic servers may retain more than three WAL files in order to keep at\nleast two hours of raw data.\n\nA Prometheus server's data directory looks something like this:\n\n```\n./data\n├── 01BKGV7JBM69T2G1BGBGM6KB12\n│   └── meta.json\n├── 01BKGTZQ1SYQJTR4PB43C8PD98\n│   ├── chunks\n│   │   └── 000001\n│   ├── tombstones\n│   ├── index\n│   └── meta.json\n├── 01BKGTZQ1HHWHV8FBJXW1Y3W0K\n│   └── meta.json\n├── 01BKGV7JC0RY8A6MACW02A2PJD\n│   ├── chunks\n│   │   └── 000001\n│   ├── tombstones\n│   ├── index\n│   └── meta.json\n├── chunks_head\n│   └── 000001\n└── wal\n    ├── 000000002\n    └── checkpoint.00000001"
+        },
+        {
+          "heading": "On-disk layout",
+          "level": 3,
+          "start_line": 31,
+          "end_line": 76,
+          "text": "Ingested samples are grouped into two-hour blocks. Each block consists of a directory that \ncontains a chunks subdirectory with all the time series samples for that time window, \na metadata file,  and an index file (which maps metric names and labels to the time series \nin the chunks directory). The samples in the chunks directory are organized into one \nor more segment files, each up to 512 MB by default. When series are deleted via the API, \nthe deletion records are stored in separate tombstone files rather than being immediately \nremoved from the chunk segments.\n\nThe current block for incoming samples is kept in memory and is not fully\npersisted. It is secured against crashes by a write-ahead log (WAL) that can be\nreplayed when the Prometheus server restarts. Write-ahead log files are stored\nin the `wal` directory in 128MB segments. These files contain raw data that\nhas not yet been compacted; thus they are significantly larger than regular block\nfiles. Prometheus will retain a minimum of three write-ahead log files.\nHigh-traffic servers may retain more than three WAL files in order to keep at\nleast two hours of raw data.\n\nA Prometheus server's data directory looks something like this:\n\n```\n./data\n├── 01BKGV7JBM69T2G1BGBGM6KB12\n│   └── meta.json\n├── 01BKGTZQ1SYQJTR4PB43C8PD98\n│   ├── chunks\n│   │   └── 000001\n│   ├── tombstones\n│   ├── index\n│   └── meta.json\n├── 01BKGTZQ1HHWHV8FBJXW1Y3W0K\n│   └── meta.json\n├── 01BKGV7JC0RY8A6MACW02A2PJD\n│   ├── chunks\n│   │   └── 000001\n│   ├── tombstones\n│   ├── index\n│   └── meta.json\n├── chunks_head\n│   └── 000001\n└── wal\n    ├── 000000002\n    └── checkpoint.00000001"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-012",
+      "title": "Kubernetes SIG Architecture charter [tech_spec]",
+      "source_path": "WS-TS-012.md",
+      "source_sha256": "597441e140de399ababf7cf4e6d43e5550d157688b22cb6f723ad4ab368223d0",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: architecture, governance."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 27,
+          "text": "\u003c!---\nThis is an autogenerated file!\n\nPlease do not edit this file directly, but instead make changes to the\nsigs.yaml file in the project root.\n\nTo understand how this file is generated, see https://git.k8s.io/community/generator/README.md\n---\u003e"
+        },
+        {
+          "heading": "Meetings",
+          "level": 2,
+          "start_line": 34,
+          "end_line": 53,
+          "text": "*Joining the [mailing list](https://groups.google.com/a/kubernetes.io/g/sig-architecture) for the group will typically add invites for the following meetings to your calendar.*\n* AI Conformance Meeting ([calendar](https://calendar.google.com/calendar/embed?src=ot1d7dd3tfjg4dpd5qf216qeq8%40group.calendar.google.com)) : [Thursdays at 10:00 PT (Pacific Time)](https://zoom.us/j/97008974781?pwd=1Y54XO1EoV4AUYTE9QEAeNzCaas4Yb.1) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=10%3A00\u0026tz=PT%20%28Pacific%20Time%29).\n  * [Meeting notes and Agenda](https://docs.google.com/document/d/1qlW1LkibOoiMio-hbJucRjOYeKT8mNaQ4awwzf0bi8M/edit).\n* Enhancements Subproject Meeting: [Thursdays at 10:00 PT (Pacific Time)](https://zoom.us/j/95357819945) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=10%3A00\u0026tz=PT%20%28Pacific%20Time%29).\n  * [Meeting notes and Agenda](https://bit.ly/k8s-enhancements-agenda).\n  * [Meeting recordings](TBD).\n* Production Readiness Office Hours: [Wednesdays at 12:00 PT (Pacific Time)](https://zoom.us/j/482444151) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=12%3A00\u0026tz=PT%20%28Pacific%20Time%29).\n  * [Meeting notes and Agenda](https://docs.google.com/document/d/10QkXwiZfBL7wBKHHFslooXvGDKHA75jkkgiIXuKFryM/edit?usp=sharing).\n  * [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP2m6198LaLN6YahX7EEac5g).\n* Regular SIG Meeting: [Thursdays at 11:00 PT (Pacific Time)](https://zoom.us/j/845605479) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=11%3A00\u0026tz=PT%20%28Pacific%20Time%29).\n  * [Meeting notes and Agenda](https://docs.google.com/document/d/1BlmHq5uPyBUDlppYqAAzslVbAO8hilgjqZUTaNXUhKM/edit).\n  * [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP2m6198LaLN6YahX7EEac5g).\n* code organization Office Hours: [Thursdays at 14:00 PT (Pacific Time)](https://zoom.us/j/159990793) (biweekly). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=14%3A00\u0026tz=PT%20%28Pacific%20Time%29).\n  * [Meeting notes and Agenda](https://docs.google.com/document/d/1HtTI0rJEGP_MSf6eO87aCmx_tzpovPAAg7U2Zxwm8FE/edit#).\n  * [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP03VEluzh0wpSRPzgve8kI5).\n* conformance office Hours: [Wednesdays at 18:00 UTC](https://zoom.us/j/427337923) (First Wednesday of the month). [Convert to your timezone](http://www.thetimezoneconverter.com/?t=18%3A00\u0026tz=UTC).\n  * [Meeting notes and Agenda](https://docs.google.com/document/d/1W31nXh9RYAb_VaYkwuPLd1hFxuRX3iU0DmaQ4lkCsX8/edit#).\n  * [Meeting recordings](https://www.youtube.com/playlist?list=PL69nYSiGNLP2m6198LaLN6YahX7EEac5g)."
+        },
+        {
+          "heading": "Leadership",
+          "level": 2,
+          "start_line": 54,
+          "end_line": 62,
+          "text": "### Chairs\nThe Chairs of the SIG run operations and processes governing the SIG.\n\n* Derek Carr (**[@derekwaynecarr](https://github.com/derekwaynecarr)**), Red Hat\n* Davanum Srinivas (**[@dims](https://github.com/dims)**), NVIDIA\n* John Belamaric (**[@johnbelamaric](https://github.com/johnbelamaric)**), Google"
+        },
+        {
+          "heading": "Chairs",
+          "level": 3,
+          "start_line": 56,
+          "end_line": 62,
+          "text": "The Chairs of the SIG run operations and processes governing the SIG.\n\n* Derek Carr (**[@derekwaynecarr](https://github.com/derekwaynecarr)**), Red Hat\n* Davanum Srinivas (**[@dims](https://github.com/dims)**), NVIDIA\n* John Belamaric (**[@johnbelamaric](https://github.com/johnbelamaric)**), Google"
+        },
+        {
+          "heading": "Contact",
+          "level": 2,
+          "start_line": 63,
+          "end_line": 72,
+          "text": "- Slack: [#sig-architecture](https://kubernetes.slack.com/messages/sig-architecture)\n- [Mailing list](https://groups.google.com/a/kubernetes.io/g/sig-architecture)\n- [Open Community Issues/PRs](https://github.com/kubernetes/community/labels/sig%2Farchitecture)\n- GitHub Teams:\n    - [@kubernetes/sig-architecture-api-reviews](https://github.com/orgs/kubernetes/teams/sig-architecture-api-reviews) - API Changes and Reviews\n    - [@kubernetes/sig-architecture-bugs](https://github.com/orgs/kubernetes/teams/sig-architecture-bugs) - Bug Triage and Troubleshooting\n    - [@kubernetes/sig-architecture-feature-requests](https://github.com/orgs/kubernetes/teams/sig-architecture-feature-requests) - Feature Requests"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-013",
+      "title": "Argo CD operator architecture [tech_spec]",
+      "source_path": "WS-TS-013.md",
+      "source_sha256": "b410ead294dc445d74bcd5b03dbb14d3c80e528fb2d2d00b42f623b3b0738d4b",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: gitops, reliability."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Components",
+          "level": 2,
+          "start_line": 24,
+          "end_line": 53,
+          "text": "### API Server\nThe API server is a gRPC/REST server which exposes the API consumed by the Web UI, CLI, and CI/CD \nsystems. It has the following responsibilities:\n\n* application management and status reporting\n* invoking of application operations (e.g. sync, rollback, user-defined actions)\n* repository and cluster credential management (stored as K8s secrets)\n* authentication and auth delegation to external identity providers\n* RBAC enforcement\n* listener/forwarder for Git webhook events\n\n### Repository Server\nThe repository server is an internal service which maintains a local cache of the Git repository\nholding the application manifests. It is responsible for generating and returning the Kubernetes\nmanifests when provided the following inputs:\n\n* repository URL\n* revision (commit, tag, branch)\n* application path\n* template specific settings: parameters, helm values.yaml\n\n### Application Controller\nThe application controller is a Kubernetes controller which continuously monitors running\napplications and compares the current, live state against the desired target state (as specified in\nthe repo). It detects `OutOfSync` application state and optionally takes corrective action. It\nis responsible for invoking any user-defined hooks for lifecycle events (PreSync, Sync, PostSync)"
+        },
+        {
+          "heading": "API Server",
+          "level": 3,
+          "start_line": 26,
+          "end_line": 36,
+          "text": "The API server is a gRPC/REST server which exposes the API consumed by the Web UI, CLI, and CI/CD \nsystems. It has the following responsibilities:\n\n* application management and status reporting\n* invoking of application operations (e.g. sync, rollback, user-defined actions)\n* repository and cluster credential management (stored as K8s secrets)\n* authentication and auth delegation to external identity providers\n* RBAC enforcement\n* listener/forwarder for Git webhook events"
+        },
+        {
+          "heading": "Repository Server",
+          "level": 3,
+          "start_line": 37,
+          "end_line": 46,
+          "text": "The repository server is an internal service which maintains a local cache of the Git repository\nholding the application manifests. It is responsible for generating and returning the Kubernetes\nmanifests when provided the following inputs:\n\n* repository URL\n* revision (commit, tag, branch)\n* application path\n* template specific settings: parameters, helm values.yaml"
+        },
+        {
+          "heading": "Application Controller",
+          "level": 3,
+          "start_line": 47,
+          "end_line": 53,
+          "text": "The application controller is a Kubernetes controller which continuously monitors running\napplications and compares the current, live state against the desired target state (as specified in\nthe repo). It detects `OutOfSync` application state and optionally takes corrective action. It\nis responsible for invoking any user-defined hooks for lifecycle events (PreSync, Sync, PostSync)"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-014",
+      "title": "Envoy security architecture overview [tech_spec]",
+      "source_path": "WS-TS-014.md",
+      "source_sha256": "c059c4b4ea7bf3ce50236e0d4745b9cde9702a2220c8a84537895a04791622bd",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: networking, security, auth."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-015",
+      "title": "Flux RFC-0001 authorization [tech_spec]",
+      "source_path": "WS-TS-015.md",
+      "source_sha256": "18073e9b5d5247f7fae87125d4b78b92250d278d3ed4bb8c05b96d0f41535e04",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: gitops, auth, rbac."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Summary",
+          "level": 2,
+          "start_line": 22,
+          "end_line": 26,
+          "text": "This RFC describes in detail, for [Flux version 0.24][] (Nov 2021), how Flux determines which\noperations are allowed to proceed, and how this interacts with Kubernetes' access control."
+        },
+        {
+          "heading": "Motivation",
+          "level": 2,
+          "start_line": 27,
+          "end_line": 42,
+          "text": "To this point, the Flux project has provided [examples of how to make a multi-tenant\nsystem](https://github.com/fluxcd/flux2-multi-tenancy/tree/v0.1.0), but not explained exactly how\nthey relate to Flux's authorization model; nor has the authorization model itself been\ndocumented. Further work on support for multi-tenancy, among other things, requires a full account\nof Flux's authorization model as a baseline.\n\n### Goals\n\n- Give a comprehensive account of Flux's authorization model\n\n### Non-Goals\n\n- Justify the model as it stands; this RFC simply records the state as at v0.24."
+        },
+        {
+          "heading": "Goals",
+          "level": 3,
+          "start_line": 35,
+          "end_line": 38,
+          "text": "- Give a comprehensive account of Flux's authorization model"
+        },
+        {
+          "heading": "Non-Goals",
+          "level": 3,
+          "start_line": 39,
+          "end_line": 42,
+          "text": "- Justify the model as it stands; this RFC simply records the state as at v0.24."
+        },
+        {
+          "heading": "Flux's authorization model",
+          "level": 2,
+          "start_line": 43,
+          "end_line": 76,
+          "text": "The Flux controllers undertake operations as specified by custom resources of the kinds defined in\nthe [Flux API][]. Most of the operations are through the Kubernetes API. Authorization for\noperations on external systems is not accounted for here.\n\nFlux controllers defer to [Kubernetes' native RBAC][k8s-rbac] and [namespace isolation][k8s-ns] to\ndetermine which operations are authorized, when processing the custom resources in the Flux API.\n\nIn general, **Kubernetes API operations are constrained by the service account under which each\ncontroller pod runs**. In the [default deployment of Flux][flux-rbac] each controller has its own\nservice account; and, the service accounts for the Kustomize controller and Helm controller have the\n[`cluster-admin` cluster role][k8s-cluster-admin] bound to it.\n\nBoth the Kustomize controller and the Helm controller create, update and delete arbitrary sets of\nconfiguration that they take as user input. For example, a Kustomization object that references a\nGitRepository is processed by taking whatever is in the specified Git repository and applying it to\nthe cluster. This is informally called \"syncing\", and these user-supplied configurations will be\ncalled \"sync configurations\" in the following.\n\nThere are five types of access that have a distinct treatment with respect to RBAC and namespace\nisolation:\n\n - reading and writing the Flux API object to be processed\n - accessing dependencies of a Flux API object; for example, a secret that holds a decryption key\n - accessing Flux API objects related to the object being processed; for example, a GitRepository\n   referenced by a Kustomization\n - creating, updating and deleting Flux API objects as part of processing; for example, each\n   `HelmRelease` object contains a template for a Helm chart spec, which the Helm controller uses to\n   create a `HelmChart` object\n - creating, updating, deleting, and health-checking of arbitrary objects as specified by _sync\n   configurations_ (as mentioned above)."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-016",
+      "title": "Flux RFC-0007 passwordless Git auth [tech_spec]",
+      "source_path": "WS-TS-016.md",
+      "source_sha256": "3f3e6902ccff433182c3d49ba86cedcf68b0fca6128f98fbc3a1dc002a175961",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: gitops, auth."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Summary",
+          "level": 2,
+          "start_line": 27,
+          "end_line": 33,
+          "text": "Flux should provide a mechanism to authenticate against Git repositories without\nthe use of passwords. This RFC proposes the use of alternative authentication\nmethods like OIDC, OAuth2 and IAM to access Git repositories hosted on specific\nGit SaaS platforms and cloud providers."
+        },
+        {
+          "heading": "Motivation",
+          "level": 2,
+          "start_line": 34,
+          "end_line": 73,
+          "text": "At the moment, Flux supports HTTP basic and bearer authentication. Users are\nrequired to create a Secret containing the username and the password/bearer\ntoken, which is then referred to in the GitRepository using `.spec.secretRef`.\n\nWhile this works fine, it has a couple of drawbacks:\n* Scalability: Each new GitRepository potentially warrants another credentials\npair, which doesn't scale well in big organizations with hundreds of\nrepositories with different owners, increasing the risk of mismanagement and\nleaks.\n* Identity: A username is associated with an actual human. But often, the\nrepository belongs to a team of 2 or more people. This leads to a problem where\nteams have to decide whose credentials should Flux use for authentication.\n\nThese problems exist not due to flaws in Flux, but because of the inherent\nnature of password based authentication.\n\nWith support for OIDC, OAuth2 and IAM based authentication, we can eliminate\nthese problems:\n* Scalability: Since OIDC is fully handled by the cloud provider, it eliminates\nany user involvement in managing credentials. For OAuth2 and IAM, users do need\nto provide certain information like the ID of the resource, private key, etc.\nbut these are still a better alternative to passwords since the same resource\ncan be reused by multiple teams with different members.\n* Identity: Since all the above authentication methods are associated with a\nvirtual resource independent of a user, it solves the problem of a single person\nbeing tied to automation that several people are involved in.\n\n### Goals\n\n* Integrate with major cloud providers' OIDC and IAM offerings to provide a\nseamless way of Git repository authentication.\n* Integrate with major Git SaaS providers to support their app based OAuth2\nmechanism.\n\n### Non-Goals\n\n* Replace the existing basic and bearer authentication API."
+        },
+        {
+          "heading": "Goals",
+          "level": 3,
+          "start_line": 63,
+          "end_line": 69,
+          "text": "* Integrate with major cloud providers' OIDC and IAM offerings to provide a\nseamless way of Git repository authentication.\n* Integrate with major Git SaaS providers to support their app based OAuth2\nmechanism."
+        },
+        {
+          "heading": "Non-Goals",
+          "level": 3,
+          "start_line": 70,
+          "end_line": 73,
+          "text": "* Replace the existing basic and bearer authentication API."
+        },
+        {
+          "heading": "Proposal",
+          "level": 2,
+          "start_line": 74,
+          "end_line": 76,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-017",
+      "title": "Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "source_path": "WS-TS-017.md",
+      "source_sha256": "a2d1547ab53dd47782260748534062eda0fbaa7b17c6feb1fd830a4ecffafb2a",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: gitops, auth, aws."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Summary",
+          "level": 2,
+          "start_line": 28,
+          "end_line": 48,
+          "text": "In this RFC we aim to add support for multi-tenant workload identity in Flux,\ni.e. the ability to specify at the object-level which set of cloud provider\npermissions must be used for interacting with the respective cloud provider\non behalf of the reconciliation of the object. In this process, credentials\nmust be obtained automatically, i.e. this feature must not involve the use\nof secrets. This would be useful in a number of Flux APIs that need to\ninteract with cloud providers, spanning all the Flux controllers.\n\n### Multi-Tenancy Model\n\nIn the context of this RFC, multi-tenancy refers to the ability of a single\nFlux instance running inside a Kubernetes cluster to manage Flux objects\nbelonging to all the tenants in the cluster while still ensuring that each\ntenant has access only to their own resources according to the Least Privilege\nPrinciple. In this scenario a tenant is often a team inside an organization,\nso the reader can consider the\n[multi-team tenancy model](https://kubernetes.io/docs/concepts/security/multi-tenancy/#multiple-teams).\nEach team has their own namespaces, which are not shared with other teams."
+        },
+        {
+          "heading": "Multi-Tenancy Model",
+          "level": 3,
+          "start_line": 38,
+          "end_line": 48,
+          "text": "In the context of this RFC, multi-tenancy refers to the ability of a single\nFlux instance running inside a Kubernetes cluster to manage Flux objects\nbelonging to all the tenants in the cluster while still ensuring that each\ntenant has access only to their own resources according to the Least Privilege\nPrinciple. In this scenario a tenant is often a team inside an organization,\nso the reader can consider the\n[multi-team tenancy model](https://kubernetes.io/docs/concepts/security/multi-tenancy/#multiple-teams).\nEach team has their own namespaces, which are not shared with other teams."
+        },
+        {
+          "heading": "Motivation",
+          "level": 2,
+          "start_line": 49,
+          "end_line": 76,
+          "text": "Flux has strong multi-tenancy features. For example, the `Kustomization` and\n`HelmRelease` APIs support the field `spec.serviceAccountName` for specifying\nthe Kubernetes `ServiceAccount` to impersonate when interacting with the\nKubernetes API on behalf of a tenant, e.g. when applying resources. This\nallows tenants to be constrained under the Kubernetes RBAC permissions\ngranted to this `ServiceAccount`, and therefore have access only to the\nspecific subset of resources they should be allowed to use.\n\nBesides the Kubernetes API, Flux also interacts with cloud providers, e.g.\ncontainer registries, object storage, pub/sub services, etc. In these cases,\nFlux currently supports basically two modes of authentication:\n\n- *Secret-based multi-tenant authentication*: Objects have the field\n  `spec.secretRef` for specifying the Kubernetes `Secret` containing the\n  credentials to use when interacting with the cloud provider. This is\n  similar to the `spec.serviceAccountName` field, but for cloud providers.\n  The problem with this approach is that secrets are a security risk and\n  operational burden, as they must be managed and rotated.\n- *Workload-identity-based single-tenant authentication*: Flux offers\n  single-tenant workload identity support by configuring the `ServiceAccount`\n  of the Flux controllers to impersonate a cloud identity. This eliminates\n  the need for secrets, as the credentials are obtained automatically by\n  the cloud provider Go libraries used by the Flux controllers when they\n  are running inside the respective cloud environment. The problem with"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-018",
+      "title": "Grafana k8s-inspired backend architecture [tech_spec]",
+      "source_path": "WS-TS-018.md",
+      "source_sha256": "cc2c8ac78e9e54074f8343097fc1877a3a9a484fe6ab8b1daa572de10f25e4c8",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: platform, apis."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "1. Key Differences from Legacy API Endpoints",
+          "level": 2,
+          "start_line": 33,
+          "end_line": 54,
+          "text": "- **URL structure \u0026 versioning:**\n  - **Resource APIs:** Follow Kubernetes conventions (`/apis/\u003cgroup\u003e/\u003cversion\u003e/namespaces/\u003cnamespace\u003e/\u003cresource\u003e/\u003cname\u003e`). Includes explicit API versions (e.g., `v0alpha1`, `v1`, `v2beta1`) in the path, allowing for controlled evolution and multiple versions of a resource API to co-exist.\n  - **Legacy APIs:** Variable path structures (e.g., `/api/dashboards/uid/:uid`, `/api/ruler/grafana/api/v1/rules/:uid/:uid`). Less explicit versioning.\n\n- **Resource schemas:**\n  - **Resource APIs:** Each resource has a well-defined schema (`spec`) and is wrapped with an envelope with common metadata, all APIs come with an always-in-sync OpenAPI spec.\n  - **Legacy APIs:** Structures vary\n\n- **Namespacing / org context:**\n  - **Resource APIs:** Uses explicit namespaces in the path (`/namespaces/\u003cnamespace\u003e/...`) mapping to Grafana Organization IDs in OSS/Enterprise and Grafana Cloud Stack IDs in Grafana Cloud for scoping.\n  - **Legacy APIs:** Org context determined implicitly (session, API key), not usually part of the URL structure.\n\n- **Consistency of convenience features:**\n  - **Resource APIs:** Convenience features such as resource history, restore and observability-as-code tooling come out of the box; a single implementation of convenience features works across all resources because of the standardization\n  - **Legacy APIs:** Different APIs support different convenience features; implementations are feature-specific\n\n- **Error Handling:**\n  - **Resource APIs:** Uses Kubernetes error response conventions (HTTP status codes 400, 401/403, 404, 409; structured error body).\n  - **Legacy APIs:** Variable error formats; Grafana-specific."
+        },
+        {
+          "heading": "2. Core Concepts",
+          "level": 2,
+          "start_line": 55,
+          "end_line": 64,
+          "text": "- **Resource APIs:** New Grafana API endpoints that mimic the Kubernetes API structure (e.g., `/apis/dashboard.grafana.app/v1alpha1/dashboards`). These are served by Grafana itself and are distinct from any Kubernetes API running on the same system.\n\n- **API implementation approaches:**\n  - **Registry Approach (`pkg/registry/apis/...`):** Original method using Go code (`.../register.go` files). While newer resources are primarily defined using CUE in `apps/`, this path is still used for things such as legacy fallbacks for App-defined resources when data for that resource exists outside of unified storage.\n  - **Apps Approach (`apps/...`):** The newer, more modular implementation where APIs are defined using CUE in self-contained modules. Each app defines resources in `kinds/*.cue` files and resources are registered via the App SDK. This is the direction Grafana is moving towards for all resources.\n- **Unified Storage (`pkg/storage/unified/...`):** Internal abstraction handling resource persistence. It handles the conversion between the Resource API and the underlying storage backend."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-019",
+      "title": "containerd garbage collection [tech_spec]",
+      "source_path": "WS-TS-019.md",
+      "source_sha256": "3c49d60b746c48608e0a89e0a127e9471657188c0596eb2438b144801de48237",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: reliability, runtime."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "What is a lease?",
+          "level": 2,
+          "start_line": 31,
+          "end_line": 39,
+          "text": "Leases are a resource in `containerd` which are created by clients and are used\nto reference other resources such as snapshots and content. Leases may be\nconfigured with an expiration or deleted by clients once it has completed an\noperation. Leases are needed to inform the `containerd` daemon that a resource\nmay be used in the future after the client completes an operation, even though\nit currently is not seen as utilized."
+        },
+        {
+          "heading": "How to use leases",
+          "level": 2,
+          "start_line": 40,
+          "end_line": 76,
+          "text": "### using Go client\n\nThe best way to use leases is to add it to a Go context immediately after the\ncontext is created. Normally the lifespan of a lease will be the same as the\nlifecycle of a Go context.\n\n```.go\n\tctx, done, err := client.WithLease(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer done(ctx)\n```\n\nThis will create a lease which will defer its own deletion and have a default\nexpiry of 24 hours (in case the process dies before defer). For most use cases,\nthis is enough and no more thought needs to be put into leases.\n\n_But, of course, more complicated use cases are supported..._\n\nIf the program or lease are intended to be longer lived, instead of the very\neasy `client.WithLease`, the lease manager can be used directly. This also\nallows for setting custom labels on the lease or manipulating its resources.\nUse `client.LeasesService()` to get a [lease Manager](https://godoc.org/github.com/containerd/containerd/v2/leases#Manager)\nwhich can be used to create, list, and delete leases as well as manage the\nreferenced resources for that lease.\n\n```.go\n\tmanager := client.LeasesService()\n\n\t// this lease will never expire\n\t// Use `leases.WithExpiration` to make it expire\n\t// Use `leases.WithLabels` to apply any labels"
+        },
+        {
+          "heading": "using Go client",
+          "level": 3,
+          "start_line": 42,
+          "end_line": 76,
+          "text": "The best way to use leases is to add it to a Go context immediately after the\ncontext is created. Normally the lifespan of a lease will be the same as the\nlifecycle of a Go context.\n\n```.go\n\tctx, done, err := client.WithLease(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer done(ctx)\n```\n\nThis will create a lease which will defer its own deletion and have a default\nexpiry of 24 hours (in case the process dies before defer). For most use cases,\nthis is enough and no more thought needs to be put into leases.\n\n_But, of course, more complicated use cases are supported..._\n\nIf the program or lease are intended to be longer lived, instead of the very\neasy `client.WithLease`, the lease manager can be used directly. This also\nallows for setting custom labels on the lease or manipulating its resources.\nUse `client.LeasesService()` to get a [lease Manager](https://godoc.org/github.com/containerd/containerd/v2/leases#Manager)\nwhich can be used to create, list, and delete leases as well as manage the\nreferenced resources for that lease.\n\n```.go\n\tmanager := client.LeasesService()\n\n\t// this lease will never expire\n\t// Use `leases.WithExpiration` to make it expire\n\t// Use `leases.WithLabels` to apply any labels"
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-020",
+      "title": "containerd image verification [tech_spec]",
+      "source_path": "WS-TS-020.md",
+      "source_sha256": "23e485d5367c9b82e9b444e9d6c3a3aac466e50afedaf491b877ae026ad0e1d2",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: security, supply-chain."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Image Verifier Binary API",
+          "level": 2,
+          "start_line": 36,
+          "end_line": 59,
+          "text": "### CLI Arguments\n\n- `-name`: The given reference to the image that may be pulled.\n- `-digest`: The resolved digest of the image that may be pulled.\n- `-stdin-media-type`: The media type of the JSON data passed to stdin.\n\n### Standard Input\n\nA JSON encoded payload is passed to the verifier binary's standard input. The\nmedia type of this payload is specified by the `-stdin-media-type` CLI\nargument, and may change in future versions of containerd. Currently, the\npayload has a media type of `application/vnd.oci.descriptor.v1+json` and\nrepresents the OCI Content Descriptor of the image that may be pulled. See\n[the OCI specification](https://github.com/opencontainers/image-spec/blob/main/descriptor.md)\nfor more details.\n\n### Image Pull Judgement\n\nPrint to standard output a reason for the image pull judgement.\n\nReturn an exit code of 0 to allow the image to be pulled and any other exit code to block the image from being pulled."
+        },
+        {
+          "heading": "CLI Arguments",
+          "level": 3,
+          "start_line": 38,
+          "end_line": 43,
+          "text": "- `-name`: The given reference to the image that may be pulled.\n- `-digest`: The resolved digest of the image that may be pulled.\n- `-stdin-media-type`: The media type of the JSON data passed to stdin."
+        },
+        {
+          "heading": "Standard Input",
+          "level": 3,
+          "start_line": 44,
+          "end_line": 53,
+          "text": "A JSON encoded payload is passed to the verifier binary's standard input. The\nmedia type of this payload is specified by the `-stdin-media-type` CLI\nargument, and may change in future versions of containerd. Currently, the\npayload has a media type of `application/vnd.oci.descriptor.v1+json` and\nrepresents the OCI Content Descriptor of the image that may be pulled. See\n[the OCI specification](https://github.com/opencontainers/image-spec/blob/main/descriptor.md)\nfor more details."
+        },
+        {
+          "heading": "Image Pull Judgement",
+          "level": 3,
+          "start_line": 54,
+          "end_line": 59,
+          "text": "Print to standard output a reason for the image pull judgement.\n\nReturn an exit code of 0 to allow the image to be pulled and any other exit code to block the image from being pulled."
+        },
+        {
+          "heading": "Image Verifier Caller Contract",
+          "level": 2,
+          "start_line": 60,
+          "end_line": 72,
+          "text": "- If `bin_dir` does not exist or contains no files, the image verifier does not block image pulls.\n- An image is pulled only if all verifiers that are called return an \"ok\" judgement (exit with status code 0). In other words, image pull judgements are combined with an `AND` operator.\n- If any verifiers exceeds the `per_verifier_timeout` or fails to exec, the verification fails with an error and a `nil` judgement is returned.\n- If `max_verifiers \u003c 0`, there is no imposed limit on the number of image verifiers called.\n- If `max_verifiers \u003e= 0`, there is a limit imposed on the number of image verifiers called. The entries in `bin_dir` are lexicographically sorted by name, and the first `n = max_verifiers` of the verifiers will be called, and the rest will be skipped.\n- There is no guarantee for the order of execution of verifier binaries.\n- Standard error output of verifier binaries is logged at debug level by containerd, subject to truncation.\n- Standard output of verifier binaries (the \"reason\" for the judgement) is subject to truncation.\n- System resources used by verifier binaries are currently accounted for in and constrained by containerd's own cgroup, but this is subject to change."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-021",
+      "title": "OPA project introduction / philosophy [tech_spec]",
+      "source_path": "WS-TS-021.md",
+      "source_sha256": "9cf73f2a03770aad573e8f762c4f7471cb11d239ec33909be0f787d7a7134804",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: policy, auth."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Get started with OPA",
+          "level": 2,
+          "start_line": 28,
+          "end_line": 38,
+          "text": "- Write your first Rego policy with the [Rego Playground](https://play.openpolicyagent.org) or use it to share your work with others for feedback and support. Have a look at the [Access Control examples](https://play.openpolicyagent.org/?example-group=access-control) if you're not sure where to start.\n- Install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=tsandall.opa) to get started locally with live diagnostics, debugging and formatting. See [Editor and IDE Support](https://www.openpolicyagent.org/docs/editor-and-ide-support) for other supported editors.\n- Go to the [OPA Documentation](https://www.openpolicyagent.org/docs) to\n  learn about the Rego language as well as how to deploy and integrate OPA.\n- Check out the learning resources in the [Learning Rego](https://www.openpolicyagent.org/ecosystem/by-feature/learning-rego) section of the ecosystem directory.\n- Follow the [Running OPA](https://www.openpolicyagent.org/docs/latest/#running-opa) instructions to get started with the OPA CLI locally.\n- See [Docker Hub](https://hub.docker.com/r/openpolicyagent/opa/tags/) for container images and the [GitHub releases](https://github.com/open-policy-agent/opa/releases) for binaries.\n- Check out the [OPA Roadmap](https://github.com/orgs/open-policy-agent/projects/10) to see a high-level snapshot of OPA features in-progress and planned."
+        },
+        {
+          "heading": "Want to talk about OPA or get support?",
+          "level": 2,
+          "start_line": 39,
+          "end_line": 44,
+          "text": "- Join the [OPA Slack](https://slack.openpolicyagent.org) to talk to other OPA users and maintainers. See `#help` for support.\n- Check out the [Community Discussions](https://github.com/orgs/open-policy-agent/discussions) to ask questions.\n- See the [Support](https://www.openpolicyagent.org/support) page for commercial support options."
+        },
+        {
+          "heading": "Interested to learn what others are doing with OPA?",
+          "level": 2,
+          "start_line": 45,
+          "end_line": 49,
+          "text": "- Browse community projects on the [OPA Ecosystem Directory](https://www.openpolicyagent.org/ecosystem) - don't forget to [list your own](https://github.com/open-policy-agent/opa/tree/main/docs#opa-ecosystem)!\n- Check out the [ADOPTERS.md](./ADOPTERS.md) file for a list of production adopters. Does your organization use OPA in production? Support the OPA project by submitting a PR to add your organization to the list with a short description of your OPA use cases!"
+        },
+        {
+          "heading": "Want to integrate OPA?",
+          "level": 2,
+          "start_line": 50,
+          "end_line": 58,
+          "text": "- See the high-level [Go SDK](https://www.openpolicyagent.org/docs/integration#integrating-with-the-go-sdk) or the low-level Go API\n  [![GoDoc](https://pkg.go.dev/badge/github.com/open-policy-agent/opa?utm_source=godoc)](https://pkg.go.dev/github.com/open-policy-agent/opa/rego?utm_source=godoc)\n  to integrate OPA with services written in Go.\n- See the [REST API](https://www.openpolicyagent.org/docs/rest-api.html)\n  reference to integrate OPA with services written in other languages.\n- See the [integration docs](https://www.openpolicyagent.org/docs/integration) for more options."
+        },
+        {
+          "heading": "Want to contribute to OPA?",
+          "level": 2,
+          "start_line": 59,
+          "end_line": 64,
+          "text": "- Read the [Contributing Guide](https://www.openpolicyagent.org/docs/contributing) to learn how to make your first contribution.\n- Use [#contributors](https://openpolicyagent.slack.com/?redir=%2Farchives%2FC02L1TLPN59%3Fname%3DC02L1TLPN59) in Slack to talk to other contributors and OPA maintainers.\n- File a [GitHub Issue](https://github.com/open-policy-agent/opa/issues) to request features or report bugs."
+        },
+        {
+          "heading": "How does OPA work?",
+          "level": 2,
+          "start_line": 65,
+          "end_line": 71,
+          "text": "OPA gives you a high-level declarative language to author and enforce policies\nacross your stack."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-022",
+      "title": "Helm HIP-0001 process [tech_spec]",
+      "status": "\"accepted\"",
+      "source_path": "WS-TS-022.md",
+      "source_sha256": "7303d146a4b2b4c667f326ff996ff48bbc6889fa823c701ee2974334a9600fc9",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: process, iac."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 20,
+          "text": "---"
+        },
+        {
+          "heading": "hip: \"0001\"\ntitle: \"Writing a HIP\"\nauthors: [ \"Matthew Fisher matt.fisher@microsoft.com\" ]\ncreated: \"2020-08-13\"\ntype: \"process\"\nstatus: \"accepted\"",
+          "level": 2,
+          "start_line": 21,
+          "end_line": 28,
+          "text": "title: \"Writing a HIP\"\nauthors: [ \"Matthew Fisher \u003cmatt.fisher@microsoft.com\u003e\" ]\ncreated: \"2020-08-13\"\ntype: \"process\"\nstatus: \"accepted\"\n---"
+        },
+        {
+          "heading": "Abstract",
+          "level": 2,
+          "start_line": 29,
+          "end_line": 49,
+          "text": "A HIP is a Helm Improvement Proposal. It is a design document providing\ninformation to the Helm community, or describing a new feature for a Helm\nproject or its processes or environment. The proposal should provide a concise\ntechnical specification of the feature and a rationale for the feature.\n\nWe intend HIPs to be the primary mechanisms for proposing major new features,\nfor collecting community input on an issue, and for documenting the design\ndecisions that have gone into the project. The proposal author is responsible\nfor building consensus within the community and documenting dissenting opinions.\n\nThe system is heavily influenced by Python's Enhancement Proposal (PEP) system,\nhence the name. Given that Helm is a much (MUCH) smaller project than Python,\nthere are a few changes in the HIP workflow to make it a looser format for\nproposals, most notably the lack of proposal \"editors\", a BDFL, and a much\nsmaller review \u0026 resolution cycle.\n\nBecause the proposals are maintained as markdown files in a versioned\nrepository, their revision history is the historical record of the proposal."
+        },
+        {
+          "heading": "Audience",
+          "level": 2,
+          "start_line": 50,
+          "end_line": 59,
+          "text": "The typical primary audience for proposals are the project maintainers for each\nHelm project, as well as the Helm project's org maintainers.\n\nHowever, other parts of the Helm community may also choose to use the process\n(particularly for informational proposals) to document expected conventions and\nto manage complex design coordination problems that require collaboration across\nmultiple projects."
+        },
+        {
+          "heading": "HIP types",
+          "level": 2,
+          "start_line": 60,
+          "end_line": 76,
+          "text": "There are three kinds of proposals:\n\n1. A **feature** proposal describes a new feature or implementation for the Helm\n   project. It may also describe an interoperability standard that will be\n   supported by the Helm project.\n1. An **informational** proposal describes a Helm design issue, or provides\n   general guidelines or information to the Helm community, but does not propose\n   a new feature. Informational proposals do not necessarily represent a Helm\n   community consensus or recommendation, so users and implementers are free to\n   ignore informational proposals or follow their advice.\n1. A **process** proposal describes a process surrounding the Helm project, or\n   proposes a change to (or an event in) a process. Process proposals are like\n   feature proposals, but apply to areas other than the Helm project itself."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-023",
+      "title": "Istio security README [tech_spec]",
+      "source_path": "WS-TS-023.md",
+      "source_sha256": "3bff70225e013bb6e04596b454881e29f143bfea198f272fd62e09b55231e0bd",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: security, networking, auth."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 23,
+          "text": "Please check our [website](https://istio.io/docs/concepts/security/) for\nmore information."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-024",
+      "title": "SPIFFE identity standard excerpt [tech_spec]",
+      "source_path": "WS-TS-024.md",
+      "source_sha256": "5ec49a9afcc8b69f36521ff3a7f5ccfb0d566a06793ab19ce9c20b5d7e73bd14",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: auth, identity."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 19,
+          "text": ""
+        },
+        {
+          "heading": "Status of this Memo",
+          "level": 2,
+          "start_line": 24,
+          "end_line": 26,
+          "text": "This document specifies an identity and identity issuance standard for the internet community, and requests discussion and suggestions for improvements. Distribution of this document is unlimited."
+        },
+        {
+          "heading": "Abstract",
+          "level": 2,
+          "start_line": 27,
+          "end_line": 33,
+          "text": "Distributed design patterns and practices such as microservices, container orchestrators, and cloud computing have led to production environments that are increasingly dynamic and heterogeneous. Conventional security practices (such as network policies that only allow traffic between particular IP addresses) struggle to scale under this complexity. A first-class identity framework for workloads in an organization becomes necessary.\n\nFurther, modern developers are expected to understand and play a role in how applications are deployed and managed in production environments. Operations teams require deeper visibility into the applications they are managing. As we move to a more evolved security stance, we must offer better tools to both teams so they can play an active role in building secure, distributed applications.\n\nThe SPIFFE standard provides a specification for a framework capable of bootstrapping and issuing identity to services across heterogeneous environments and organizational boundaries."
+        },
+        {
+          "heading": "Table of Contents",
+          "level": 2,
+          "start_line": 34,
+          "end_line": 41,
+          "text": "1\\. [Introduction](#1-introduction)  \n2\\. [The SPIFFE ID](#2-the-spiffe-id)  \n3\\. [The SPIFFE Verifiable Identity Document](#3-the-spiffe-verifiable-identity-document)  \n4\\. [The Workload API](#4-the-workload-api)  \n5\\. [Conclusion](#5-conclusion)  \nAppendix A. [List of SPIFFE Specifications](#appendix-a-list-of-spiffe-specifications)"
+        },
+        {
+          "heading": "1. Introduction",
+          "level": 2,
+          "start_line": 42,
+          "end_line": 46,
+          "text": "The SPIFFE standard comprises three major components - one which standardizes an identity namespace, one which dictates the manner in which an issued identity may be presented and verified, and another which specifies an API through which identity may be retrieved and/or issued. These components are known as the SPIFFE ID, the SPIFFE Verifiable Identity Document (SVID) and the Workload API, respectively.\n\nWhile each of these components has a dedicated specification, the remainder of this document will explore them at a high level, and explain how they fit together."
+        },
+        {
+          "heading": "2. The SPIFFE ID",
+          "level": 2,
+          "start_line": 47,
+          "end_line": 49,
+          "text": "A SPIFFE ID is a structured string (represented as a URI) which serves as the \"name\" of an entity. Although just a string, it is the component around which everything else is built. It is defined in the [SPIFFE Identity and Verifiable Identity Document](SPIFFE-ID.md) specification."
+        },
+        {
+          "heading": "3. The SPIFFE Verifiable Identity Document",
+          "level": 2,
+          "start_line": 50,
+          "end_line": 64,
+          "text": "A SPIFFE Verifiable Identity Document (SVID) is a document which carries the SPIFFE ID itself. It is the functional equivalent of a passport - a document which is presented that carries the identity of the presenter. Of course, similar to passports, they must be resistant to forgery, and it must be obvious that the document belongs to the presenter. In order to achieve this, an SVID includes cryptographic properties which allow it to be:\n\n  1) proven as authentic\n  2) proven to belong to the presenter\n\nAn SVID itself is not a document type. Instead, we define:\n\n  1) the properties required of an SVID\n  2) the method by which SVID information can be encoded and validated in various existing document types\n\nThe supported document types are an X.509 certificate, JWT token and WIT token.\n\nThe SPIFFE SVID is defined in the [SPIFFE Identity and Verifiable Identity Document](SPIFFE-ID.md) specification. The X.509 SVID specification is defined in [The X.509 SPIFFE Verifiable Identity Document](X509-SVID.md). The JWT token SVID specification is defined in [The JWT SPIFFE Verifiable Identity Document](JWT-SVID.md). The WIT token SVID specification is defined in [The WIT SPIFFE Verifiable Identity Document](WIT-SVID.md)."
+        },
+        {
+          "heading": "4. The Workload API",
+          "level": 2,
+          "start_line": 65,
+          "end_line": 69,
+          "text": "The SPIFFE Workload API is the method through which workloads, or compute processes, obtain their SVID(s). It is typically exposed locally (eg. via a Unix domain socket), and explicitly does not include an authentication handshake or authenticating token from the workload. Implementors can verify the authenticity of the caller to the Workload API via an out-of-band method, such as inspecting the properties of the process calling the Unix domain socket that are provided by the operating system."
+        }
+      ]
+    },
+    {
+      "id": "WS-TS-025",
+      "title": "Tekton pipeline auth documentation [tech_spec]",
+      "source_path": "WS-TS-025.md",
+      "source_sha256": "b320678e25db5109aaeb9c528b287e550789149722c8b000399f5a6dc8984ab5",
+      "sections": [
+        {
+          "heading": "Design context",
+          "level": 2,
+          "start_line": 13,
+          "end_line": 17,
+          "text": "Workshop body-of-evidence submission sourced from a public third-party repository.\n`submission_kind` is **tech_spec**. Domains: ci, auth."
+        },
+        {
+          "heading": "Technical specification / ADR (excerpt)",
+          "level": 2,
+          "start_line": 18,
+          "end_line": 26,
+          "text": "\u003c!--\n---\nlinkTitle: \"Authentication\"\nweight: 301\n---\n--\u003e"
+        },
+        {
+          "heading": "Overview",
+          "level": 2,
+          "start_line": 74,
+          "end_line": 76,
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

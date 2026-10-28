@@ -1,0 +1,17 @@
+{
+  "id": "WS-TS-023",
+  "title": "[ADR Assessment] Istio security README [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "security",
+    "networking",
+    "auth"
+  ],
+  "path": "tech_spec/WS-TS-023.md",
+  "source_url": "https://github.com/istio/istio/blob/master/security/README.md",
+  "repo": "istio/istio",
+  "source_path": "security/README.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "4e0192aefe73"
+}

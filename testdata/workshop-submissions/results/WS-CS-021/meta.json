@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-021",
+  "title": "[ADR Assessment] Traefik BasicAuth middleware docs/config [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "auth",
+    "networking",
+    "apis"
+  ],
+  "path": "code_snippet/WS-CS-021.md",
+  "source_url": "https://github.com/traefik/traefik/blob/v3.1/docs/content/middlewares/http/basicauth.md",
+  "repo": "traefik/traefik",
+  "source_path": "docs/content/middlewares/http/basicauth.md",
+  "license": "MIT",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "5f74dcac717b",
+  "language": "markdown"
+}

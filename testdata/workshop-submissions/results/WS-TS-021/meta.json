@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-021",
+  "title": "[ADR Assessment] OPA project introduction / philosophy [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "policy",
+    "auth"
+  ],
+  "path": "tech_spec/WS-TS-021.md",
+  "source_url": "https://github.com/open-policy-agent/opa/blob/main/README.md",
+  "repo": "open-policy-agent/opa",
+  "source_path": "README.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "b39c59212ece"
+}

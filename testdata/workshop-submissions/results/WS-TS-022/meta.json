@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-022",
+  "title": "[ADR Assessment] Helm HIP-0001 process [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "process",
+    "iac"
+  ],
+  "path": "tech_spec/WS-TS-022.md",
+  "source_url": "https://github.com/helm/community/blob/main/hips/hip-0001.md",
+  "repo": "helm/community",
+  "source_path": "hips/hip-0001.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "160cc00bab4f"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-019",
+  "title": "[ADR Assessment] Terraform AWS VPC simple example [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "networking"
+  ],
+  "path": "code_snippet/WS-CS-019.md",
+  "source_url": "https://github.com/terraform-aws-modules/terraform-aws-vpc/blob/master/examples/simple/main.tf",
+  "repo": "terraform-aws-modules/terraform-aws-vpc",
+  "source_path": "examples/simple/main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "3b89db922034",
+  "language": "hcl"
+}

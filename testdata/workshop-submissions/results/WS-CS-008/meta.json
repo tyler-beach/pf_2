@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-008",
+  "title": "[ADR Assessment] Helmet CSP middleware [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "security",
+    "javascript",
+    "apis"
+  ],
+  "path": "code_snippet/WS-CS-008.md",
+  "source_url": "https://github.com/helmetjs/helmet/blob/main/middlewares/content-security-policy/index.ts",
+  "repo": "helmetjs/helmet",
+  "source_path": "middlewares/content-security-policy/index.ts",
+  "license": "MIT",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "e24d839f300c",
+  "language": "typescript"
+}

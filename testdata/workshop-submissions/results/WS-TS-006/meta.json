@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-006",
+  "title": "[ADR Assessment] Backstage: Default catalog file format [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "platform",
+    "data"
+  ],
+  "path": "tech_spec/WS-TS-006.md",
+  "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md",
+  "repo": "backstage/backstage",
+  "source_path": "docs/architecture-decisions/adr002-default-catalog-file-format.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "abaaab065cb3"
+}

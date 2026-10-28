@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-016",
+  "title": "[ADR Assessment] Flux RFC-0007 passwordless Git auth [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "gitops",
+    "auth"
+  ],
+  "path": "tech_spec/WS-TS-016.md",
+  "source_url": "https://github.com/fluxcd/flux2/blob/main/rfcs/0007-git-repo-passwordless-auth/README.md",
+  "repo": "fluxcd/flux2",
+  "source_path": "rfcs/0007-git-repo-passwordless-auth/README.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "8f9d915f26e1"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "WS-TS-024",
+  "title": "[ADR Assessment] SPIFFE identity standard excerpt [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "auth",
+    "identity"
+  ],
+  "path": "tech_spec/WS-TS-024.md",
+  "source_url": "https://github.com/spiffe/spiffe/blob/main/standards/SPIFFE.md",
+  "repo": "spiffe/spiffe",
+  "source_path": "standards/SPIFFE.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "90e2dcc14129"
+}

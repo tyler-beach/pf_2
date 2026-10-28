@@ -1,0 +1,17 @@
+{
+  "id": "WS-TS-015",
+  "title": "[ADR Assessment] Flux RFC-0001 authorization [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "gitops",
+    "auth",
+    "rbac"
+  ],
+  "path": "tech_spec/WS-TS-015.md",
+  "source_url": "https://github.com/fluxcd/flux2/blob/main/rfcs/0001-authorization/README.md",
+  "repo": "fluxcd/flux2",
+  "source_path": "rfcs/0001-authorization/README.md",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "1c3c6624be44"
+}

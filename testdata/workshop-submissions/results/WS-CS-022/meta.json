@@ -1,0 +1,17 @@
+{
+  "id": "WS-CS-022",
+  "title": "[ADR Assessment] ZAP baseline scanner script [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "security",
+    "ci"
+  ],
+  "path": "code_snippet/WS-CS-022.md",
+  "source_url": "https://github.com/zaproxy/zaproxy/blob/main/docker/zap-baseline.py",
+  "repo": "zaproxy/zaproxy",
+  "source_path": "docker/zap-baseline.py",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "f58ed29337bb",
+  "language": "python"
+}

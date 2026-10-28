@@ -1,0 +1,17 @@
+{
+  "id": "WS-TS-014",
+  "title": "[ADR Assessment] Envoy security architecture overview [tech_spec]",
+  "submission_kind": "tech_spec",
+  "domains": [
+    "networking",
+    "security",
+    "auth"
+  ],
+  "path": "tech_spec/WS-TS-014.md",
+  "source_url": "https://github.com/envoyproxy/envoy/blob/main/docs/root/intro/arch_overview/security/security.rst",
+  "repo": "envoyproxy/envoy",
+  "source_path": "docs/root/intro/arch_overview/security/security.rst",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "eeaa233facb6"
+}

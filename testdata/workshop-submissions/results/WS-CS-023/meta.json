@@ -1,0 +1,18 @@
+{
+  "id": "WS-CS-023",
+  "title": "[ADR Assessment] Terraform EKS auto-mode example [code_snippet]",
+  "submission_kind": "code_snippet",
+  "domains": [
+    "iac",
+    "aws",
+    "k8s"
+  ],
+  "path": "code_snippet/WS-CS-023.md",
+  "source_url": "https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/eks-auto-mode/main.tf",
+  "repo": "terraform-aws-modules/terraform-aws-eks",
+  "source_path": "examples/eks-auto-mode/main.tf",
+  "license": "Apache-2.0",
+  "retrieved": "2026-10-28",
+  "excerpt_sha256_12": "d20da6811c8f",
+  "language": "hcl"
+}
