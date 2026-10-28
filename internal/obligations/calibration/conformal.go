@@ -128,7 +128,7 @@ func FitBandThresholds(ps []float64, bands []string) (highMin, mediumMin float64
 		mediumMin = percentile(medPs, 0.2)
 	}
 	if mediumMin > highMin {
-		mediumMin, highMin = highMin*0.7, highMin
+		mediumMin = highMin * 0.7
 	}
 	if mediumMin < 0.05 {
 		mediumMin = 0.05
