@@ -476,15 +476,21 @@ jobs:
             echo "No reviewdog reporters selected; skipping."
             exit 0
           fi
-          # reviewdog's GitHub Actions cienv ignores CI_COMMIT and uses GITHUB_SHA
-          # (workflow ref on workflow_dispatch). Drop GITHUB_ACTIONS so CI_* point
-          # the check at the PR head. -fail-level only affects process exit code;
-          # github-pr-check/github-check conclusion needs -level=error (or ERROR
-          # diagnostics) or WARNING findings stay neutral / "skipping".
+          # workflow_dispatch/issue runs are not pull_request events, so reviewdog
+          # would attach checks to GITHUB_SHA (workflow ref). Point cienv at a
+          # synthetic pull_request event for the scanned head. Keep GITHUB_ACTIONS
+          # set so github-pr-check uses the Checks API (not reviewdog.app doghouse).
+          # -fail-level only affects process exit; -level=error makes the check
+          # conclude failure when findings exist (WARNING annotations alone → neutral).
           level_args=()
           if [[ "${FAIL_LEVEL}" != "none" ]]; then
             level_args=(-level=error)
           fi
+          # One-liner keeps YAML/bash indent from breaking Python.
+          python3 -c 'import json,os; print(json.dumps({"action":"synchronize","number":int(os.environ["CI_PULL_REQUEST"]),"pull_request":{"number":int(os.environ["CI_PULL_REQUEST"]),"head":{"sha":os.environ["CI_COMMIT"],"ref":"pathfinder-pr-scan","repo":{"owner":{"id":1}}},"base":{"repo":{"owner":{"id":1}}}},"repository":{"owner":{"login":os.environ["CI_REPO_OWNER"]},"name":os.environ["CI_REPO_NAME"]}}))' \
+            > "$RUNNER_TEMP/pathfinder-reviewdog-event.json"
+          export GITHUB_EVENT_PATH="$RUNNER_TEMP/pathfinder-reviewdog-event.json"
+          export GITHUB_EVENT_NAME=pull_request
           for reporter in "${reporters[@]}"; do
             echo "::group::reviewdog reporter=${reporter}"
             if [[ "$reporter" == "local" ]]; then
@@ -492,8 +498,7 @@ jobs:
                 | tee "$GITHUB_WORKSPACE/reviewdog-local.txt" || true
             else
               # Stable check/annotation name for branch protection & docs.
-              env -u GITHUB_ACTIONS -u GITHUB_EVENT_PATH \
-                reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" \
+              reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" \
                 -fail-level="$FAIL_LEVEL" "${level_args[@]}" \
                 -name=pathfinder-pr-scan < pathfinder.rdjson || true
             fi

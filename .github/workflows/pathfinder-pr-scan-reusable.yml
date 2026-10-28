@@ -302,20 +302,23 @@ jobs:
           (
             cd "$PR_ROOT"
             mapfile -t reporters < <(echo "$REPORTERS_JSON" | jq -r '.[]')
-            # Drop GITHUB_ACTIONS so CI_* (PR head SHA / number) win over GITHUB_SHA.
-            # -level=error makes github-pr-check conclude failure when findings exist
-            # (-fail-level alone only sets the process exit code).
+            # Synthetic pull_request event so checks attach to PR head (not workflow ref).
+            # Keep GITHUB_ACTIONS for Checks API (skip reviewdog.app doghouse).
             level_args=()
             if [[ "${FAIL_LEVEL}" != "none" ]]; then
               level_args=(-level=error)
             fi
+            CI_REPO_OWNER="$OWNER" CI_REPO_NAME="$REPO" CI_PULL_REQUEST="$NUMBER" CI_COMMIT="$HEAD_SHA" \
+              python3 -c 'import json,os; print(json.dumps({"action":"synchronize","number":int(os.environ["CI_PULL_REQUEST"]),"pull_request":{"number":int(os.environ["CI_PULL_REQUEST"]),"head":{"sha":os.environ["CI_COMMIT"],"ref":"pathfinder-pr-scan","repo":{"owner":{"id":1}}},"base":{"repo":{"owner":{"id":1}}}},"repository":{"owner":{"login":os.environ["CI_REPO_OWNER"]},"name":os.environ["CI_REPO_NAME"]}}))' \
+              > "$RUNNER_TEMP/pathfinder-reviewdog-event.json"
+            export GITHUB_EVENT_PATH="$RUNNER_TEMP/pathfinder-reviewdog-event.json"
+            export GITHUB_EVENT_NAME=pull_request
             for reporter in "${reporters[@]+"${reporters[@]}"}"; do
               [[ -z "${reporter:-}" ]] && continue
               if [[ "$reporter" == "local" ]]; then
                 reviewdog -f=rdjson -reporter=local -filter-mode="$FILTER" -fail-level=none < pathfinder.rdjson || true
               else
-                env -u GITHUB_ACTIONS -u GITHUB_EVENT_PATH \
-                  CI_REPO_OWNER="$OWNER" CI_REPO_NAME="$REPO" CI_PULL_REQUEST="$NUMBER" CI_COMMIT="$HEAD_SHA" \
+                CI_REPO_OWNER="$OWNER" CI_REPO_NAME="$REPO" CI_PULL_REQUEST="$NUMBER" CI_COMMIT="$HEAD_SHA" \
                   reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" \
                   -fail-level="$FAIL_LEVEL" "${level_args[@]}" \
                   -name=pathfinder-pr-scan < pathfinder.rdjson || true
