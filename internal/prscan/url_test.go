@@ -18,6 +18,9 @@ func TestParsePRURL(t *testing.T) {
 		{"https://github.com/acme/widgets/issues/1", "", "", 0, true},
 		{"", "", "", 0, true},
 		{"not a url", "", "", 0, true},
+		{"https://github.com/acme/wid gets/pull/1", "", "", 0, true},
+		{"https://github.com/./widgets/pull/1", "", "", 0, true},
+		{"https://github.com/acme/../evil/pull/1", "", "", 0, true},
 	}
 	for _, tc := range cases {
 		got, err := ParsePRURL(tc.in)

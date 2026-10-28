@@ -21,7 +21,6 @@ on:
 
 permissions:
   contents: read
-  actions: write
 
 jobs:
   assist:
@@ -111,15 +110,20 @@ jobs:
           jq -e '((.pass_rate // 0) | tonumber) >= 1' "$WORKSHOP_INPUTS/promptfoo-live.json"
 
       - name: Emit workshop snapshot inputs
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GIT_SHA: ${{ github.sha }}
+          SERVER_URL: ${{ github.server_url }}
         run: |
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
           emit_args=(
             --out-dir "$inputs/snapshot"
-            --run-id "${{ github.run_id }}-${{ github.run_attempt }}"
+            --run-id "${RUN_ID}-${RUN_ATTEMPT}"
             --workflow "LLM Assist"
-            --git-sha "${{ github.sha }}"
-            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            --git-sha "$GIT_SHA"
+            --html-url "${SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}"
             --provider-mode "${PROVIDER_MODE:-offline}"
             --candidates "$inputs/candidates.json"
             --proposals "$inputs/proposals.json"
@@ -132,7 +136,7 @@ jobs:
           go run ./cmd/adrctl workshop-emit "${emit_args[@]}"
 
       - name: Upload assist artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: llm-assist-${{ github.run_id }}
           path: |

@@ -6,9 +6,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
+
+# Snapshot directory names must be single path segments (artifact-controlled).
+_SAFE_RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
 
 def load_json(path: Path) -> dict:
@@ -20,6 +24,17 @@ def write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def sanitize_run_id(raw: str) -> str:
+    run_id = str(raw or "").strip()
+    if not _SAFE_RUN_ID.fullmatch(run_id):
+        raise SystemExit(
+            f"refusing unsafe run_id {run_id!r}: must match {_SAFE_RUN_ID.pattern}"
+        )
+    if run_id in {".", ".."} or "/" in run_id or "\\" in run_id:
+        raise SystemExit(f"refusing path-like run_id {run_id!r}")
+    return run_id
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--snapshot", required=True, type=Path)
@@ -27,8 +42,8 @@ def main() -> int:
     parser.add_argument("--retain-snapshots", type=int, default=180)
     args = parser.parse_args()
 
-    snapshot = args.snapshot
-    data_dir = args.data_dir
+    snapshot = args.snapshot.resolve()
+    data_dir = args.data_dir.resolve()
     data_dir.mkdir(parents=True, exist_ok=True)
 
     latest_path = snapshot / "latest.json"
@@ -40,9 +55,13 @@ def main() -> int:
     latest = load_json(latest_path)
     metrics = load_json(metrics_path) if metrics_path.exists() else latest.get("metrics", {})
     run = load_json(run_path) if run_path.exists() else latest.get("run", {})
-    run_id = str(run.get("run_id") or latest.get("run", {}).get("run_id") or "unknown")
+    run_id = sanitize_run_id(
+        str(run.get("run_id") or latest.get("run", {}).get("run_id") or "unknown")
+    )
 
-    dest = data_dir / "snapshots" / run_id
+    dest = (data_dir / "snapshots" / run_id).resolve()
+    if not dest.is_relative_to(data_dir / "snapshots"):
+        raise SystemExit(f"snapshot destination escapes data dir: {dest}")
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(snapshot, dest)

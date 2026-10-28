@@ -21,6 +21,8 @@ type PRRef struct {
 var (
 	prPathPattern = regexp.MustCompile(`(?i)^/([^/]+)/([^/]+)/pull/(\d+)/?$`)
 	prAPIPattern  = regexp.MustCompile(`(?i)^/repos/([^/]+)/([^/]+)/pulls/(\d+)/?$`)
+	// GitHub owner/repo slug: no slashes, spaces, or control chars that break API paths.
+	safeGitHubName = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$`)
 )
 
 // ParsePRURL accepts common GitHub PR URL shapes, including api.github.com.
@@ -37,7 +39,14 @@ func ParsePRURL(raw string) (PRRef, error) {
 		if err != nil || n <= 0 || len(ownerRepo) != 2 {
 			return PRRef{}, fmt.Errorf("invalid PR shorthand %q (want owner/repo#123)", raw)
 		}
-		return PRRef{Owner: ownerRepo[0], Repo: ownerRepo[1], Number: n, Host: "github.com"}, nil
+		owner, repo := ownerRepo[0], ownerRepo[1]
+		if err := validateGitHubName(owner, "owner"); err != nil {
+			return PRRef{}, err
+		}
+		if err := validateGitHubName(repo, "repo"); err != nil {
+			return PRRef{}, err
+		}
+		return PRRef{Owner: owner, Repo: repo, Number: n, Host: "github.com"}, nil
 	}
 
 	if !strings.Contains(raw, "://") {
@@ -66,13 +75,27 @@ func ParsePRURL(raw string) (PRRef, error) {
 	if err != nil || n <= 0 {
 		return PRRef{}, fmt.Errorf("invalid PR number in %q", raw)
 	}
+	owner, repo := m[1], m[2]
+	if err := validateGitHubName(owner, "owner"); err != nil {
+		return PRRef{}, err
+	}
+	if err := validateGitHubName(repo, "repo"); err != nil {
+		return PRRef{}, err
+	}
 	if host != "github.com" && host != "www.github.com" && host != "api.github.com" {
 		// Still accept enterprise hosts; operators must supply a capable token.
 	}
 	if host == "www.github.com" || host == "api.github.com" {
 		host = "github.com"
 	}
-	return PRRef{Owner: m[1], Repo: m[2], Number: n, Host: host}, nil
+	return PRRef{Owner: owner, Repo: repo, Number: n, Host: host}, nil
+}
+
+func validateGitHubName(name, kind string) error {
+	if !safeGitHubName.MatchString(name) {
+		return fmt.Errorf("invalid GitHub %s %q", kind, name)
+	}
+	return nil
 }
 
 // HTMLURL returns the canonical browser URL for the PR.

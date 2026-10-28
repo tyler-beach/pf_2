@@ -14,9 +14,15 @@ concurrency:
 
 jobs:
   scan:
+    # Title/label trigger alone is attacker-controlled on public repos. Gate on
+    # trusted authors so PATHFINDER_* tokens cannot be confused-deputied via issues.
     if: >-
-      startsWith(github.event.issue.title, '[Pathfinder PR Scan]') ||
-      contains(join(github.event.issue.labels.*.name, ','), 'pathfinder-pr-scan')
+      (startsWith(github.event.issue.title, '[Pathfinder PR Scan]') ||
+       contains(join(github.event.issue.labels.*.name, ','), 'pathfinder-pr-scan')) &&
+      (github.event.issue.author_association == 'OWNER' ||
+       github.event.issue.author_association == 'MEMBER' ||
+       github.event.issue.author_association == 'COLLABORATOR' ||
+       github.event.issue.author_association == 'MANNEQUIN')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -55,14 +61,33 @@ jobs:
           upload_sarif="$(jq -r '.UploadSARIF' "$RUNNER_TEMP/pr-scan-request.json")"
           reporters="$(jq -c '.Reporters' "$RUNNER_TEMP/pr-scan-request.json")"
 
-          echo "owner=$owner" >> "$GITHUB_OUTPUT"
-          echo "repo=$repo" >> "$GITHUB_OUTPUT"
-          echo "number=$number" >> "$GITHUB_OUTPUT"
-          echo "filter=$filter" >> "$GITHUB_OUTPUT"
-          echo "catalog=$catalog" >> "$GITHUB_OUTPUT"
-          echo "fail_level=$fail_level" >> "$GITHUB_OUTPUT"
-          echo "upload_sarif=$upload_sarif" >> "$GITHUB_OUTPUT"
-          echo "reporters=$reporters" >> "$GITHUB_OUTPUT"
+          # Delimiter form prevents newline injection into GITHUB_OUTPUT.
+          {
+            echo "owner<<PF_EOF"
+            printf '%s\n' "$owner"
+            echo "PF_EOF"
+            echo "repo<<PF_EOF"
+            printf '%s\n' "$repo"
+            echo "PF_EOF"
+            echo "number<<PF_EOF"
+            printf '%s\n' "$number"
+            echo "PF_EOF"
+            echo "filter<<PF_EOF"
+            printf '%s\n' "$filter"
+            echo "PF_EOF"
+            echo "catalog<<PF_EOF"
+            printf '%s\n' "$catalog"
+            echo "PF_EOF"
+            echo "fail_level<<PF_EOF"
+            printf '%s\n' "$fail_level"
+            echo "PF_EOF"
+            echo "upload_sarif<<PF_EOF"
+            printf '%s\n' "$upload_sarif"
+            echo "PF_EOF"
+            echo "reporters<<PF_EOF"
+            printf '%s\n' "$reporters"
+            echo "PF_EOF"
+          } >> "$GITHUB_OUTPUT"
 
           if [[ "$catalog" == "live" ]]; then
             echo "requirements=adr/requirements.json" >> "$GITHUB_OUTPUT"
@@ -184,14 +209,24 @@ jobs:
           if [[ ${#dirs[@]} -gt 0 && -z "${dirs[.]+x}" ]]; then
             scope="$(printf '%s\n' "${!dirs[@]}" | sort | paste -sd, -)"
           fi
-          echo "scope=$scope" >> "$GITHUB_OUTPUT"
+          # Coerce to safe path prefixes only (PR filenames can be adversarial).
+          if ! [[ "$scope" =~ ^[A-Za-z0-9._/,+-]+$ ]]; then
+            echo "::warning::Unsafe PR scope characters; falling back to repository root"
+            scope="."
+          fi
+          {
+            echo "scope<<PF_EOF"
+            printf '%s\n' "$scope"
+            echo "PF_EOF"
+          } >> "$GITHUB_OUTPUT"
           echo "PR analyzer scope: $scope (from ${#files[@]} changed file(s))"
 
       - name: Assess PR head (Pathfinder host binaries only)
+        env:
+          REQUIREMENTS: ${{ steps.parse.outputs.requirements }}
+          SCOPE: ${{ steps.scope.outputs.scope }}
         run: |
           set -euo pipefail
-          requirements="${{ steps.parse.outputs.requirements }}"
-          scope="${{ steps.scope.outputs.scope }}"
           mkdir -p analyzer-evidence
           go build -o "$RUNNER_TEMP/adrctl" ./cmd/adrctl
           ADRCTL="$RUNNER_TEMP/adrctl"
@@ -203,7 +238,7 @@ jobs:
           "$ADRCTL" scan-opengrep \
             --root "$PR_ROOT" \
             --config rules/pathfinder-security.yml \
-            --scope "$scope" \
+            --scope "$SCOPE" \
             --binary "$OPENGREP_BIN" \
             --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
             --version 1.30.0 \
@@ -213,7 +248,7 @@ jobs:
           "$ADRCTL" scan-checkov \
             --root "$PR_ROOT" \
             --config rules/checkov.yml \
-            --scope "$scope" \
+            --scope "$SCOPE" \
             --binary "$CHECKOV_BIN" \
             --binary-sha256 "$CHECKOV_SHA" \
             --version 3.2.484 \
@@ -244,7 +279,7 @@ jobs:
 
           "$ADRCTL" assess-repo \
             --root "$PR_ROOT" \
-            --requirements "$requirements" \
+            --requirements "$REQUIREMENTS" \
             --issue-surface \
             "${evidence_flags[@]}" \
             --report report.md \
@@ -354,6 +389,7 @@ jobs:
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
           UPLOAD_SARIF: ${{ steps.parse.outputs.upload_sarif }}
           REPORTERS: ${{ steps.parse.outputs.reporters }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
           body="## Pathfinder PR scan finished
@@ -366,11 +402,11 @@ jobs:
 
           Artifacts (rdjson / security SARIF / assessment) are uploaded with this run.
           "
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${{ github.event.issue.number }}/comments" -f body="$body"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="$body"
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pathfinder-pr-scan-${{ github.event.issue.number }}
           path: |

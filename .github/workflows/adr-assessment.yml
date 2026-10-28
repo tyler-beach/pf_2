@@ -175,6 +175,11 @@ jobs:
       - name: Emit workshop snapshot inputs
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GIT_SHA: ${{ github.sha }}
+          SERVER_URL: ${{ github.server_url }}
         run: |
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
@@ -210,10 +215,10 @@ jobs:
             --md-out "$inputs/low-confidence-checklist.md"
           go run ./cmd/adrctl workshop-emit \
             --out-dir "$inputs/snapshot" \
-            --run-id "${{ github.run_id }}-${{ github.run_attempt }}-issue-${{ github.event.issue.number }}" \
+            --run-id "${RUN_ID}-${RUN_ATTEMPT}-issue-${ISSUE_NUMBER}" \
             --workflow "ADR Assessment" \
-            --git-sha "${{ github.sha }}" \
-            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --git-sha "$GIT_SHA" \
+            --html-url "${SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" \
             --candidates "$inputs/candidates.json" \
             --assessment "$inputs/assessment.json" \
             --corpus-labels testdata/corpus/labels.json \
@@ -280,7 +285,7 @@ jobs:
           upsert_comment "$checklist_marker" "$inputs/low-confidence-checklist.md"
 
       - name: Upload machine-readable evidence
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: adr-assessment-${{ github.event.issue.number }}
           path: |
@@ -291,7 +296,7 @@ jobs:
           retention-days: 14
 
       - name: Upload workshop inputs
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: workshop-inputs-adr-${{ github.event.issue.number }}
           path: ${{ runner.temp }}/workshop-inputs

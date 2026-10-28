@@ -67,6 +67,43 @@ class WorkshopPublishDataTest(unittest.TestCase):
             self.assertEqual(row["run"]["run_id"], "fixture-001")
             self.assertEqual(row["metrics"].get("kpi.confidence.method"), "platt_conformal")
 
+    def test_rejects_path_traversal_run_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            data = tmp_path / "data"
+            snap = tmp_path / "snap"
+            snap.mkdir()
+            (snap / "latest.json").write_text(
+                json.dumps(
+                    {
+                        "run": {"run_id": "../escape", "timestamp": "2026-01-01T00:00:00Z"},
+                        "metrics": {},
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            (snap / "run.json").write_text(
+                json.dumps({"run_id": "../escape", "timestamp": "2026-01-01T00:00:00Z"}) + "\n",
+                encoding="utf-8",
+            )
+            proc = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts" / "workshop_publish_data.py"),
+                    "--snapshot",
+                    str(snap),
+                    "--data-dir",
+                    str(data),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertIn("unsafe run_id", proc.stderr + proc.stdout)
+            self.assertFalse((tmp_path / "escape").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

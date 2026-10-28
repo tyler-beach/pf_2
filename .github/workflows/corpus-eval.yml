@@ -21,6 +21,11 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Evaluate labeled corpus (deterministic, zero LLM)
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GIT_SHA: ${{ github.sha }}
+          SERVER_URL: ${{ github.server_url }}
         run: |
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
@@ -37,16 +42,16 @@ jobs:
             "$inputs/candidates.json"
           go run ./cmd/adrctl workshop-emit \
             --out-dir "$inputs/snapshot" \
-            --run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --run-id "${RUN_ID}-${RUN_ATTEMPT}" \
             --workflow "Labeled corpus evaluation" \
-            --git-sha "${{ github.sha }}" \
-            --html-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --git-sha "$GIT_SHA" \
+            --html-url "${SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" \
             --candidates "$inputs/candidates.json" \
             --harness "$inputs/harness.json" \
             --corpus-labels testdata/corpus/labels.json
 
       - name: Upload corpus evaluation artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: workshop-inputs-corpus
           path: |

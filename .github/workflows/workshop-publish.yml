@@ -31,7 +31,13 @@ concurrency:
 
 jobs:
   publish:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    # Only auto-publish from trusted same-repo non-PR runs (push/schedule/etc).
+    # Fork or same-repo PR artifacts must not reach Pages; operators use workflow_dispatch.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.event != 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
@@ -61,10 +67,42 @@ jobs:
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
           mkdir -p "$inputs/snapshot"
+
+          # Dispatch source_run_id must be digits-only (gh run id).
+          if [ -n "${SOURCE_RUN_ID:-}" ] && ! [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::SOURCE_RUN_ID must be a numeric Actions run id"
+            exit 1
+          fi
+
+          # snapshot_path must resolve under the trusted checkout (no path traversal).
+          resolve_snap() {
+            local raw="$1"
+            local abs
+            case "$raw" in
+              ""|/*|~*) echo "::error::snapshot_path must be a relative path under the repository"; return 1 ;;
+            esac
+            if [[ "$raw" == *..* ]]; then
+              echo "::error::snapshot_path must not contain '..'"
+              return 1
+            fi
+            abs="$(cd "$GITHUB_WORKSPACE" && realpath -m -- "$raw")"
+            case "$abs" in
+              "$GITHUB_WORKSPACE"|"$GITHUB_WORKSPACE"/*) ;;
+              *) echo "::error::snapshot_path escapes repository root"; return 1 ;;
+            esac
+            printf '%s' "$abs"
+          }
+
           if [ -z "${SOURCE_RUN_ID:-}" ]; then
-            if [ -n "${SNAP_PATH:-}" ] && [ -f "${SNAP_PATH}/latest.json" ]; then
-              echo "No source run id; using in-repo snapshot ${SNAP_PATH}"
-              cp -R "${SNAP_PATH}/." "$inputs/snapshot/"
+            if [ -n "${SNAP_PATH:-}" ]; then
+              snap_abs="$(resolve_snap "$SNAP_PATH")"
+              if [ -f "${snap_abs}/latest.json" ]; then
+                echo "No source run id; using in-repo snapshot ${SNAP_PATH}"
+                cp -R "${snap_abs}/." "$inputs/snapshot/"
+              else
+                echo "::error::snapshot_path ${SNAP_PATH} missing latest.json"
+                exit 1
+              fi
             else
               echo "No source run id; using fixtures"
               cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
@@ -91,6 +129,11 @@ jobs:
             cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
             exit 0
           fi
+          # Artifact names must match the allowlist literally (no path/metachar surprises).
+          case "$pick" in
+            workshop-inputs*|llm-assist-*) ;;
+            *) echo "::error::refusing unexpected artifact name: $pick"; exit 1 ;;
+          esac
           gh run download "$SOURCE_RUN_ID" -n "$pick" -D "$inputs"
           if [ -f "$inputs/snapshot/latest.json" ]; then
             echo "Using pre-built snapshot from artifact $pick"
@@ -160,19 +203,19 @@ jobs:
           npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: workshop/dist
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
 
       - name: Upload snapshot artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: workshop-snapshot-${{ github.run_id }}
           path: ${{ runner.temp }}/workshop-inputs/snapshot

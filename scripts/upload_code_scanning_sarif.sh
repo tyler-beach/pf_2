@@ -31,8 +31,36 @@ if [[ -z "$owner" || -z "$repo" || -z "$sha" || -z "$ref" || -z "$sarif" ]]; the
   echo "usage: $0 --owner O --repo R --sha SHA --ref REF --sarif FILE [--tool Name]" >&2
   exit 2
 fi
+
+# Fail closed on values that could break API path segments or confuse operators.
+if ! [[ "$owner" =~ ^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$ ]]; then
+  echo "invalid owner: $owner" >&2
+  exit 2
+fi
+if ! [[ "$repo" =~ ^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$ ]]; then
+  echo "invalid repo: $repo" >&2
+  exit 2
+fi
+if ! [[ "$sha" =~ ^[0-9a-fA-F]{40}$ ]]; then
+  echo "invalid commit sha (want 40 hex): $sha" >&2
+  exit 2
+fi
+if ! [[ "$ref" =~ ^(refs/heads/[A-Za-z0-9._/-]+|refs/pull/[0-9]+/head|refs/tags/[A-Za-z0-9._/-]+)$ ]]; then
+  echo "invalid git ref for code scanning upload: $ref" >&2
+  exit 2
+fi
+if ! [[ "$tool" =~ ^[A-Za-z0-9][A-Za-z0-9 ._-]{0,63}$ ]]; then
+  echo "invalid tool name: $tool" >&2
+  exit 2
+fi
 if [[ ! -f "$sarif" ]]; then
   echo "SARIF file not found: $sarif" >&2
+  exit 1
+fi
+# Bound upload size to limit abuse of the code-scanning API from CI.
+sarif_bytes="$(wc -c <"$sarif" | tr -d ' ')"
+if [[ "$sarif_bytes" -gt 10485760 ]]; then
+  echo "SARIF file too large (${sarif_bytes} bytes; max 10MiB)" >&2
   exit 1
 fi
 if [[ -z "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]]; then
@@ -62,8 +90,11 @@ status=$?
 set -e
 if [[ $status -ne 0 ]]; then
   echo "code-scanning SARIF upload failed:" >&2
-  cat "$resp.err" >&2 || true
-  cat "$resp" >&2 || true
+  # Avoid dumping full tokenized error bodies; keep short stderr.
+  head -c 2048 "$resp.err" >&2 || true
+  echo >&2
+  head -c 2048 "$resp" >&2 || true
+  echo >&2
   exit "$status"
 fi
 cat "$resp"

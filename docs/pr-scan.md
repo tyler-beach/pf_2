@@ -13,7 +13,8 @@ Both surfaces share one finding model and the same short comment body.
 2. Paste the PR URL.
 3. Check one or more **reviewdog** feedback modes and/or **Upload SARIF to GitHub code scanning**.
 4. Keep the `[Pathfinder PR Scan]` title prefix (or the `pathfinder-pr-scan` label).
-5. Wait for the workflow; it comments a summary on the target PR and on the scan issue.
+5. The workflow only runs for issue authors with `OWNER` / `MEMBER` / `COLLABORATOR` association (blocks public-issue confused-deputy abuse of review tokens).
+6. Wait for the workflow; it comments a summary on the target PR and on the scan issue.
 
 ### Shared finding body (all reporters + Security)
 
@@ -66,8 +67,10 @@ Same-repository scans can use the default `GITHUB_TOKEN` (workflow already grant
 - Fork PRs: commenting/Security upload still needs write access on the **base** repo; head may live on a fork (workflow clones `head.repo`).
 - Private target repos: token must reach that repo; otherwise fetch/upload fails closed.
 - `GITHUB_TOKEN` from this workflow **cannot** write to foreign repos — set `PATHFINDER_REVIEW_TOKEN`.
+- Outside collaborators / anonymous issue authors cannot trigger scans (author-association gate).
 - Pathfinder never executes PR workflows, `npm install`, or untrusted binaries from the head tree. Only pinned OpenGrep/Checkov + `adrctl` from this repository run.
 - Duplicate sticky summaries for the same head SHA are skipped; reviewdog may still refresh comments depending on reporter.
+- SARIF upload validates owner/repo/sha/ref shapes and bounds file size before calling the code-scanning API.
 
 ## Operator CLI
 
