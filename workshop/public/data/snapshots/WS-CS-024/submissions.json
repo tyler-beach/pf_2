@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-024",
+  "timestamp": "2026-10-28T03:28:40.714530+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-024",
+      "title": "[ADR Assessment] Terraform RDS Postgres complete example [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "iac",
+        "aws",
+        "data"
+      ],
+      "path": "code_snippet/WS-CS-024.md",
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-rds/blob/master/examples/complete-postgres/main.tf",
+      "repo": "terraform-aws-modules/terraform-aws-rds",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-024/assessment.json"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-013",
+  "timestamp": "2026-10-28T03:28:37.010156+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-013",
+      "title": "[ADR Assessment] Prometheus example scrape config [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "observability",
+        "logging",
+        "networking"
+      ],
+      "path": "code_snippet/WS-CS-013.md",
+      "source_url": "https://github.com/prometheus/prometheus/blob/main/documentation/examples/prometheus.yml",
+      "repo": "prometheus/prometheus",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-013/assessment.json"
+    }
+  ]
+}

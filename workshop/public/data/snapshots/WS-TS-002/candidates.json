@@ -1,0 +1,188 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 6,
+  "candidates": [
+    {
+      "id": "CAND-685232342eb02f51",
+      "adr_id": "WS-TS-002",
+      "confidence": "low",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "pattern_hint": "architecture.dependency_or_boundary",
+      "statement": "For instance, in Germany that means users may not alter anything without explicitly asking for permission.",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_line_start": 29,
+      "source_line_end": 29,
+      "escalation_reasons": [
+        "non_decision_section",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0069,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-8870747f16e5fbfe",
+      "adr_id": "WS-TS-002",
+      "confidence": "low",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Bad, because it does not contain attribution - and [attribution is important](https://opensource.stackexchange.com/a/9126/5671).",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_line_start": 52,
+      "source_line_end": 52,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-acc545bd7410de1b",
+      "adr_id": "WS-TS-002",
+      "confidence": "low",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Bad, because it does not contain attribution - and [attribution is important](https://opensource.stackexchange.com/a/9126/5671).",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_line_start": 52,
+      "source_line_end": 52,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-3b93a0cb6d45e868",
+      "adr_id": "WS-TS-002",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Good, because it [explicitly may be used for documentation](https://opensource.stackexchange.com/a/9545/5671)",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_line_start": 60,
+      "source_line_end": 60,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-7d66d191905feb2c",
+      "adr_id": "WS-TS-002",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Good, because it [explicitly may be used for documentation](https://opensource.stackexchange.com/a/9545/5671)",
+      "source_path": "adrs/WS-TS-002.md",
+      "source_line_start": 60,
+      "source_line_end": 60,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-002",
+      "adr_id": "WS-TS-002",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] MADR: CC0 or MIT license [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-002.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 3,
+    "low": 3,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "1b7436aecf549563dd6eb0cfd2976a37af8bd837c8c34fad39e9386fe3b97a11",
+  "source_root": "adrs"
+}

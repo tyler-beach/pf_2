@@ -1,0 +1,41 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "id": "sub-WS-CS-009",
+      "adr_id": "WS-CS-009",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] chi jwtauth middleware [code_snippet] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "code_snippet/WS-CS-009.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "code_snippet",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 1,
+    "low": 0,
+    "medium": 0
+  },
+  "schema_version": "obligation-candidates-v1"
+}

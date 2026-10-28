@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-013",
+  "timestamp": "2026-10-28T03:28:25.463145+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-013",
+      "title": "[ADR Assessment] Argo CD operator architecture [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "gitops",
+        "reliability"
+      ],
+      "path": "tech_spec/WS-TS-013.md",
+      "source_url": "https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/architecture.md",
+      "repo": "argoproj/argo-cd",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-013/assessment.json"
+    }
+  ]
+}

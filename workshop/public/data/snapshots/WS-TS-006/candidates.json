@@ -1,0 +1,170 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 5,
+  "candidates": [
+    {
+      "id": "CAND-6a29b915ce776b9e",
+      "adr_id": "WS-TS-006",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Entities have distinct names, and they may reference each other by those names.",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_line_start": 61,
+      "source_line_end": 61,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-80bee6d9511aee1e",
+      "adr_id": "WS-TS-006",
+      "confidence": "low",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Entities have distinct names, and they may reference each other by those names.",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_line_start": 61,
+      "source_line_end": 61,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.1355,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-4ca4116d1fde5536",
+      "adr_id": "WS-TS-006",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Each file may",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_line_start": 66,
+      "source_line_end": 66,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-57df937d8c5e8b99",
+      "adr_id": "WS-TS-006",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "They may be written by hand or created using automated tools.",
+      "source_path": "adrs/WS-TS-006.md",
+      "source_line_start": 66,
+      "source_line_end": 66,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-006",
+      "adr_id": "WS-TS-006",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Backstage: Default catalog file format [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-006.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 4,
+    "low": 1,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "99cd825a9afce3f32c2c87ae6871f977209cb96acb71df26430b510f232799f1",
+  "source_root": "adrs"
+}

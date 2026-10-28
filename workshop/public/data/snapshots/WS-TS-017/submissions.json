@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-017",
+  "timestamp": "2026-10-28T03:28:27.853649+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-017",
+      "title": "[ADR Assessment] Flux RFC-0010 multi-tenant workload identity [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "gitops",
+        "auth",
+        "aws"
+      ],
+      "path": "tech_spec/WS-TS-017.md",
+      "source_url": "https://github.com/fluxcd/flux2/blob/main/rfcs/0010-multi-tenant-workload-identity/README.md",
+      "repo": "fluxcd/flux2",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-017/assessment.json"
+    }
+  ]
+}

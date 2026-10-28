@@ -1,0 +1,108 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 3,
+  "candidates": [
+    {
+      "id": "CAND-5aa8c8cf9b5137c8",
+      "adr_id": "WS-TS-015",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "operations are allowed to proceed, and how this interacts with Kubernetes' access control.",
+      "source_path": "adrs/WS-TS-015.md",
+      "source_line_start": 25,
+      "source_line_end": 25,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-7c6d063ab48f7a5c",
+      "adr_id": "WS-TS-015",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Further work on support for multi-tenancy, among other things, requires a full account",
+      "source_path": "adrs/WS-TS-015.md",
+      "source_line_start": 32,
+      "source_line_end": 32,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-015",
+      "adr_id": "WS-TS-015",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Flux RFC-0001 authorization [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-015.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 2,
+    "low": 1,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "bae72c680978f70dce9a764195cdc49e058374a62ba9d8876480d4b6fc541313",
+  "source_root": "adrs"
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-022",
+  "timestamp": "2026-10-28T03:28:30.802822+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-022",
+      "title": "[ADR Assessment] Helm HIP-0001 process [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "process",
+        "iac"
+      ],
+      "path": "tech_spec/WS-TS-022.md",
+      "source_url": "https://github.com/helm/community/blob/main/hips/hip-0001.md",
+      "repo": "helm/community",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-022/assessment.json"
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 10,
+  "candidates": [
+    {
+      "id": "CAND-4fe425adceb5679a",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "`-name`: The given reference to the image that may be pulled.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 40,
+      "source_line_end": 40,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-5767b96ec9c25973",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "`-name`: The given reference to the image that may be pulled.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 40,
+      "source_line_end": 40,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-03bc495790a1c7fc",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "`-digest`: The resolved digest of the image that may be pulled.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 41,
+      "source_line_end": 41,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-99154bff94f2d325",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "`-digest`: The resolved digest of the image that may be pulled.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 41,
+      "source_line_end": 41,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-8403fbcb05d57ec7",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "argument, and may change in future versions of containerd.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 48,
+      "source_line_end": 48,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-9edb82aee39672aa",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "argument, and may change in future versions of containerd.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 48,
+      "source_line_end": 48,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-7a545b28bc89e883",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "represents the OCI Content Descriptor of the image that may be pulled.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 50,
+      "source_line_end": 50,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-ff39e9879110a3e7",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "represents the OCI Content Descriptor of the image that may be pulled.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 50,
+      "source_line_end": 50,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-cb4d712016a0716e",
+      "adr_id": "WS-TS-020",
+      "confidence": "low",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "If `bin_dir` does not exist or contains no files, the image verifier does not block image pulls.",
+      "source_path": "adrs/WS-TS-020.md",
+      "source_line_start": 62,
+      "source_line_end": 62,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "conditional_scope",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": [
+        "conditional_applicability"
+      ],
+      "review_hints": [
+        "compound_or_conjoined",
+        "conditional_scope"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0292,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-020",
+      "adr_id": "WS-TS-020",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] containerd image verification [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-020.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 9,
+    "low": 1,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "88edea7350a407331ff6cfb61ccfd3794bd262a63548fd0935f1a7ee6c41e450",
+  "source_root": "adrs"
+}

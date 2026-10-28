@@ -1,0 +1,199 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 6,
+  "candidates": [
+    {
+      "id": "CAND-95aaf01c4243517a",
+      "adr_id": "WS-TS-017",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "permissions must be used for interacting with the respective cloud provider",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_line_start": 32,
+      "source_line_end": 32,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-2dbf58b6f1c4a53f",
+      "adr_id": "WS-TS-017",
+      "confidence": "low",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "this feature must not involve the use",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_line_start": 34,
+      "source_line_end": 34,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-a1ec7447335c80c8",
+      "adr_id": "WS-TS-017",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "must be obtained automatically, i.e",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_line_start": 34,
+      "source_line_end": 34,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-e091f5049e800fda",
+      "adr_id": "WS-TS-017",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "specific subset of resources they should be allowed to use.",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_line_start": 57,
+      "source_line_end": 57,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9496,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-4a86b22286955826",
+      "adr_id": "WS-TS-017",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "operational burden, as they must be managed and rotated.",
+      "source_path": "adrs/WS-TS-017.md",
+      "source_line_start": 68,
+      "source_line_end": 68,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-017",
+      "adr_id": "WS-TS-017",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Flux RFC-0010 multi-tenant workload identity [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-017.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 2,
+    "low": 4,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "e19a2303a82f4f3f5dcd1fd2e35a4443f3e70a328a51a3dd441062c0334e7b45",
+  "source_root": "adrs"
+}

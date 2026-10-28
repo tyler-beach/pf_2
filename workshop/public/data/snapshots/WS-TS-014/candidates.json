@@ -1,0 +1,45 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "id": "sub-WS-TS-014",
+      "adr_id": "WS-TS-014",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Envoy security architecture overview [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-014.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 1,
+    "low": 0,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 0,
+  "schema_version": "1",
+  "source_index_sha256": "e2c8b14c88e4d4f4583d19d3bc99f7b6bc7f27768eb55490992f4e86ab1b22e2",
+  "source_root": "adrs"
+}

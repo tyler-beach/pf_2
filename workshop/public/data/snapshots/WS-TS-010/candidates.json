@@ -1,0 +1,164 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 5,
+  "candidates": [
+    {
+      "id": "CAND-6388802706075bfa",
+      "adr_id": "WS-TS-010",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "All code that is executed in Node.js (including backend and CLIs) should use the",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_line_start": 38,
+      "source_line_end": 38,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9997,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-374de4a34f1eb287",
+      "adr_id": "WS-TS-010",
+      "confidence": "low",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Frontend plugins and packages should prefer to use the",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_line_start": 54,
+      "source_line_end": 54,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "ambiguity_flags",
+        "subjective_or_underspecified",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": [
+        "subjective_or_preference_language"
+      ],
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "ambiguous_interpretation"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.2448,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-78a1c1d852af7dac",
+      "adr_id": "WS-TS-010",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "architecture.dependency_or_boundary",
+      "statement": "Isomorphic packages should have a dependency on the `cross-fetch` package for",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_line_start": 70,
+      "source_line_end": 70,
+      "escalation_reasons": [
+        "should_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9999,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-61b64049723cfea0",
+      "adr_id": "WS-TS-010",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "packages should accept an argument of type `typeof fetch` to let callers supply",
+      "source_path": "adrs/WS-TS-010.md",
+      "source_line_start": 72,
+      "source_line_end": 72,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-010",
+      "adr_id": "WS-TS-010",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Backstage: Use fetch [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-010.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 4,
+    "low": 1,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "0899fbc595d5b815d1d8c10fe88fa1a5bc49b13b82cb48d2c62589a4fe3371db",
+  "source_root": "adrs"
+}

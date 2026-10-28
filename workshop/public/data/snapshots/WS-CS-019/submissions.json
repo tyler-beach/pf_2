@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-019",
+  "timestamp": "2026-10-28T03:28:39.020925+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-019",
+      "title": "[ADR Assessment] Terraform AWS VPC simple example [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "iac",
+        "aws",
+        "networking"
+      ],
+      "path": "code_snippet/WS-CS-019.md",
+      "source_url": "https://github.com/terraform-aws-modules/terraform-aws-vpc/blob/master/examples/simple/main.tf",
+      "repo": "terraform-aws-modules/terraform-aws-vpc",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-019/assessment.json"
+    }
+  ]
+}
