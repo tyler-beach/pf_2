@@ -67,7 +67,7 @@ N/A and PASS requirements are **never** inlined or uploaded. Inline comments are
 
 reviewdog posts under the stable name **`pathfinder-pr-scan`**. Require this check in branch protection when using `github-pr-check` / `github-check` reporters. Do not rename without a coordinated docs + workflow bump.
 
-Default **`fail_level=any`** (`-fail-level=any`): the check concludes **failure** when any Pathfinder deviation is reported, and **success** when the filtered finding set is empty. Use `none` only when you want annotations without a failing required check (GitHub shows that as neutral / skipping). Severity thresholds (`warning` / `error`) are available but usually unnecessary—deviations already carry requirement severity.
+Default **`fail_level=any`**: workflows pass reviewdog `-fail-level=any` **and** `-level=error` so the `pathfinder-pr-scan` check concludes **failure** when any deviation is reported and **success** when the filtered set is empty. (`-fail-level` alone only affects the process exit code; without `-level=error`, WARNING annotations stay **neutral** / GitHub “skipping”, which cannot gate merges.) Use `fail_level=none` for report-only (no `-level=error`). Checks are posted against the **PR head SHA** (CI_* env; not the workflow ref).
 
 ## Known-FAIL fixture + dry-run
 

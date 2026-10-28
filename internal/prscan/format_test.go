@@ -51,6 +51,21 @@ func TestFormatFindingUsesSharedShape(t *testing.T) {
 	}
 }
 
+func TestMapSeverityPrefersRequirementOverAnalyzer(t *testing.T) {
+	if got := mapSeverity("error", "warning"); got != "ERROR" {
+		t.Fatalf("req error + analyzer warning → %q", got)
+	}
+	if got := mapSeverity("warning", "error"); got != "WARNING" {
+		t.Fatalf("req warning wins over analyzer error → %q", got)
+	}
+	if got := mapSeverity("", "warning"); got != "WARNING" {
+		t.Fatalf("analyzer fallback → %q", got)
+	}
+	if got := mapSeverity("", ""); got != "ERROR" {
+		t.Fatalf("default → %q", got)
+	}
+}
+
 func TestFormatSummaryOmitsNAList(t *testing.T) {
 	got := FormatSummary(Summary{
 		Verdict: "FAIL", CoverageStatus: "PARTIAL", Applicable: 12, RequirementCount: 200,

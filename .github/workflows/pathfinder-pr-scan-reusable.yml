@@ -302,13 +302,22 @@ jobs:
           (
             cd "$PR_ROOT"
             mapfile -t reporters < <(echo "$REPORTERS_JSON" | jq -r '.[]')
+            # Drop GITHUB_ACTIONS so CI_* (PR head SHA / number) win over GITHUB_SHA.
+            # -level=error makes github-pr-check conclude failure when findings exist
+            # (-fail-level alone only sets the process exit code).
+            level_args=()
+            if [[ "${FAIL_LEVEL}" != "none" ]]; then
+              level_args=(-level=error)
+            fi
             for reporter in "${reporters[@]+"${reporters[@]}"}"; do
               [[ -z "${reporter:-}" ]] && continue
               if [[ "$reporter" == "local" ]]; then
                 reviewdog -f=rdjson -reporter=local -filter-mode="$FILTER" -fail-level=none < pathfinder.rdjson || true
               else
-                CI_REPO_OWNER="$OWNER" CI_REPO_NAME="$REPO" CI_PULL_REQUEST="$NUMBER" CI_COMMIT="$HEAD_SHA" \
-                  reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" -fail-level="$FAIL_LEVEL" \
+                env -u GITHUB_ACTIONS -u GITHUB_EVENT_PATH \
+                  CI_REPO_OWNER="$OWNER" CI_REPO_NAME="$REPO" CI_PULL_REQUEST="$NUMBER" CI_COMMIT="$HEAD_SHA" \
+                  reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" \
+                  -fail-level="$FAIL_LEVEL" "${level_args[@]}" \
                   -name=pathfinder-pr-scan < pathfinder.rdjson || true
               fi
             done

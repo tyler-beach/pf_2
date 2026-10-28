@@ -160,7 +160,11 @@ type Summary struct {
 }
 
 func mapSeverity(reqSeverity, findingLevel string) string {
-	for _, s := range []string{findingLevel, reqSeverity} {
+	// Prefer ADR/requirement severity over analyzer hit level so reviewdog
+	// annotations match obligation severity (OpenGrep often emits "warning"
+	// even when the requirement is error — which would leave github-pr-check
+	// neutral and unusable for branch protection).
+	for _, s := range []string{reqSeverity, findingLevel} {
 		switch strings.ToLower(strings.TrimSpace(s)) {
 		case "error", "err":
 			return "ERROR"

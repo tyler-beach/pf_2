@@ -476,6 +476,15 @@ jobs:
             echo "No reviewdog reporters selected; skipping."
             exit 0
           fi
+          # reviewdog's GitHub Actions cienv ignores CI_COMMIT and uses GITHUB_SHA
+          # (workflow ref on workflow_dispatch). Drop GITHUB_ACTIONS so CI_* point
+          # the check at the PR head. -fail-level only affects process exit code;
+          # github-pr-check/github-check conclusion needs -level=error (or ERROR
+          # diagnostics) or WARNING findings stay neutral / "skipping".
+          level_args=()
+          if [[ "${FAIL_LEVEL}" != "none" ]]; then
+            level_args=(-level=error)
+          fi
           for reporter in "${reporters[@]}"; do
             echo "::group::reviewdog reporter=${reporter}"
             if [[ "$reporter" == "local" ]]; then
@@ -483,7 +492,9 @@ jobs:
                 | tee "$GITHUB_WORKSPACE/reviewdog-local.txt" || true
             else
               # Stable check/annotation name for branch protection & docs.
-              reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" -fail-level="$FAIL_LEVEL" \
+              env -u GITHUB_ACTIONS -u GITHUB_EVENT_PATH \
+                reviewdog -f=rdjson -reporter="$reporter" -filter-mode="$FILTER" \
+                -fail-level="$FAIL_LEVEL" "${level_args[@]}" \
                 -name=pathfinder-pr-scan < pathfinder.rdjson || true
             fi
             echo "::endgroup::"

@@ -181,7 +181,7 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><code>github-pr-annotations</code> — job annotations · <code>local</code> — artifact only</li>
   <li><strong>Upload SARIF</strong> / <code>upload_sarif=true</code> → Security tab via code-scanning API (<code>pathfinder/pr-scan</code> automation id). Target needs code scanning available (GHAS on private).</li>
 </ul>
-<p>Filter modes: <code>added</code> (default), <code>diff_context</code>, <code>file</code>, <code>nofilter</code>. Findings = deviations only (never N/A/PASS). Default <code>fail_level=any</code> makes <code>pathfinder-pr-scan</code> <strong>fail</strong> when deviations exist and <strong>succeed</strong> when clean (<code>none</code> = report-only / neutral).</p>
+<p>Filter modes: <code>added</code> (default), <code>diff_context</code>, <code>file</code>, <code>nofilter</code>. Findings = deviations only (never N/A/PASS). Default <code>fail_level=any</code> (+ reviewdog <code>-level=error</code>) makes <code>pathfinder-pr-scan</code> <strong>fail</strong> when deviations exist and <strong>succeed</strong> when clean; <code>none</code> = report-only / neutral. Check is posted on the PR head SHA.</p>
 <h3>Issue templates</h3>
 <ul>
   <li><strong>Pathfinder PR scan</strong> — paste PR URL; checkboxes for reporters + Security; title prefix <code>[Pathfinder PR Scan]</code> or label <code>pathfinder-pr-scan</code>.</li>
