@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -17,10 +18,10 @@ import (
 
 func TestBlockingGateFailsClosedOnIncompleteReviewCoverage(t *testing.T) {
 	for _, tc := range []struct {
-		name string
-		coverage obligations.BindingCoverage
+		name       string
+		coverage   obligations.BindingCoverage
 		candidates []obligations.CandidateAssessment
-		want string
+		want       string
 	}{
 		{name: "orphaned review history", coverage: obligations.BindingCoverage{OrphanedCount: 1}, want: "orphaned review history"},
 		{name: "stale binding", coverage: obligations.BindingCoverage{StaleCount: 1}, want: "stale candidate review"},
@@ -121,10 +122,10 @@ func TestRunSpecificationCheckRejectsOutputSymlinkEscapingRepository(t *testing.
 		Requirements: []assessment.Requirement{{
 			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
 			Description: "Domain source files must not import internal infrastructure packages.",
-			Severity: "error",
+			Severity:    "error",
 			Verifier: assessment.Verifier{
-				Type: "go-import-boundary",
-				SourcePathPrefixes: []string{"internal/domain/"},
+				Type:                    "go-import-boundary",
+				SourcePathPrefixes:      []string{"internal/domain/"},
 				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 			},
 		}},
@@ -199,10 +200,10 @@ func TestRunSpecificationCheckBindsPlainEnglishSpecificationToReviewedVerifier(t
 		Requirements: []assessment.Requirement{{
 			ID: "REQ-runtime-01", Title: "Domain code must not depend on infrastructure adapters",
 			Description: "Domain source files must not import internal infrastructure packages.",
-			Severity: "error",
+			Severity:    "error",
 			Verifier: assessment.Verifier{
-				Type: "go-import-boundary",
-				SourcePathPrefixes: []string{"internal/domain/"},
+				Type:                    "go-import-boundary",
+				SourcePathPrefixes:      []string{"internal/domain/"},
 				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 			},
 		}},
@@ -240,15 +241,15 @@ func TestRunSpecificationCheckBindsPlainEnglishSpecificationToReviewedVerifier(t
 	}
 
 	proposal := obligations.ReviewProposal{
-		CandidateID: candidate.ID,
-		Decision: obligations.DecisionApproved,
-		RequirementID: "REQ-runtime-01",
-		PatternID: candidate.PatternHint,
+		CandidateID:     candidate.ID,
+		Decision:        obligations.DecisionApproved,
+		RequirementID:   "REQ-runtime-01",
+		PatternID:       candidate.PatternHint,
 		EnforcementMode: obligations.EnforcementBlocking,
-		Reviewer: "security-architect@example.com",
-		ReviewedAt: "2026-10-27T12:00:00Z",
+		Reviewer:        "security-architect@example.com",
+		ReviewedAt:      "2026-10-27T12:00:00Z",
 		ReviewReference: "https://github.com/tyler-beach/pf_2/issues/900",
-		Rationale: "The source statement is covered by the deterministic Go import-boundary verifier.",
+		Rationale:       "The source statement is covered by the deterministic Go import-boundary verifier.",
 	}
 	proposalPath := filepath.Join(t.TempDir(), "review-proposal.json")
 	proposalBytes, err := json.Marshal(proposal)
@@ -305,11 +306,19 @@ func TestRunSpecificationCheckRequiresAnalyzerEvidencePair(t *testing.T) {
 func TestRunSpecificationCheckOrchestratesLifecycleAndEnforcesReview(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
-	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
 	adrSource := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
-	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil { t.Fatal(err) }
-	if err := os.MkdirAll(filepath.Join(root, "internal", "domain"), 0o700); err != nil { t.Fatal(err) }
-	if err := os.WriteFile(filepath.Join(root, "internal", "domain", "customer.go"), []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(root, "internal", "domain"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "internal", "domain", "customer.go"), []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
 		ID: "ADR-001", Title: "Preserve domain boundaries", Version: 1, Status: "accepted",
@@ -320,16 +329,30 @@ func TestRunSpecificationCheckOrchestratesLifecycleAndEnforcesReview(t *testing.
 		}},
 	}}}
 	catalogBytes, err := json.Marshal(catalog)
-	if err != nil { t.Fatal(err) }
-	if err := os.MkdirAll(filepath.Join(root, "adr"), 0o700); err != nil { t.Fatal(err) }
-	if err := os.WriteFile(filepath.Join(root, "adr", "requirements.json"), catalogBytes, 0o600); err != nil { t.Fatal(err) }
-	if err := obligations.SaveRegistry(filepath.Join(root, "adr", "obligation-reviews.json"), obligations.NewRegistry()); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(root, "adr"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "adr", "requirements.json"), catalogBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := obligations.SaveRegistry(filepath.Join(root, "adr", "obligation-reviews.json"), obligations.NewRegistry()); err != nil {
+		t.Fatal(err)
+	}
 
-	if err := runSpecificationCheck([]string{"--root", root, "--adr-root", "adrs", "--report-only"}); err != nil { t.Fatalf("report-only orchestration failed: %v", err) }
+	if err := runSpecificationCheck([]string{"--root", root, "--adr-root", "adrs", "--report-only"}); err != nil {
+		t.Fatalf("report-only orchestration failed: %v", err)
+	}
 	data, err := os.ReadFile(filepath.Join(root, "obligation-assessment.json"))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var report obligations.AssessmentReport
-	if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatal(err)
+	}
 	if report.CandidateCount != 1 || report.Candidates[0].Status != "INDETERMINATE" || report.ObligationVerdict != "INDETERMINATE" {
 		t.Fatalf("specification check did not preserve pending review state: %+v", report)
 	}
@@ -370,10 +393,10 @@ func TestSpecificationCheckReviewedLifecyclePassAndFail(t *testing.T) {
 		Requirements: []assessment.Requirement{{
 			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
 			Description: "Domain source files must not import internal infrastructure packages.",
-			Severity: "error",
+			Severity:    "error",
 			Verifier: assessment.Verifier{
-				Type: "go-import-boundary",
-				SourcePathPrefixes: []string{"internal/domain/"},
+				Type:                    "go-import-boundary",
+				SourcePathPrefixes:      []string{"internal/domain/"},
 				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 			},
 		}},
@@ -430,15 +453,15 @@ func TestSpecificationCheckReviewedLifecyclePassAndFail(t *testing.T) {
 
 	// Explicit reviewer approval binds the source-backed candidate to a known verifier.
 	proposal := obligations.ReviewProposal{
-		CandidateID: candidate.ID,
-		Decision: obligations.DecisionApproved,
-		RequirementID: "REQ-001-01",
-		PatternID: candidate.PatternHint,
+		CandidateID:     candidate.ID,
+		Decision:        obligations.DecisionApproved,
+		RequirementID:   "REQ-001-01",
+		PatternID:       candidate.PatternHint,
 		EnforcementMode: obligations.EnforcementBlocking,
-		Reviewer: "security-architect@example.com",
-		ReviewedAt: "2026-10-27T12:00:00Z",
+		Reviewer:        "security-architect@example.com",
+		ReviewedAt:      "2026-10-27T12:00:00Z",
 		ReviewReference: "https://github.com/tyler-beach/pf_2/issues/900",
-		Rationale: "The reviewed boundary obligation matches the deterministic Go import verifier.",
+		Rationale:       "The reviewed boundary obligation matches the deterministic Go import verifier.",
 	}
 	proposalPath := filepath.Join(t.TempDir(), "review-proposal.json")
 	proposalBytes, err := json.Marshal(proposal)
@@ -484,56 +507,86 @@ func TestSpecificationCheckReviewedLifecyclePassAndFail(t *testing.T) {
 func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
-	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
 	adrSource := "# ADR-001: Preserve domain boundaries\n\n## Status\n\nAccepted\n\n## Decision\n\nDomain code must not import internal infrastructure packages.\n"
-	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil { t.Fatal(err) }
-	if err := os.MkdirAll(filepath.Join(root, "internal", "domain"), 0o700); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(adrSource), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(root, "internal", "domain"), 0o700); err != nil {
+		t.Fatal(err)
+	}
 	sourcePath := filepath.Join(root, "internal", "domain", "customer.go")
-	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n"), 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"strings\"\nfunc Normalize(s string) string { return strings.TrimSpace(s) }\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
 		ID: "ADR-001", Title: "Preserve domain boundaries", Version: 1, Status: "accepted",
 		Requirements: []assessment.Requirement{{
 			ID: "REQ-001-01", Title: "Domain code must not depend on infrastructure adapters",
 			Description: "Domain source files must not import internal infrastructure packages.",
-			Severity: "error", Verifier: assessment.Verifier{
+			Severity:    "error", Verifier: assessment.Verifier{
 				Type: "go-import-boundary", SourcePathPrefixes: []string{"internal/domain/"},
 				ForbiddenImportPrefixes: []string{"internal/infrastructure/"},
 			},
 		}},
 	}}}
 	catalogPath := filepath.Join(root, "adr", "requirements.json")
-	if err := os.MkdirAll(filepath.Dir(catalogPath), 0o700); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(filepath.Dir(catalogPath), 0o700); err != nil {
+		t.Fatal(err)
+	}
 	catalogBytes, err := json.Marshal(catalog)
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	ingestionPath := filepath.Join(root, "adr", "ingested-adrs.json")
-	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil { t.Fatal(err) }
+	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil {
+		t.Fatal(err)
+	}
 	candidatePath := filepath.Join(root, "adr", "obligation-candidates.json")
-	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil { t.Fatal(err) }
+	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", candidatePath}); err != nil {
+		t.Fatal(err)
+	}
 	index, err := readObligationIndex(candidatePath)
-	if err != nil { t.Fatal(err) }
-	if len(index.Candidates) != 1 { t.Fatalf("candidate count=%d, want 1: %+v", len(index.Candidates), index) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(index.Candidates) != 1 {
+		t.Fatalf("candidate count=%d, want 1: %+v", len(index.Candidates), index)
+	}
 	candidate := index.Candidates[0]
 
 	registryPath := filepath.Join(root, "adr", "obligation-reviews.json")
-	if err := runInitReviewRegistry([]string{"--output", registryPath}); err != nil { t.Fatal(err) }
+	if err := runInitReviewRegistry([]string{"--output", registryPath}); err != nil {
+		t.Fatal(err)
+	}
 	proposalPath := filepath.Join(t.TempDir(), "review-proposal.json")
 	proposal := obligations.ReviewProposal{
 		CandidateID: candidate.ID, Decision: obligations.DecisionApproved,
 		RequirementID: "REQ-001-01", PatternID: candidate.PatternHint,
 		EnforcementMode: obligations.EnforcementBlocking,
-		Reviewer: "security-architect@example.com", ReviewedAt: "2026-10-27T12:00:00Z",
+		Reviewer:        "security-architect@example.com", ReviewedAt: "2026-10-27T12:00:00Z",
 		ReviewReference: "https://github.com/tyler-beach/pf_2/issues/900",
-		Rationale: "The reviewed boundary obligation matches the existing deterministic Go import verifier.",
+		Rationale:       "The reviewed boundary obligation matches the existing deterministic Go import verifier.",
 	}
 	proposalBytes, err := json.Marshal(proposal)
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(proposalPath, proposalBytes, 0o600); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(proposalPath, proposalBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if err := runRecordObligationReview([]string{
 		"--index", candidatePath, "--requirements", catalogPath, "--registry", registryPath, "--proposal", proposalPath,
-	}); err != nil { t.Fatal(err) }
+	}); err != nil {
+		t.Fatal(err)
+	}
 
 	assessmentPath := filepath.Join(root, "assessment.json")
 	repoAssessmentArgs := []string{
@@ -541,7 +594,9 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 		"--report", filepath.Join(root, "report.md"), "--json-out", assessmentPath,
 		"--sarif-out", filepath.Join(root, "results.sarif"),
 	}
-	if err := runAssess(repoAssessmentArgs, true); err != nil { t.Fatal(err) }
+	if err := runAssess(repoAssessmentArgs, true); err != nil {
+		t.Fatal(err)
+	}
 	jsonReport := filepath.Join(root, "obligation-assessment.json")
 	markdownReport := filepath.Join(root, "obligation-assessment.md")
 	args := []string{
@@ -549,12 +604,18 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 		"--registry", registryPath, "--assessment", assessmentPath,
 		"--json-out", jsonReport, "--report", markdownReport,
 	}
-	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
+	if err := runAssessObligations(args); err != nil {
+		t.Fatal(err)
+	}
 	readReport := func() obligations.AssessmentReport {
 		data, err := os.ReadFile(jsonReport)
-		if err != nil { t.Fatal(err) }
+		if err != nil {
+			t.Fatal(err)
+		}
 		var report obligations.AssessmentReport
-		if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
+		if err := json.Unmarshal(data, &report); err != nil {
+			t.Fatal(err)
+		}
 		return report
 	}
 	passed := readReport()
@@ -565,9 +626,15 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	}
 
 	// A fresh repository scan with a real boundary violation should fail.
-	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"internal/infrastructure/storage\"\n"), 0o600); err != nil { t.Fatal(err) }
-	if err := runAssess(repoAssessmentArgs, true); err != nil { t.Fatal(err) }
-	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(sourcePath, []byte("package domain\nimport \"internal/infrastructure/storage\"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := runAssess(repoAssessmentArgs, true); err != nil {
+		t.Fatal(err)
+	}
+	if err := runAssessObligations(args); err != nil {
+		t.Fatal(err)
+	}
 	failed := readReport()
 	if !failed.EvidenceFresh || failed.ObligationVerdict != "FAIL" || failed.Candidates[0].Status != "FAIL" || failed.Candidates[0].EvidenceStatus != "FAIL" {
 		t.Fatalf("fresh failing repository evidence was not reported as FAIL: %+v", failed)
@@ -577,8 +644,12 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	}
 
 	// Mutating source again without rerunning assessment must not preserve FAIL.
-	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil { t.Fatal(err) }
-	if err := runAssessObligations(args); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(sourcePath, []byte("package domain\nfunc Normalize(s string) string { return s }\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := runAssessObligations(args); err != nil {
+		t.Fatal(err)
+	}
 	stale := readReport()
 	if stale.EvidenceFresh || stale.ObligationVerdict != "INDETERMINATE" || stale.Candidates[0].Status != "INDETERMINATE" || stale.Candidates[0].EvidenceStatus != "STALE" {
 		t.Fatalf("stale assessment remained compliant after source changed: %+v", stale)
@@ -588,7 +659,9 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 	}
 
 	// An ADR edit must invalidate the extracted candidate index itself.
-	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), append([]byte(adrSource), '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), append([]byte(adrSource), '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if err := runAssessObligations(args); err == nil || !strings.Contains(err.Error(), "rebuild candidate index") {
 		t.Fatalf("stale candidate index should be rejected after an ADR edit, got %v", err)
 	}
@@ -597,19 +670,33 @@ func TestEndToEndReviewedADRToRepositoryAssessment(t *testing.T) {
 func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
-	if err := os.MkdirAll(adrRoot, 0o700); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(adrRoot, 0o700); err != nil {
+		t.Fatal(err)
+	}
 	source := []byte("# ADR-001: Explicit timeout policy\n\n## Status\n\nAccepted\n\n## Decision\n\nThe service must set a finite timeout and must keep it below 30 seconds.\n")
-	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), source, 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), source, 0o600); err != nil {
+		t.Fatal(err)
+	}
 	doc, err := adringest.Parse("ADR-001.md", source)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	ingestionPath := filepath.Join(root, "adr", "ingested-adrs.json")
-	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil { t.Fatal(err) }
+	if err := runIngestADRs([]string{"--root", adrRoot, "--json-out", ingestionPath}); err != nil {
+		t.Fatal(err)
+	}
 	indexPath := filepath.Join(root, "adr", "obligation-candidates.json")
-	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", indexPath}); err != nil { t.Fatal(err) }
+	if err := runExtractObligations([]string{"--index", ingestionPath, "--root", adrRoot, "--json-out", indexPath}); err != nil {
+		t.Fatal(err)
+	}
 	indexBytes, err := os.ReadFile(indexPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var index obligations.Index
-	if err := json.Unmarshal(indexBytes, &index); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(indexBytes, &index); err != nil {
+		t.Fatal(err)
+	}
 	candidates := index.Candidates
 
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
@@ -617,36 +704,56 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	}}}
 	catalogPath := filepath.Join(root, "requirements.json")
 	catalogBytes, err := json.Marshal(catalog)
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(catalogPath, catalogBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	registryPath := filepath.Join(root, "reviews.json")
-	if err := obligations.SaveRegistry(registryPath, obligations.NewRegistry()); err != nil { t.Fatal(err) }
+	if err := obligations.SaveRegistry(registryPath, obligations.NewRegistry()); err != nil {
+		t.Fatal(err)
+	}
 	assessmentPath := filepath.Join(root, "assessment.json")
 	sourceFiles, err := assessment.LoadSourceFiles(root)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	evidenceBytes, err := json.Marshal(assessment.Result{
 		SchemaVersion: "1", EvidenceMode: string(assessment.EvidenceModeRepository),
 		Verdict: "PASS", Requirements: []assessment.RequirementResult{},
 		SourceSnapshotSHA256: assessment.HashSourceFiles(sourceFiles),
 	})
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(assessmentPath, evidenceBytes, 0o600); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(assessmentPath, evidenceBytes, 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	jsonPath := filepath.Join(root, "obligation-assessment.json")
 	markdownPath := filepath.Join(root, "obligation-assessment.md")
 	if err := runAssessObligations([]string{
 		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
 		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
-	}); err != nil { t.Fatal(err) }
+	}); err != nil {
+		t.Fatal(err)
+	}
 	data, err := os.ReadFile(jsonPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var report obligations.AssessmentReport
-	if err := json.Unmarshal(data, &report); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatal(err)
+	}
 	if report.CandidateCount < 1 || report.Counts["INDETERMINATE"] < 1 || report.ObligationVerdict != "INDETERMINATE" || report.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("unreviewed obligation was not reported as indeterminate: %+v", report)
 	}
-	if !report.EvidenceFresh { t.Fatalf("matching source snapshot was incorrectly marked stale: %+v", report) }
+	if !report.EvidenceFresh {
+		t.Fatalf("matching source snapshot was incorrectly marked stale: %+v", report)
+	}
 	if err := runAssessObligations([]string{
 		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
 		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath, "--enforce-blocking",
@@ -659,7 +766,9 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 	}
 	_ = candidates
 	registryBytes, err := os.ReadFile(registryPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	indexDigest, registryDigest, assessmentDigest := sha256.Sum256(indexBytes), sha256.Sum256(registryBytes), sha256.Sum256(evidenceBytes)
 	if report.CandidateIndexArtifactSHA256 != hex.EncodeToString(indexDigest[:]) ||
 		report.ReviewRegistryArtifactSHA256 != hex.EncodeToString(registryDigest[:]) ||
@@ -667,22 +776,32 @@ func TestRunAssessObligationsWritesIndeterminateForUnreviewedCandidate(t *testin
 		t.Fatalf("report did not preserve exact input artifact digests: %+v", report)
 	}
 	markdown, err := os.ReadFile(markdownPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !strings.Contains(string(markdown), "INDETERMINATE") || !strings.Contains(string(markdown), candidates[0].ID) || !strings.Contains(string(markdown), "compound_or_conjoined") {
 		t.Fatalf("Markdown report is missing obligation status or identity: %s", markdown)
 	}
 
 	// Change an input without changing its decoded meaning. The original
 	// assessment artifact must be treated as stale against the current tree.
-	if err := os.WriteFile(catalogPath, append(catalogBytes, '\n'), 0o600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, append(catalogBytes, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	if err := runAssessObligations([]string{
 		"--index", indexPath, "--ingestion-index", ingestionPath, "--requirements", catalogPath, "--registry", registryPath,
 		"--assessment", assessmentPath, "--root", root, "--json-out", jsonPath, "--report", markdownPath,
-	}); err != nil { t.Fatal(err) }
+	}); err != nil {
+		t.Fatal(err)
+	}
 	staleBytes, err := os.ReadFile(jsonPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var stale obligations.AssessmentReport
-	if err := json.Unmarshal(staleBytes, &stale); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(staleBytes, &stale); err != nil {
+		t.Fatal(err)
+	}
 	if stale.EvidenceFresh || stale.RepositoryVerdict != "INDETERMINATE" || stale.Candidates[0].Status != "INDETERMINATE" {
 		t.Fatalf("assessment was not downgraded after its source snapshot changed: %+v", stale)
 	}
@@ -752,13 +871,20 @@ func TestIngestionIndexDocumentsHaveProvenance(t *testing.T) {
 	}
 }
 
-
 func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	root := t.TempDir()
-	if err := os.MkdirAll(filepath.Join(root, "cmd"), 0700); err != nil { t.Fatal(err) }
-	if err := os.MkdirAll(filepath.Join(root, "rules"), 0700); err != nil { t.Fatal(err) }
-	if err := os.WriteFile(filepath.Join(root, "cmd", "main.go"), []byte("package main\n"), 0600); err != nil { t.Fatal(err) }
-	if err := os.WriteFile(filepath.Join(root, "rules", "security.yml"), []byte("rules: []\n"), 0600); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(filepath.Join(root, "cmd"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(root, "rules"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "cmd", "main.go"), []byte("package main\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "rules", "security.yml"), []byte("rules: []\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
 	catalog := assessment.Catalog{SchemaVersion: "1", ADRs: []assessment.ADR{{
 		ID: "ADR-003", Title: "Analyzer policy", Version: 1, Status: "accepted",
 		Requirements: []assessment.Requirement{{
@@ -768,16 +894,26 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	}}}
 	catalogPath := filepath.Join(root, "requirements.json")
 	catalogBytes, err := json.Marshal(catalog)
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil {
+		t.Fatal(err)
+	}
 
 	raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.30.0"}},"results":[]}]}`)
 	evidence, err := analyzer.ParseSARIF(raw, root)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	configHash, err := analyzer.HashFile(filepath.Join(root, "rules", "security.yml"))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	inputHash, err := analyzer.HashInputTree(root)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	evidence.ConfigurationPath = "rules/security.yml"
 	evidence.ConfigurationSHA256 = configHash
 	evidence.BinarySHA256 = strings.Repeat("a", 64)
@@ -787,10 +923,16 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 	evidenceRoot := t.TempDir()
 	evidencePath := filepath.Join(evidenceRoot, "opengrep.json")
 	evidenceBytes, err := json.Marshal(evidence)
-	if err != nil { t.Fatal(err) }
-	if err := os.WriteFile(evidencePath, evidenceBytes, 0600); err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(evidencePath, evidenceBytes, 0600); err != nil {
+		t.Fatal(err)
+	}
 	sarifPath := filepath.Join(evidenceRoot, "opengrep.sarif")
-	if err := os.WriteFile(sarifPath, raw, 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(sarifPath, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
 	resultPath := filepath.Join(root, "assessment.json")
 	if err := runAssess([]string{"--root", root, "--requirements", catalogPath,
 		"--report", filepath.Join(root, "report.md"), "--json-out", resultPath,
@@ -799,24 +941,40 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 		t.Fatalf("runAssess() error = %v", err)
 	}
 	data, err := os.ReadFile(resultPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var got assessment.Result
-	if err := json.Unmarshal(data, &got); err != nil { t.Fatal(err) }
-	if got.Verdict != "PASS" || len(got.AnalyzerResults) != 1 { t.Fatalf("analyzer evidence was not included: %+v", got) }
-	if len(got.AnalyzerResults[0].ScannedPaths) == 0 { t.Fatalf("verified scan inventory missing: %+v", got.AnalyzerResults[0]) }
+	if err := json.Unmarshal(data, &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.Verdict != "PASS" || len(got.AnalyzerResults) != 1 {
+		t.Fatalf("analyzer evidence was not included: %+v", got)
+	}
+	if len(got.AnalyzerResults[0].ScannedPaths) == 0 {
+		t.Fatalf("verified scan inventory missing: %+v", got.AnalyzerResults[0])
+	}
 }
 
 func TestRunAssessRejectsNormalizedEvidenceWithoutRawSARIF(t *testing.T) {
 	root := t.TempDir()
 	catalog, err := assessment.LoadCatalog(filepath.Join("..", "..", "adr", "requirements.json"))
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	catalogBytes, err := json.Marshal(catalog)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	catalogPath := filepath.Join(root, "requirements.json")
-	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(catalogPath, catalogBytes, 0600); err != nil {
+		t.Fatal(err)
+	}
 	evidenceRoot := t.TempDir()
 	evidencePath := filepath.Join(evidenceRoot, "evidence.json")
-	if err := os.WriteFile(evidencePath, []byte(`{"schema_version":"1","sarif_version":"2.1.0","status":"COMPLETE"}`), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(evidencePath, []byte(`{"schema_version":"1","sarif_version":"2.1.0","status":"COMPLETE"}`), 0600); err != nil {
+		t.Fatal(err)
+	}
 	err = runAssess([]string{"--root", root, "--requirements", catalogPath,
 		"--report", filepath.Join(root, "report.md"), "--json-out", filepath.Join(root, "assessment.json"),
 		"--analyzer-evidence", evidencePath}, true)
@@ -828,28 +986,46 @@ func TestRunAssessRejectsNormalizedEvidenceWithoutRawSARIF(t *testing.T) {
 func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *testing.T) {
 	root := t.TempDir()
 	adrRoot := filepath.Join(root, "adrs")
-	if err := os.MkdirAll(adrRoot, 0700); err != nil { t.Fatal(err) }
+	if err := os.MkdirAll(adrRoot, 0700); err != nil {
+		t.Fatal(err)
+	}
 	source := "# ADR-001: Explicit timeouts\n\n## Status\n\nAccepted\n\n## Decision\n\nEvery network client must set a finite timeout.\n"
-	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(source), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(filepath.Join(adrRoot, "ADR-001.md"), []byte(source), 0600); err != nil {
+		t.Fatal(err)
+	}
 	docs, err := adringest.ParseDir(adrRoot)
-	if err != nil { t.Fatal(err) }
-	indexBytes, err := json.MarshalIndent(ingestionIndex{SchemaVersion:"1", SourceRoot:adrRoot, Documents:docs}, "", "  ")
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	indexBytes, err := json.MarshalIndent(ingestionIndex{SchemaVersion: "1", SourceRoot: adrRoot, Documents: docs}, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
 	indexPath := filepath.Join(root, "ingested.json")
-	if err := os.WriteFile(indexPath, indexBytes, 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(indexPath, indexBytes, 0600); err != nil {
+		t.Fatal(err)
+	}
 	outPath := filepath.Join(root, "candidates.json")
 	reportPath := filepath.Join(root, "candidates.md")
 	args := []string{"--index", indexPath, "--root", adrRoot, "--json-out", outPath, "--report", reportPath}
-	if err := runExtractObligations(args); err != nil { t.Fatalf("runExtractObligations() error: %v", err) }
+	if err := runExtractObligations(args); err != nil {
+		t.Fatalf("runExtractObligations() error: %v", err)
+	}
 	first, err := os.ReadFile(outPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var got obligations.Index
-	if err := json.Unmarshal(first, &got); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(first, &got); err != nil {
+		t.Fatal(err)
+	}
 	if got.DocumentCount != 1 || got.CandidateCount != 1 || got.Candidates[0].ApprovalStatus != "pending_review" || got.Candidates[0].Executable {
 		t.Fatalf("candidate output was not review-only: %+v", got)
 	}
 	reportBytes, err := os.ReadFile(reportPath)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !strings.Contains(string(reportBytes), got.Candidates[0].ID) || !strings.Contains(string(reportBytes), "pending_review") || !strings.Contains(string(reportBytes), "Every network client must set a finite timeout") {
 		t.Fatalf("candidate Markdown report is missing review details: %s", reportBytes)
 	}
@@ -857,32 +1033,49 @@ func TestRunExtractObligationsWritesReviewOnlyCandidatesDeterministically(t *tes
 	secondReportPath := filepath.Join(root, "candidates-again.md")
 	args[5] = secondPath
 	args[7] = secondReportPath
-	if err := runExtractObligations(args); err != nil { t.Fatalf("second run: %v", err) }
+	if err := runExtractObligations(args); err != nil {
+		t.Fatalf("second run: %v", err)
+	}
 	second, err := os.ReadFile(secondPath)
-	if err != nil { t.Fatal(err) }
-	if string(first) != string(second) { t.Fatalf("candidate generation changed across identical inputs:\n%s\n%s", first, second) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(first) != string(second) {
+		t.Fatalf("candidate generation changed across identical inputs:\n%s\n%s", first, second)
+	}
 	secondReport, err := os.ReadFile(secondReportPath)
-	if err != nil { t.Fatal(err) }
-	if string(reportBytes) != string(secondReport) { t.Fatalf("candidate review report changed across identical inputs:\n%s\n%s", reportBytes, secondReport) }
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(reportBytes) != string(secondReport) {
+		t.Fatalf("candidate review report changed across identical inputs:\n%s\n%s", reportBytes, secondReport)
+	}
 }
 
 func TestRunExtractObligationsRefusesToOverwriteIndex(t *testing.T) {
 	root := t.TempDir()
 	indexPath := filepath.Join(root, "index.json")
-	if err := os.WriteFile(indexPath, []byte("{"), 0600); err != nil { t.Fatal(err) }
+	if err := os.WriteFile(indexPath, []byte("{"), 0600); err != nil {
+		t.Fatal(err)
+	}
 	err := runExtractObligations([]string{"--index", indexPath, "--root", root, "--json-out", indexPath})
-	if err == nil || !strings.Contains(err.Error(), "must not overwrite") { t.Fatalf("expected index overwrite rejection, got %v", err) }
+	if err == nil || !strings.Contains(err.Error(), "must not overwrite") {
+		t.Fatalf("expected index overwrite rejection, got %v", err)
+	}
 }
-
 
 func TestRunAssertIssueVerdict(t *testing.T) {
 	root := t.TempDir()
 	reportPath := filepath.Join(root, "assessment.json")
 	writeResult := func(verdict, coverage string) {
 		t.Helper()
-		data, err := json.Marshal(assessment.Result{SchemaVersion:"1", Verdict:verdict, CoverageStatus:coverage})
-		if err != nil { t.Fatal(err) }
-		if err := os.WriteFile(reportPath, data, 0600); err != nil { t.Fatal(err) }
+		data, err := json.Marshal(assessment.Result{SchemaVersion: "1", Verdict: verdict, CoverageStatus: coverage})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(reportPath, data, 0600); err != nil {
+			t.Fatal(err)
+		}
 	}
 	writeResult("INDETERMINATE", "PARTIAL")
 	if err := runAssertIssueVerdict([]string{"--title", "[ADR Assessment] [expected:INDETERMINATE] missing source scope", "--assessment", reportPath}); err != nil {
@@ -898,7 +1091,6 @@ func TestRunAssertIssueVerdict(t *testing.T) {
 		t.Fatalf("missing title should fail, got %v", err)
 	}
 }
-
 
 func TestResolveOpenGrepBinaryDigest(t *testing.T) {
 	binary := filepath.Join(t.TempDir(), "opengrep-test")
@@ -957,7 +1149,7 @@ func TestRunAssistObligationsOfflineWritesProposalsOnly(t *testing.T) {
 	}
 	proposalPath := filepath.Join(root, "proposals.json")
 	mdPath := filepath.Join(root, "proposals.md")
-	if err := runAssistObligations([]string{
+	if err := runAssistObligations(context.Background(), []string{
 		"--index", candidatePath,
 		"--root", root,
 		"--json-out", proposalPath,

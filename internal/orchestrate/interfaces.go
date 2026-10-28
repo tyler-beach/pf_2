@@ -5,6 +5,7 @@ package orchestrate
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/tyler-beach/pf_2/internal/analyzer"
 	"github.com/tyler-beach/pf_2/internal/assessment"
@@ -78,9 +79,15 @@ func NewDefaultOrchestrator() DefaultOrchestrator {
 }
 
 func (o DefaultOrchestrator) Assess(catalogPath string, files []assessment.SourceFile, options assessment.AssessmentOptions) (assessment.Result, error) {
+	if o.Catalogs == nil {
+		return assessment.Result{}, fmt.Errorf("orchestrate: CatalogProvider is required")
+	}
+	if o.Evaluate == nil {
+		return assessment.Result{}, fmt.Errorf("orchestrate: PatternEvaluator is required")
+	}
 	catalog, err := o.Catalogs.Load(catalogPath)
 	if err != nil {
-		return assessment.Result{}, err
+		return assessment.Result{}, fmt.Errorf("load requirements catalog: %w", err)
 	}
 	return o.Evaluate.Evaluate(catalog, files, options), nil
 }

@@ -2,6 +2,7 @@ package orchestrate
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/tyler-beach/pf_2/internal/analyzer"
@@ -26,6 +27,21 @@ func TestDefaultOrchestratorAssessesFixture(t *testing.T) {
 	}
 	if result.CorpusCoverage.AcceptedADRs == 0 {
 		t.Fatal("expected accepted ADR inventory in corpus coverage")
+	}
+}
+
+func TestDefaultOrchestratorRequiresDependencies(t *testing.T) {
+	_, err := (DefaultOrchestrator{}).Assess("missing.json", nil, assessment.AssessmentOptions{})
+	if err == nil || !strings.Contains(err.Error(), "CatalogProvider") {
+		t.Fatalf("expected CatalogProvider error, got %v", err)
+	}
+	_, err = (DefaultOrchestrator{Catalogs: CatalogFileProvider{}}).Assess("missing.json", nil, assessment.AssessmentOptions{})
+	if err == nil || !strings.Contains(err.Error(), "PatternEvaluator") {
+		t.Fatalf("expected PatternEvaluator error, got %v", err)
+	}
+	_, err = NewDefaultOrchestrator().Assess(filepath.Join("does", "not", "exist.json"), nil, assessment.AssessmentOptions{})
+	if err == nil || !strings.Contains(err.Error(), "load requirements catalog") {
+		t.Fatalf("expected wrapped catalog load error, got %v", err)
 	}
 }
 
