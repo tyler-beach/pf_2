@@ -3,12 +3,14 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { createTwoFilesPatch } from 'diff';
 import { html as diff2html } from 'diff2html';
+import { adrFlaggingDigInHTML, openADRFlaggingDrawer } from './adr-flags-view';
 import {
   dataAge,
   githubBlobURL,
   issueURL,
   loadActiveContext,
   loadADR,
+  loadADRFlagging,
   loadADRIndex,
   loadCorpusIndex,
   loadCosts,
@@ -689,11 +691,12 @@ export async function renderPipeline(app: HTMLElement, stepId?: string) {
 export async function renderADRs(app: HTMLElement, id?: string) {
   if (id) return renderADRDetail(app, id);
   setCrumb('ADRs');
-  setPurpose('Browse published ADR sources. / search · j/k · Enter opens.');
-  setTopActions('');
+  setPurpose('Browse published ADR sources. Expand a row for aligned vs deviate assessment dig-in. / search · j/k · Enter opens · o expands.');
+  setTopActions(`<a class="btn" href="#/adr-flags">ADR Flagging</a><a class="btn" href="#/docs/adr-flagging">Definitions</a>`);
   const state = readListQuery({ sort: 'id', dir: 'asc' });
-  const index = await loadADRIndex();
+  const [index, flagging] = await Promise.all([loadADRIndex(), loadADRFlagging()]);
   const adrs = index?.adrs || [];
+  const flagById = new Map((flagging?.adrs || []).map((r) => [r.adr_id, r]));
   app.innerHTML = `
     <div class="toolbar">
       <input class="search" id="adr-q" placeholder="Filter by id or title (/)" value="${escapeHTML(state.q)}" />
@@ -726,6 +729,8 @@ export async function renderADRs(app: HTMLElement, id?: string) {
       if (key === 'title') return a.title;
       if (key === 'status') return a.status;
       if (key === 'candidates') return (a.candidate_ids || []).length;
+      if (key === 'flag_rate') return flagById.get(a.id)?.flag_rate ?? -1;
+      if (key === 'fail') return flagById.get(a.id)?.fail_count ?? 0;
       return a.id;
     });
   };
@@ -739,7 +744,7 @@ export async function renderADRs(app: HTMLElement, id?: string) {
     page = slice.page;
     pageSize = slice.pageSize;
     if (countEl) countEl.textContent = `${list.length} documents`;
-    thead.innerHTML = `${sortHeader('ID', 'id', sort, dir)}${sortHeader('Title', 'title', sort, dir)}${sortHeader('Status', 'status', sort, dir)}<th>Mix</th>${sortHeader('Candidates', 'candidates', sort, dir)}`;
+    thead.innerHTML = `<th class="col-expand" scope="col"><span class="sr-only">Details</span></th>${sortHeader('ID', 'id', sort, dir)}${sortHeader('Title', 'title', sort, dir)}${sortHeader('Status', 'status', sort, dir)}<th>Mix</th>${sortHeader('Candidates', 'candidates', sort, dir)}${sortHeader('Flag rate', 'flag_rate', sort, dir)}${sortHeader('FAIL', 'fail', sort, dir)}`;
     bindSortHeaders(thead, (key, nextDir) => {
       sort = key;
       dir = nextDir;
@@ -749,22 +754,39 @@ export async function renderADRs(app: HTMLElement, id?: string) {
     });
     tbody.innerHTML = slice.items.length
       ? slice.items
-          .map(
-            (a) => `<tr class="row-link" data-row data-id="${escapeHTML(a.id)}">
-          <td><code class="id" title="${escapeHTML(a.id)}">${escapeHTML(a.id)}</code></td>
-          <td class="truncate" title="${escapeHTML(a.title)}">${escapeHTML(a.title)}</td>
+          .map((a) => {
+            const fr = flagById.get(a.id);
+            const rate =
+              fr?.flag_rate == null
+                ? fr
+                  ? 'n/a'
+                  : '—'
+                : fmt(fr.flag_rate);
+            return `<tr data-row data-id="${escapeHTML(a.id)}">
+          <td class="col-expand">${expandControl(a.id, 'Flags')}</td>
+          <td><a class="id" href="#/adrs/${encodeURIComponent(a.id)}" title="${escapeHTML(a.id)}">${escapeHTML(a.id)}</a></td>
+          <td class="truncate expand-cell" title="${escapeHTML(a.title)}" data-expand="${escapeHTML(a.id)}">${escapeHTML(a.title)}</td>
           <td>${tag(a.status, a.status === 'accepted' ? 'ok' : '')}</td>
           <td class="num">${a.confidence_mix ? `${a.confidence_mix.high}/${a.confidence_mix.medium}/${a.confidence_mix.low}` : '—'}</td>
           <td class="num">${(a.candidate_ids || []).length}</td>
-        </tr>`,
-          )
+          <td class="num">${escapeHTML(rate)}</td>
+          <td class="num">${fr ? fmt(fr.fail_count) : '—'}</td>
+        </tr>`;
+          })
           .join('')
       : filterEmpty('No ADRs match this filter.');
     pagerEl.innerHTML = renderPager(slice);
-    tbody.querySelectorAll<HTMLElement>('tr.row-link').forEach((tr) => {
-      tr.addEventListener('click', () => {
-        location.hash = `#/adrs/${tr.dataset.id}`;
-      });
+    bindExpandControls(tbody, (id) => {
+      const fr = flagById.get(id);
+      if (fr) openADRFlaggingDrawer(fr);
+      else {
+        openDrawer({
+          title: id,
+          meta: 'ADR flagging',
+          bodyHTML: `<p class="muted">No assessment rollup for this ADR in <code>adr_flagging.json</code>.</p>
+            <div class="entity-links"><a href="#/adr-flags">ADR Flagging dashboard</a><a href="#/adrs/${encodeURIComponent(id)}">Open ADR</a></div>`,
+        });
+      }
     });
     bindPager(pagerEl, () => ({ page, pageSize }), (next) => {
       page = next.page;
@@ -775,6 +797,11 @@ export async function renderADRs(app: HTMLElement, id?: string) {
     unbindKeys = bindTableKeyboard(tbody, {
       onActivate: (row) => {
         if (row.dataset.id) location.hash = `#/adrs/${row.dataset.id}`;
+      },
+      onExpand: (row) => {
+        const id = row.dataset.id || '';
+        const fr = flagById.get(id);
+        if (fr) openADRFlaggingDrawer(fr);
       },
     });
     syncHash(true);
@@ -790,8 +817,18 @@ export async function renderADRs(app: HTMLElement, id?: string) {
     await copyWithButtonFeedback(
       e.currentTarget as HTMLButtonElement,
       toTSV(
-        ['id', 'title', 'status', 'candidates'],
-        list.map((a) => [a.id, a.title, a.status, String((a.candidate_ids || []).length)]),
+        ['id', 'title', 'status', 'candidates', 'flag_rate', 'fail'],
+        list.map((a) => {
+          const fr = flagById.get(a.id);
+          return [
+            a.id,
+            a.title,
+            a.status,
+            String((a.candidate_ids || []).length),
+            fr?.flag_rate == null ? '' : String(fr.flag_rate),
+            fr ? String(fr.fail_count) : '',
+          ];
+        }),
       ),
     );
   });
@@ -801,35 +838,47 @@ export async function renderADRs(app: HTMLElement, id?: string) {
 
 async function renderADRDetail(app: HTMLElement, id: string) {
   setCrumb(`ADR · ${id}`);
-  setPurpose('Source document beside the candidates extracted from it.');
-  setTopActions(`<a class="btn" href="#/adrs">All ADRs</a>`);
-  const adr = await loadADR(id);
-  if (!adr) {
+  setPurpose('Source document beside candidates and aligned vs deviate assessment dig-in.');
+  setTopActions(`<a class="btn" href="#/adrs">All ADRs</a><a class="btn" href="#/adr-flags?q=${encodeURIComponent(id)}">Flagging</a>`);
+  const [adr, flagging] = await Promise.all([loadADR(id), loadADRFlagging()]);
+  const flagRow = flagging?.adrs.find((a) => a.adr_id === id);
+  if (!adr && !flagRow) {
     app.innerHTML = emptyState('ADR not found', id);
     return;
   }
-  const html = DOMPurify.sanitize(await marked.parse(adr.body || '_No body_'));
+  const html = adr ? DOMPurify.sanitize(await marked.parse(adr.body || '_No body_')) : '';
   const cands = await loadLinkJSON<{ candidates?: Array<Record<string, unknown>> }>('candidates');
   const linked = (cands?.candidates || []).filter(
-    (c) => String(c.adr_id) === id || (adr.candidate_ids || []).includes(String(c.id)),
+    (c) => String(c.adr_id) === id || (adr?.candidate_ids || []).includes(String(c.id)),
   );
   app.innerHTML = `
-    <p class="run-meta">${tag(adr.status, 'ok')} · <code>${escapeHTML(adr.path)}</code></p>
+    <p class="run-meta">${adr ? `${tag(adr.status, 'ok')} · <code>${escapeHTML(adr.path)}</code>` : tag('corpus / assessment only', 'warn')}</p>
     <div class="entity-links">
       <a href="#/candidates?q=${encodeURIComponent(id)}">Candidates</a>
       <a href="#/proposals">Proposals</a>
-      <a href="#/assess">Assess</a>
-      <a href="#/docs/lifecycle">Docs</a>
-      ${copyControl(adr.id, 'Copy ADR id')}
+      <a href="#/assess?q=${encodeURIComponent(id)}">Assess</a>
+      <a href="#/adr-flags?q=${encodeURIComponent(id)}">ADR Flagging</a>
+      <a href="#/docs/adr-flagging">Aligned vs deviate</a>
+      ${copyControl(id, 'Copy ADR id')}
     </div>
     ${metricsRow([
       { label: 'Linked', value: fmt(linked.length) },
-      { label: 'High', value: fmt(adr.confidence_mix?.high ?? linked.filter((c) => c.confidence === 'high').length) },
-      { label: 'Medium', value: fmt(adr.confidence_mix?.medium ?? linked.filter((c) => c.confidence === 'medium').length) },
-      { label: 'Low', value: fmt(adr.confidence_mix?.low ?? linked.filter((c) => c.confidence === 'low').length) },
+      { label: 'High', value: fmt(adr?.confidence_mix?.high ?? linked.filter((c) => c.confidence === 'high').length) },
+      { label: 'Medium', value: fmt(adr?.confidence_mix?.medium ?? linked.filter((c) => c.confidence === 'medium').length) },
+      { label: 'Low', value: fmt(adr?.confidence_mix?.low ?? linked.filter((c) => c.confidence === 'low').length) },
+      { label: 'Flag rate', value: flagRow?.flag_rate == null ? (flagRow ? 'n/a' : '—') : fmt(flagRow.flag_rate) },
+      { label: 'FAIL / aligned', value: flagRow ? `${fmt(flagRow.fail_count)} / ${fmt(flagRow.aligned)}` : '—' },
     ])}
+    <details class="adr-flag-digin" ${flagRow ? 'open' : ''}>
+      <summary>Aligned vs deviate dig-in</summary>
+      ${
+        flagRow
+          ? adrFlaggingDigInHTML(flagRow)
+          : `<p class="muted">No <code>adr_flagging.json</code> row for ${escapeHTML(id)}. Open the <a href="#/adr-flags">ADR Flagging</a> dashboard after workshop-emit.</p>`
+      }
+    </details>
     <div class="layout-2" style="margin-top:1.25rem">
-      <article class="prose">${html}</article>
+      <article class="prose">${html || '<p class="muted">No Markdown body in this snapshot (assessment-only ADR).</p>'}</article>
       <aside>
         <h2>Candidates</h2>
         ${

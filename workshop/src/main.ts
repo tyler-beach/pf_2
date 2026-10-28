@@ -2,6 +2,7 @@ import 'uplot/dist/uPlot.min.css';
 import 'diff2html/bundles/css/diff2html.min.css';
 import { renderChrome } from './chrome';
 import { bindCopyButtons, closeDrawer, loadingState } from './ui';
+import { renderADRFlags } from './adr-flags-view';
 import { renderConfidence } from './confidence-view';
 import {
   renderADRs,
@@ -27,6 +28,7 @@ const navGroups: Array<{ label: string; items: Array<[string, string]> }> = [
       ['/', 'Overview'],
       ['/metrics', 'Metrics'],
       ['/confidence', 'Confidence'],
+      ['/adr-flags', 'ADR Flagging'],
       ['/pipeline', 'Pipeline'],
       ['/sample', 'Sample'],
     ],
@@ -102,6 +104,9 @@ async function render() {
     case '/confidence':
       await renderConfidence(app);
       break;
+    case '/adr-flags':
+      await renderADRFlags(app);
+      break;
     case '/pipeline':
       await renderPipeline(app, rest[0]);
       break;
@@ -109,6 +114,11 @@ async function render() {
       await renderSample(app, rest[0]);
       break;
     case '/adrs':
+      if (rest[0] === 'insights') {
+        document.body.classList.remove('is-loading');
+        location.hash = '#/adr-flags';
+        return;
+      }
       await renderADRs(app, rest[0]);
       break;
     case '/submissions':

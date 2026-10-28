@@ -54,7 +54,19 @@
     "kpi.promptfoo.pass_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
     "promptfoo_mode": { "type": "string" },
     "kpi.evidence.gap_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
-    "kpi.corpus.size": { "type": ["integer", "null"], "minimum": 0 }
+    "kpi.corpus.size": { "type": ["integer", "null"], "minimum": 0 },
+    "kpi.adr.touched": { "type": ["integer", "null"], "minimum": 0 },
+    "kpi.adr.assessed": { "type": ["integer", "null"], "minimum": 0 },
+    "kpi.adr.flag_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "kpi.adr.flag_rate.ci_low": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "kpi.adr.flag_rate.ci_high": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "kpi.adr.top_flag_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "kpi.adr.top_flag_rate_adr": { "type": "string" },
+    "kpi.adr.fail_count": { "type": ["integer", "null"], "minimum": 0 },
+    "kpi.adr.pass_count": { "type": ["integer", "null"], "minimum": 0 },
+    "kpi.adr.indeterminate_count": { "type": ["integer", "null"], "minimum": 0 },
+    "kpi.adr.most_fail": { "type": "string" },
+    "kpi.adr.most_aligned": { "type": "string" }
   },
   "additionalProperties": true
 }

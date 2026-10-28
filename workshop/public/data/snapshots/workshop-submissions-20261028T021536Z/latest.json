@@ -41,7 +41,12 @@
     "kpi.escalation.rate.code_snippet": 0,
     "kpi.evidence.gap_rate": 0.5309734513274337,
     "kpi.corpus.size": 200,
-    "kpi.assess.submission_kind": "mixed"
+    "kpi.assess.submission_kind": "mixed",
+    "kpi.adr.touched": 200,
+    "kpi.adr.assessed": 0,
+    "kpi.adr.fail_count": 0,
+    "kpi.adr.pass_count": 0,
+    "kpi.adr.indeterminate_count": 0
   },
   "slo": {
     "assess_runtime_llm_calls_zero": true,
@@ -50,7 +55,8 @@
   },
   "links": {
     "assessment": "assessment.json",
-    "candidates": "candidates.json"
+    "candidates": "candidates.json",
+    "adr_flagging": "adr_flagging.json"
   },
   "summary": "Workshop submissions batch: 25 tech_spec + 25 code_snippet assessed."
 }

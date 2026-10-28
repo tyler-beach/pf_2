@@ -1,7 +1,8 @@
 {
   "links": {
     "assessment": "assessment.json",
-    "candidates": "candidates.json"
+    "candidates": "candidates.json",
+    "adr_flagging": "adr_flagging.json"
   },
   "metrics": {
     "candidate_total": 113,
@@ -38,7 +39,12 @@
     "kpi.invariant.llm_calls": 0,
     "kpi.submission.code_snippet_count": 25,
     "kpi.submission.tech_spec_count": 25,
-    "schema_version": "workshop-metrics-v1"
+    "schema_version": "workshop-metrics-v1",
+    "kpi.adr.touched": 200,
+    "kpi.adr.assessed": 0,
+    "kpi.adr.fail_count": 0,
+    "kpi.adr.pass_count": 0,
+    "kpi.adr.indeterminate_count": 0
   },
   "run": {
     "git_sha": "d9890cf14e8c037b667442bb6e1a50bc1f116073",

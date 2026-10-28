@@ -93,6 +93,20 @@ type Metrics struct {
 
 	EvidenceGapRate *float64 `json:"kpi.evidence.gap_rate,omitempty"`
 	CorpusSize      *int     `json:"kpi.corpus.size,omitempty"`
+
+	// ADR flagging rollup (from assessment requirements ± batch).
+	ADRTouched             *int     `json:"kpi.adr.touched,omitempty"`
+	ADRAssessed            *int     `json:"kpi.adr.assessed,omitempty"`
+	ADRFlagRate            *float64 `json:"kpi.adr.flag_rate,omitempty"`
+	ADRFlagRateLo          *float64 `json:"kpi.adr.flag_rate.ci_low,omitempty"`
+	ADRFlagRateHi          *float64 `json:"kpi.adr.flag_rate.ci_high,omitempty"`
+	ADRTopFlagRate         *float64 `json:"kpi.adr.top_flag_rate,omitempty"`
+	ADRTopFlagRateADR      string   `json:"kpi.adr.top_flag_rate_adr,omitempty"`
+	ADRFailCount           *int     `json:"kpi.adr.fail_count,omitempty"`
+	ADRPassCount           *int     `json:"kpi.adr.pass_count,omitempty"`
+	ADRIndeterminateCount  *int     `json:"kpi.adr.indeterminate_count,omitempty"`
+	ADRMostFail            string   `json:"kpi.adr.most_fail,omitempty"`
+	ADRMostAligned         string   `json:"kpi.adr.most_aligned,omitempty"`
 }
 
 // Latest is the operational rollup for the workshop home page.
@@ -112,12 +126,17 @@ type EmitOptions struct {
 	CandidatesPath   string
 	CoveragePath     string
 	AssessmentPath   string
-	ProposalsPath    string
-	RegistryPath     string
-	HarnessPath      string
-	PromptfooPath    string
-	CorpusLabelsPath string
-	EnforceAssessLLM bool
+	// SubmissionsIndexPath is an optional workshop submissions results index
+	// (submissions.json) whose per-submission assessment_path files are rolled
+	// into adr_flagging.json. Prefer this for batch snapshots when the rollup
+	// assessment.json has empty requirements.
+	SubmissionsIndexPath string
+	ProposalsPath        string
+	RegistryPath         string
+	HarnessPath          string
+	PromptfooPath        string
+	CorpusLabelsPath     string
+	EnforceAssessLLM     bool
 }
 
 // Emit builds a workshop-snapshot directory from optional artifact paths.
@@ -295,6 +314,19 @@ func Emit(opts EmitOptions) (Latest, error) {
 			Verdict         string `json:"verdict"`
 			RuntimeLLMCalls int    `json:"runtime_llm_calls"`
 			SubmissionKind  string `json:"submission_kind"`
+			Requirements    []struct {
+				ADRID         string `json:"adr_id"`
+				Title         string `json:"title"`
+				RequirementID string `json:"requirement_id"`
+				Status        string `json:"status"`
+				Reason        string `json:"reason"`
+				Findings      []struct {
+					RuleID   string `json:"rule_id"`
+					Analyzer string `json:"analyzer"`
+					Path     string `json:"path"`
+					Message  string `json:"message"`
+				} `json:"findings"`
+			} `json:"requirements"`
 		}
 		if err := readJSON(opts.AssessmentPath, &payload); err != nil {
 			return Latest{}, fmt.Errorf("assessment: %w", err)
@@ -311,6 +343,41 @@ func Emit(opts EmitOptions) (Latest, error) {
 			return Latest{}, err
 		}
 		copied["assessment"] = "assessment.json"
+
+		if len(payload.Requirements) > 0 && opts.SubmissionsIndexPath == "" {
+			reqs := make([]ADRFlaggingInputRequirement, 0, len(payload.Requirements))
+			for _, r := range payload.Requirements {
+				findings := make([]ADRFlaggingRule, 0, len(r.Findings))
+				for _, f := range r.Findings {
+					findings = append(findings, ADRFlaggingRule{
+						RuleID: f.RuleID, Analyzer: f.Analyzer, Path: f.Path, Message: f.Message,
+					})
+				}
+				reqs = append(reqs, ADRFlaggingInputRequirement{
+					ADRID: r.ADRID, Title: r.Title, RequirementID: r.RequirementID,
+					Status: r.Status, Reason: r.Reason, Findings: findings,
+				})
+			}
+			report := BuildADRFlagging(opts.Run.RunID, []ADRFlaggingInput{{
+				RunID: opts.Run.RunID, SubmissionKind: payload.SubmissionKind, Requirements: reqs,
+			}})
+			if err := writeADRFlaggingArtifact(opts.OutDir, &metrics, links, copied, report); err != nil {
+				return Latest{}, err
+			}
+		}
+	}
+
+	if opts.SubmissionsIndexPath != "" {
+		inputs, err := LoadADRFlaggingInputsFromSubmissions(opts.SubmissionsIndexPath, opts.Run.RunID)
+		if err != nil {
+			return Latest{}, fmt.Errorf("adr flagging submissions: %w", err)
+		}
+		if len(inputs) > 0 {
+			report := BuildADRFlagging(opts.Run.RunID, inputs)
+			if err := writeADRFlaggingArtifact(opts.OutDir, &metrics, links, copied, report); err != nil {
+				return Latest{}, err
+			}
+		}
 	}
 
 	if opts.ProposalsPath != "" {

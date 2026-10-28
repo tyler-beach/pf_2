@@ -184,11 +184,16 @@ go run ./cmd/adrctl workshop-emit \
   --git-sha "$GIT_SHA" \
   --candidates "$OUT/candidates.json" \
   --assessment "$OUT/assessment-rollup.json" \
+  --submissions "$OUT/submissions.json" \
   --corpus-labels testdata/corpus/labels.json \
   --enforce-assess-llm
 
 cp "$OUT/submissions.json" "$SNAP/submissions.json"
 cp "$PACK/manifest.json" "$SNAP/workshop-submissions-manifest.json"
+# Keep a copy of the ADR flagging rollup next to results for offline reuse.
+if [[ -f "$SNAP/adr_flagging.json" ]]; then
+  cp "$SNAP/adr_flagging.json" "$OUT/adr_flagging.json"
+fi
 
 python3 <<'PY'
 import json, os

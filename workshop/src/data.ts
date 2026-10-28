@@ -122,6 +122,93 @@ export type CorpusIndex = {
   entries: CorpusEntry[];
 };
 
+export type ADRFlaggingRule = {
+  rule_id?: string;
+  analyzer?: string;
+  pattern?: string;
+  path?: string;
+  message?: string;
+};
+
+export type ADRFlaggingObservation = {
+  run_id?: string;
+  submission_id?: string;
+  submission_kind?: string;
+  requirement_id: string;
+  status: string;
+  alignment: string;
+  title?: string;
+  reason?: string;
+  rules?: ADRFlaggingRule[];
+};
+
+export type ADRFlaggingKindRollup = {
+  counts: Record<string, number>;
+  assessed: number;
+  aligned: number;
+  deviated: number;
+  excluded: number;
+  flag_rate?: number;
+  flag_rate_ci_low?: number;
+  flag_rate_ci_high?: number;
+};
+
+export type ADRFlaggingRow = {
+  adr_id: string;
+  title?: string;
+  counts: Record<string, number>;
+  assessed: number;
+  aligned: number;
+  deviated: number;
+  excluded: number;
+  fail_count: number;
+  indeterminate_count: number;
+  flag_rate?: number;
+  flag_rate_ci_low?: number;
+  flag_rate_ci_high?: number;
+  by_submission_kind?: Record<string, ADRFlaggingKindRollup>;
+  rules?: ADRFlaggingRule[];
+  aligned_runs?: ADRFlaggingObservation[];
+  deviated_runs?: ADRFlaggingObservation[];
+  run_ids?: string[];
+};
+
+export type ADRFlaggingReport = {
+  schema_version: string;
+  run_id?: string;
+  definitions: Record<string, string>;
+  summary: {
+    adr_touched: number;
+    adr_assessed: number;
+    requirement_observations: number;
+    assessed_observations: number;
+    aligned_observations: number;
+    deviated_observations: number;
+    excluded_observations: number;
+    fail_observations: number;
+    indeterminate_observations: number;
+    flag_rate?: number;
+    flag_rate_ci_low?: number;
+    flag_rate_ci_high?: number;
+    top_flag_rate?: number;
+    top_flag_rate_adr?: string;
+    most_fail_adr?: string;
+    most_fail_count?: number;
+    most_aligned_adr?: string;
+    most_aligned_count?: number;
+    most_indeterminate_adr?: string;
+    most_indeterminate_count?: number;
+  };
+  leaderboards: {
+    most_flagging: string[];
+    least_flagging: string[];
+    most_fail: string[];
+    most_indeterminate: string[];
+    most_aligned: string[];
+  };
+  adrs: ADRFlaggingRow[];
+};
+
 export type ActiveContext = {
   runId: string;
   prefix: string;
@@ -303,6 +390,10 @@ export async function loadADR(id: string): Promise<ADRSummary | null> {
 
 export async function loadCosts(): Promise<Record<string, unknown> | null> {
   return loadLinkJSON<Record<string, unknown>>('costs');
+}
+
+export async function loadADRFlagging(): Promise<ADRFlaggingReport | null> {
+  return loadLinkJSON<ADRFlaggingReport>('adr_flagging');
 }
 
 export function previousRun(runs: MetricsRow[], runId: string): MetricsRow | undefined {

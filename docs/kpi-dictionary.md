@@ -31,6 +31,14 @@ Emitted by `adrctl workshop-emit` into `metrics.json` and appended to `workshop-
 | `kpi.promptfoo.pass_rate` | Did assist eval assertions pass? | successes / (successes+failures); **not a compliance verdict** | ratio | offline\|live | Promptfoo |
 | `kpi.evidence.gap_rate` | Share needing manual / non-executable patterns | `manual_review` candidates / total | ratio | workflow | extract |
 | `kpi.corpus.size` | Labeled corpus scale | labeled ADR count | count | corpus | labels.json |
+| `kpi.adr.touched` | How many ADRs appear in assessment requirements? | distinct `adr_id` in rolled requirement observations | count | workflow, ref | assess / workshop-emit |
+| `kpi.adr.assessed` | How many ADRs have ≥1 applicable (non-N/A) result? | distinct ADR with aligned or deviate observations | count | workflow, ref | assess / workshop-emit |
+| `kpi.adr.flag_rate` | How often do applicable ADR checks deviate? | deviate / assessed (± Wilson `kpi.adr.flag_rate.ci_low/ci_high`). **Aligned** = `PASS`. **Deviated** = `FAIL`/`WARN`/`INDETERMINATE`/`EVIDENCE_MISSING`/`ERROR`/`REVIEW_REQUIRED`/`UNSUPPORTED`. **Excluded** = `NOT_APPLICABLE` (not in denominator). | ratio 0–1 | workflow, submission_kind | assess / `--submissions` batch |
+| `kpi.adr.top_flag_rate` / `top_flag_rate_adr` | Which ADR flags most? | max per-ADR flag rate + id | ratio / id | adr | assess / workshop-emit |
+| `kpi.adr.fail_count` / `pass_count` / `indeterminate_count` | Observation totals | counts of FAIL / PASS / INDETERMINATE requirement results | count | workflow | assess / workshop-emit |
+| `kpi.adr.most_fail` / `most_aligned` | Leaderboard anchors | ADR id with most FAIL / most PASS observations | id | adr | assess / workshop-emit |
+
+Static dig-in artifact: `adr_flagging.json` (`adr-flagging-v1`) with per-ADR counts, Wilson CIs, `by_submission_kind`, aligned/deviated run samples, and fired rule ids. Workshop route: `#/adr-flags`.
 
 ## SLO tiles (workshop home)
 

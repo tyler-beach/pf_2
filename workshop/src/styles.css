@@ -683,6 +683,28 @@ td.wrap {
 }
 td.col-id { width: 12rem; }
 td.col-adr { width: 6.5rem; }
+
+.adr-flag-digin {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--panel) 88%, #000 12%);
+}
+.adr-flag-digin > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  list-style: none;
+}
+.adr-flag-digin > summary::-webkit-details-marker { display: none; }
+.adr-flag-digin > summary::before {
+  content: "▸ ";
+  color: var(--muted);
+  font-weight: 400;
+}
+.adr-flag-digin[open] > summary::before { content: "▾ "; }
+.adr-flag-digin .metrics { margin-top: 0.75rem; }
 td.col-band { width: 7.5rem; white-space: normal; }
 td.col-links { width: 13.5rem; }
 td.col-pattern { width: 11rem; }

@@ -581,6 +581,8 @@ const HIGHER_BETTER_EXACT = new Set([
   'kpi.promptfoo.pass_rate',
   'kpi.assess.covered',
   'kpi.corpus.size',
+  'kpi.adr.pass_count',
+  'kpi.adr.assessed',
 ]);
 
 const LOWER_BETTER_EXACT = new Set([
@@ -600,6 +602,10 @@ const LOWER_BETTER_EXACT = new Set([
   'kpi.assist.cost_usd',
   'kpi.assist.prompt_tokens',
   'kpi.assist.completion_tokens',
+  'kpi.adr.flag_rate',
+  'kpi.adr.fail_count',
+  'kpi.adr.indeterminate_count',
+  'kpi.adr.top_flag_rate',
 ]);
 
 const NEUTRAL_EXACT = new Set([

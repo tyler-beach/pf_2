@@ -307,7 +307,35 @@ export const DOC_SECTIONS: DocSection[] = [
   <li><strong>Export</strong> — Copy TSV / Markdown / failing checklist for Issues.</li>
   <li><strong>Docs</strong> route as <code>#/docs/:section</code> (this page).</li>
 </ul>
-<p>Routes: Overview, Metrics, <a href="#/confidence">Confidence</a>, Pipeline, Sample, ADRs, Candidates, Proposals, Assess, Costs, Runs, Evals, Corpus, Docs.</p>`,
+<p>Routes: Overview, Metrics, <a href="#/confidence">Confidence</a>, <a href="#/adr-flags">ADR Flagging</a>, Pipeline, Sample, ADRs, Candidates, Proposals, Assess, Costs, Runs, Evals, Corpus, Docs.</p>`,
+  },
+  {
+    id: 'adr-flagging',
+    title: 'ADR flagging analytics',
+    group: 'Operator reference',
+    summary: 'Aligned vs deviate definitions, flag rate, and leaderboard KPIs.',
+    body: `
+<p>Dashboard: <a href="#/adr-flags"><code>#/adr-flags</code></a> (alias <code>#/adrs/insights</code>). Artifact: <code>adr_flagging.json</code> from <code>adrctl workshop-emit</code> (single assessment requirements or <code>--submissions</code> batch index). Summary KPIs land on <code>metrics.json</code> as <code>kpi.adr.*</code>.</p>
+<h3>Aligned vs deviate</h3>
+<table class="docs-table">
+  <thead><tr><th>Class</th><th>Requirement statuses</th><th>In flag rate?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Aligned</strong></td><td><code>PASS</code></td><td>Yes (denominator + success)</td></tr>
+    <tr><td><strong>Deviated</strong></td><td><code>FAIL</code>, <code>WARN</code>, <code>INDETERMINATE</code>, <code>EVIDENCE_MISSING</code>, <code>ERROR</code>, <code>REVIEW_REQUIRED</code>, <code>UNSUPPORTED</code></td><td>Yes (denominator + flag)</td></tr>
+    <tr><td><strong>Excluded</strong></td><td><code>NOT_APPLICABLE</code> (or empty)</td><td>No — counted as touched only</td></tr>
+  </tbody>
+</table>
+<p><strong>Assessed</strong> = aligned + deviate. <strong>Flag rate</strong> = deviate / assessed (Wilson 95% <code>kpi.adr.flag_rate.ci_*</code> when assessed &gt; 0). Issue-surface batches that are all <code>NOT_APPLICABLE</code> show touched ADRs with no flag rate until repository evidence produces PASS/FAIL.</p>
+<h3>KPI strip</h3>
+<ul>
+  <li><code>kpi.adr.touched</code> / <code>kpi.adr.assessed</code> — ADRs with any observation / with ≥1 assessed observation.</li>
+  <li><code>kpi.adr.flag_rate</code> (± CI) — overall deviate share among assessed requirement observations.</li>
+  <li><code>kpi.adr.top_flag_rate</code> / <code>kpi.adr.top_flag_rate_adr</code> — highest per-ADR flag rate.</li>
+  <li><code>kpi.adr.fail_count</code> / <code>pass_count</code> / <code>indeterminate_count</code> — observation totals.</li>
+  <li><code>kpi.adr.most_fail</code> / <code>kpi.adr.most_aligned</code> — ADR ids for the strip.</li>
+</ul>
+<p>Per-ADR dig-in (dashboard expand or <a href="#/adrs">ADRs</a> detail) lists aligned runs, deviate runs, OpenGrep/Checkov rule ids that fired, and deep links into Assess / Submissions / Runs. Split by <code>submission_kind</code> when present.</p>
+<p>Related: <a href="#/docs/statuses">Statuses</a> · <a href="#/docs/kpis">KPI glossary</a> · repo <code>docs/kpi-dictionary.md</code>.</p>`,
   },
   {
     id: 'confidence',
@@ -361,8 +389,9 @@ export const DOC_SECTIONS: DocSection[] = [
   <li>Assist cost &amp; proposal counts measure batch assist — not compliance.</li>
   <li>Promptfoo pass rate is assist regression only.</li>
   <li>Assess covered / unbound / stale track binding completeness, not “green estate.”</li>
+  <li><code>kpi.adr.*</code> — ADR flagging rollup (aligned=PASS, deviate=FAIL/WARN/INDETERMINATE/…, N/A excluded). Dashboard: <a href="#/adr-flags">ADR Flagging</a>. See <a href="#/docs/adr-flagging">ADR flagging analytics</a>.</li>
 </ul>
-<p>Authoritative definitions: repository <code>docs/kpi-dictionary.md</code>. Charts: <a href="#/metrics">Metrics</a> · <a href="#/confidence">Confidence</a>.</p>`,
+<p>Authoritative definitions: repository <code>docs/kpi-dictionary.md</code>. Charts: <a href="#/metrics">Metrics</a> · <a href="#/confidence">Confidence</a> · <a href="#/adr-flags">ADR Flagging</a>.</p>`,
   },
   {
     id: 'glossary',

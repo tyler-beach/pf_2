@@ -844,6 +844,7 @@ func runWorkshopEmit(args []string) error {
 	candidates := fs.String("candidates", "", "obligation candidates JSON")
 	coverage := fs.String("coverage", "", "obligation review coverage JSON")
 	assessmentPath := fs.String("assessment", "", "assessment JSON")
+	submissions := fs.String("submissions", "", "workshop submissions index JSON (rolls ADR flagging across assessment_path files)")
 	proposals := fs.String("proposals", "", "LLM assist proposals JSON")
 	registryPath := fs.String("registry", "", "obligation review registry JSON (for accept_rate)")
 	harness := fs.String("harness", "", "reuse/corpus harness metrics JSON")
@@ -865,15 +866,16 @@ func runWorkshopEmit(args []string) error {
 			HTMLURL:      *htmlURL,
 			ProviderMode: *providerMode,
 		},
-		CandidatesPath:   *candidates,
-		CoveragePath:     *coverage,
-		AssessmentPath:   *assessmentPath,
-		ProposalsPath:    *proposals,
-		RegistryPath:     *registryPath,
-		HarnessPath:      *harness,
-		PromptfooPath:    *promptfooPath,
-		CorpusLabelsPath: *corpusLabels,
-		EnforceAssessLLM: *enforceAssessLLM,
+		CandidatesPath:       *candidates,
+		CoveragePath:         *coverage,
+		AssessmentPath:       *assessmentPath,
+		SubmissionsIndexPath: *submissions,
+		ProposalsPath:        *proposals,
+		RegistryPath:         *registryPath,
+		HarnessPath:          *harness,
+		PromptfooPath:        *promptfooPath,
+		CorpusLabelsPath:     *corpusLabels,
+		EnforceAssessLLM:     *enforceAssessLLM,
 	})
 	if err != nil {
 		return err

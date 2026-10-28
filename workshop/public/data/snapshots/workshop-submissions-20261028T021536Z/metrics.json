@@ -33,5 +33,10 @@
   "kpi.escalation.rate.code_snippet": 0,
   "kpi.evidence.gap_rate": 0.5309734513274337,
   "kpi.corpus.size": 200,
-  "kpi.assess.submission_kind": "mixed"
+  "kpi.assess.submission_kind": "mixed",
+  "kpi.adr.touched": 200,
+  "kpi.adr.assessed": 0,
+  "kpi.adr.fail_count": 0,
+  "kpi.adr.pass_count": 0,
+  "kpi.adr.indeterminate_count": 0
 }
