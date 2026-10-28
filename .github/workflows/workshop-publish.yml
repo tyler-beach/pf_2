@@ -14,6 +14,10 @@ on:
         description: Optional Actions run id to download workshop-inputs from
         required: false
         default: ""
+      snapshot_path:
+        description: Optional in-repo snapshot dir (e.g. testdata/workshop-submissions/workshop-snapshot) when no source_run_id
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -55,8 +59,14 @@ jobs:
           inputs="$RUNNER_TEMP/workshop-inputs"
           mkdir -p "$inputs/snapshot"
           if [ -z "${SOURCE_RUN_ID:-}" ]; then
-            echo "No source run id; using fixtures"
-            cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
+            SNAP_PATH="${{ github.event.inputs.snapshot_path }}"
+            if [ -n "${SNAP_PATH:-}" ] && [ -f "${SNAP_PATH}/latest.json" ]; then
+              echo "No source run id; using in-repo snapshot ${SNAP_PATH}"
+              cp -R "${SNAP_PATH}/." "$inputs/snapshot/"
+            else
+              echo "No source run id; using fixtures"
+              cp -R testdata/workshop-fixtures/. "$inputs/snapshot/"
+            fi
             exit 0
           fi
           # Prefer dedicated workshop-inputs artifacts over evidence-only uploads.
