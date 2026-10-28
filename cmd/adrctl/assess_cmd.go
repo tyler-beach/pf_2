@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -30,6 +31,10 @@ func runValidate(args []string) error {
 }
 
 func runAssess(args []string, repoMode bool) error {
+	return runAssessCtx(context.Background(), args, repoMode)
+}
+
+func runAssessCtx(ctx context.Context, args []string, repoMode bool) error {
 	fs := flag.NewFlagSet("assess", flag.ContinueOnError)
 	input := fs.String("input", "", "Markdown issue body")
 	root := fs.String("root", ".", "repository root")
@@ -79,8 +84,13 @@ func runAssess(args []string, repoMode bool) error {
 		return err
 	}
 	// AssessmentOrchestrator is the production DI seam (Uber Go: accept interfaces
-	// at edges; microservice practice: keep assess boundary injectable for tests).
-	result, err := orchestrate.NewDefaultOrchestrator().Assess(*catalogPath, files, assessment.AssessmentOptions{
+	// at edges). Deterministic: zero LLM calls; Observer emits stage JSON when enabled.
+	orch := orchestrate.DefaultOrchestrator{
+		Catalogs: orchestrate.CatalogFileProvider{},
+		Evaluate: orchestrate.DefaultEvaluator{},
+		Observer: cliObserver(),
+	}
+	result, err := orch.Assess(ctx, *catalogPath, files, assessment.AssessmentOptions{
 		EvidenceMode:    mode,
 		AnalyzerResults: analyzerResults,
 		IssueSurface:    *issueSurface,

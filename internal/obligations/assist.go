@@ -35,12 +35,12 @@ type Proposal struct {
 	SourceLineStart     int      `json:"source_line_start"`
 	SourceLineEnd       int      `json:"source_line_end"`
 	SourceQuote         string   `json:"source_quote"`
-	Confidence         string   `json:"parent_confidence"`
-	ConfidenceP        float64  `json:"parent_confidence_p,omitempty"`
-	ConfidenceMethod   string   `json:"parent_confidence_method,omitempty"`
-	ConfidenceCoverage float64  `json:"parent_confidence_coverage,omitempty"`
-	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
-	Provider           string   `json:"provider"`
+	Confidence          string   `json:"parent_confidence"`
+	ConfidenceP         float64  `json:"parent_confidence_p,omitempty"`
+	ConfidenceMethod    string   `json:"parent_confidence_method,omitempty"`
+	ConfidenceCoverage  float64  `json:"parent_confidence_coverage,omitempty"`
+	EscalationReasons   []string `json:"escalation_reasons,omitempty"`
+	Provider            string   `json:"provider"`
 	Model               string   `json:"model"`
 	PromptVersion       string   `json:"prompt_version"`
 	PromptSHA256        string   `json:"prompt_sha256"`
@@ -77,10 +77,13 @@ type TokenUsage struct {
 
 // AssistProvider generates raw proposal JSON for one candidate. Live providers
 // may call external APIs; OfflineAssistProvider never does.
+//
+// Complete returns optional TokenUsage so spend/observability never depends on
+// mutable receiver state (value vs pointer provider wiring).
 type AssistProvider interface {
 	Name() string
 	Model() string
-	Complete(ctx context.Context, prompt string) (raw []byte, err error)
+	Complete(ctx context.Context, prompt string) (raw []byte, usage TokenUsage, err error)
 }
 
 // OfflineAssistProvider produces deterministic proposals without network calls.
@@ -97,9 +100,9 @@ func (p OfflineAssistProvider) Model() string {
 	return p.ModelID
 }
 
-func (p OfflineAssistProvider) Complete(ctx context.Context, prompt string) ([]byte, error) {
+func (p OfflineAssistProvider) Complete(ctx context.Context, prompt string) ([]byte, TokenUsage, error) {
 	if ctx != nil && ctx.Err() != nil {
-		return nil, ctx.Err()
+		return nil, TokenUsage{}, ctx.Err()
 	}
 	// Deterministic structured stub derived from the prompt hash; not a model.
 	sum := sha256.Sum256([]byte(prompt))
@@ -110,7 +113,8 @@ func (p OfflineAssistProvider) Complete(ctx context.Context, prompt string) ([]b
 		"rationale":            "Deterministic offline fixture response for Promptfoo/CI; not a live model judgment.",
 		"fixture_digest":       hex.EncodeToString(sum[:8]),
 	}
-	return json.Marshal(payload)
+	raw, err := json.Marshal(payload)
+	return raw, TokenUsage{}, err
 }
 
 // OpenAICompatProvider calls an OpenAI-compatible chat completions endpoint.
@@ -120,19 +124,17 @@ type OpenAICompatProvider struct {
 	ModelID    string
 	HTTPClient *http.Client
 	MaxTokens  int
-	// LastUsage is populated after each successful Complete call.
-	LastUsage TokenUsage
 }
 
 func (p OpenAICompatProvider) Name() string  { return "openai-compatible" }
 func (p OpenAICompatProvider) Model() string { return p.ModelID }
 
-func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]byte, error) {
+func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]byte, TokenUsage, error) {
 	if strings.TrimSpace(p.APIKey) == "" {
-		return nil, fmt.Errorf("API key is required for live LLM assist")
+		return nil, TokenUsage{}, fmt.Errorf("API key is required for live LLM assist")
 	}
 	if strings.TrimSpace(p.ModelID) == "" {
-		return nil, fmt.Errorf("model is required for live LLM assist")
+		return nil, TokenUsage{}, fmt.Errorf("model is required for live LLM assist")
 	}
 	endpoint := strings.TrimSpace(p.Endpoint)
 	if endpoint == "" {
@@ -153,7 +155,7 @@ func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]by
 	}
 	encoded, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		return nil, TokenUsage{}, err
 	}
 	client := p.HTTPClient
 	if client == nil {
@@ -161,21 +163,21 @@ func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]by
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(encoded))
 	if err != nil {
-		return nil, err
+		return nil, TokenUsage{}, err
 	}
 	req.Header.Set("Authorization", "Bearer "+p.APIKey)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, TokenUsage{}, err
 	}
 	defer resp.Body.Close()
 	raw, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if err != nil {
-		return nil, err
+		return nil, TokenUsage{}, err
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("LLM provider returned HTTP %d: %s", resp.StatusCode, truncateAssist(string(raw), 512))
+		return nil, TokenUsage{}, fmt.Errorf("LLM provider returned HTTP %d: %s", resp.StatusCode, truncateAssist(string(raw), 512))
 	}
 	var parsed struct {
 		Choices []struct {
@@ -189,12 +191,12 @@ func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]by
 		} `json:"usage"`
 	}
 	if err := json.Unmarshal(raw, &parsed); err != nil {
-		return nil, fmt.Errorf("decode provider response: %w", err)
+		return nil, TokenUsage{}, fmt.Errorf("decode provider response: %w", err)
 	}
 	if len(parsed.Choices) == 0 || strings.TrimSpace(parsed.Choices[0].Message.Content) == "" {
-		return nil, fmt.Errorf("provider returned no assistant content")
+		return nil, TokenUsage{}, fmt.Errorf("provider returned no assistant content")
 	}
-	p.LastUsage = TokenUsage{
+	usage := TokenUsage{
 		PromptTokens:     parsed.Usage.PromptTokens,
 		CompletionTokens: parsed.Usage.CompletionTokens,
 	}
@@ -202,7 +204,7 @@ func (p OpenAICompatProvider) Complete(ctx context.Context, prompt string) ([]by
 	content = strings.TrimPrefix(content, "```json")
 	content = strings.TrimPrefix(content, "```")
 	content = strings.TrimSuffix(content, "```")
-	return []byte(strings.TrimSpace(content)), nil
+	return []byte(strings.TrimSpace(content)), usage, nil
 }
 
 // AssistOptions configures confidence-gated proposal generation.
@@ -249,15 +251,13 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 		}
 		prompt := buildAssistPrompt(candidate)
 		promptSum := sha256.Sum256([]byte(prompt))
-		raw, err := opts.Provider.Complete(ctx, prompt)
+		raw, usage, err := opts.Provider.Complete(ctx, prompt)
 		if err != nil {
 			return out, fmt.Errorf("assist candidate %s: %w", candidate.ID, err)
 		}
 		out.RuntimeLLMCalls++
-		if live, ok := opts.Provider.(*OpenAICompatProvider); ok {
-			out.PromptTokens += live.LastUsage.PromptTokens
-			out.CompletionTokens += live.LastUsage.CompletionTokens
-		}
+		out.PromptTokens += usage.PromptTokens
+		out.CompletionTokens += usage.CompletionTokens
 		rawSum := sha256.Sum256(raw)
 		parsed, err := parseAssistPayload(raw)
 		if err != nil {
@@ -281,12 +281,12 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 			SourceLineStart:     candidate.SourceLineStart,
 			SourceLineEnd:       candidate.SourceLineEnd,
 			SourceQuote:         quote,
-			Confidence:         candidate.Confidence,
-			ConfidenceP:        candidate.ConfidenceP,
-			ConfidenceMethod:   candidate.ConfidenceMethod,
-			ConfidenceCoverage: candidate.ConfidenceCoverage,
-			EscalationReasons:  append([]string(nil), candidate.EscalationReasons...),
-			Provider:           opts.Provider.Name(),
+			Confidence:          candidate.Confidence,
+			ConfidenceP:         candidate.ConfidenceP,
+			ConfidenceMethod:    candidate.ConfidenceMethod,
+			ConfidenceCoverage:  candidate.ConfidenceCoverage,
+			EscalationReasons:   append([]string(nil), candidate.EscalationReasons...),
+			Provider:            opts.Provider.Name(),
 			Model:               opts.Provider.Model(),
 			PromptVersion:       AssistPromptVersion,
 			PromptSHA256:        hex.EncodeToString(promptSum[:]),

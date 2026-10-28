@@ -1,6 +1,13 @@
 // Package orchestrate defines thin orchestration interfaces around existing
 // Pathfinder packages. Implementations wrap current behavior without changing
 // assessment semantics (scaling-adr-design Step A).
+//
+// Agentic architecture contracts (tool/agent boundaries):
+//
+//	ingest → extract (deterministic) → assist (LLM batch, HITL) → review (human)
+//	plan → execute/analyzers (deterministic) → assess (deterministic) → prscan / workshop
+//
+// Runtime assess/PR gates make zero LLM calls. Assist never auto-approves.
 package orchestrate
 
 import (
@@ -34,8 +41,9 @@ type CatalogProvider interface {
 }
 
 // AssessmentOrchestrator coordinates catalog load, evidence attachment, and evaluation.
+// Deterministic seam: implementations must keep Result.LLMCalls at zero.
 type AssessmentOrchestrator interface {
-	Assess(catalogPath string, files []assessment.SourceFile, options assessment.AssessmentOptions) (assessment.Result, error)
+	Assess(ctx context.Context, catalogPath string, files []assessment.SourceFile, options assessment.AssessmentOptions) (assessment.Result, error)
 }
 
 // OpenGrepAnalyzer adapts plan.OpenGrepTaskRunner to Analyzer.
@@ -72,22 +80,55 @@ func (DefaultEvaluator) Evaluate(catalog assessment.Catalog, files []assessment.
 type DefaultOrchestrator struct {
 	Catalogs CatalogProvider
 	Evaluate PatternEvaluator
+	Observer Observer
 }
 
 func NewDefaultOrchestrator() DefaultOrchestrator {
-	return DefaultOrchestrator{Catalogs: CatalogFileProvider{}, Evaluate: DefaultEvaluator{}}
+	// Observer defaults to nop so unit tests stay quiet; CLI wires DefaultObserver.
+	return DefaultOrchestrator{
+		Catalogs: CatalogFileProvider{},
+		Evaluate: DefaultEvaluator{},
+		Observer: NopObserver{},
+	}
 }
 
-func (o DefaultOrchestrator) Assess(catalogPath string, files []assessment.SourceFile, options assessment.AssessmentOptions) (assessment.Result, error) {
+func (o DefaultOrchestrator) Assess(ctx context.Context, catalogPath string, files []assessment.SourceFile, options assessment.AssessmentOptions) (assessment.Result, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := ctx.Err(); err != nil {
+		return assessment.Result{}, err
+	}
 	if o.Catalogs == nil {
 		return assessment.Result{}, fmt.Errorf("orchestrate: CatalogProvider is required")
 	}
 	if o.Evaluate == nil {
 		return assessment.Result{}, fmt.Errorf("orchestrate: PatternEvaluator is required")
 	}
-	catalog, err := o.Catalogs.Load(catalogPath)
-	if err != nil {
-		return assessment.Result{}, fmt.Errorf("load requirements catalog: %w", err)
+	var result assessment.Result
+	attrs := map[string]any{
+		"catalog_path":      catalogPath,
+		"source_file_count": len(files),
+		"evidence_mode":     options.EvidenceMode,
+		"issue_surface":     options.IssueSurface,
+		"analyzer_results":  len(options.AnalyzerResults),
 	}
-	return o.Evaluate.Evaluate(catalog, files, options), nil
+	err := traceStage(ctx, o.Observer, StageAssess, SeamDeterministic, attrs, func() error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		catalog, loadErr := o.Catalogs.Load(catalogPath)
+		if loadErr != nil {
+			return fmt.Errorf("load requirements catalog: %w", loadErr)
+		}
+		result = o.Evaluate.Evaluate(catalog, files, options)
+		if result.LLMCalls != 0 {
+			return fmt.Errorf("orchestrate: assess seam violated — runtime LLM calls = %d (must be 0)", result.LLMCalls)
+		}
+		attrs["verdict"] = result.Verdict
+		attrs["requirement_count"] = result.RequirementCount
+		attrs["llm_calls"] = result.LLMCalls
+		return nil
+	})
+	return result, err
 }

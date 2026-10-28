@@ -1,6 +1,7 @@
 package orchestrate
 
 import (
+	"context"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -12,7 +13,7 @@ import (
 func TestDefaultOrchestratorAssessesFixture(t *testing.T) {
 	root := filepath.Join("..", "..")
 	orch := NewDefaultOrchestrator()
-	result, err := orch.Assess(filepath.Join(root, "adr", "requirements.json"), []assessment.SourceFile{{
+	result, err := orch.Assess(context.Background(), filepath.Join(root, "adr", "requirements.json"), []assessment.SourceFile{{
 		Path: "internal/domain/customer.go", Language: "go",
 		Content: "package domain\n",
 	}, {
@@ -31,17 +32,27 @@ func TestDefaultOrchestratorAssessesFixture(t *testing.T) {
 }
 
 func TestDefaultOrchestratorRequiresDependencies(t *testing.T) {
-	_, err := (DefaultOrchestrator{}).Assess("missing.json", nil, assessment.AssessmentOptions{})
+	ctx := context.Background()
+	_, err := (DefaultOrchestrator{}).Assess(ctx, "missing.json", nil, assessment.AssessmentOptions{})
 	if err == nil || !strings.Contains(err.Error(), "CatalogProvider") {
 		t.Fatalf("expected CatalogProvider error, got %v", err)
 	}
-	_, err = (DefaultOrchestrator{Catalogs: CatalogFileProvider{}}).Assess("missing.json", nil, assessment.AssessmentOptions{})
+	_, err = (DefaultOrchestrator{Catalogs: CatalogFileProvider{}}).Assess(ctx, "missing.json", nil, assessment.AssessmentOptions{})
 	if err == nil || !strings.Contains(err.Error(), "PatternEvaluator") {
 		t.Fatalf("expected PatternEvaluator error, got %v", err)
 	}
-	_, err = NewDefaultOrchestrator().Assess(filepath.Join("does", "not", "exist.json"), nil, assessment.AssessmentOptions{})
+	_, err = NewDefaultOrchestrator().Assess(ctx, filepath.Join("does", "not", "exist.json"), nil, assessment.AssessmentOptions{})
 	if err == nil || !strings.Contains(err.Error(), "load requirements catalog") {
 		t.Fatalf("expected wrapped catalog load error, got %v", err)
+	}
+}
+
+func TestDefaultOrchestratorHonorsCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	_, err := NewDefaultOrchestrator().Assess(ctx, "irrelevant.json", nil, assessment.AssessmentOptions{})
+	if err == nil {
+		t.Fatal("expected canceled context error")
 	}
 }
 

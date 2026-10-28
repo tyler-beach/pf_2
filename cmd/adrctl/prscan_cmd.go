@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"os"
 
 	"github.com/tyler-beach/pf_2/internal/assessment"
+	"github.com/tyler-beach/pf_2/internal/orchestrate"
 	"github.com/tyler-beach/pf_2/internal/prscan"
 )
 
@@ -53,7 +55,7 @@ func runParsePRScanIssue(args []string) error {
 	return enc.Encode(req)
 }
 
-func runAssessmentToRDJSON(args []string) error {
+func runAssessmentToRDJSON(ctx context.Context, args []string) error {
 	fs := flag.NewFlagSet("assessment-to-rdjson", flag.ContinueOnError)
 	assessmentPath := fs.String("assessment", "assessment.json", "assessment JSON input")
 	rdjsonPath := fs.String("rdjson-out", "pathfinder.rdjson", "rdjson output path")
@@ -81,7 +83,10 @@ func runAssessmentToRDJSON(args []string) error {
 	if mark == "" {
 		mark = *headSHA
 	}
-	conv := prscan.ConvertAssessment(result, prscan.ConvertOptions{
+	// FindingConverter is the PR-agent trust boundary: deterministic assessments
+	// only; N/A/PASS never become inline/Security findings; LLM-tainted evidence refused.
+	converter := orchestrate.DefaultFindingConverter{Observer: cliObserver()}
+	conv, err := converter.Convert(ctx, result, prscan.ConvertOptions{
 		MaxInline:        *maxInline,
 		SecurityUncapped: *securityUncapped,
 		DocsBase:         *docsBase,
@@ -90,6 +95,9 @@ func runAssessmentToRDJSON(args []string) error {
 		IssueURL:         *issueURL,
 		Marker:           mark,
 	})
+	if err != nil {
+		return fmt.Errorf("prscan convert: %w", err)
+	}
 	raw, err := prscan.MarshalRDJSON(conv.RDJSON)
 	if err != nil {
 		return err

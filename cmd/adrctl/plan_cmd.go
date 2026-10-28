@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tyler-beach/pf_2/internal/orchestrate"
 	"github.com/tyler-beach/pf_2/internal/plan"
 )
 
@@ -155,7 +156,8 @@ func runExecutePlanWithRunner(ctx context.Context, args []string, injected plan.
 	if runner == nil {
 		runner = plan.DefaultRunnerRegistryWithBinaries(*binary, *checkovBinary)
 	}
-	result, runErr := plan.ExecuteManifest(ctx, *root, manifest, runner, cache)
+	executor := orchestrate.DefaultPlanExecutor{Observer: cliObserver()}
+	result, runErr := executor.Execute(ctx, *root, manifest, runner, cache)
 	for i := range result.Tasks {
 		task := &result.Tasks[i]
 		if len(task.RawSARIF) == 0 {

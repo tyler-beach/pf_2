@@ -18,9 +18,9 @@ func main() {
 	case "validate":
 		err = runValidate(os.Args[2:])
 	case "assess":
-		err = runAssess(os.Args[2:], false)
+		err = runAssessCtx(ctx, os.Args[2:], false)
 	case "assess-repo":
-		err = runAssess(os.Args[2:], true)
+		err = runAssessCtx(ctx, os.Args[2:], true)
 	case "ingest-adrs":
 		err = runIngestADRs(os.Args[2:])
 	case "extract-obligations":
@@ -62,7 +62,7 @@ func main() {
 	case "parse-pr-scan-issue":
 		err = runParsePRScanIssue(os.Args[2:])
 	case "assessment-to-rdjson":
-		err = runAssessmentToRDJSON(os.Args[2:])
+		err = runAssessmentToRDJSON(ctx, os.Args[2:])
 	case "version":
 		fmt.Println("adrctl 0.1.0")
 	default:

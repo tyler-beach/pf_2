@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/tyler-beach/pf_2/internal/analyzer"
+	"github.com/tyler-beach/pf_2/internal/orchestrate"
 	"github.com/tyler-beach/pf_2/internal/plan"
 )
 
@@ -94,7 +95,7 @@ func runOpenGrepScan(ctx context.Context, args []string) error {
 		}
 		cache = fileCache
 	}
-	run, err := plan.ExecuteManifest(ctx, rootAbs, manifest, plan.OpenGrepTaskRunner{Binary: binaryPath}, cache)
+	run, err := orchestrate.DefaultPlanExecutor{Observer: cliObserver()}.Execute(ctx, rootAbs, manifest, plan.OpenGrepTaskRunner{Binary: binaryPath}, cache)
 	if err != nil && run.Status == "" {
 		return fmt.Errorf("run deterministic analyzer plan: %w", err)
 	}
@@ -226,7 +227,7 @@ func runCheckovScan(ctx context.Context, args []string) error {
 		}
 		cache = fileCache
 	}
-	run, err := plan.ExecuteManifest(ctx, rootAbs, manifest, plan.CheckovTaskRunner{Binary: binaryPath}, cache)
+	run, err := orchestrate.DefaultPlanExecutor{Observer: cliObserver()}.Execute(ctx, rootAbs, manifest, plan.CheckovTaskRunner{Binary: binaryPath}, cache)
 	if err != nil && run.Status == "" {
 		return fmt.Errorf("run deterministic analyzer plan: %w", err)
 	}
