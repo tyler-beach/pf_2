@@ -54,12 +54,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id || github.event.inputs.source_run_id }}
+          SNAP_PATH: ${{ github.event.inputs.snapshot_path }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name || 'dispatch' }}
+          GIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
           inputs="$RUNNER_TEMP/workshop-inputs"
           mkdir -p "$inputs/snapshot"
           if [ -z "${SOURCE_RUN_ID:-}" ]; then
-            SNAP_PATH="${{ github.event.inputs.snapshot_path }}"
             if [ -n "${SNAP_PATH:-}" ] && [ -f "${SNAP_PATH}/latest.json" ]; then
               echo "No source run id; using in-repo snapshot ${SNAP_PATH}"
               cp -R "${SNAP_PATH}/." "$inputs/snapshot/"
@@ -70,7 +72,7 @@ jobs:
             exit 0
           fi
           # Prefer dedicated workshop-inputs artifacts over evidence-only uploads.
-          names="$(gh api "repos/${{ github.repository }}/actions/runs/${SOURCE_RUN_ID}/artifacts" --jq '.artifacts[].name')"
+          names="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}/artifacts" --jq '.artifacts[].name')"
           pick=""
           for n in $names; do
             case "$n" in
@@ -95,9 +97,9 @@ jobs:
           elif [ -f "$inputs/candidates.json" ] || [ -f "$inputs/assessment.json" ]; then
             emit=(
               --out-dir "$inputs/snapshot"
-              --run-id "${SOURCE_RUN_ID}-${{ github.run_attempt }}"
-              --workflow "${{ github.event.workflow_run.name || 'dispatch' }}"
-              --git-sha "${{ github.event.workflow_run.head_sha || github.sha }}"
+              --run-id "${SOURCE_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+              --workflow "$WORKFLOW_NAME"
+              --git-sha "$GIT_SHA"
             )
             [ -f "$inputs/candidates.json" ] && emit+=(--candidates "$inputs/candidates.json")
             [ -f "$inputs/proposals.json" ] && emit+=(--proposals "$inputs/proposals.json")
@@ -112,13 +114,16 @@ jobs:
           test -f "$inputs/snapshot/latest.json"
 
       - name: Merge into workshop-data layout and push branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISH_RUN_ID: ${{ github.event.workflow_run.id || github.run_id }}
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/workshop-data-git"
           rm -rf "$work"
           if git ls-remote --exit-code --heads origin workshop-data >/dev/null 2>&1; then
             git clone --single-branch --branch workshop-data \
-              "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "$work"
+              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$work"
           else
             mkdir -p "$work"
             git -C "$work" init
@@ -139,9 +144,9 @@ jobs:
           if git -C "$work" diff --cached --quiet; then
             echo "No workshop-data changes"
           else
-            git -C "$work" commit -m "workshop-data: publish ${{ github.event.workflow_run.id || github.run_id }}"
+            git -C "$work" commit -m "workshop-data: publish ${PUBLISH_RUN_ID}"
             git -C "$work" push \
-              "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
               HEAD:workshop-data
           fi
 
