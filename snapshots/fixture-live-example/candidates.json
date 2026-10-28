@@ -1,0 +1,55 @@
+{
+  "schema_version": "1",
+  "candidate_count": 4,
+  "confidence_summary": { "high": 2, "medium": 1, "low": 1 },
+  "candidates": [
+    {
+      "id": "CAND-1",
+      "adr_id": "ADR-2001",
+      "confidence": "high",
+      "modality": "must",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "statement": "All public HTTP traffic must terminate TLS at the edge proxy with certificates managed by the platform.",
+      "source_path": "ADR-2001.md",
+      "source_line_start": 8,
+      "source_line_end": 8,
+      "escalation_reasons": []
+    },
+    {
+      "id": "CAND-2",
+      "adr_id": "ADR-2002",
+      "confidence": "high",
+      "modality": "must",
+      "pattern_hint": "configuration.bounds_or_required_values",
+      "statement": "Security audit logs must be retained for at least 365 days in immutable storage.",
+      "source_path": "ADR-2002.md",
+      "source_line_start": 6,
+      "source_line_end": 6,
+      "escalation_reasons": []
+    },
+    {
+      "id": "CAND-3",
+      "adr_id": "ADR-2003",
+      "confidence": "medium",
+      "modality": "should",
+      "pattern_hint": "manual_review",
+      "statement": "Service-to-service calls should use mesh-provided mTLS.",
+      "source_path": "ADR-2003.md",
+      "source_line_start": 6,
+      "source_line_end": 6,
+      "escalation_reasons": ["should_modality"]
+    },
+    {
+      "id": "CAND-4",
+      "adr_id": "ADR-2001",
+      "confidence": "low",
+      "modality": "must",
+      "pattern_hint": "manual_review",
+      "statement": "Edge certificate lifecycle must remain platform-managed without per-team exceptions.",
+      "source_path": "ADR-2001.md",
+      "source_line_start": 12,
+      "source_line_end": 14,
+      "escalation_reasons": ["weak_pattern_match", "broad_scope"]
+    }
+  ]
+}

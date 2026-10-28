@@ -1,0 +1,19 @@
+{
+  "verdict": "INDETERMINATE",
+  "coverage_status": "PARTIAL",
+  "requirement_count": 200,
+  "runtime_llm_calls": 0,
+  "submission_kind": "",
+  "workshop_batch": {
+    "run_id": "workshop-submissions-20261028T015800Z",
+    "tech_spec_count": 25,
+    "code_snippet_count": 25,
+    "total": 50,
+    "verdicts": {
+      "PASS": 0,
+      "FAIL": 0,
+      "INDETERMINATE": 50
+    }
+  },
+  "requirements": []
+}
