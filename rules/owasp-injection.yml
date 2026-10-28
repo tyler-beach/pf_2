@@ -8,7 +8,7 @@ rules:
       owasp: A03
       confidence: MEDIUM
       cwe: "CWE-89"
-    pattern-regex: 'execute\s*\(\s*f["'\'']'
+    pattern-regex: 'execute\s*\(\s*f["'']'
 
   - id: pathfinder.owasp-sql-format-go
     languages: [go]

@@ -85,4 +85,4 @@ rules:
       owasp: A02
       confidence: MEDIUM
       cwe: "CWE-295"
-    pattern: InsecureSkipVerify: true
+    pattern: "InsecureSkipVerify: true"

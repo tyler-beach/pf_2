@@ -190,7 +190,7 @@ rules:
       owasp: A03
       confidence: MEDIUM
       cwe: "CWE-89"
-    pattern-regex: 'execute\s*\(\s*f["'\'']'
+    pattern-regex: 'execute\s*\(\s*f["'']'
 
   - id: pathfinder.owasp-sql-format-go
     languages: [go]
@@ -356,7 +356,7 @@ rules:
       owasp: A02
       confidence: MEDIUM
       cwe: "CWE-295"
-    pattern: InsecureSkipVerify: true
+    pattern: "InsecureSkipVerify: true"
 
 # --- from owasp-ssrf.yml ---
   - id: pathfinder.owasp-ssrf-http-get-python
@@ -447,7 +447,7 @@ rules:
       owasp: A07
       confidence: LOW
       cwe: "CWE-798"
-    pattern-regex: '(?i)(password|passwd|pwd)\s*=\s*["\'][^"\']{8,}["\']'
+    pattern-regex: '(?i)(password|passwd|pwd)\s*=\s*["''][^"'']{8,}["'']'
 
   - id: pathfinder.owasp-hardcoded-api-key-javascript
     languages: [javascript, typescript]
@@ -458,7 +458,7 @@ rules:
       owasp: A07
       confidence: LOW
       cwe: "CWE-798"
-    pattern-regex: '(?i)(api[_-]?key|apikey)\s*[:=]\s*["\'][A-Za-z0-9_\-]{16,}["\']'
+    pattern-regex: '(?i)(api[_-]?key|apikey)\s*[:=]\s*["''][A-Za-z0-9_\-]{16,}["'']'
 
   - id: pathfinder.owasp-hardcoded-bearer-go
     languages: [go]
@@ -505,7 +505,7 @@ rules:
       owasp: A01
       confidence: MEDIUM
       cwe: "CWE-284"
-    pattern-regex: 'ACL\s*=\s*["'\'']public-read["'\'']'
+    pattern-regex: 'ACL\s*=\s*["'']public-read["'']'
 
   - id: pathfinder.aws-s3-public-read-acl-go
     languages: [go]
@@ -527,7 +527,7 @@ rules:
       aws: s3
       confidence: MEDIUM
       cwe: "CWE-284"
-    pattern-regex: 'ACL\s*=\s*["'\'']public-read-write["'\'']'
+    pattern-regex: 'ACL\s*=\s*["'']public-read-write["'']'
 
   - id: pathfinder.aws-put-bucket-acl-public-python
     languages: [python]
@@ -571,7 +571,7 @@ rules:
       aws: secrets
       confidence: MEDIUM
       cwe: "CWE-798"
-    pattern-regex: 'os\.environ\[["'\'']AWS_SECRET_ACCESS_KEY["'\'']\]\s*='
+    pattern-regex: 'os\.environ\[["'']AWS_SECRET_ACCESS_KEY["'']\]\s*='
 
   - id: pathfinder.aws-setenv-secret-go
     languages: [go]

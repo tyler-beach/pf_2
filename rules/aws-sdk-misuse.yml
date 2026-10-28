@@ -9,7 +9,7 @@ rules:
       owasp: A01
       confidence: MEDIUM
       cwe: "CWE-284"
-    pattern-regex: 'ACL\s*=\s*["'\'']public-read["'\'']'
+    pattern-regex: 'ACL\s*=\s*["'']public-read["'']'
 
   - id: pathfinder.aws-s3-public-read-acl-go
     languages: [go]
@@ -31,7 +31,7 @@ rules:
       aws: s3
       confidence: MEDIUM
       cwe: "CWE-284"
-    pattern-regex: 'ACL\s*=\s*["'\'']public-read-write["'\'']'
+    pattern-regex: 'ACL\s*=\s*["'']public-read-write["'']'
 
   - id: pathfinder.aws-put-bucket-acl-public-python
     languages: [python]
@@ -75,7 +75,7 @@ rules:
       aws: secrets
       confidence: MEDIUM
       cwe: "CWE-798"
-    pattern-regex: 'os\.environ\[["'\'']AWS_SECRET_ACCESS_KEY["'\'']\]\s*='
+    pattern-regex: 'os\.environ\[["'']AWS_SECRET_ACCESS_KEY["'']\]\s*='
 
   - id: pathfinder.aws-setenv-secret-go
     languages: [go]
