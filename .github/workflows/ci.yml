@@ -103,9 +103,9 @@ jobs:
           install_dir="$RUNNER_TEMP/opengrep"
           mkdir -p "$install_dir"
           curl --fail --location --silent --show-error \
-            https://github.com/opengrep/opengrep/releases/download/v1.30.0/opengrep_manylinux_x86 \
+            https://github.com/opengrep/opengrep/releases/download/v1.33.0/opengrep_manylinux_x86 \
             --output "$install_dir/opengrep"
-          echo "35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c  $install_dir/opengrep" | sha256sum --check
+          echo "2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24  $install_dir/opengrep" | sha256sum --check
           chmod 0755 "$install_dir/opengrep"
           echo "$install_dir" >> "$GITHUB_PATH"
           "$install_dir/opengrep" --version
@@ -125,8 +125,8 @@ jobs:
             --root "$fixture_root/vulnerable" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
-            --version 1.30.0 \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
+            --version 1.33.0 \
             --json-out "$RUNNER_TEMP/opengrep-vulnerable.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-vulnerable.sarif"
 
@@ -134,8 +134,8 @@ jobs:
             --root "$fixture_root/clean" \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
-            --version 1.30.0 \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
+            --version 1.33.0 \
             --json-out "$RUNNER_TEMP/opengrep-clean.json" \
             --sarif-out "$RUNNER_TEMP/opengrep-clean.sarif"
 
@@ -183,7 +183,7 @@ jobs:
             .status == "COMPLETE"
             and ([.findings[].path | capture("\\.(?<extension>[^/.]+)$").extension] | unique | sort) == [
               "bash", "c", "cpp", "cs", "dart", "ex", "go", "java", "js", "kt",
-              "lua", "ml", "php", "py", "rb", "rs", "scala", "swift", "ts", "vb"
+              "lua", "ml", "php", "py", "rb", "rs", "scala", "sh", "swift", "ts", "vb"
             ]
           ' "$RUNNER_TEMP/opengrep-vulnerable.json"
 
@@ -196,12 +196,12 @@ jobs:
           # --user console script under ~/.local/bin cannot import checkov.
           checkov_venv="$RUNNER_TEMP/checkov-venv"
           python3 -m venv "$checkov_venv"
-          "$checkov_venv/bin/python" -m pip install --disable-pip-version-check --no-input "checkov==3.2.484"
+          "$checkov_venv/bin/python" -m pip install --disable-pip-version-check --no-input "checkov==3.3.30"
           checkov_bin="$checkov_venv/bin/checkov"
           test -x "$checkov_bin"
           checkov_sha="$(sha256sum "$checkov_bin" | awk '{print $1}')"
           "$checkov_bin" --version | tee "$RUNNER_TEMP/checkov-version.txt"
-          grep -F "3.2.484" "$RUNNER_TEMP/checkov-version.txt"
+          grep -F "3.3.30" "$RUNNER_TEMP/checkov-version.txt"
 
           fixture_root="$RUNNER_TEMP/pathfinder-checkov-fixtures"
           mkdir -p "$fixture_root/vulnerable/rules" "$fixture_root/clean/rules"
@@ -215,7 +215,7 @@ jobs:
             --config rules/checkov.yml \
             --binary "$checkov_bin" \
             --binary-sha256 "$checkov_sha" \
-            --version 3.2.484 \
+            --version 3.3.30 \
             --json-out "$RUNNER_TEMP/checkov-vulnerable.json" \
             --sarif-out "$RUNNER_TEMP/checkov-vulnerable.sarif"
 
@@ -224,7 +224,7 @@ jobs:
             --config rules/checkov.yml \
             --binary "$checkov_bin" \
             --binary-sha256 "$checkov_sha" \
-            --version 3.2.484 \
+            --version 3.3.30 \
             --json-out "$RUNNER_TEMP/checkov-clean.json" \
             --sarif-out "$RUNNER_TEMP/checkov-clean.sarif"
 
@@ -249,15 +249,15 @@ jobs:
           cp rules/pathfinder-security.yml "$plan_root/rules/pathfinder-security.yml"
 
           go run ./cmd/adrctl plan-repo \
-            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --root "$plan_root" --analyzer opengrep --version 1.33.0 \
             --config rules/pathfinder-security.yml --scope src/ \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
             --json-out "$plan_root/analyzer-evidence/plan.json"
           cp "$plan_root/analyzer-evidence/plan.json" "$RUNNER_TEMP/plan-first.json"
           go run ./cmd/adrctl plan-repo \
-            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --root "$plan_root" --analyzer opengrep --version 1.33.0 \
             --config rules/pathfinder-security.yml --scope src/ \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
             --json-out "$plan_root/analyzer-evidence/plan.json"
           cmp "$RUNNER_TEMP/plan-first.json" "$plan_root/analyzer-evidence/plan.json"
           go run ./cmd/adrctl verify-plan --root "$plan_root" --manifest "$plan_root/analyzer-evidence/plan.json"
@@ -266,9 +266,9 @@ jobs:
           cp "$RUNNER_TEMP/plan-first.json" "$RUNNER_TEMP/plan-stale.json"
           printf '\n// cache invalidation fixture\n' >> "$plan_root/src/app.js"
           go run ./cmd/adrctl plan-repo \
-            --root "$plan_root" --analyzer opengrep --version 1.30.0 \
+            --root "$plan_root" --analyzer opengrep --version 1.33.0 \
             --config rules/pathfinder-security.yml --scope src/ \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
             --json-out "$plan_root/analyzer-evidence/plan.json"
           new_cache_key="$(jq -er '.tasks[0].cache_key' "$plan_root/analyzer-evidence/plan.json")"
           test "$old_cache_key" != "$new_cache_key"
@@ -300,8 +300,8 @@ jobs:
             --root . \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
-            --version 1.30.0 \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
+            --version 1.33.0 \
             --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
             --manifest-out analyzer-evidence/run-manifest.json \
             --json-out analyzer-evidence/opengrep.json \
@@ -313,8 +313,8 @@ jobs:
             --root . \
             --config rules/pathfinder-security.yml \
             --binary "$RUNNER_TEMP/opengrep/opengrep" \
-            --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
-            --version 1.30.0 \
+            --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
+            --version 1.33.0 \
             --cache-dir "$RUNNER_TEMP/pathfinder-analyzer-cache" \
             --manifest-out analyzer-evidence/run-manifest.json \
             --json-out analyzer-evidence/opengrep.json \
@@ -380,7 +380,7 @@ jobs:
       - name: Install pinned reviewdog CLI
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
-          go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
+          go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.21.2
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Annotate pull request with SARIF findings

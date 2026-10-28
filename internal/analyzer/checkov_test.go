@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const checkovFixtureSARIF = `{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"checkov","version":"3.2.484","rules":[{"id":"CKV_AWS_24"}]}},"results":[{"ruleId":"CKV_AWS_24","level":"error","message":{"text":"Ensure no security groups allow ingress from 0.0.0.0/0 to port 22"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"security_group.tf"},"region":{"startLine":7,"startColumn":1}}}]}]}]}`
+const checkovFixtureSARIF = `{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"checkov","version":"3.3.30","rules":[{"id":"CKV_AWS_24"}]}},"results":[{"ruleId":"CKV_AWS_24","level":"error","message":{"text":"Ensure no security groups allow ingress from 0.0.0.0/0 to port 22"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"security_group.tf"},"region":{"startLine":7,"startColumn":1}}}]}]}]}`
 
 type checkovFakeRunner struct {
 	calls         []runnerCall
@@ -24,7 +24,7 @@ func (f *checkovFakeRunner) Run(ctx context.Context, binary string, args []strin
 	if len(args) == 1 && args[0] == "--version" {
 		output := f.versionOutput
 		if output == nil {
-			output = []byte("checkov version: 3.2.484\n")
+			output = []byte("checkov version: 3.3.30\n")
 		}
 		return CommandResult{ExitCode: 0, Stdout: output}, nil
 	}
@@ -69,7 +69,7 @@ func TestCheckovScannerRunsPinnedCLIAndNormalizesEvidence(t *testing.T) {
 	root := prepareCheckovFixture(t)
 	runner := &checkovFakeRunner{sarif: []byte(checkovFixtureSARIF), scanExitCode: 1}
 	scanner := CheckovScanner{
-		Binary: "/opt/checkov", Version: "3.2.484", ConfigPath: "rules/checkov.yml",
+		Binary: "/opt/checkov", Version: "3.3.30", ConfigPath: "rules/checkov.yml",
 		Timeout: time.Second, Runner: runner,
 	}
 	got, err := scanner.Scan(context.Background(), root)
@@ -105,7 +105,7 @@ func TestCheckovScannerRejectsBinaryDigestMismatchBeforeExecution(t *testing.T) 
 	runner := &checkovFakeRunner{sarif: []byte(checkovFixtureSARIF)}
 	_, err := (CheckovScanner{
 		Binary: binary, BinarySHA256: strings.Repeat("f", 64),
-		Version: "3.2.484", ConfigPath: "rules/checkov.yml", Runner: runner,
+		Version: "3.3.30", ConfigPath: "rules/checkov.yml", Runner: runner,
 	}).Scan(context.Background(), root)
 	if err == nil || !strings.Contains(err.Error(), "binary SHA-256 mismatch") {
 		t.Fatalf("expected binary integrity failure, got %v", err)
@@ -145,9 +145,9 @@ func TestVerifyScanEvidenceAcceptsCheckov(t *testing.T) {
 		t.Fatal(err)
 	}
 	parsed.Analyzers[0].Name = "checkov"
-	parsed.Analyzers[0].Version = "3.2.484"
+	parsed.Analyzers[0].Version = "3.3.30"
 	parsed.Findings[0].Analyzer = "checkov"
-	parsed.Findings[0].AnalyzerVersion = "3.2.484"
+	parsed.Findings[0].AnalyzerVersion = "3.3.30"
 	parsed.Findings[0].RuleID = normalizeCheckovRuleID(parsed.Findings[0].RuleID)
 	parsed.ConfigurationPath = "rules/checkov.yml"
 	parsed.ConfigurationSHA256 = configHash

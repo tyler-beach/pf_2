@@ -22,7 +22,7 @@ func runPlanRepo(args []string) error {
 	fs := flag.NewFlagSet("plan-repo", flag.ContinueOnError)
 	root := fs.String("root", ".", "repository root")
 	analyzerName := fs.String("analyzer", "opengrep", "analyzer adapter name")
-	version := fs.String("version", "1.30.0", "exact analyzer version")
+	version := fs.String("version", "1.33.0", "exact analyzer version")
 	config := fs.String("config", "rules/pathfinder-security.yml", "repository-relative analyzer configuration")
 	binarySHA256 := fs.String("binary-sha256", "", "pinned executable SHA-256; required for OpenGrep execution")
 	ruleSetSHA256 := fs.String("ruleset-sha256", "", "optional rule-set SHA-256 (defaults to configuration SHA-256)")

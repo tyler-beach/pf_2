@@ -29,6 +29,9 @@ Pass/deviation assess oracles after Go or analyzer bumps when assessment default
 |-----|----------------|-----|
 | `@types/diff` | **removed** (was 7.0.2) | `diff@9` ships its own typings; `@types/diff@8.0.0` is a deprecated stub. |
 | `dompurify` / `diff2html` | kept at 3.4.17 / 3.4.56 | Already current at audit time; not bumped. |
+| CI OpenGrep lang-extension oracle | adapted for `.sh` | Fixture `owasp_promote_misc.sh` yields an extra extension under OpenGrep 1.33; CI list now includes `sh`. |
+| Node 26 (Current) | **held**; CI uses Node **24** LTS | Prefer LTS for CI stability unless the repo explicitly wants Current. |
+| Pages / upload-artifact | left at current SHAs | Already latest majors at audit time. |
 
 ## Final pin table
 

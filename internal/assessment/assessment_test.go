@@ -268,7 +268,7 @@ func analyzerRuleCatalog() Catalog {
 func completeAnalyzerEvidence(findings []analyzer.Finding) analyzer.ScanResult {
 	return analyzer.ScanResult{
 		SchemaVersion: "1", SARIFVersion: "2.1.0", Status: analyzer.ScanStatusComplete,
-		Analyzers:           []analyzer.AnalyzerInfo{{Name: "Opengrep OSS Version", Version: "1.30.0"}},
+		Analyzers:           []analyzer.AnalyzerInfo{{Name: "Opengrep OSS Version", Version: "1.33.0"}},
 		ConfigurationSHA256: strings.Repeat("c", 64), InputSHA256: strings.Repeat("i", 64),
 		BinarySHA256: strings.Repeat("a", 64), RuleSetSHA256: strings.Repeat("b", 64),
 		RawOutputSHA256: strings.Repeat("r", 64),
@@ -297,7 +297,7 @@ func TestAnalyzerRulePassesOnlyWithCompleteScopedEvidence(t *testing.T) {
 }
 
 func TestAnalyzerRuleFailsAndPreservesFindingProvenance(t *testing.T) {
-	finding := analyzer.Finding{Analyzer: "Opengrep OSS Version", AnalyzerVersion: "1.30.0", RuleID: "pathfinder.go-shell-command",
+	finding := analyzer.Finding{Analyzer: "Opengrep OSS Version", AnalyzerVersion: "1.33.0", RuleID: "pathfinder.go-shell-command",
 		Message: "Avoid dynamically composed shell command", Path: "internal/app/runner.go",
 		StartLine: 17, StartColumn: 3, Level: "error", Fingerprint: "fingerprint-123",
 		Properties: map[string]any{"cwe": "CWE-78"}}
@@ -308,7 +308,7 @@ func TestAnalyzerRuleFailsAndPreservesFindingProvenance(t *testing.T) {
 		t.Fatalf("expected FAIL, got %+v", result)
 	}
 	got := result.Requirements[0].Findings[0]
-	if got.Path != finding.Path || got.Line != 17 || got.Column != 3 || got.Fingerprint != "fingerprint-123" || got.AnalyzerVersion != "1.30.0" {
+	if got.Path != finding.Path || got.Line != 17 || got.Column != 3 || got.Fingerprint != "fingerprint-123" || got.AnalyzerVersion != "1.33.0" {
 		t.Fatalf("finding provenance was lost: %+v", got)
 	}
 }

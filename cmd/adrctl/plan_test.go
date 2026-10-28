@@ -32,7 +32,7 @@ func planFixtureRoot(t *testing.T) string {
 func TestPlanRepoCLIIsDeterministicAndVerifyDetectsDrift(t *testing.T) {
 	root := planFixtureRoot(t)
 	output := filepath.Join(root, "analyzer-evidence", "plan.json")
-	args := []string{"--root", root, "--analyzer", "opengrep", "--version", "1.30.0",
+	args := []string{"--root", root, "--analyzer", "opengrep", "--version", "1.33.0",
 		"--config", "rules/security.yml", "--scope", "src/", "--binary-sha256", strings.Repeat("b", 64), "--json-out", output}
 	if err := runPlanRepo(args); err != nil {
 		t.Fatal(err)
@@ -65,7 +65,7 @@ func TestPlanRepoCLIIsDeterministicAndVerifyDetectsDrift(t *testing.T) {
 func TestExecutePlanCLIUsesCacheAndWritesRawSARIF(t *testing.T) {
 	root := planFixtureRoot(t)
 	manifestPath := filepath.Join(root, "analyzer-evidence", "plan.json")
-	if err := runPlanRepo([]string{"--root", root, "--analyzer", "opengrep", "--version", "1.30.0", "--config", "rules/security.yml", "--scope", "src/", "--binary-sha256", strings.Repeat("b", 64), "--json-out", manifestPath}); err != nil {
+	if err := runPlanRepo([]string{"--root", root, "--analyzer", "opengrep", "--version", "1.33.0", "--config", "rules/security.yml", "--scope", "src/", "--binary-sha256", strings.Repeat("b", 64), "--json-out", manifestPath}); err != nil {
 		t.Fatal(err)
 	}
 	cacheDir := filepath.Join(t.TempDir(), "cache")
@@ -74,7 +74,7 @@ func TestExecutePlanCLIUsesCacheAndWritesRawSARIF(t *testing.T) {
 	var calls int
 	runner := plan.TaskRunnerFunc(func(ctx context.Context, root string, task plan.Task) (analyzer.ScanResult, error) {
 		calls++
-		raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"Opengrep OSS Version","version":"1.30.0","rules":[]}},"results":[]}]}`)
+		raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"Opengrep OSS Version","version":"1.33.0","rules":[]}},"results":[]}]}`)
 		evidence, err := analyzer.ParseSARIF(raw, root)
 		if err != nil {
 			return evidence, err

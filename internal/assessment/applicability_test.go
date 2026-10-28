@@ -81,7 +81,7 @@ func TestApplicabilityScopeShrinksCorpusSlice(t *testing.T) {
 		IssueSurface:   true,
 		AnalyzerResults: []analyzer.ScanResult{{
 			Status: analyzer.ScanStatusComplete,
-			Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+			Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 			InputSHA256: strings.Repeat("a", 64), ConfigurationSHA256: strings.Repeat("b", 64),
 			BinarySHA256: strings.Repeat("c", 64), RuleSetSHA256: strings.Repeat("d", 64),
 			RawOutputSHA256: strings.Repeat("e", 64),
@@ -231,7 +231,7 @@ func TestAnalyzerCapabilityFiltersCheckovWhenOnlyOpenGrepPresent(t *testing.T) {
 		SubmissionKind: SubmissionKindCodeSnippet,
 		AnalyzerResults: []analyzer.ScanResult{{
 			Status: analyzer.ScanStatusComplete,
-			Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+			Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 			InputSHA256: strings.Repeat("a", 64), ConfigurationSHA256: strings.Repeat("b", 64),
 			BinarySHA256: strings.Repeat("c", 64), RuleSetSHA256: strings.Repeat("d", 64),
 			RawOutputSHA256: strings.Repeat("e", 64),

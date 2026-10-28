@@ -60,7 +60,7 @@ func TestScanNormalizerUsesEvidenceEnvelope(t *testing.T) {
 	var n Normalizer = ScanNormalizer{}
 	bundle := n.Normalize(analyzer.ScanResult{
 		SchemaVersion: "1", Status: analyzer.ScanStatusComplete,
-		Analyzers:       []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+		Analyzers:       []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 		InputSHA256:     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
 		RawOutputSHA256: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		ScannedPaths:    []string{"a.go"},

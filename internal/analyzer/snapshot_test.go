@@ -152,7 +152,7 @@ func TestOpenGrepSkipsVersionProbeWhenBinaryDigestPinned(t *testing.T) {
 	}
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
 	if _, err := (OpenGrepScanner{
-		Binary: binary, BinarySHA256: digest, Version: "1.30.0",
+		Binary: binary, BinarySHA256: digest, Version: "1.33.0",
 		ConfigPath: "rules/security.yml", Runner: runner,
 		PrecomputedInputSHA256: inputHash,
 	}).Scan(context.Background(), root); err != nil {

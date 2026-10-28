@@ -24,7 +24,7 @@ func TestSARIFReportIsDeterministicAndPreservesFingerprint(t *testing.T) {
 			Findings: []Finding{{
 				RuleID: "pathfinder.go-shell-command", Path: "internal/run.go", Line: 14,
 				Column: 5, Message: "Avoid shell invocation", Analyzer: "opengrep",
-				AnalyzerVersion: "1.30.0", Fingerprint: "stable-fingerprint",
+				AnalyzerVersion: "1.33.0", Fingerprint: "stable-fingerprint",
 			}},
 		}},
 	}
@@ -86,7 +86,7 @@ func TestSARIFReportPreservesCoverageAndUnsupportedStates(t *testing.T) {
 		UnassessedSourceFiles: []string{"scripts/evaluate.py (python)"},
 		AnalyzerResults: []analyzer.ScanResult{{
 			Status:              analyzer.ScanStatusPartial,
-			Analyzers:           []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+			Analyzers:           []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 			InputSHA256:         strings.Repeat("i", 64),
 			ConfigurationSHA256: strings.Repeat("c", 64),
 			RawOutputSHA256:     strings.Repeat("r", 64),
@@ -178,7 +178,7 @@ func TestSARIFReportPreservesCoverageAndUnsupportedStates(t *testing.T) {
 	}
 	analyzers := scan["analyzers"].([]any)
 	firstAnalyzer := analyzers[0].(map[string]any)
-	if firstAnalyzer["name"] != "opengrep" || firstAnalyzer["version"] != "1.30.0" {
+	if firstAnalyzer["name"] != "opengrep" || firstAnalyzer["version"] != "1.33.0" {
 		t.Fatalf("SARIF analyzer identity/version missing: %+v", firstAnalyzer)
 	}
 }
@@ -212,12 +212,12 @@ func TestMarkdownReportIncludesAnalyzerProvenance(t *testing.T) {
 	result := Result{
 		Verdict: "FAIL", CoverageStatus: "COMPLETE", EvidenceMode: string(EvidenceModeRepository),
 		EngineVersion: "0.2.0", AnalyzerResults: []analyzer.ScanResult{{
-			Status: "COMPLETE", Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+			Status: "COMPLETE", Analyzers: []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 			InputSHA256: strings.Repeat("i", 64), ConfigurationSHA256: strings.Repeat("c", 64), RawOutputSHA256: strings.Repeat("r", 64),
 		}},
 	}
 	report := MarkdownReport(result)
-	for _, want := range []string{"opengrep", "1.30.0", strings.Repeat("i", 64), strings.Repeat("c", 64), strings.Repeat("r", 64)} {
+	for _, want := range []string{"opengrep", "1.33.0", strings.Repeat("i", 64), strings.Repeat("c", 64), strings.Repeat("r", 64)} {
 		if !strings.Contains(report, want) {
 			t.Errorf("Markdown report missing %q", want)
 		}

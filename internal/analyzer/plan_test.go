@@ -16,7 +16,7 @@ import (
 func planTestSpec(name string) AnalyzerSpec {
 	return AnalyzerSpec{
 		Name: name,
-		Version: "1.30.0",
+		Version: "1.33.0",
 		BinarySHA256: strings.Repeat("a", 64),
 		ConfigurationPath: "rules/security.yml",
 		ConfigurationSHA256: strings.Repeat("b", 64),
@@ -30,7 +30,7 @@ func planTestSpec(name string) AnalyzerSpec {
 }
 
 func planTestResult(spec AnalyzerSpec, snapshot string, status string) ScanResult {
-	raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.30.0"}},"results":[]}]}`)
+	raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.33.0"}},"results":[]}]}`)
 	result, _ := ParseSARIF(raw, ".")
 	result.Status = status
 	result.Analyzers = []AnalyzerInfo{{Name: spec.Name, Version: spec.Version}}

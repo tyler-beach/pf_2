@@ -9,7 +9,7 @@ import (
 func TestFromScanResultIsDeterministic(t *testing.T) {
 	scan := analyzer.ScanResult{
 		SchemaVersion: "1", Status: analyzer.ScanStatusComplete,
-		Analyzers:           []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+		Analyzers:           []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 		ConfigurationPath:   "rules/pathfinder-security.yml",
 		ConfigurationSHA256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 		BinarySHA256:        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -18,7 +18,7 @@ func TestFromScanResultIsDeterministic(t *testing.T) {
 		RawOutputSHA256:     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		ScannedPaths:        []string{"cmd/adrctl/main.go"},
 		Findings: []analyzer.Finding{{
-			Analyzer: "opengrep", AnalyzerVersion: "1.30.0",
+			Analyzer: "opengrep", AnalyzerVersion: "1.33.0",
 			RuleID: "rules.pathfinder.go-shell-command", Message: "shell",
 			Path: "cmd/adrctl/main.go", StartLine: 10, StartColumn: 1, Level: "error",
 			Fingerprint: "fp-1",
@@ -40,7 +40,7 @@ func TestFromScanResultIsDeterministic(t *testing.T) {
 func TestIncompleteScanNeverObservedOnly(t *testing.T) {
 	scan := analyzer.ScanResult{
 		SchemaVersion: "1", Status: analyzer.ScanStatusPartial,
-		Analyzers:       []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.30.0"}},
+		Analyzers:       []analyzer.AnalyzerInfo{{Name: "opengrep", Version: "1.33.0"}},
 		InputSHA256:     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
 		RawOutputSHA256: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 		Errors:          []string{"timeout"},

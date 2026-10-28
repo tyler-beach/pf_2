@@ -29,7 +29,7 @@ func writeFixture(t *testing.T) string {
 
 func fixtureSpec() AnalyzerSpec {
 	return AnalyzerSpec{
-		Name: "opengrep", Version: "1.30.0", BinarySHA256: strings.Repeat("b",64), ConfigurationPath: "rules/security.yml",
+		Name: "opengrep", Version: "1.33.0", BinarySHA256: strings.Repeat("b",64), ConfigurationPath: "rules/security.yml",
 		ScopePrefixes: []string{"src/"}, TimeoutMillis: 30_000, MaxRetries: 1,
 		RetryableFailureKinds: []string{"timeout", "temporary_process_start"},
 	}
@@ -108,9 +108,9 @@ func TestManifestReportsEmptyScopeInsteadOfClaimingCoverage(t *testing.T) {
 func TestBuildManifestRejectsUnsafePathsLimitsAndDuplicateTasks(t *testing.T) {
 	root := writeFixture(t)
 	cases := []struct{name string; spec AnalyzerSpec; concurrency int}{
-		{"absolute configuration", AnalyzerSpec{Name:"opengrep",Version:"1.30.0",ConfigurationPath:filepath.Join(root,"rules","security.yml")}, 1},
-		{"traversing configuration", AnalyzerSpec{Name:"opengrep",Version:"1.30.0",ConfigurationPath:"../../etc/passwd"}, 1},
-		{"traversing scope", AnalyzerSpec{Name:"opengrep",Version:"1.30.0",ConfigurationPath:"rules/security.yml",ScopePrefixes:[]string{"../outside"}}, 1},
+		{"absolute configuration", AnalyzerSpec{Name:"opengrep",Version:"1.33.0",ConfigurationPath:filepath.Join(root,"rules","security.yml")}, 1},
+		{"traversing configuration", AnalyzerSpec{Name:"opengrep",Version:"1.33.0",ConfigurationPath:"../../etc/passwd"}, 1},
+		{"traversing scope", AnalyzerSpec{Name:"opengrep",Version:"1.33.0",ConfigurationPath:"rules/security.yml",ScopePrefixes:[]string{"../outside"}}, 1},
 		{"zero concurrency", fixtureSpec(), 0},
 		{"excess concurrency", fixtureSpec(), MaxConcurrency+1},
 		{"negative retries", func() AnalyzerSpec { s:=fixtureSpec();s.MaxRetries=-1;return s }(), 1},

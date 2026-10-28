@@ -901,7 +901,7 @@ func TestRunAssessRepoConsumesAnalyzerEvidence(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.30.0"}},"results":[]}]}`)
+	raw := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.33.0"}},"results":[]}]}`)
 	evidence, err := analyzer.ParseSARIF(raw, root)
 	if err != nil {
 		t.Fatal(err)

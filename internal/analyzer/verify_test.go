@@ -23,8 +23,8 @@ func verificationFixture(t *testing.T) (string, []byte, ScanResult) {
 	if err != nil { t.Fatal(err) }
 	inputHash, err := HashInputTree(root)
 	if err != nil { t.Fatal(err) }
-	parsed.Analyzers[0].Version = "1.30.0"
-	parsed.Findings[0].AnalyzerVersion = "1.30.0"
+	parsed.Analyzers[0].Version = "1.33.0"
+	parsed.Findings[0].AnalyzerVersion = "1.33.0"
 	parsed.ConfigurationPath = "rules/security.yml"
 	parsed.ConfigurationSHA256 = configHash
 	parsed.BinarySHA256 = strings.Repeat("a", 64)

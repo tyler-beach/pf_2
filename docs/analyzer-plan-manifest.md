@@ -27,7 +27,7 @@ Use a cache directory outside the repository to avoid changing the input-tree di
 go run ./cmd/adrctl plan-repo \
   --root . \
   --analyzer opengrep \
-  --version 1.30.0 \
+  --version 1.33.0 \
   --config rules/pathfinder-security.yml \
   --scope . \
   --json-out analyzer-evidence/plan.json

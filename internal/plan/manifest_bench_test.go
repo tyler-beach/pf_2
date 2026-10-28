@@ -11,7 +11,7 @@ func BenchmarkBuildManifest(b *testing.B) {
 		b.Skip("PF_BENCH_ROOT unset")
 	}
 	specs := []AnalyzerSpec{{
-		Name: "opengrep", Version: "1.30.0",
+		Name: "opengrep", Version: "1.33.0",
 		BinarySHA256:      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 		ConfigurationPath: "rules/pathfinder-security.yml",
 		ScopePrefixes:     []string{"."},

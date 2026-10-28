@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const fixtureSARIF = `{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.30.0","rules":[{"id":"pathfinder.test-eval"}]}},"results":[{"ruleId":"pathfinder.test-eval","level":"error","message":{"text":"Avoid eval"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/app.py"},"region":{"startLine":7,"startColumn":1}}}],"partialFingerprints":{"primaryLocationLineHash":"fixture-fingerprint"}}]}]}`
+const fixtureSARIF = `{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.33.0","rules":[{"id":"pathfinder.test-eval"}]}},"results":[{"ruleId":"pathfinder.test-eval","level":"error","message":{"text":"Avoid eval"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"src/app.py"},"region":{"startLine":7,"startColumn":1}}}],"partialFingerprints":{"primaryLocationLineHash":"fixture-fingerprint"}}]}]}`
 
 type runnerCall struct {
 	binary string
@@ -34,7 +34,7 @@ func (f *fakeRunner) Run(ctx context.Context, binary string, args []string, dir 
 	if len(args) == 1 && args[0] == "--version" {
 		output := f.versionOutput
 		if output == nil {
-			output = []byte("OpenGrep 1.30.0\n")
+			output = []byte("OpenGrep 1.33.0\n")
 		}
 		return CommandResult{ExitCode: f.versionExitCode, Stdout: output}, nil
 	}
@@ -85,7 +85,7 @@ func prepareOpenGrepFixture(t *testing.T) string {
 func TestOpenGrepScannerRunsPinnedCLIAndNormalizesEvidence(t *testing.T) {
 	root := prepareOpenGrepFixture(t)
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
-	scanner := OpenGrepScanner{Binary: "/opt/opengrep", Version: "1.30.0", ConfigPath: "rules/security.yml", Timeout: time.Second, Runner: runner}
+	scanner := OpenGrepScanner{Binary: "/opt/opengrep", Version: "1.33.0", ConfigPath: "rules/security.yml", Timeout: time.Second, Runner: runner}
 	got, err := scanner.Scan(context.Background(), root)
 	if err != nil {
 		t.Fatalf("Scan returned error: %v", err)
@@ -133,7 +133,7 @@ func TestOpenGrepScannerRunsPinnedCLIAndNormalizesEvidence(t *testing.T) {
 func TestOpenGrepScannerAcceptsFindingsExitCodeOne(t *testing.T) {
 	root := prepareOpenGrepFixture(t)
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF), scanExitCode: 1}
-	got, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
+	got, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
 	if err != nil {
 		t.Fatalf("exit 1 with valid finding SARIF should be accepted: %v", err)
 	}
@@ -144,9 +144,9 @@ func TestOpenGrepScannerAcceptsFindingsExitCodeOne(t *testing.T) {
 
 func TestOpenGrepScannerRejectsExitOneWithoutFindings(t *testing.T) {
 	root := prepareOpenGrepFixture(t)
-	empty := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.30.0"}},"results":[]}]}`)
+	empty := []byte(`{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"opengrep","version":"1.33.0"}},"results":[]}]}`)
 	runner := &fakeRunner{sarif: empty, scanExitCode: 1}
-	got, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
+	got, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
 	if err == nil || got.Status != ScanStatusError {
 		t.Fatalf("exit 1 without findings must fail closed, got result=%+v err=%v", got, err)
 	}
@@ -155,7 +155,7 @@ func TestOpenGrepScannerRejectsExitOneWithoutFindings(t *testing.T) {
 func TestOpenGrepScannerRejectsFatalExitCode(t *testing.T) {
 	root := prepareOpenGrepFixture(t)
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF), scanExitCode: 2}
-	got, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
+	got, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
 	if err == nil || got.Status != ScanStatusError || !strings.Contains(err.Error(), "exited 2") {
 		t.Fatalf("expected fatal scan error, got %+v, %v", got, err)
 	}
@@ -164,7 +164,7 @@ func TestOpenGrepScannerRejectsFatalExitCode(t *testing.T) {
 func TestOpenGrepScannerRejectsVersionMismatch(t *testing.T) {
 	root := prepareOpenGrepFixture(t)
 	runner := &fakeRunner{versionOutput: []byte("OpenGrep 9.9.9")}
-	_, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
+	_, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
 	if err == nil || !strings.Contains(err.Error(), "version mismatch") {
 		t.Fatalf("expected version mismatch, got %v", err)
 	}
@@ -180,7 +180,7 @@ func TestOpenGrepScannerRejectsConfigOutsideRepository(t *testing.T) {
 		t.Fatal(err)
 	}
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
-	_, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: outside, Runner: runner}).Scan(context.Background(), root)
+	_, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: outside, Runner: runner}).Scan(context.Background(), root)
 	if err == nil || !strings.Contains(err.Error(), "inside repository root") {
 		t.Fatalf("expected configuration path rejection, got %v", err)
 	}
@@ -192,7 +192,7 @@ func TestOpenGrepScannerRejectsConfigOutsideRepository(t *testing.T) {
 func TestOpenGrepScannerHonorsTimeout(t *testing.T) {
 	root := prepareOpenGrepFixture(t)
 	runner := &fakeRunner{waitForCancel: true}
-	_, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Timeout: 15 * time.Millisecond, Runner: runner}).Scan(context.Background(), root)
+	_, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Timeout: 15 * time.Millisecond, Runner: runner}).Scan(context.Background(), root)
 	if err == nil || !strings.Contains(err.Error(), "deadline exceeded") {
 		t.Fatalf("expected context timeout, got %v", err)
 	}
@@ -324,7 +324,7 @@ func TestOpenGrepScannerRejectsPartialAnalysisEvenWhenSARIFExists(t *testing.T) 
 		scanExitCode: 1,
 		scanStderr:   []byte("Partially scanned: 1 files only partially analyzed due to parsing or internal OpenGrep errors"),
 	}
-	got, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
+	got, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
 	if err == nil || got.Status != ScanStatusPartial {
 		t.Fatalf("partial analysis must not be accepted as complete: result=%+v err=%v", got, err)
 	}
@@ -363,7 +363,7 @@ func TestOpenGrepScannerAcceptsGenericSkippedFileSummary(t *testing.T) {
 		scanExitCode: 1,
 		scanStderr:   []byte("Some files were skipped or only partially analyzed."),
 	}
-	got, err := (OpenGrepScanner{Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
+	got, err := (OpenGrepScanner{Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner}).Scan(context.Background(), root)
 	if err != nil || got.Status != ScanStatusComplete {
 		t.Fatalf("generic skipped-file summary should not make a successful rule scan partial: result=%+v err=%v", got, err)
 	}
@@ -396,7 +396,7 @@ func TestOpenGrepScannerRejectsBinaryDigestMismatchBeforeExecution(t *testing.T)
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
 	_, err := (OpenGrepScanner{
 		Binary: binary, BinarySHA256: strings.Repeat("f", 64),
-		Version: "1.30.0", ConfigPath: "rules/security.yml", Runner: runner,
+		Version: "1.33.0", ConfigPath: "rules/security.yml", Runner: runner,
 	}).Scan(context.Background(), root)
 	if err == nil || !strings.Contains(err.Error(), "binary SHA-256 mismatch") {
 		t.Fatalf("expected binary integrity failure, got %v", err)
@@ -414,7 +414,7 @@ func TestOpenGrepScannerEnforcesSourceFileSizeLimitBeforeExecution(t *testing.T)
 	}
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
 	_, err := (OpenGrepScanner{
-		Version: "1.30.0", ConfigPath: "rules/security.yml",
+		Version: "1.33.0", ConfigPath: "rules/security.yml",
 		MaxFileBytes: 32, SourceExtensions: []string{".py"}, Runner: runner,
 	}).Scan(context.Background(), root)
 	if err == nil || !strings.Contains(err.Error(), "exceeds the configured") {
@@ -432,7 +432,7 @@ func TestOpenGrepScannerHonorsExplicitSourceScope(t *testing.T) {
 	}
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
 	scanner := OpenGrepScanner{
-		Binary: "/opt/opengrep", Version: "1.30.0", ConfigPath: "rules/security.yml",
+		Binary: "/opt/opengrep", Version: "1.33.0", ConfigPath: "rules/security.yml",
 		ScanPaths: []string{"src/app.py"}, Runner: runner,
 	}
 	got, err := scanner.Scan(context.Background(), root)
@@ -474,7 +474,7 @@ func TestOpenGrepScannerRejectsExcludedFixturePaths(t *testing.T) {
 	}
 	runner := &fakeRunner{sarif: []byte(fixtureSARIF)}
 	scanner := OpenGrepScanner{
-		Version: "1.30.0", ConfigPath: "rules/security.yml",
+		Version: "1.33.0", ConfigPath: "rules/security.yml",
 		ScanPaths: []string{analyzerFixtureDirectory + "/vulnerable/secret.go"}, Runner: runner,
 	}
 	if _, err := scanner.Scan(context.Background(), root); err == nil || !strings.Contains(err.Error(), "eligible analyzer source inventory") {

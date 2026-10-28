@@ -139,7 +139,7 @@ See [docs/language-support.md](docs/language-support.md) for the explicit rule/e
 
 ## Multi-language analyzer (implemented)
 
-Repository CI downloads OpenGrep v1.30.0 from the upstream release and verifies the binary SHA-256 before execution. Checked-in rules in `rules/pathfinder-security.yml` (merged from `rules/pathfinder-security-core.yml` plus OWASP/AWS packs via `scripts/merge_opengrep_rules.py`) are exercised against vulnerable and clean fixtures. The CI gate requires the legacy shell/eval families plus key OWASP/AWS rules to produce findings in vulnerable fixtures and no findings for clean fixtures. The labeled MADR corpus under `testdata/corpus` covers 200 OWASP Top 10 + AWS security ADRs (`python3 scripts/generate_security_corpus.py`).
+Repository CI downloads OpenGrep v1.33.0 from the upstream release and verifies the binary SHA-256 before execution. Checked-in rules in `rules/pathfinder-security.yml` (merged from `rules/pathfinder-security-core.yml` plus OWASP/AWS packs via `scripts/merge_opengrep_rules.py`) are exercised against vulnerable and clean fixtures. The CI gate requires the legacy shell/eval families plus key OWASP/AWS rules to produce findings in vulnerable fixtures and no findings for clean fixtures. The labeled MADR corpus under `testdata/corpus` covers 200 OWASP Top 10 + AWS security ADRs (`python3 scripts/generate_security_corpus.py`).
 
 Scan a repository and retain both raw and normalized evidence:
 
@@ -148,7 +148,7 @@ go run ./cmd/adrctl scan-opengrep \
   --root . \
   --config rules/pathfinder-security.yml \
   --binary /path/to/pinned/opengrep \
-  --version 1.30.0 \
+  --version 1.33.0 \
   --cache-dir "$HOME/.cache/pathfinder/analyzer-cache" \
   --manifest-out analyzer-evidence/run-manifest.json \
   --json-out analyzer-evidence/opengrep.json \
@@ -255,9 +255,9 @@ Create a versioned plan manifest without executing an analyzer:
 go run ./cmd/adrctl plan-repo \
   --root . \
   --analyzer opengrep \
-  --version 1.30.0 \
+  --version 1.33.0 \
   --config rules/pathfinder-security.yml \
-  --binary-sha256 35779bdd72e92129c8df2a77f0c55e8c08356801ea92591ef32108d6b28d564c \
+  --binary-sha256 2545812755572e1355ea60f96288f82a26eebed7fc8b512430d49d5667214c24 \
   --scope . \
   --timeout 5m \
   --max-retries 1 \
