@@ -16,7 +16,7 @@ export const DOC_SECTIONS: DocSection[] = [
     body: `
 <p>Pathfinder turns accepted Architecture Decision Records (ADRs) and plain-English technical specifications into <strong>reviewable obligations</strong>, binds them to typed verifiers, collects analyzer evidence, and emits Markdown / JSON / SARIF assessments — with <strong>zero runtime LLM calls</strong> on the assess path.</p>
 <ul>
-  <li><strong>GitHub Issues</strong> carry fenced snippets + tech specs; ADR Assessment sandboxes fences and assesses against the OWASP/AWS corpus.</li>
+  <li><strong>GitHub Issues</strong> carry fenced snippets + tech specs; ADR Assessment sandboxes fences and assesses against the OWASP/AWS corpus. Inputs are tagged <code>submission_kind</code>: <code>tech_spec</code> (ADR/prose) vs <code>code_snippet</code> (source/IaC) so parsers and KPIs can trend separately.</li>
   <li><strong>Repository CI</strong> uses the live catalog (<code>adr/requirements.json</code>) plus OpenGrep / Checkov evidence for pull requests.</li>
   <li><strong>This workshop</strong> is a GitOps command center: Actions emit snapshots, <code>workshop-data</code> stores history, Pages serves the SPA.</li>
 </ul>
@@ -72,7 +72,7 @@ export const DOC_SECTIONS: DocSection[] = [
     body: `
 <ol class="docs-steps">
   <li>Open an issue titled <code>[ADR Assessment] …</code> with tech-spec prose and/or language-tagged fences.</li>
-  <li><code>issue_sandbox_extract.py</code> materializes fences into a temp tree (code is never executed).</li>
+  <li><code>issue_sandbox_extract.py</code> materializes fences into a temp tree (code is never executed). Fence-only bodies classify as <code>submission_kind=code_snippet</code>; ADR-like prose as <code>tech_spec</code>; mixed stays unspecified unless <code>--submission-kind</code> is set.</li>
   <li>Pinned <strong>OpenGrep</strong> and <strong>Checkov</strong> scan the sandbox; evidence JSON + raw SARIF are written.</li>
   <li><code>adrctl assess-repo --issue-surface</code> evaluates <code>testdata/corpus/requirements.json</code> (200 ADRs). Manual-review and missing analyzers become <code>NOT_APPLICABLE</code> so they do not force indeterminate noise.</li>
   <li>Report comments on the issue; artifacts upload; Workshop Publish merges a snapshot for Pages.</li>
@@ -318,6 +318,7 @@ export const DOC_SECTIONS: DocSection[] = [
 <ul>
   <li><code>kpi.invariant.llm_calls</code> must be <strong>0</strong> on assess paths.</li>
   <li>Confidence / escalation / harness precision-recall measure extract quality.</li>
+  <li><code>kpi.assess.submission_kind</code> and <code>kpi.submission.*_count</code> / <code>kpi.escalation.rate.{tech_spec,code_snippet}</code> split trends for English tech specs vs code/IaC.</li>
   <li>Assist cost &amp; proposal counts measure batch assist — not compliance.</li>
   <li>Promptfoo pass rate is assist regression only.</li>
   <li>Assess covered / unbound / stale track binding completeness, not “green estate.”</li>

@@ -390,6 +390,8 @@ export async function renderMetrics(app: HTMLElement) {
     ],
     escalation: [
       { label: 'Escalation rate', value: fmt(m['kpi.escalation.rate']) },
+      { label: 'Escalation tech-spec', value: fmt(m['kpi.escalation.rate.tech_spec']) },
+      { label: 'Escalation code', value: fmt(m['kpi.escalation.rate.code_snippet']) },
       { label: 'Low candidates', value: fmt(m.confidence_low) },
       { label: 'Proposals', value: fmt(m['kpi.assist.proposal_count']) },
       { label: 'Evidence gap', value: fmt(m['kpi.evidence.gap_rate']) },
@@ -419,6 +421,9 @@ export async function renderMetrics(app: HTMLElement) {
     ],
     assess: [
       { label: 'Verdict', value: fmt(m['kpi.assess.verdict']) },
+      { label: 'Submission', value: fmt(m['kpi.assess.submission_kind'] || 'unspecified') },
+      { label: 'Tech-spec cands', value: fmt(m['kpi.submission.tech_spec_count']) },
+      { label: 'Code-snippet cands', value: fmt(m['kpi.submission.code_snippet_count']) },
       { label: 'LLM calls', value: fmt(m['kpi.invariant.llm_calls']), cls: Number(m['kpi.invariant.llm_calls'] || 0) === 0 ? 'ok' : 'bad' },
       { label: 'Covered', value: fmt(m['kpi.assess.covered']) },
       { label: 'Unbound', value: fmt(m['kpi.assess.unbound']) },

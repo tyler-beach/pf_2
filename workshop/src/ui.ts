@@ -587,6 +587,8 @@ const LOWER_BETTER_EXACT = new Set([
   'confidence_low',
   'kpi.confidence.share.low',
   'kpi.escalation.rate',
+  'kpi.escalation.rate.tech_spec',
+  'kpi.escalation.rate.code_snippet',
   'kpi.invariant.llm_calls',
   'kpi.assess.unbound',
   'kpi.assess.stale',
@@ -605,12 +607,15 @@ const NEUTRAL_EXACT = new Set([
   'confidence_medium',
   'kpi.confidence.share.medium',
   'kpi.assist.proposal_count',
+  'kpi.submission.tech_spec_count',
+  'kpi.submission.code_snippet_count',
   'schema_version',
 ]);
 
 const UNKNOWN_EXACT = new Set([
   'kpi.assist.provider',
   'kpi.assist.model',
+  'kpi.assess.submission_kind',
   'promptfoo_mode',
 ]);
 

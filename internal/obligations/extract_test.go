@@ -60,6 +60,9 @@ func TestBuildIndexCreatesReviewOnlyCandidatesWithExactSourceLines(t *testing.T)
 		if candidate.ApprovalStatus != "pending_review" || candidate.EnforcementMode != "review_required" || candidate.Executable {
 			t.Errorf("candidate was accidentally made enforceable: %+v", candidate)
 		}
+		if candidate.SubmissionKind != "tech_spec" {
+			t.Errorf("ADR extract candidates must be tech_spec, got %q on %+v", candidate.SubmissionKind, candidate)
+		}
 		if strings.Contains(candidate.Statement, "must not be extracted") {
 			t.Errorf("code fence emitted a candidate: %+v", candidate)
 		}

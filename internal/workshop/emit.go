@@ -49,11 +49,16 @@ type Metrics struct {
 	PendingLow       *int     `json:"kpi.review.pending_low,omitempty"`
 	AssistAcceptRate *float64 `json:"kpi.review.accept_rate,omitempty"`
 
-	AssessVerdict   string `json:"kpi.assess.verdict,omitempty"`
-	AssessCovered   *int   `json:"kpi.assess.covered,omitempty"`
-	AssessUnbound   *int   `json:"kpi.assess.unbound,omitempty"`
-	AssessStale     *int   `json:"kpi.assess.stale,omitempty"`
-	RuntimeLLMCalls *int   `json:"kpi.invariant.llm_calls,omitempty"`
+	AssessVerdict         string `json:"kpi.assess.verdict,omitempty"`
+	AssessSubmissionKind  string `json:"kpi.assess.submission_kind,omitempty"`
+	AssessCovered         *int   `json:"kpi.assess.covered,omitempty"`
+	AssessUnbound         *int   `json:"kpi.assess.unbound,omitempty"`
+	AssessStale           *int   `json:"kpi.assess.stale,omitempty"`
+	RuntimeLLMCalls       *int   `json:"kpi.invariant.llm_calls,omitempty"`
+	SubmissionTechSpec    *int   `json:"kpi.submission.tech_spec_count,omitempty"`
+	SubmissionCodeSnippet *int   `json:"kpi.submission.code_snippet_count,omitempty"`
+	EscalationTechSpec    *float64 `json:"kpi.escalation.rate.tech_spec,omitempty"`
+	EscalationCodeSnippet *float64 `json:"kpi.escalation.rate.code_snippet,omitempty"`
 
 	AssistProposalCount    *int     `json:"kpi.assist.proposal_count,omitempty"`
 	AssistPromptTokens     *int     `json:"kpi.assist.prompt_tokens,omitempty"`
@@ -121,7 +126,9 @@ func Emit(opts EmitOptions) (Latest, error) {
 				Low    int `json:"low"`
 			} `json:"confidence_summary"`
 			Candidates []struct {
-				PatternHint string `json:"pattern_hint"`
+				PatternHint    string `json:"pattern_hint"`
+				SubmissionKind string `json:"submission_kind"`
+				Confidence     string `json:"confidence"`
 			} `json:"candidates"`
 		}
 		if err := readJSON(opts.CandidatesPath, &payload); err != nil {
@@ -141,10 +148,34 @@ func Emit(opts EmitOptions) (Latest, error) {
 			metrics.ConfidenceShareLow = &l
 		}
 		manual := 0
+		techSpec, codeSnippet := 0, 0
+		techSpecLow, codeSnippetLow := 0, 0
 		for _, c := range payload.Candidates {
 			if c.PatternHint == "manual_review" {
 				manual++
 			}
+			switch c.SubmissionKind {
+			case "tech_spec":
+				techSpec++
+				if c.Confidence == "low" {
+					techSpecLow++
+				}
+			case "code_snippet":
+				codeSnippet++
+				if c.Confidence == "low" {
+					codeSnippetLow++
+				}
+			}
+		}
+		if techSpec > 0 {
+			metrics.SubmissionTechSpec = &techSpec
+			rate := float64(techSpecLow) / float64(techSpec)
+			metrics.EscalationTechSpec = &rate
+		}
+		if codeSnippet > 0 {
+			metrics.SubmissionCodeSnippet = &codeSnippet
+			rate := float64(codeSnippetLow) / float64(codeSnippet)
+			metrics.EscalationCodeSnippet = &rate
 		}
 		if payload.CandidateCount > 0 {
 			rate := float64(manual) / float64(payload.CandidateCount)
@@ -187,11 +218,13 @@ func Emit(opts EmitOptions) (Latest, error) {
 		var payload struct {
 			Verdict         string `json:"verdict"`
 			RuntimeLLMCalls int    `json:"runtime_llm_calls"`
+			SubmissionKind  string `json:"submission_kind"`
 		}
 		if err := readJSON(opts.AssessmentPath, &payload); err != nil {
 			return Latest{}, fmt.Errorf("assessment: %w", err)
 		}
 		metrics.AssessVerdict = payload.Verdict
+		metrics.AssessSubmissionKind = payload.SubmissionKind
 		metrics.RuntimeLLMCalls = intPtr(payload.RuntimeLLMCalls)
 		if opts.EnforceAssessLLM || isAssessWorkflow(opts.Run.Workflow) {
 			if payload.RuntimeLLMCalls != 0 {

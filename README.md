@@ -167,6 +167,7 @@ Before findings are used, Pathfinder re-parses the paired raw SARIF and verifies
 
 Issue submissions retain common source and configuration snippets with explicit language labels, including Go, JSON, Python, JavaScript/TypeScript, Java, C#, PHP, Ruby, Rust, shell, YAML, Terraform/HCL, Kotlin, Scala, C/C++, SQL, HTML/XML, and Vue. Only Go and JSON have direct deterministic snippet verifiers today. Other submitted languages are listed under `unassessed_source_files`; they force a partial-coverage `INDETERMINATE` result instead of being ignored or implicitly passing. Issue workflows never execute submitted code or launch external analyzers against issue-provided snippets.
 
+Assessments also record `submission_kind`: `tech_spec` (ADR / English prose) vs `code_snippet` (source or IaC). Pass `--submission-kind` to `assess` / `assess-repo`, or let auto-detect infer fence-only issues as `code_snippet`, ADR-like prose as `tech_spec`, and repository trees as `code_snippet`. Workshop KPIs trend these kinds separately (`kpi.assess.submission_kind`, `kpi.submission.*_count`).
 
 ### Repository rule bindings
 

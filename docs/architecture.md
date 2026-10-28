@@ -82,6 +82,18 @@ Findings may be reused by many obligations. Deduplicate normalized observations 
 
 ## Verdicts, applicability, and coverage
 
+### Submission kind (tech_spec vs code_snippet)
+
+Assessments and extracted candidates may carry `submission_kind`:
+
+| Value | Typical input | Parser / surface |
+|---|---|---|
+| `tech_spec` | ADR / English prose obligations | Goldmark ADR ingest + deterministic extract |
+| `code_snippet` | Source or IaC (YAML/TF/…) | Issue fence sandbox or repository tree + OpenGrep/Checkov |
+| _(empty)_ | Older artifacts / mixed issue bodies | Unspecified; loaders treat as unknown |
+
+`EvidenceMode` (`submission` vs `repository`) is orthogonal: it describes evidence completeness semantics. `IssueSurface` flips manual-review / missing-analyzer statuses for GitHub-issue sandboxes. CLI: `--submission-kind=tech_spec|code_snippet` (auto-detects when omitted: fence-only issue → `code_snippet`, ADR-like prose → `tech_spec`, repo assess → `code_snippet`).
+
 Current behavior:
 - `PASS`: every evaluated applicable mandatory requirement passed.
 - `FAIL`: at least one requirement has reproducible violating evidence.

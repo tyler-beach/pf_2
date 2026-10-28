@@ -11,6 +11,9 @@ func MarkdownReport(r Result) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# ADR Compliance Assessment: %s\n\n", r.Verdict)
 	fmt.Fprintf(&b, "- **Coverage:** %s (%d/%d requirements applicable)\n- **Evidence scope:** %s\n", r.CoverageStatus, r.ApplicableRequirementCount, r.RequirementCount, r.EvidenceMode)
+	if r.SubmissionKind != "" {
+		fmt.Fprintf(&b, "- **Submission kind:** %s\n", r.SubmissionKind)
+	}
 	if r.CoverageStatus != "COMPLETE" {
 		b.WriteString("> Coverage is incomplete; requirements without applicable evidence are not counted as passing. Missing required evidence is reported as EVIDENCE_MISSING and makes the verdict INDETERMINATE.\n\n")
 	}
@@ -235,6 +238,7 @@ func sarifAssessmentMetadata(r Result) map[string]any {
 		"verdict":                      r.Verdict,
 		"coverage_status":              r.CoverageStatus,
 		"evidence_mode":                r.EvidenceMode,
+		"submission_kind":              r.SubmissionKind,
 		"requirement_count":            r.RequirementCount,
 		"applicable_requirement_count": r.ApplicableRequirementCount,
 		"status_counts":                statusCounts,

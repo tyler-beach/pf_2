@@ -98,6 +98,9 @@ type AssessmentOptions struct {
 	// (instead of REVIEW_REQUIRED) so they do not force an indeterminate verdict.
 	// Full repository CI keeps IssueSurface=false and preserves REVIEW_REQUIRED.
 	IssueSurface bool
+	// SubmissionKind distinguishes English tech-spec / ADR prose from source or
+	// IaC snippets. Empty means unspecified (older callers / artifacts).
+	SubmissionKind SubmissionKind
 }
 
 // CorpusCoverage reports interpretation/binding/evidence progress beyond the
@@ -115,6 +118,7 @@ type CorpusCoverage struct {
 type Result struct {
 	SchemaVersion              string                `json:"schema_version"`
 	EvidenceMode               string                `json:"evidence_mode"`
+	SubmissionKind             string                `json:"submission_kind,omitempty"`
 	EngineVersion              string                `json:"engine_version"`
 	Verdict                    string                `json:"verdict"`
 	CoverageStatus             string                `json:"coverage_status"`
@@ -512,6 +516,7 @@ func AssessWithOptions(c Catalog, files []SourceFile, options AssessmentOptions)
 	}
 	out := Result{
 		SchemaVersion: "1", EvidenceMode: string(options.EvidenceMode), EngineVersion: "0.3.0",
+		SubmissionKind: string(options.SubmissionKind),
 		SourceFileCount: len(files), Counts: map[string]int{}, LLMCalls: 0,
 		AnalyzerResults: options.AnalyzerResults, EvidenceBundles: options.EvidenceBundles,
 		SourceSnapshotSHA256: HashSourceFiles(files),

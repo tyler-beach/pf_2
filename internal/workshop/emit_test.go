@@ -15,15 +15,15 @@ func TestEmitAggregatesKPIsAndFailsClosedOnAssessLLM(t *testing.T) {
 		"candidate_count": 4,
 		"confidence_summary": {"high": 2, "medium": 1, "low": 1},
 		"candidates": [
-			{"pattern_hint": "manual_review"},
-			{"pattern_hint": "configuration.bounds_or_required_values"},
-			{"pattern_hint": "configuration.bounds_or_required_values"},
-			{"pattern_hint": "security.source_pattern"}
+			{"pattern_hint": "manual_review", "submission_kind": "tech_spec", "confidence": "high"},
+			{"pattern_hint": "configuration.bounds_or_required_values", "submission_kind": "tech_spec", "confidence": "medium"},
+			{"pattern_hint": "configuration.bounds_or_required_values", "submission_kind": "tech_spec", "confidence": "low"},
+			{"pattern_hint": "security.source_pattern", "submission_kind": "code_snippet", "confidence": "high"}
 		]
 	}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(assessment, []byte(`{"verdict":"PASS","runtime_llm_calls":0}`), 0o600); err != nil {
+	if err := os.WriteFile(assessment, []byte(`{"verdict":"PASS","runtime_llm_calls":0,"submission_kind":"code_snippet"}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	out := filepath.Join(root, "snapshot")
@@ -44,6 +44,18 @@ func TestEmitAggregatesKPIsAndFailsClosedOnAssessLLM(t *testing.T) {
 	}
 	if latest.Metrics.ConfidenceShareHigh == nil || *latest.Metrics.ConfidenceShareHigh != 0.5 {
 		t.Fatalf("confidence share high: %v", latest.Metrics.ConfidenceShareHigh)
+	}
+	if latest.Metrics.AssessSubmissionKind != "code_snippet" {
+		t.Fatalf("assess submission kind: %q", latest.Metrics.AssessSubmissionKind)
+	}
+	if latest.Metrics.SubmissionTechSpec == nil || *latest.Metrics.SubmissionTechSpec != 3 {
+		t.Fatalf("tech_spec count: %v", latest.Metrics.SubmissionTechSpec)
+	}
+	if latest.Metrics.SubmissionCodeSnippet == nil || *latest.Metrics.SubmissionCodeSnippet != 1 {
+		t.Fatalf("code_snippet count: %v", latest.Metrics.SubmissionCodeSnippet)
+	}
+	if latest.Metrics.EscalationTechSpec == nil || *latest.Metrics.EscalationTechSpec != 1.0/3.0 {
+		t.Fatalf("escalation tech_spec: %v", latest.Metrics.EscalationTechSpec)
 	}
 	if latest.SLO["assess_runtime_llm_calls_zero"] != true {
 		t.Fatalf("SLO missing: %+v", latest.SLO)

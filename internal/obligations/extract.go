@@ -11,6 +11,7 @@ import (
 	"unicode"
 
 	"github.com/tyler-beach/pf_2/internal/adringest"
+	"github.com/tyler-beach/pf_2/internal/assessment"
 )
 
 const (
@@ -30,6 +31,9 @@ type Candidate struct {
 	Statement       string   `json:"statement"`
 	Modality        string   `json:"modality"`
 	Kind            string   `json:"kind"`
+	// SubmissionKind is tech_spec for ADR/prose extraction (English parsers).
+	// Empty means unspecified for older candidate indexes.
+	SubmissionKind  string   `json:"submission_kind,omitempty"`
 	PatternHint     string   `json:"pattern_hint"`
 	SourcePath      string   `json:"source_path"`
 	SourceSHA256    string   `json:"source_sha256"`
@@ -269,7 +273,8 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 				candidate := Candidate{
 					ADRID: parsed.ID, ADRTitle: parsed.Title, ADRStatus: parsed.Status,
 					SectionHeading: section.Heading, Statement: statement, Modality: modality,
-					Kind: kind, PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
+					Kind: kind, SubmissionKind: string(assessment.SubmissionKindTechSpec),
+					PatternHint: suggestPattern(statement), SourcePath: cleanDisplayPath,
 					SourceSHA256: parsed.SourceSHA256, SourceLineStart: lineIndex + 1, SourceLineEnd: lineIndex + 1,
 					ApprovalStatus: "pending_review", EnforcementMode: "review_required", Executable: false,
 					ReviewHints: hints, Conditions: conditions, Exceptions: exceptions, Ambiguity: ambiguity,

@@ -116,7 +116,12 @@ func runAssess(args []string, repoMode bool) error {
 	analyzerEvidencePath := fs.String("analyzer-evidence", "", "comma-separated normalized analyzer evidence JSON paths (repository assessment only)")
 	analyzerSARIFPath := fs.String("analyzer-sarif", "", "comma-separated raw SARIF paths paired 1:1 with --analyzer-evidence")
 	issueSurface := fs.Bool("issue-surface", false, "GitHub-issue/sandbox semantics: manual-review and missing analyzer evidence become NOT_APPLICABLE")
+	submissionKindFlag := fs.String("submission-kind", "", "input shape: tech_spec (ADR/prose) or code_snippet (source/IaC); empty auto-detects")
 	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	explicitKind, err := assessment.ParseSubmissionKind(*submissionKindFlag)
+	if err != nil {
 		return err
 	}
 	c, err := assessment.LoadCatalog(*catalogPath)
@@ -124,6 +129,7 @@ func runAssess(args []string, repoMode bool) error {
 		return err
 	}
 	var files []assessment.SourceFile
+	var issueMarkdown string
 	if repoMode {
 		files, err = assessment.LoadSourceFiles(*root)
 	} else {
@@ -133,15 +139,20 @@ func runAssess(args []string, repoMode bool) error {
 		var data []byte
 		data, err = os.ReadFile(*input)
 		if err == nil {
-			files = assessment.ParseIssueMarkdown(string(data))
+			issueMarkdown = string(data)
+			files = assessment.ParseIssueMarkdown(issueMarkdown)
 		}
 	}
 	if err != nil {
 		return err
 	}
 	mode := assessment.EvidenceModeSubmission
+	hint := assessment.SubmissionKindUnspecified
 	if repoMode {
 		mode = assessment.EvidenceModeRepository
+		hint = assessment.DefaultRepositorySubmissionKind()
+	} else if issueMarkdown != "" {
+		hint = assessment.ClassifyIssueSubmissionKind(issueMarkdown)
 	}
 	analyzerResults, err := loadVerifiedAnalyzerEvidence(*root, repoMode, *analyzerEvidencePath, *analyzerSARIFPath)
 	if err != nil {
@@ -151,6 +162,7 @@ func runAssess(args []string, repoMode bool) error {
 		EvidenceMode:    mode,
 		AnalyzerResults: analyzerResults,
 		IssueSurface:    *issueSurface,
+		SubmissionKind:  assessment.ResolveSubmissionKind(explicitKind, hint),
 	})
 	if err := writeFile(*reportPath, []byte(assessment.MarkdownReport(result))); err != nil {
 		return err
