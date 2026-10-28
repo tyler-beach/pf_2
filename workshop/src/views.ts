@@ -20,6 +20,9 @@ import {
   previousRun,
   repoBase,
   workflowDispatchURL,
+  type JourneyPanel,
+  type SampleJourney,
+  type SampleStep,
 } from './data';
 import { DOC_SECTIONS, docsById, docsGroups } from './docs-content';
 import { getQueryValue, readListQuery, setQuery, writeListQuery } from './hash';
@@ -1585,101 +1588,316 @@ export async function renderCosts(app: HTMLElement) {
   }
 }
 
-function fieldRows(obj: Record<string, unknown> | null): string {
-  if (!obj) return `<p class="muted">No artifact for this step.</p>`;
-  const wrapKeys = new Set(['excerpt', 'statement', 'normalized_statement', 'summary', 'rationale']);
-  return `<div class="fields">${Object.entries(obj)
+const JOURNEY_QUOTE_KEYS = new Set([
+  'excerpt',
+  'statement',
+  'normalized_statement',
+  'summary',
+  'rationale',
+  'evidence',
+  'note',
+]);
+const JOURNEY_BADGE_KEYS = new Set([
+  'confidence',
+  'verdict',
+  'approval_status',
+  'status',
+  'coverage_status',
+  'decision',
+  'modality',
+  'enforcement_mode',
+  'issue_surface_status',
+]);
+
+let journeyTipSeq = 0;
+
+function journeyBadgeKind(key: string, value: string): string {
+  const v = value.toLowerCase();
+  if (key === 'confidence') {
+    if (v === 'high') return 'ok';
+    if (v === 'medium') return 'warn';
+    if (v === 'low') return 'bad';
+  }
+  if (v === 'pass' || v === 'approved' || v === 'accepted' || v === 'complete' || v === 'ok') return 'ok';
+  if (
+    v === 'pending_review' ||
+    v === 'review_required' ||
+    v === 'should' ||
+    v === 'indeterminate' ||
+    v === 'partial' ||
+    v === 'not_applicable'
+  )
+    return 'warn';
+  if (v === 'fail' || v === 'rejected' || v === 'evidence_missing') return 'bad';
+  if (v === 'must') return 'warn';
+  return '';
+}
+
+/** Inline ℹ tip — reuses chart-help popover wiring via shared classes. */
+function journeyTip(term: string, def: string): string {
+  const id = `journey-tip-${++journeyTipSeq}`;
+  return `<span class="journey-tip">
+    <button type="button" class="journey-tip-btn" data-journey-tip="1" aria-expanded="false" aria-controls="${id}" title="${escapeHTML(def)}" aria-label="About ${escapeHTML(term)}">${escapeHTML(term)}<span aria-hidden="true">ℹ</span></button>
+    <span class="journey-tip-pop" id="${id}" role="region" aria-label="About ${escapeHTML(term)}" hidden>
+      <p><span class="journey-tip-k">${escapeHTML(term)}</span> ${escapeHTML(def)}</p>
+    </span>
+  </span>`;
+}
+
+/** [[term]] → glossary tip; otherwise escaped HTML (single fragment). */
+function journeyInline(text: string, glossary: Record<string, string>): string {
+  if (!text) return '';
+  return text
+    .split(/(\[\[[^\]]+\]\])/g)
+    .map((part) => {
+      const m = part.match(/^\[\[([^\]]+)\]\]$/);
+      if (m) {
+        const term = m[1];
+        const def = glossary[term];
+        if (def) return journeyTip(term, def);
+        return `<code>${escapeHTML(term)}</code>`;
+      }
+      return escapeHTML(part).replace(/\n/g, '<br/>');
+    })
+    .join('');
+}
+
+/** Multi-paragraph prose with [[term]] glossary tooltips. */
+function journeyProse(text: string, glossary: Record<string, string>): string {
+  if (!text) return '';
+  return text
+    .split(/\n\n+/)
+    .map((para) => `<p class="journey-prose">${journeyInline(para, glossary)}</p>`)
+    .join('');
+}
+
+function journeyPanel(panel: JourneyPanel): string {
+  const lang = panel.lang || 'text';
+  const shimmer = panel.shimmer ? ' journey-shimmer' : '';
+  return `<figure class="journey-panel${shimmer}">
+    <figcaption class="journey-panel-head">
+      <span class="journey-panel-title">${escapeHTML(panel.title)}</span>
+      <span class="journey-panel-lang">${escapeHTML(lang)}</span>
+      ${copyControl(panel.code, 'Copy')}
+    </figcaption>
+    <pre class="journey-code" tabindex="0"><code>${escapeHTML(panel.code)}</code></pre>
+    ${panel.caption ? `<p class="journey-panel-cap">${escapeHTML(panel.caption)}</p>` : ''}
+  </figure>`;
+}
+
+function journeyArtifactPreview(obj: Record<string, unknown> | null): string {
+  if (!obj) return '';
+  const entries = Object.entries(obj);
+  const quotes = entries.filter(([k]) => JOURNEY_QUOTE_KEYS.has(k));
+  const badges = entries.filter(([k]) => JOURNEY_BADGE_KEYS.has(k));
+  const rest = entries.filter(([k]) => !JOURNEY_QUOTE_KEYS.has(k) && !JOURNEY_BADGE_KEYS.has(k));
+  const badgeHtml = badges.length
+    ? `<div class="journey-badges">${badges
+        .map(([k, v]) => {
+          const text = v == null ? '—' : String(v);
+          return `<span class="journey-badge ${journeyBadgeKind(k, text)}" title="${escapeHTML(k)}">${escapeHTML(text)}</span>`;
+        })
+        .join('')}</div>`
+    : '';
+  const quoteHtml = quotes
+    .map(([k, v]) => {
+      const text = v == null ? '—' : String(v);
+      return `<blockquote class="journey-quote"><span class="journey-quote-k">${escapeHTML(k)}</span>${escapeHTML(text)}</blockquote>`;
+    })
+    .join('');
+  const rows = rest
     .map(([k, v]) => {
       const text = Array.isArray(v) ? v.join(', ') : v == null ? '—' : String(v);
-      const isId = /(_id|id)$/i.test(k) || k.endsWith('_path');
-      const wrap = wrapKeys.has(k);
-      return `<div class="row"><div class="k">${escapeHTML(k)}</div><div class="v ${wrap ? 'wrap' : ''}" title="${escapeHTML(text)}">${
-        isId && !wrap ? `<code>${escapeHTML(text)}</code>` : escapeHTML(text)
+      const isId = /(_id|^id)$/i.test(k) || k.endsWith('_path');
+      return `<div class="journey-row"><div class="journey-k">${escapeHTML(k)}</div><div class="journey-v" title="${escapeHTML(text)}">${
+        isId ? `<code>${escapeHTML(text)}</code>` : escapeHTML(text)
       }</div></div>`;
     })
-    .join('')}</div>`;
+    .join('');
+  return `<div class="journey-artifact">${badgeHtml}${quoteHtml}${
+    rows ? `<div class="journey-fields">${rows}</div>` : ''
+  }</div>`;
+}
+
+function bindJourneyTips(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLButtonElement>('[data-journey-tip]').forEach((btn) => {
+    if (btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    const pop = btn.parentElement?.querySelector<HTMLElement>('.journey-tip-pop');
+    if (!pop) return;
+    const close = () => {
+      pop.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    };
+    const open = () => {
+      root.querySelectorAll<HTMLElement>('.journey-tip-pop:not([hidden])').forEach((other) => {
+        if (other === pop) return;
+        other.hidden = true;
+        other.parentElement?.querySelector<HTMLButtonElement>('[data-journey-tip]')?.setAttribute('aria-expanded', 'false');
+      });
+      pop.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+    };
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (pop.hidden) open();
+      else close();
+    });
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !pop.hidden) {
+        e.preventDefault();
+        close();
+      }
+    });
+  });
+  const doc = root instanceof Document ? root : root.ownerDocument || document;
+  if ((doc as Document & { __pfJourneyTipDoc?: boolean }).__pfJourneyTipDoc) return;
+  (doc as Document & { __pfJourneyTipDoc?: boolean }).__pfJourneyTipDoc = true;
+  doc.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement | null;
+    if (t?.closest?.('.journey-tip')) return;
+    doc.querySelectorAll<HTMLElement>('.journey-tip-pop:not([hidden])').forEach((pop) => {
+      pop.hidden = true;
+      pop.parentElement?.querySelector<HTMLButtonElement>('[data-journey-tip]')?.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+function journeyChips(keys: string[] | undefined, glossary: Record<string, string>): string {
+  if (!keys?.length) return '';
+  const chips = keys
+    .filter((k) => glossary[k])
+    .map((k) => journeyTip(k, glossary[k]));
+  if (!chips.length) return '';
+  return `<div class="journey-chips" aria-label="Glossary">${chips.join('')}</div>`;
+}
+
+function renderJourneyStepBody(step: SampleStep, journey: SampleJourney): string {
+  const glossary = journey.glossary || {};
+  const why = step.why || step.narrative || '';
+  const notice = step.notice || step.checks || [];
+  const panels = step.panels || [];
+  const artifact = step.artifact_key
+    ? (journey.artifacts?.[step.artifact_key] as Record<string, unknown> | undefined)
+    : null;
+  return `
+    ${why ? `<p class="journey-lede">${journeyInline(why, glossary)}</p>` : ''}
+    ${journeyChips(step.chips, glossary)}
+    ${(step.callouts || []).length
+      ? `<ul class="journey-callouts">${(step.callouts || []).map((c) => `<li>${journeyInline(c, glossary)}</li>`).join('')}</ul>`
+      : ''}
+    <div class="journey-tech">
+      <h2>How this stage works</h2>
+      ${journeyProse(step.technical, glossary)}
+    </div>
+    ${step.highlight ? `<p class="journey-highlight"><span>${escapeHTML(step.highlight)}</span></p>` : ''}
+    ${panels.map(journeyPanel).join('')}
+    ${(step.commands || []).length
+      ? `<h2>Commands</h2>${(step.commands || [])
+          .map((c) => `<div class="journey-cmd" title="${escapeHTML(c)}"><code>${escapeHTML(c)}</code> ${copyControl(c, 'Copy')}</div>`)
+          .join('')}`
+      : ''}
+    ${notice.length
+      ? `<h2>What to notice</h2><ul class="journey-checks">${notice.map((c) => `<li><span>${journeyInline(c, glossary)}</span></li>`).join('')}</ul>`
+      : ''}
+    ${
+      step.deeper
+        ? `<details class="journey-deeper">
+            <summary>${escapeHTML(step.deeper.title || 'Deeper dive')}</summary>
+            <div class="journey-deeper-body">
+              ${journeyProse(step.deeper.body, glossary)}
+              ${(step.deeper.panels || []).map(journeyPanel).join('')}
+            </div>
+          </details>`
+        : ''
+    }
+    ${
+      artifact
+        ? `<section class="journey-artifact-panel">
+            <h2>${escapeHTML(step.artifact_label || 'Compact artifact')}</h2>
+            ${journeyArtifactPreview(artifact)}
+          </section>`
+        : ''
+    }
+  `;
 }
 
 export async function renderSample(app: HTMLElement, stepId?: string) {
   setCrumb('Sample journey');
-  setPurpose('Walk one Pathfinder pass end to end — each step shows the idea, the command, and a real artifact shape.');
+  setPurpose('Partner onboarding: PDB YAML → ADR → Candidate → binding → ScanResult → assess → publish.');
   const journey = await loadSampleJourney();
   const steps = journey?.steps || [];
   const idx = Math.max(0, steps.findIndex((s) => s.id === stepId));
   const step = steps[idx] || steps[0];
-  const artifact = step?.artifact_key ? (journey?.artifacts?.[step.artifact_key] as Record<string, unknown> | undefined) : null;
-  setTopActions('');
+  setTopActions(`<a class="btn" href="#/docs/architecture">Architecture</a><a class="btn" href="#/docs/lifecycle">Lifecycle</a>`);
   if (!step) {
-    app.innerHTML = emptyState('Journey missing', 'sample-journey.json not published.');
+    app.innerHTML = `
+      <div class="journey journey-empty" role="status">
+        <p class="journey-kicker">Sample journey</p>
+        <h1>Journey not published</h1>
+        <p class="journey-lede">This run has no <code>sample-journey.json</code>. Publish workshop fixtures, or switch to a snapshot that ships the walkthrough.</p>
+        <div class="journey-empty-actions">
+          <a class="btn primary" href="#/pipeline">Open Pipeline</a>
+          <a class="btn" href="${escapeHTML(workflowDispatchURL('workshop-publish.yml'))}" target="_blank" rel="noopener">Workshop Publish</a>
+          <a class="btn" href="#/docs/lifecycle">Lifecycle docs</a>
+        </div>
+      </div>`;
     return;
   }
   const pct = ((idx + 1) / steps.length) * 100;
   const prev = idx > 0 ? steps[idx - 1] : null;
   const next = idx < steps.length - 1 ? steps[idx + 1] : null;
+  const subtitle = journey?.subtitle
+    ? `<p class="journey-subtitle">${escapeHTML(journey.subtitle)}</p>`
+    : '';
   app.innerHTML = `
     <div class="journey">
       <nav class="journey-rail" aria-label="Journey steps">
+        ${subtitle ? `<div class="journey-rail-intro">${subtitle}</div>` : ''}
         ${steps
           .map((s, i) => {
             const state = s.id === step.id ? 'active' : i < idx ? 'done' : '';
             const label = s.short || s.title;
-            return `<a class="${state}" href="#/sample/${escapeHTML(s.id)}" title="${escapeHTML(s.title)}">
-              <span class="n">${String(i + 1).padStart(2, '0')}</span>
-              <span class="t">${escapeHTML(label)}</span>
+            const current = s.id === step.id ? ' aria-current="step"' : '';
+            return `<a class="${state}" href="#/sample/${escapeHTML(s.id)}" title="${escapeHTML(s.title)}"${current}>
+              <span class="journey-n">${String(i + 1).padStart(2, '0')}</span>
+              <span class="journey-t">${escapeHTML(label)}</span>
             </a>`;
           })
           .join('')}
       </nav>
-      <div class="journey-body">
-        <div class="journey-progress" aria-hidden="true"><span style="width:${pct}%"></span></div>
-        <section class="journey-copy">
-          <p class="faint">Step ${idx + 1} of ${steps.length}</p>
+      <article class="journey-body">
+        <div class="journey-progress" role="progressbar" aria-valuemin="1" aria-valuemax="${steps.length}" aria-valuenow="${idx + 1}" aria-label="Step ${idx + 1} of ${steps.length}"><span style="width:${pct}%"></span></div>
+        <header class="journey-copy">
+          <p class="journey-kicker">Step ${idx + 1} of ${steps.length}${step.short ? ` · ${escapeHTML(step.short)}` : ''}</p>
           <h1>${escapeHTML(step.title)}</h1>
-          <p class="prose">${escapeHTML(step.narrative)}</p>
-          <h2>What happens technically</h2>
-          <p class="prose">${escapeHTML(step.technical)}</p>
-          ${(step.commands || [])
-            .map(
-              (c) =>
-                `<div class="cmd-line" title="${escapeHTML(c)}"><code>${escapeHTML(c)}</code> ${copyControl(c, 'Copy')}</div>`,
-            )
-            .join('')}
-          ${
-            (step.checks || []).length
-              ? `<h2>Checks</h2><ul class="checklist">${(step.checks || [])
-                  .map((c) => `<li><span>${escapeHTML(c)}</span></li>`)
-                  .join('')}</ul>`
-              : ''
-          }
-        </section>
-        <section>
-          <h2>${escapeHTML(step.artifact_label || 'Example artifact')}</h2>
-          ${fieldRows(artifact || null)}
-        </section>
+        </header>
+        ${renderJourneyStepBody(step, journey!)}
         <div class="journey-nav">
           ${prev ? `<a class="btn" id="sample-prev" href="#/sample/${escapeHTML(prev.id)}">← ${escapeHTML(prev.short || prev.title)}</a>` : `<span></span>`}
           ${
             next
               ? `<a class="btn primary" id="sample-next" href="#/sample/${escapeHTML(next.id)}">${escapeHTML(next.short || next.title)} →</a>`
-              : `<a class="btn primary" href="#/pipeline">Explore live pipeline →</a>`
+              : `<a class="btn primary" href="#/docs/architecture">Architecture docs →</a>`
           }
         </div>
-        <p class="faint">Keyboard: ← previous · → next</p>
-      </div>
+        <p class="journey-keys">Keyboard: ← / k previous · → / j next · deep link <code>#/sample/${escapeHTML(step.id)}</code></p>
+      </article>
     </div>
   `;
   bindCopyButtons(app);
+  bindJourneyTips(app);
   const keyFlag = '__pfSampleKeyHandler' as const;
   const w = window as Window & { [keyFlag]?: (e: KeyboardEvent) => void };
   if (w[keyFlag]) window.removeEventListener('keydown', w[keyFlag]!);
   w[keyFlag] = (e: KeyboardEvent) => {
     if (!location.hash.startsWith('#/sample')) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
-    if (e.key === 'ArrowLeft' && prev) {
+    if ((e.key === 'ArrowLeft' || e.key === 'k') && prev) {
       e.preventDefault();
       location.hash = `#/sample/${prev.id}`;
     }
-    if (e.key === 'ArrowRight' && next) {
+    if ((e.key === 'ArrowRight' || e.key === 'j') && next) {
       e.preventDefault();
       location.hash = `#/sample/${next.id}`;
     }

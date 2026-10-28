@@ -46,17 +46,54 @@ export type PipelineStep = {
   };
 };
 
+/** Annotated code/JSON panel inside a Sample journey step. */
+export type JourneyPanel = {
+  title: string;
+  lang?: string;
+  code: string;
+  caption?: string;
+  /** Soft shimmer to mark a key transition (e.g. YAML → evidence). */
+  shimmer?: boolean;
+};
+
+export type JourneyDeep = {
+  title?: string;
+  body: string;
+  panels?: JourneyPanel[];
+};
+
 export type SampleStep = {
   id: string;
   short?: string;
   title: string;
+  /** Short “why this stage” blurb. */
+  why?: string;
+  /** Legacy alias for why — still rendered if why is absent. */
+  narrative?: string;
+  /** Deep technical body. Use [[term]] markers for glossary tooltips. */
   technical: string;
-  narrative: string;
   commands?: string[];
+  /** “What to notice” bullets. */
+  notice?: string[];
+  /** Legacy alias for notice. */
   checks?: string[];
+  callouts?: string[];
+  panels?: JourneyPanel[];
+  deeper?: JourneyDeep;
+  /** Glossary keys to surface as chips on this step. */
+  chips?: string[];
   artifact_key?: string;
   artifact_label?: string;
-  callouts?: string[];
+  /** Transition label shown above shimmer panels (e.g. "YAML → ScanResult"). */
+  highlight?: string;
+};
+
+export type SampleJourney = {
+  title?: string;
+  subtitle?: string;
+  glossary?: Record<string, string>;
+  steps: SampleStep[];
+  artifacts?: Record<string, unknown>;
 };
 
 export type ADRSummary = {
@@ -149,20 +186,16 @@ export const loadPipeline = () => fetchJSON<{ steps: PipelineStep[] }>('pipeline
 export const loadCorpusIndex = () => fetchJSON<CorpusIndex>('corpus.json');
 
 /** Prefer the selected run snapshot, then any snapshot that ships a journey, then root. */
-export async function loadSampleJourney(): Promise<{
-  steps: SampleStep[];
-  artifacts: Record<string, unknown>;
-} | null> {
-  type Journey = { steps: SampleStep[]; artifacts: Record<string, unknown> };
-  const fromActive = await loadLinkJSON<Journey>('sample-journey');
+export async function loadSampleJourney(): Promise<SampleJourney | null> {
+  const fromActive = await loadLinkJSON<SampleJourney>('sample-journey');
   if (fromActive?.steps?.length) return fromActive;
   const manifest = await loadManifest();
   for (const snap of manifest?.snapshots || []) {
     const prefix = `${snap.path.replace(/\/$/, '')}/`;
-    const j = await fetchJSON<Journey>(`${prefix}sample-journey.json`);
+    const j = await fetchJSON<SampleJourney>(`${prefix}sample-journey.json`);
     if (j?.steps?.length) return j;
   }
-  return fetchJSON<Journey>('sample-journey.json');
+  return fetchJSON<SampleJourney>('sample-journey.json');
 }
 
 export async function loadRuns(): Promise<MetricsRow[]> {

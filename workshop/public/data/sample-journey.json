@@ -1,116 +1,392 @@
 {
+  "title": "Partner onboarding \u2014 PDB through Pathfinder",
+  "subtitle": "End-to-end architecture walkthrough: Kubernetes PodDisruptionBudget YAML \u2192 ADR obligation \u2192 binding \u2192 normalized evidence \u2192 assess \u2192 publish. Dense on purpose; skim the rail, deepen per step.",
+  "glossary": {
+    "binding": "Approved mapping from a reviewed obligation to a catalog requirement + pattern_id + verifier. Stored in the obligation review registry; stale digests force re-review.",
+    "IssueSurface": "assess-repo --issue-surface (GitHub issue / sandbox). Manual-review and missing analyzer evidence become NOT_APPLICABLE so unresolved judgment does not pollute the automated verdict. Repo CI keeps IssueSurface=false.",
+    "NOT_APPLICABLE": "Requirement status meaning the check does not apply in this context (empty scope, issue-surface N/A, or analyzer not collected for the issue). All-NOT_APPLICABLE still rolls up to INDETERMINATE \u2014 nothing was proved.",
+    "REVIEW_REQUIRED": "Repo-CI status for manual-review verifiers: a human must decide. On IssueSurface this becomes NOT_APPLICABLE instead.",
+    "EVIDENCE_MISSING": "Fail-closed status when a required analyzer scan is incomplete or digests are missing (repo CI). On IssueSurface, missing analyzer evidence for that analyzer is NOT_APPLICABLE.",
+    "pattern_id": "Reusable verification pattern from adr/patterns.json (e.g. security.source_pattern, configuration.authentication, manual_review). Gates which verifier_types may bind.",
+    "pattern_hint": "Deterministic extract suggestion on a Candidate before human review. Heuristic only \u2014 never executable approval.",
+    "analyzer-rule": "Verifier type that matches pinned OpenGrep or Checkov ScanResult findings by exact rule_ids, path/extension scope, and complete digests.",
+    "CKV_*": "Bare Checkov rule IDs after normalization (CKV_AWS_*, CKV_K8S_*, CKV2_*). Catalog bindings today pin CKV_AWS_*; kubernetes framework is enabled in rules/checkov.yml.",
+    "ScanResult": "Normalized analyzer output in internal/analyzer: status, analyzers[], findings[], scanned_paths, binary/config/input/raw_output SHA-256 digests.",
+    "Candidate": "Unapproved obligation extracted from ADR Decision prose \u2014 citation, modality, confidence, pattern_hint. executable stays false until human bind.",
+    "enforcement_mode": "blocking | advisory | review_required on an approved binding. Only blocking feeds the --enforce-blocking CI gate.",
+    "runtime_llm_calls": "Must stay 0 on assess workflows. workshop-emit --enforce-assess-llm fails the snapshot otherwise. Assist is batch-time only.",
+    "manual_review": "Pattern id and verifier path for subjective obligations with no reliable analyzer proxy. Repo CI \u2192 REVIEW_REQUIRED; IssueSurface \u2192 NOT_APPLICABLE."
+  },
   "steps": [
     {
-      "id": "start",
+      "id": "snippet",
+      "short": "YAML",
+      "title": "Start from real-ish cluster YAML",
+      "why": "Partners need a concrete artifact before abstractions. Here is a critical Deployment\u2019s PodDisruptionBudget \u2014 the kind of IaC Pathfinder\u2019s Checkov path is built to scan.",
+      "technical": "Pathfinder never executes submitted YAML. On the GitHub [[IssueSurface]], fences are materialized into a sandbox tree; on repo CI, Checkov scans the live tree under pinned binary/ruleset digests. Kubernetes is an enabled Checkov framework in rules/checkov.yml alongside terraform, cloudformation, and dockerfile.\n\nNotice minAvailable: 2 against a 3-replica Deployment \u2014 majority availability during voluntary eviction. maxUnavailable would be the alternate control when replica count is small.",
+      "highlight": "Cluster intent \u2192 assessable artifact",
+      "commands": [
+        "adrctl scan-checkov --root . --json-out checkov-evidence.json --sarif-out checkov.sarif"
+      ],
+      "notice": [
+        "apiVersion/kind/metadata/spec are what Checkov\u2019s kubernetes parser sees",
+        "selector must match the Deployment\u2019s pod labels or the PDB is a no-op",
+        "This file is the later ScanResult.findings[].path target"
+      ],
+      "callouts": [
+        "Workshop fixture \u2014 illustrative payments-api PDB, not a live corpus ADR yet."
+      ],
+      "chips": [
+        "IssueSurface",
+        "CKV_*",
+        "ScanResult"
+      ],
+      "panels": [
+        {
+          "title": "deploy/payments-api-pdb.yaml",
+          "lang": "yaml",
+          "shimmer": true,
+          "caption": "Voluntary disruption budget for a labeled critical Deployment.",
+          "code": "apiVersion: policy/v1\nkind: PodDisruptionBudget\nmetadata:\n  name: payments-api-pdb\n  namespace: payments\n  labels:\n    app: payments-api\n    pathfinder.critical: \"true\"\nspec:\n  minAvailable: 2\n  selector:\n    matchLabels:\n      app: payments-api\n---\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: payments-api\n  namespace: payments\n  labels:\n    app: payments-api\n    pathfinder.critical: \"true\"\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: payments-api\n  template:\n    metadata:\n      labels:\n        app: payments-api\n    spec:\n      containers:\n        - name: api\n          image: ghcr.io/example/payments-api:1.4.2"
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 why Checkov, not OpenGrep?",
+        "body": "OpenGrep (rules/pathfinder-security.yml) targets source AST / structural code patterns \u2014 SQL format strings, AWS SDK misuse, secrets. A PodDisruptionBudget is declarative IaC. Checkov\u2019s kubernetes framework evaluates resource shape; OpenGrep would be the wrong parser family here. Subjective product policy with no observable proxy stays [[manual_review]] / verifier type manual-review.",
+        "panels": [
+          {
+            "title": "Analyzer selection cheat-sheet",
+            "lang": "text",
+            "code": "Source / security AST  \u2192  OpenGrep  + analyzer-rule (rules.pathfinder.*)\nTerraform / CFN / K8s / Dockerfile  \u2192  Checkov  + analyzer-rule (CKV_*)\nJSON keys / numeric bounds  \u2192  json-required-keys | json-number-range\nSubjective / no proxy  \u2192  manual-review  (repo: REVIEW_REQUIRED; issue: NOT_APPLICABLE)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "adr",
       "short": "ADR",
-      "title": "Start with an ADR",
-      "narrative": "An architect publishes an ADR with a hard requirement. Pathfinder turns that prose into reviewable obligation candidates — without calling an LLM on the assess path.",
-      "technical": "ADR Markdown needs an H1 title. ingest-adrs builds a content-addressed index. Later stages cite source_path, line ranges, and SHA-256 of the file bytes.",
-      "commands": ["adrctl ingest-adrs --root adrs --json-out ingested.json"],
-      "checks": ["H1 title present", "Fail-closed on malformed ADR", "Assess path never reads LLM_API_KEY"],
+      "title": "Write the ADR / tech-spec obligation",
+      "why": "YAML alone is not policy. An accepted ADR Decision states the MUST \u2014 Pathfinder cites those exact bytes forever.",
+      "technical": "ingest-adrs indexes Markdown with an H1 title, Status, and Decision section. Later stages bind citations via source_path, source_line_start/end, and source_sha256 of file bytes. RFC 2119 modality (MUST / SHALL) drives extract confidence; SHOULD softens the band.\n\nThe three-layer model: (1) Source ADR \u2014 immutable Markdown + digest; (2) Obligation \u2014 cited Candidate or approved interpretation; (3) Verification pattern \u2014 reusable analyzer/policy contract shared across many ADRs.",
+      "commands": [
+        "adrctl ingest-adrs --root adrs --json-out ingested.json"
+      ],
+      "notice": [
+        "Normative language lives in Decision \u2014 Context/Consequences are not extracted as obligations",
+        "Accepted status is required before a binding can block CI",
+        "Filename supplies stable document ID when the H1 lacks ADR-####"
+      ],
+      "chips": [
+        "Candidate",
+        "binding",
+        "pattern_id"
+      ],
+      "panels": [
+        {
+          "title": "ADR-2100.md (Decision excerpt)",
+          "lang": "markdown",
+          "shimmer": true,
+          "caption": "Fixture-local ADR \u2014 corpus does not yet ship a PDB ADR; shape matches MADR + RFC 2119.",
+          "code": "# ADR-2100: Pod Disruption Budgets for critical Deployments\n\n## Status\nAccepted\n\n## Context\nNode drains and cluster upgrades evict pods. Critical payment APIs\nmust keep a majority of desired replicas available during voluntary\ndisruptions.\n\n## Decision\nCritical Deployments MUST declare a PodDisruptionBudget that keeps\nminAvailable at or above a majority of desired replicas, or sets\nmaxUnavailable to at most one when replica count is three or fewer.\n\n## Consequences\n- Platform Checkov/Kubernetes policy can verify PDB presence and bounds.\n- Teams without a matching selector fail closed under blocking bindings."
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 ingestion contract",
+        "body": "Reprocessing the same content hash must not create duplicate documents. Assessment reports state which ADR and obligation versions were used. See docs/specification-to-enforcement.md and docs/scaling-adr-design.md.",
+        "panels": [
+          {
+            "title": "Ingested document identity (illustrative)",
+            "lang": "json",
+            "code": "{\n  \"id\": \"ADR-2100\",\n  \"title\": \"Pod Disruption Budgets for critical Deployments\",\n  \"status\": \"accepted\",\n  \"source_path\": \"adrs/ADR-2100.md\",\n  \"source_sha256\": \"a1b2\u2026fixture\"\n}"
+          }
+        ]
+      },
       "artifact_key": "adr",
-      "artifact_label": "Ingested ADR"
+      "artifact_label": "Ingested ADR summary"
     },
     {
       "id": "extract",
       "short": "Extract",
-      "title": "Extract and score confidence",
-      "narrative": "Deterministic extractors find obligation-like statements and band them high, medium, or low. Only the low band is eligible for batch LLM assist.",
-      "technical": "Confidence combines modality strength, pattern_hint match, and citation quality. Escalation reasons stay on the candidate for review UX.",
-      "commands": ["adrctl extract-obligations --index ingested.json --root adrs --json-out candidates.json"],
-      "checks": ["No LLM on extract", "Bands: high | medium | low", "kpi.escalation.rate = low / total"],
+      "title": "Extract a Candidate (not an approval)",
+      "why": "Deterministic extractors turn Decision prose into reviewable [[Candidate]] objects. Nothing here is executable; approval_status stays pending_review.",
+      "technical": "extract-obligations emits an Index of Candidates. Confidence bands (high | medium | low) combine modality strength, [[pattern_hint]] match quality, and citation quality. Only the low band is eligible for batch LLM assist.\n\nFor this PDB wording, modality is must (strong) but Kubernetes policy matching is weak in today\u2019s heuristic map \u2014 so confidence=low with escalation_reasons like weak_pattern_match and broad_scope. That is intentional: humans (or assist) decide the [[pattern_id]], extract never auto-binds.",
+      "commands": [
+        "adrctl extract-obligations --index ingested.json --root adrs --json-out candidates.json",
+        "adrctl assist-obligations --index candidates.json --root adrs --json-out proposals.json"
+      ],
+      "notice": [
+        "executable is always false until human bind",
+        "pattern_hint is a suggestion, not a binding",
+        "kpi.escalation.rate = confidence_low / candidate_total"
+      ],
+      "chips": [
+        "Candidate",
+        "pattern_hint",
+        "runtime_llm_calls"
+      ],
+      "highlight": "Prose \u2192 Candidate fields",
+      "panels": [
+        {
+          "title": "candidates.json \u2014 Candidate (Pathfinder shape)",
+          "lang": "json",
+          "shimmer": true,
+          "caption": "Fields mirror internal/obligations.Candidate JSON tags.",
+          "code": "{\n  \"id\": \"CAND-PDB-1\",\n  \"adr_id\": \"ADR-2100\",\n  \"adr_title\": \"Pod Disruption Budgets for critical Deployments\",\n  \"adr_status\": \"accepted\",\n  \"section_heading\": \"Decision\",\n  \"statement\": \"Critical Deployments MUST declare a PodDisruptionBudget that keeps minAvailable at or above a majority of desired replicas, or sets maxUnavailable to at most one when replica count is three or fewer.\",\n  \"modality\": \"must\",\n  \"kind\": \"obligation\",\n  \"pattern_hint\": \"manual_review\",\n  \"source_path\": \"ADR-2100.md\",\n  \"source_sha256\": \"a1b2\u2026fixture\",\n  \"source_line_start\": 10,\n  \"source_line_end\": 12,\n  \"approval_status\": \"pending_review\",\n  \"enforcement_mode\": \"review_required\",\n  \"executable\": false,\n  \"confidence\": \"low\",\n  \"confidence_score\": 0.34,\n  \"escalation_reasons\": [\"weak_pattern_match\", \"broad_scope\"]\n}"
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 batch assist proposal (optional)",
+        "body": "assist-obligations drafts normalized_statement + suggested_pattern_id for low-confidence Candidates. Proposals verify the quote against file bytes/SHA, stay executable=false and approval_status=pending_review, and never run on the assess path ([[runtime_llm_calls]] on assess must remain 0).",
+        "panels": [
+          {
+            "title": "proposals.json \u2014 Proposal (assist shape)",
+            "lang": "json",
+            "code": "{\n  \"proposal_id\": \"PROP-PDB-1\",\n  \"parent_candidate_id\": \"CAND-PDB-1\",\n  \"adr_id\": \"ADR-2100\",\n  \"normalized_statement\": \"Critical Deployments must ship a PodDisruptionBudget with minAvailable \u2265 majority of replicas, or maxUnavailable \u2264 1 when replicas \u2264 3.\",\n  \"suggested_pattern_id\": \"manual_review\",\n  \"rationale\": \"Kubernetes PDB bounds are IaC-shaped; bind via analyzer-rule/checkov once a rule_id is catalogued, or keep manual-review until then.\",\n  \"parent_confidence\": \"low\",\n  \"executable\": false,\n  \"approval_status\": \"pending_review\",\n  \"provider\": \"offline-fixture\",\n  \"estimated_cost_usd\": 0\n}"
+          }
+        ]
+      },
       "artifact_key": "candidate",
-      "artifact_label": "Low-confidence candidate"
+      "artifact_label": "Candidate summary"
     },
     {
-      "id": "assist",
-      "short": "Assist",
-      "title": "Batch LLM assist",
-      "narrative": "For low-confidence candidates, assist drafts a normalized statement and suggested pattern. Offline fixtures keep CI green without secrets.",
-      "technical": "assist-obligations verifies the quote against file bytes and SHA. Proposals are never executable and stay pending_review. Live mode records tokens and estimated USD.",
-      "commands": ["adrctl assist-obligations --index candidates.json --root adrs --json-out proposals.json"],
-      "checks": ["executable = false", "approval_status = pending_review", "Offline cost = $0"],
-      "artifact_key": "proposal",
-      "artifact_label": "Assist proposal"
-    },
-    {
-      "id": "review",
-      "short": "Review",
-      "title": "Human accept or reject",
-      "narrative": "A reviewer accepts or rejects the proposal into the append-only review registry. Accept rate becomes a workshop KPI.",
-      "technical": "accept-assist-proposal maps to RecordReview. Citation drift between proposal and candidate fails closed before the ledger updates.",
-      "commands": ["adrctl accept-assist-proposal --proposal-id PROP-DEMO-1 --decision approved ..."],
-      "checks": ["Human-authored ledger entry", "Citation SHA must still match", "kpi.review.accept_rate"],
+      "id": "bind",
+      "short": "Bind",
+      "title": "Choose the parser / analyzer binding",
+      "why": "This is the architectural fork partners must internalize: OpenGrep vs Checkov vs manual-review vs JSON verifiers. Humans record the [[binding]]; extract never invents one.",
+      "technical": "record-obligation-review / accept-assist-proposal writes a ReviewRecord into the append-only registry: decision, pattern_id, requirement_id, requirement_sha256, [[enforcement_mode]].\n\nCatalog Verifier.type decides runtime behavior:\n\u2022 analyzer-rule + analyzer=checkov + rule_ids \u2192 require a complete Checkov [[ScanResult]]\n\u2022 analyzer-rule + analyzer=opengrep \u2192 OpenGrep findings\n\u2022 manual-review \u2192 [[REVIEW_REQUIRED]] in repo CI, [[NOT_APPLICABLE]] on [[IssueSurface]]\n\u2022 json-required-keys / json-number-range \u2192 native Go JSON verifiers (pattern configuration.bounds_or_required_values)\n\nAccuracy note: today\u2019s corpus pins CKV_AWS_* against Terraform fixtures. Kubernetes is enabled in Checkov config, but there is no catalogued PDB [[CKV_*]] yet \u2014 so a honest partner binding is either manual-review now, or a proposed analyzer-rule awaiting a real rule_id + fixtures.",
+      "commands": [
+        "adrctl accept-assist-proposal --proposal-id PROP-PDB-1 --decision approved --pattern-id manual_review --enforcement-mode review_required --requirement-id REQ-PDB-1"
+      ],
+      "notice": [
+        "pattern_id must allow the verifier_types you intend (adr/patterns.json)",
+        "Stale requirement_sha256 or source digest \u2192 binding becomes stale \u2192 re-review",
+        "blocking enforcement_mode is what --enforce-blocking gates on"
+      ],
+      "chips": [
+        "binding",
+        "pattern_id",
+        "analyzer-rule",
+        "enforcement_mode",
+        "REVIEW_REQUIRED"
+      ],
+      "highlight": "pattern_hint \u2192 approved binding",
+      "panels": [
+        {
+          "title": "ReviewRecord (registry shape)",
+          "lang": "json",
+          "shimmer": true,
+          "caption": "internal/obligations.ReviewRecord \u2014 human-authored ledger entry.",
+          "code": "{\n  \"candidate_id\": \"CAND-PDB-1\",\n  \"revision\": 1,\n  \"decision\": \"approved\",\n  \"requirement_id\": \"REQ-PDB-1\",\n  \"requirement_sha256\": \"f00d\u2026fixture\",\n  \"pattern_id\": \"manual_review\",\n  \"enforcement_mode\": \"review_required\",\n  \"reviewer\": \"architect@example\",\n  \"review_reference\": \"https://github.com/example/pf_2/issues/88\",\n  \"rationale\": \"No catalogued Checkov PDB rule yet; keep review_required until analyzer-rule + fixtures land.\"\n}"
+        },
+        {
+          "title": "Proposed future catalog verifier (not shipped)",
+          "lang": "json",
+          "caption": "What an analyzer-rule binding would look like once a K8s PDB rule exists.",
+          "code": "{\n  \"requirement_id\": \"REQ-PDB-1\",\n  \"pattern_id\": \"configuration.hardening\",\n  \"verifier\": {\n    \"type\": \"analyzer-rule\",\n    \"analyzer\": \"checkov\",\n    \"rule_ids\": [\"CKV_K8S_PDB_MINAVAILABLE\"],\n    \"source_path_prefixes\": [\".\"],\n    \"source_extensions\": [\".yml\", \".yaml\"]\n  }\n}"
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 BindingCoverage KPIs",
+        "body": "validate-obligation-reviews / assess-obligations emit BindingCoverage: pending_review_count, approved_count, stale_count, orphaned_count, blocking_binding_count, unbound_count. Pending or stale blocking items fail --enforce-blocking.",
+        "panels": [
+          {
+            "title": "BindingCoverage (illustrative)",
+            "lang": "json",
+            "code": "{\n  \"candidate_count\": 1,\n  \"pending_review_count\": 0,\n  \"approved_count\": 1,\n  \"rejected_count\": 0,\n  \"stale_count\": 0,\n  \"orphaned_count\": 0,\n  \"blocking_binding_count\": 0,\n  \"review_required_count\": 1,\n  \"unbound_count\": 0\n}"
+          }
+        ]
+      },
       "artifact_key": "review",
       "artifact_label": "Review record"
     },
     {
-      "id": "assess",
-      "short": "Assess",
-      "title": "Deterministic assess gate",
-      "narrative": "PR and issue assessment evaluate requirements with analyzer evidence and binding coverage — still zero runtime LLM calls.",
-      "technical": "workshop-emit --enforce-assess-llm fails the snapshot if runtime_llm_calls is not 0 on assess workflows.",
-      "commands": ["adrctl assess-repo --root . --requirements adr/requirements.json"],
-      "checks": ["runtime_llm_calls == 0", "Blocking gate on pending/stale", "SARIF + report artifacts"],
-      "artifact_key": "assessment",
-      "artifact_label": "Assessment result"
+      "id": "evidence",
+      "short": "Evidence",
+      "title": "Normalize analyzer output to ScanResult",
+      "why": "Raw Checkov/OpenGrep SARIF is vendor-shaped. Pathfinder adapts it into [[ScanResult]] / evidence.Bundle with digests so assessment can fail closed on incomplete scans.",
+      "technical": "scan-checkov / execute-plan produce JSON + raw SARIF. ParseSARIF fills findings with analyzer, rule_id, path, start_line, message, fingerprint. Digests required for analyzer-rule: binary_sha256, rule_set_sha256, configuration_sha256, input_sha256, raw_output_sha256, non-empty scanned_paths, status=COMPLETE.\n\nBelow: illustrative ScanResult as if a future PDB rule reported a finding on the YAML from step 1. Today\u2019s CI proves Checkov with CKV_AWS_* on Terraform under testdata/analyzer-fixtures \u2014 same envelope, different rule_id.",
+      "commands": [
+        "adrctl scan-checkov --root . --json-out checkov-evidence.json --sarif-out checkov.sarif",
+        "adrctl execute-plan --plan plan.json --out-dir evidence/"
+      ],
+      "notice": [
+        "Incomplete digests \u2192 EVIDENCE_MISSING (repo) or NOT_APPLICABLE (IssueSurface missing analyzer)",
+        "rule_id matching is exact after Checkov ID normalization",
+        "evidence.Bundle.Record wraps findings with producer + provenance"
+      ],
+      "chips": [
+        "ScanResult",
+        "CKV_*",
+        "EVIDENCE_MISSING",
+        "analyzer-rule"
+      ],
+      "highlight": "YAML \u2192 normalized Finding",
+      "panels": [
+        {
+          "title": "checkov-evidence.json \u2014 ScanResult (envelope)",
+          "lang": "json",
+          "shimmer": true,
+          "caption": "internal/analyzer.ScanResult \u2014 digests make the scan replayable.",
+          "code": "{\n  \"schema_version\": \"analyzer-scan-v1\",\n  \"sarif_version\": \"2.1.0\",\n  \"status\": \"COMPLETE\",\n  \"analyzers\": [{ \"name\": \"checkov\", \"version\": \"3.x-pinned\" }],\n  \"configuration_path\": \"rules/checkov.yml\",\n  \"configuration_sha256\": \"cfg\u2026\",\n  \"binary_sha256\": \"bin\u2026\",\n  \"rule_set_sha256\": \"rules\u2026\",\n  \"input_sha256\": \"tree\u2026\",\n  \"raw_output_sha256\": \"sarif\u2026\",\n  \"scanned_paths\": [\"deploy/payments-api-pdb.yaml\"],\n  \"findings\": [],\n  \"errors\": []\n}"
+        },
+        {
+          "title": "Finding (PASS path \u2014 PDB present)",
+          "lang": "json",
+          "caption": "Empty findings for a matching rule_id means PASS once bound to analyzer-rule. A violation would appear as a Finding.",
+          "code": "{\n  \"note\": \"No finding \u21d2 analyzer-rule PASS when rule_ids are in scope and scan is COMPLETE.\",\n  \"alternate_violation_example\": {\n    \"analyzer\": \"checkov\",\n    \"rule_id\": \"CKV_K8S_PDB_MINAVAILABLE\",\n    \"message\": \"Critical Deployment payments-api missing PodDisruptionBudget minAvailable majority\",\n    \"path\": \"deploy/payments-api.yaml\",\n    \"start_line\": 1,\n    \"level\": \"error\",\n    \"fingerprint\": \"checkov|CKV_K8S_PDB_MINAVAILABLE|deploy/payments-api.yaml|1\"\n  }\n}"
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 OpenGrep contrast",
+        "body": "If this obligation were a Go SQL string format rule, the plan runner would dispatch opengrep with rules.pathfinder.* IDs. Same ScanResult envelope; different analyzers[].name and rule_id namespace.",
+        "panels": [
+          {
+            "title": "Plan task discriminator",
+            "lang": "json",
+            "code": "{\n  \"analyzer\": \"checkov\",\n  \"version\": \"pinned\",\n  \"binary_sha256\": \"\u2026\",\n  \"ruleset_sha256\": \"\u2026\",\n  \"configuration_path\": \"rules/checkov.yml\",\n  \"source_paths\": [\"deploy/\"]\n}"
+          }
+        ]
+      },
+      "artifact_key": "evidence",
+      "artifact_label": "Evidence summary"
     },
     {
-      "id": "command-center",
+      "id": "assess",
+      "short": "Assess",
+      "title": "Assess statuses & IssueSurface semantics",
+      "why": "Assessment joins catalog requirements with evidence and emits per-requirement statuses \u2014 still zero [[runtime_llm_calls]].",
+      "technical": "assess-repo evaluates each RequirementResult: status \u2208 PASS | FAIL | INDETERMINATE | [[NOT_APPLICABLE]] | [[REVIEW_REQUIRED]] | [[EVIDENCE_MISSING]] | UNSUPPORTED | ERROR, plus evidence[] and findings[].\n\n[[IssueSurface]] flips semantics for partners building issue vs repo flows:\n\u2022 manual-review \u2192 REVIEW_REQUIRED (repo) vs NOT_APPLICABLE (issue)\n\u2022 analyzer-rule with no scan for that analyzer \u2192 EVIDENCE_MISSING (repo) vs NOT_APPLICABLE (issue)\n\nOverall verdict: any FAIL wins; REVIEW_REQUIRED / EVIDENCE_MISSING / UNSUPPORTED force INDETERMINATE; all-NOT_APPLICABLE is still INDETERMINATE (nothing proved). assess-obligations then joins Candidates to produce obligation_verdict + CandidateAssessment rows.",
+      "commands": [
+        "adrctl assess-repo --root . --requirements adr/requirements.json --analyzer-evidence checkov-evidence.json --analyzer-sarif checkov.sarif",
+        "adrctl assess-repo --issue-surface --root /tmp/sandbox --requirements testdata/corpus/requirements.json \u2026",
+        "adrctl assess-obligations --candidates candidates.json --reviews adr/obligation-reviews.json --assessment assessment.json"
+      ],
+      "notice": [
+        "runtime_llm_calls must be 0 on assess",
+        "coverage_status COMPLETE|PARTIAL|NONE is independent of verdict",
+        "Rejected candidates become NOT_APPLICABLE on the obligation join"
+      ],
+      "chips": [
+        "IssueSurface",
+        "NOT_APPLICABLE",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_MISSING",
+        "runtime_llm_calls"
+      ],
+      "highlight": "Evidence \u2192 RequirementResult",
+      "panels": [
+        {
+          "title": "assessment.json \u2014 Result (excerpt)",
+          "lang": "json",
+          "shimmer": true,
+          "caption": "internal/assessment.Result field names.",
+          "code": "{\n  \"schema_version\": \"assessment-v1\",\n  \"evidence_mode\": \"repository\",\n  \"verdict\": \"INDETERMINATE\",\n  \"coverage_status\": \"PARTIAL\",\n  \"runtime_llm_calls\": 0,\n  \"counts\": {\n    \"PASS\": 0,\n    \"FAIL\": 0,\n    \"REVIEW_REQUIRED\": 1,\n    \"NOT_APPLICABLE\": 0,\n    \"EVIDENCE_MISSING\": 0\n  },\n  \"requirements\": [\n    {\n      \"requirement_id\": \"REQ-PDB-1\",\n      \"adr\": \"ADR-2100\",\n      \"title\": \"PDB for critical Deployments\",\n      \"status\": \"REVIEW_REQUIRED\",\n      \"severity\": \"medium\",\n      \"reason\": \"manual-review verifier; human decision required in repository mode\",\n      \"evidence\": [],\n      \"findings\": []\n    }\n  ]\n}"
+        },
+        {
+          "title": "IssueSurface contrast (same requirement)",
+          "lang": "json",
+          "caption": "With --issue-surface, manual-review does not force indeterminate noise.",
+          "code": "{\n  \"issue_surface\": true,\n  \"requirement_id\": \"REQ-PDB-1\",\n  \"status\": \"NOT_APPLICABLE\",\n  \"reason\": \"manual-review is not applicable on issue surface\"\n}"
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 obligation join",
+        "body": "CandidateAssessment carries candidate_id, decision, pattern_id, enforcement_mode, status, evidence_status, reason, evidence[]. RepositoryVerdict stays distinct from ObligationVerdict when bindings are stale or pending.",
+        "panels": [
+          {
+            "title": "CandidateAssessment row",
+            "lang": "json",
+            "code": "{\n  \"candidate_id\": \"CAND-PDB-1\",\n  \"adr_id\": \"ADR-2100\",\n  \"decision\": \"approved\",\n  \"requirement_id\": \"REQ-PDB-1\",\n  \"pattern_id\": \"manual_review\",\n  \"enforcement_mode\": \"review_required\",\n  \"status\": \"REVIEW_REQUIRED\",\n  \"evidence_status\": \"not_required\",\n  \"reason\": \"manual-review binding\",\n  \"evidence\": []\n}"
+          }
+        ]
+      },
+      "artifact_key": "assessment",
+      "artifact_label": "Assessment summary"
+    },
+    {
+      "id": "publish",
       "short": "Publish",
-      "title": "Publish to the command center",
-      "narrative": "Artifacts land on workshop-data and this Pages app renders drilldowns, ADR dig-ins, cost, and the Sample journey.",
-      "technical": "Workshop Publish builds the Vite app and deploys with actions/deploy-pages. Local fixtures keep the shell usable when live data is thin.",
-      "commands": ["adrctl workshop-emit --out-dir snapshot ..."],
-      "checks": ["latest.json + metrics.json", "runs.jsonl append", "Internal visibility by design"],
+      "title": "Emit workshop snapshot & command center",
+      "why": "Partners ship architecture by making runs inspectable: metrics, digdowns, this journey, and fail-closed LLM gates.",
+      "technical": "workshop-emit writes latest.json, metrics.json, and linked artifacts. Workshop Publish appends metrics/runs.jsonl, stores snapshots/<run_id>/, updates manifest.json on the workshop-data branch. Pages serves the SPA; humans write back via Issues, PR templates, and workflow_dispatch \u2014 never via the static site holding secrets.\n\n--enforce-assess-llm fails the snapshot if [[runtime_llm_calls]] \u2260 0. Sample journey JSON is promoted to data root when present beside the snapshot (scripts/workshop_publish_data.py).",
+      "commands": [
+        "adrctl workshop-emit --out-dir snapshot --enforce-assess-llm",
+        "python3 scripts/workshop_publish_data.py --snapshot snapshot --data-dir workshop-data"
+      ],
+      "notice": [
+        "latest.json + metrics.json + runs.jsonl are the command-center spine",
+        "loadSampleJourney prefers the selected run\u2019s sample-journey, then any snapshot, then root",
+        "Internal visibility by design"
+      ],
+      "chips": [
+        "runtime_llm_calls",
+        "binding"
+      ],
+      "panels": [
+        {
+          "title": "latest.json (excerpt)",
+          "lang": "json",
+          "shimmer": true,
+          "code": "{\n  \"schema_version\": \"workshop-snapshot-v1\",\n  \"run\": {\n    \"run_id\": \"fixture-000\",\n    \"workflow\": \"fixture\",\n    \"provider_mode\": \"offline\"\n  },\n  \"summary\": \"workflow=fixture; verdict=INDETERMINATE; pdb=ADR-2100; review_required=1\",\n  \"links\": {\n    \"sample-journey\": \"sample-journey.json\",\n    \"assessment\": \"assessment.json\",\n    \"candidates\": \"candidates.json\"\n  }\n}"
+        }
+      ],
+      "deeper": {
+        "title": "Deeper dive \u2014 where to read next",
+        "body": "In-app docs: Architecture, Spec \u2192 enforcement, Verifier types, Statuses, OpenGrep, Checkov, Plan/registry. Repo: docs/specification-to-enforcement.md, docs/architecture.md, internal/assessment, internal/analyzer, internal/obligations.",
+        "panels": []
+      },
       "artifact_key": "latest",
       "artifact_label": "Workshop snapshot"
     }
   ],
   "artifacts": {
     "adr": {
-      "id": "ADR-2001",
-      "title": "TLS termination at edge",
+      "id": "ADR-2100",
+      "title": "Pod Disruption Budgets for critical Deployments",
       "status": "accepted",
-      "excerpt": "All public HTTP traffic must terminate TLS at the edge proxy with certificates managed by the platform."
+      "excerpt": "Critical Deployments MUST declare a PodDisruptionBudget that keeps minAvailable at or above a majority of desired replicas, or sets maxUnavailable to at most one when replica count is three or fewer."
     },
     "candidate": {
-      "id": "CAND-DEMO-1",
-      "adr_id": "ADR-2001",
+      "id": "CAND-PDB-1",
+      "adr_id": "ADR-2100",
       "confidence": "low",
+      "modality": "must",
       "pattern_hint": "manual_review",
-      "statement": "All public HTTP traffic must terminate TLS at the edge proxy",
-      "escalation_reasons": ["weak_pattern_match", "broad_scope"],
-      "source_path": "ADR-2001.md",
-      "source_line_start": 8,
-      "source_line_end": 8
-    },
-    "proposal": {
-      "proposal_id": "PROP-DEMO-1",
-      "parent_candidate_id": "CAND-DEMO-1",
-      "normalized_statement": "Public HTTP must terminate TLS at the edge proxy",
-      "suggested_pattern_id": "manual_review",
+      "statement": "Critical Deployments MUST declare a PodDisruptionBudget that keeps minAvailable at or above a majority of desired replicas, or sets maxUnavailable to at most one when replica count is three or fewer.",
+      "escalation_reasons": [
+        "weak_pattern_match",
+        "broad_scope"
+      ],
       "executable": false,
-      "approval_status": "pending_review",
-      "estimated_cost_usd": 0,
-      "provider": "offline-fixture"
+      "approval_status": "pending_review"
     },
     "review": {
-      "candidate_id": "CAND-DEMO-1",
+      "candidate_id": "CAND-PDB-1",
       "decision": "approved",
-      "reviewer": "architect@example",
+      "pattern_id": "manual_review",
+      "requirement_id": "REQ-PDB-1",
       "enforcement_mode": "review_required",
-      "review_reference": "https://github.com/example/pf_2/issues/42"
+      "reviewer": "architect@example"
+    },
+    "evidence": {
+      "status": "COMPLETE",
+      "analyzer": "checkov",
+      "scanned_paths": "deploy/payments-api-pdb.yaml",
+      "findings_count": 0,
+      "note": "COMPLETE scan with digests; empty findings \u21d2 PASS once analyzer-rule bound"
     },
     "assessment": {
-      "verdict": "PASS",
+      "verdict": "INDETERMINATE",
       "runtime_llm_calls": 0,
-      "coverage_status": "COMPLETE"
+      "coverage_status": "PARTIAL",
+      "requirement_id": "REQ-PDB-1",
+      "status": "REVIEW_REQUIRED",
+      "issue_surface_status": "NOT_APPLICABLE"
     },
     "latest": {
       "schema_version": "workshop-snapshot-v1",
-      "run_id": "fixture-001",
-      "summary": "workflow=fixture; verdict=PASS; candidates=4; proposals=1"
+      "run_id": "fixture-000",
+      "summary": "workflow=fixture; verdict=INDETERMINATE; pdb=ADR-2100; review_required=1"
     }
   }
 }
