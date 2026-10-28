@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-004",
+  "timestamp": "2026-10-28T03:28:20.071929+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-004",
+      "title": "[ADR Assessment] MADR: YAML front matter metadata [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "architecture",
+        "metadata"
+      ],
+      "path": "tech_spec/WS-TS-004.md",
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0013-use-yaml-front-matter-for-meta-data.md",
+      "repo": "adr/madr",
+      "license": "MIT",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-004/assessment.json"
+    }
+  ]
+}

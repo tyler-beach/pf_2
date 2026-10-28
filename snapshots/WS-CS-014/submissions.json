@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-014",
+  "timestamp": "2026-10-28T03:28:37.345271+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-014",
+      "title": "[ADR Assessment] OPA Gatekeeper required-labels template [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "policy",
+        "k8s"
+      ],
+      "path": "code_snippet/WS-CS-014.md",
+      "source_url": "https://github.com/open-policy-agent/gatekeeper/blob/master/demo/basic/templates/k8srequiredlabels_template.yaml",
+      "repo": "open-policy-agent/gatekeeper",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-014/assessment.json"
+    }
+  ]
+}

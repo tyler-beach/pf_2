@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-018",
+  "timestamp": "2026-10-28T03:28:28.443212+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-018",
+      "title": "[ADR Assessment] Grafana k8s-inspired backend architecture [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "platform",
+        "apis"
+      ],
+      "path": "tech_spec/WS-TS-018.md",
+      "source_url": "https://github.com/grafana/grafana/blob/main/contribute/architecture/k8s-inspired-backend-arch.md",
+      "repo": "grafana/grafana",
+      "license": "AGPL-3.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-018/assessment.json"
+    }
+  ]
+}

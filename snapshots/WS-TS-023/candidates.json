@@ -1,0 +1,45 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "id": "sub-WS-TS-023",
+      "adr_id": "WS-TS-023",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Istio security README [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-023.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 1,
+    "low": 0,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 0,
+  "schema_version": "1",
+  "source_index_sha256": "9a9bbf7bf61ccaa837e150c7ca8c5f8b218aed13fec24f9013bec6658f863455",
+  "source_root": "adrs"
+}

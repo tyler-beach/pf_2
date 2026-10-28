@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-003",
+  "timestamp": "2026-10-28T03:28:19.471656+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-003",
+      "title": "[ADR Assessment] MADR: Add status field [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "architecture",
+        "process"
+      ],
+      "path": "tech_spec/WS-TS-003.md",
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0008-add-status-field.md",
+      "repo": "adr/madr",
+      "license": "MIT",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-003/assessment.json"
+    }
+  ]
+}

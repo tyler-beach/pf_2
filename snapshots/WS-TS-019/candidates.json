@@ -1,0 +1,103 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 3,
+  "candidates": [
+    {
+      "id": "CAND-1165e66181755f47",
+      "adr_id": "WS-TS-019",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Leases may be",
+      "source_path": "adrs/WS-TS-019.md",
+      "source_line_start": 34,
+      "source_line_end": 34,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-4cbc592c2ab67965",
+      "adr_id": "WS-TS-019",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "may be used in the future after the client completes an operation, even though",
+      "source_path": "adrs/WS-TS-019.md",
+      "source_line_start": 37,
+      "source_line_end": 37,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9864,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-019",
+      "adr_id": "WS-TS-019",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] containerd garbage collection [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-019.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 3,
+    "low": 0,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "31d5b4ea85a2fac9340e0d575671ba6ae92de8a053abcb91bd3cfc073b6315f9",
+  "source_root": "adrs"
+}

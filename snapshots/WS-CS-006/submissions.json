@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-006",
+  "timestamp": "2026-10-28T03:28:34.554892+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-006",
+      "title": "[ADR Assessment] golang-jwt parser fragment [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "auth",
+        "go",
+        "apis"
+      ],
+      "path": "code_snippet/WS-CS-006.md",
+      "source_url": "https://github.com/golang-jwt/jwt/blob/main/parser.go",
+      "repo": "golang-jwt/jwt",
+      "license": "MIT",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-006/assessment.json"
+    }
+  ]
+}

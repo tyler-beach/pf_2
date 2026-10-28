@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-001",
+  "timestamp": "2026-10-28T03:28:18.290190+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-001",
+      "title": "[ADR Assessment] MADR: Use Markdown ADRs [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "architecture",
+        "process"
+      ],
+      "path": "tech_spec/WS-TS-001.md",
+      "source_url": "https://github.com/adr/madr/blob/develop/docs/decisions/0000-use-markdown-architectural-decision-records.md",
+      "repo": "adr/madr",
+      "license": "MIT",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-001/assessment.json"
+    }
+  ]
+}

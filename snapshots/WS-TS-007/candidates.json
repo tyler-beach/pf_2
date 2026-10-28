@@ -1,0 +1,72 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 2,
+  "candidates": [
+    {
+      "id": "CAND-24f3b5c1bf184c55",
+      "adr_id": "WS-TS-007",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Backstage should eventually support the following core entities:",
+      "source_path": "adrs/WS-TS-007.md",
+      "source_line_start": 33,
+      "source_line_end": 33,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-007",
+      "adr_id": "WS-TS-007",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Backstage: Catalog core entities [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-007.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 2,
+    "low": 0,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "378f5c98eb76b1b704e48a4e2f761023ff68b8eb2489e74f799aa31c970630bc",
+  "source_root": "adrs"
+}

@@ -1,0 +1,133 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 4,
+  "candidates": [
+    {
+      "id": "CAND-2caf02435294b8bf",
+      "adr_id": "WS-TS-016",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Flux should provide a mechanism to authenticate against Git repositories without",
+      "source_path": "adrs/WS-TS-016.md",
+      "source_line_start": 29,
+      "source_line_end": 29,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9998,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-68aa6676df6e1467",
+      "adr_id": "WS-TS-016",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "security.source_pattern",
+      "statement": "required to create a Secret containing the username and the password/bearer",
+      "source_path": "adrs/WS-TS-016.md",
+      "source_line_start": 37,
+      "source_line_end": 37,
+      "escalation_reasons": [
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0043,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-b789420559aebe54",
+      "adr_id": "WS-TS-016",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "teams have to decide whose credentials should Flux use for authentication.",
+      "source_path": "adrs/WS-TS-016.md",
+      "source_line_start": 47,
+      "source_line_end": 47,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0035,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-016",
+      "adr_id": "WS-TS-016",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Flux RFC-0007 passwordless Git auth [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-016.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 2,
+    "low": 2,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "c03d4ac25c228606aee53182f6931af0192a92db53f13f9cc673534cce60f71c",
+  "source_root": "adrs"
+}

@@ -1,0 +1,238 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 7,
+  "candidates": [
+    {
+      "id": "CAND-6bdbab520ebe00ad",
+      "adr_id": "WS-TS-003",
+      "confidence": "low",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "And if it should, how should we track it?",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_line_start": 30,
+      "source_line_end": 30,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "conditional_scope",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": [
+        "conditional_applicability"
+      ],
+      "review_hints": [
+        "non_decision_section",
+        "conditional_scope",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3632,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-c572a6bdefded577",
+      "adr_id": "WS-TS-003",
+      "confidence": "high",
+      "modality": "should",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Should this be tracked?",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_line_start": 30,
+      "source_line_end": 30,
+      "escalation_reasons": [
+        "should_modality",
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9207,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-60740b768aaa781e",
+      "adr_id": "WS-TS-003",
+      "confidence": "low",
+      "modality": "must_not",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Do not add status",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_line_start": 39,
+      "source_line_end": 39,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "conformal_set_vacuous_point_band",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.4984,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-97b9c677e03cd072",
+      "adr_id": "WS-TS-003",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Bad, because relies on the online service \u003chttps://shields.io\u003e or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_line_start": 74,
+      "source_line_end": 74,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "non_decision_section",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "non_decision_section",
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.0021,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-ad99f26747d3b0c9",
+      "adr_id": "WS-TS-003",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Bad, because relies on the online service \u003chttps://shields.io\u003e or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_line_start": 74,
+      "source_line_end": 74,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-be0ef2d9c8991069",
+      "adr_id": "WS-TS-003",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Bad, because relies on the online service \u003chttps://shields.io\u003e or [local badges have to be generated](https://github.com/badges/shields#using-the-badge-library)",
+      "source_path": "adrs/WS-TS-003.md",
+      "source_line_start": 74,
+      "source_line_end": 74,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-003",
+      "adr_id": "WS-TS-003",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] MADR: Add status field [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-003.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 2,
+    "low": 5,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "78707cb7fe35257a9684a4b72a448332a26d30d235c1789784329ac21dd99ff5",
+  "source_root": "adrs"
+}

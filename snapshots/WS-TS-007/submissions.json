@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-TS-007",
+  "timestamp": "2026-10-28T03:28:21.888681+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 1,
+    "code_snippet": 0
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-TS-007",
+      "title": "[ADR Assessment] Backstage: Catalog core entities [tech_spec]",
+      "submission_kind": "tech_spec",
+      "domains": [
+        "platform",
+        "data"
+      ],
+      "path": "tech_spec/WS-TS-007.md",
+      "source_url": "https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr005-catalog-core-entities.md",
+      "repo": "backstage/backstage",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-TS-007/assessment.json"
+    }
+  ]
+}

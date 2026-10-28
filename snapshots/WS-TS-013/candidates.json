@@ -1,0 +1,45 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "id": "sub-WS-TS-013",
+      "adr_id": "WS-TS-013",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Argo CD operator architecture [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-013.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 1,
+    "low": 0,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 0,
+  "schema_version": "1",
+  "source_index_sha256": "a88215ac1dfc2cbede8e47d2805c508fa62c7228c5bd1711077418b3f8be2a8a",
+  "source_root": "adrs"
+}

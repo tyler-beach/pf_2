@@ -1,0 +1,35 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-011",
+  "timestamp": "2026-10-28T03:28:36.320920+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-011",
+      "title": "[ADR Assessment] Docker Compose nginx-golang-mysql [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "docker",
+        "networking"
+      ],
+      "path": "code_snippet/WS-CS-011.md",
+      "source_url": "https://github.com/docker/awesome-compose/blob/master/nginx-golang-mysql/compose.yaml",
+      "repo": "docker/awesome-compose",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-011/assessment.json"
+    }
+  ]
+}

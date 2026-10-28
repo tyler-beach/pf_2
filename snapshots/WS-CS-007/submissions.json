@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-007",
+  "timestamp": "2026-10-28T03:28:34.887100+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-007",
+      "title": "[ADR Assessment] Django REST framework authentication [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "auth",
+        "python",
+        "apis"
+      ],
+      "path": "code_snippet/WS-CS-007.md",
+      "source_url": "https://github.com/encode/django-rest-framework/blob/master/rest_framework/authentication.py",
+      "repo": "encode/django-rest-framework",
+      "license": "BSD-3-Clause",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-007/assessment.json"
+    }
+  ]
+}

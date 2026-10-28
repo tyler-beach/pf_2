@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-021",
+  "timestamp": "2026-10-28T03:28:39.692757+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-021",
+      "title": "[ADR Assessment] Traefik BasicAuth middleware docs/config [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "auth",
+        "networking",
+        "apis"
+      ],
+      "path": "code_snippet/WS-CS-021.md",
+      "source_url": "https://github.com/traefik/traefik/blob/v3.1/docs/content/middlewares/http/basicauth.md",
+      "repo": "traefik/traefik",
+      "license": "MIT",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-021/assessment.json"
+    }
+  ]
+}

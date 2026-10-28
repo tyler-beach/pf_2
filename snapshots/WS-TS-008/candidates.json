@@ -1,0 +1,166 @@
+{
+  "calibration": {
+    "coverage": 0.9,
+    "method": "platt_conformal"
+  },
+  "candidate_count": 5,
+  "candidates": [
+    {
+      "id": "CAND-64f636461b0cbd24",
+      "adr_id": "WS-TS-008",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Optionality of `kind` and `namespace` are contextual, and they may or may not",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_line_start": 49,
+      "source_line_end": 49,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-80fc0bcc53f2facd",
+      "adr_id": "WS-TS-008",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "Of these, only `name` is always required.",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_line_start": 62,
+      "source_line_end": 62,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined",
+        "split_from_compound"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "CAND-23e8330db8f4f7e5",
+      "adr_id": "WS-TS-008",
+      "confidence": "high",
+      "modality": "may",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "are contextual, and they may or may not have default contextual fallback values.",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_line_start": 63,
+      "source_line_end": 63,
+      "escalation_reasons": [
+        "permissive_or_negative_requirement_modality",
+        "manual_review_pattern_hint",
+        "compound_statement"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9782,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    },
+    {
+      "id": "CAND-98cf866bada0ce47",
+      "adr_id": "WS-TS-008",
+      "confidence": "low",
+      "modality": "must",
+      "kind": "normative_candidate",
+      "pattern_hint": "manual_review",
+      "statement": "shall supply the entire triplet, whether using the string form or the compound",
+      "source_path": "adrs/WS-TS-008.md",
+      "source_line_start": 67,
+      "source_line_end": 67,
+      "escalation_reasons": [
+        "manual_review_pattern_hint",
+        "compound_statement",
+        "calibrated_p_below_medium"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": [
+        "compound_or_conjoined"
+      ],
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.3797,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "low"
+      ]
+    },
+    {
+      "id": "sub-WS-TS-008",
+      "adr_id": "WS-TS-008",
+      "confidence": "high",
+      "modality": "INFORMATIONAL",
+      "kind": "workshop_submission",
+      "pattern_hint": "workshop.submission",
+      "statement": "[ADR Assessment] Backstage: Entity references [tech_spec] — assessed verdict INDETERMINATE (coverage NONE)",
+      "source_path": "tech_spec/WS-TS-008.md",
+      "source_line_start": 0,
+      "source_line_end": 0,
+      "escalation_reasons": [
+        "unknown_modality"
+      ],
+      "ambiguity": null,
+      "exceptions": null,
+      "conditions": null,
+      "review_hints": null,
+      "submission_kind": "tech_spec",
+      "confidence_p": 0.9783,
+      "confidence_method": "platt_conformal",
+      "confidence_coverage": 0.9,
+      "prediction_set": [
+        "high"
+      ]
+    }
+  ],
+  "confidence_summary": {
+    "high": 3,
+    "low": 2,
+    "medium": 0
+  },
+  "document_count": 1,
+  "documents_with_candidates": 1,
+  "schema_version": "1",
+  "source_index_sha256": "33c71003801a976fa37c2870eb4c0d74af624081b93a12a0a500047a7467ebce",
+  "source_root": "adrs"
+}

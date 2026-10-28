@@ -1,0 +1,36 @@
+{
+  "schema_version": "workshop-submission-results-v1",
+  "run_id": "WS-CS-010",
+  "timestamp": "2026-10-28T03:28:35.987262+00:00",
+  "counts": {
+    "total": 1,
+    "tech_spec": 0,
+    "code_snippet": 1
+  },
+  "verdicts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "INDETERMINATE": 1
+  },
+  "submissions": [
+    {
+      "id": "WS-CS-010",
+      "title": "[ADR Assessment] Falco default rules excerpt [code_snippet]",
+      "submission_kind": "code_snippet",
+      "domains": [
+        "security",
+        "logging",
+        "runtime"
+      ],
+      "path": "code_snippet/WS-CS-010.md",
+      "source_url": "https://github.com/falcosecurity/rules/blob/main/rules/falco_rules.yaml",
+      "repo": "falcosecurity/rules",
+      "license": "Apache-2.0",
+      "verdict": "INDETERMINATE",
+      "coverage_status": "NONE",
+      "requirement_count": 200,
+      "runtime_llm_calls": 0,
+      "assessment_path": "testdata/workshop-submissions/results/WS-CS-010/assessment.json"
+    }
+  ]
+}
