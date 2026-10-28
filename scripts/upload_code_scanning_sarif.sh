@@ -49,7 +49,10 @@ if ! [[ "$ref" =~ ^(refs/heads/[A-Za-z0-9._/-]+|refs/pull/[0-9]+/head|refs/tags/
   echo "invalid git ref for code scanning upload: $ref" >&2
   exit 2
 fi
-if ! [[ "$tool" =~ ^[A-Za-z0-9][A-Za-z0-9 ._-]{0,63}$ ]]; then
+# Store the regex in a var: an unquoted [[ =~ ]] class containing a space
+# breaks bash parsing (syntax error in conditional expression).
+tool_re='^[A-Za-z0-9][A-Za-z0-9 ._-]{0,63}$'
+if ! [[ "$tool" =~ $tool_re ]]; then
   echo "invalid tool name: $tool" >&2
   exit 2
 fi
