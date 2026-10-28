@@ -3,10 +3,6 @@
   "latest_run_id": "workshop-submissions-20261028T021536Z",
   "snapshots": [
     {
-      "path": "snapshots/fixture-000",
-      "run_id": "fixture-000"
-    },
-    {
       "path": "snapshots/fixture-001",
       "run_id": "fixture-001"
     },
@@ -15,13 +11,9 @@
       "run_id": "fixture-live-example"
     },
     {
-      "path": "snapshots/workshop-submissions-20261028T015800Z",
-      "run_id": "workshop-submissions-20261028T015800Z"
-    },
-    {
       "path": "snapshots/workshop-submissions-20261028T021536Z",
       "run_id": "workshop-submissions-20261028T021536Z"
     }
   ],
-  "updated_at": "2026-10-28T02:17:31.423861+00:00"
+  "updated_at": "2026-10-28T02:42:29.155077+00:00"
 }

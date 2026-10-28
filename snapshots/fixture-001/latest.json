@@ -10,25 +10,27 @@
   "metrics": {
     "schema_version": "workshop-metrics-v1",
     "candidate_total": 4,
-    "confidence_high": 2,
-    "confidence_medium": 1,
+    "confidence_high": 3,
+    "confidence_medium": 0,
     "confidence_low": 1,
-    "kpi.confidence.share.high": 0.5,
-    "kpi.confidence.share.medium": 0.25,
+    "kpi.confidence.share.high": 0.75,
+    "kpi.confidence.share.medium": 0,
     "kpi.confidence.share.low": 0.25,
     "kpi.escalation.rate": 0.25,
-    "kpi.harness.precision": 0.8,
-    "kpi.harness.recall": 0.75,
-    "kpi.harness.recall.high": 0.9,
-    "kpi.harness.recall.medium": 0.7,
-    "kpi.harness.recall.low": 0.55,
-    "kpi.review.backlog": 1,
-    "kpi.review.pending_low": 1,
-    "kpi.review.accept_rate": 1,
+    "kpi.escalation.rate.ci_low": 0.04558726080970055,
+    "kpi.escalation.rate.ci_high": 0.6993581574175981,
+    "kpi.confidence.share.high.ci_low": 0.3006418425824019,
+    "kpi.confidence.share.high.ci_high": 0.9544127391902995,
+    "kpi.confidence.share.low.ci_low": 0.04558726080970055,
+    "kpi.confidence.share.low.ci_high": 0.6993581574175981,
+    "kpi.confidence.method": "platt_conformal",
+    "kpi.confidence.coverage_target": 0.9,
+    "kpi.confidence.mean_p": 0.7071000000000001,
+    "kpi.confidence.calibrated_count": 4,
+    "kpi.confidence.heuristic_count": 0,
+    "kpi.ci.level": 0.95,
+    "kpi.ci.method": "wilson",
     "kpi.assess.verdict": "PASS",
-    "kpi.assess.covered": 3,
-    "kpi.assess.unbound": 0,
-    "kpi.assess.stale": 0,
     "kpi.invariant.llm_calls": 0,
     "kpi.assist.proposal_count": 1,
     "kpi.assist.prompt_tokens": 0,
@@ -38,20 +40,18 @@
     "kpi.assist.model": "offline-replay",
     "kpi.promptfoo.pass_rate": 1,
     "promptfoo_mode": "offline",
-    "kpi.evidence.gap_rate": 0.5,
-    "kpi.corpus.size": 100
+    "kpi.evidence.gap_rate": 0.5
   },
   "slo": {
     "assess_runtime_llm_calls_zero": true,
-    "promptfoo_offline_pass": true,
-    "high_confidence_share": 0.5
+    "high_confidence_share": 0.75,
+    "promptfoo_offline_pass": true
   },
   "links": {
-    "candidates": "candidates.json",
-    "proposals": "proposals.json",
-    "promptfoo": "promptfoo.json",
     "assessment": "assessment.json",
-    "sample-journey": "sample-journey.json"
+    "candidates": "candidates.json",
+    "promptfoo": "promptfoo.json",
+    "proposals": "proposals.json"
   },
-  "summary": "workflow=fixture; verdict=PASS; candidates=4 (high=2 medium=1 low=1); proposals=1"
+  "summary": "workflow=fixture; verdict=PASS; candidates=4 (high=3 medium=0 low=1); proposals=1"
 }
