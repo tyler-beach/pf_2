@@ -1,10 +1,14 @@
 {
-  "data_sha": "8143347668d430aea3be86088868d39939fbe8ae5be9cfda6c9de573dea6e521",
-  "latest_run_id": "40689951565-1",
+  "data_sha": "433ee83c5c5a1b8449431c248ba4fc1da58afd4281cd3e838f44db0b9a9d75e0",
+  "latest_run_id": "40690165338-1",
   "snapshots": [
     {
       "path": "snapshots/40689951565-1",
       "run_id": "40689951565-1"
+    },
+    {
+      "path": "snapshots/40690165338-1",
+      "run_id": "40690165338-1"
     },
     {
       "path": "snapshots/WS-CS-001",
@@ -211,5 +215,5 @@
       "run_id": "workshop-submissions-20261028T123446Z"
     }
   ],
-  "updated_at": "2026-10-28T12:44:37.803448+00:00"
+  "updated_at": "2026-10-28T12:46:23.235151+00:00"
 }
