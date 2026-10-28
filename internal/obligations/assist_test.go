@@ -41,14 +41,14 @@ func TestAssistObligationsOfflineNeverExecutable(t *testing.T) {
 			SourcePath: "adrs/a.md", SourceSHA256: sha,
 			SourceLineStart: 3, SourceLineEnd: 3,
 			ApprovalStatus: DecisionPending, EnforcementMode: EnforcementReviewRequired, Executable: false,
-			Confidence: ConfidenceLow, ConfidenceScore: 0.2, EscalationReasons: []string{"manual_review_pattern_hint"},
+			Confidence: ConfidenceLow, ConfidenceP: 0.2, ConfidenceMethod: "platt_conformal", EscalationReasons: []string{"manual_review_pattern_hint"},
 		}, {
 			ID: "CAND-2", ADRID: "ADR-002", Statement: "Services must set a timeout.",
 			Modality: "must", PatternHint: "configuration.bounds_or_required_values", Kind: "normative_candidate",
 			SourcePath: "adrs/b.md", SourceSHA256: strings.Repeat("a", 64),
 			SourceLineStart: 3, SourceLineEnd: 3,
 			ApprovalStatus: DecisionPending, EnforcementMode: EnforcementReviewRequired, Executable: false,
-			Confidence: ConfidenceHigh, ConfidenceScore: 0.9,
+			Confidence: ConfidenceHigh, ConfidenceP: 0.9, ConfidenceMethod: "platt_conformal",
 		}},
 	}
 	out, err := AssistObligations(context.Background(), index, AssistOptions{

@@ -100,7 +100,6 @@ type Cand = {
   id: string;
   adr_id: string;
   confidence: string;
-  confidence_score?: number;
   confidence_p?: number;
   confidence_method?: string;
   confidence_coverage?: number;
@@ -253,8 +252,8 @@ export async function renderConfidence(app: HTMLElement) {
       <div class="artifact">
         <h3>Honesty limits</h3>
         <ul>
-          <li><code>confidence_score</code> is heuristic triage — not P(correct).</li>
-          <li><code>confidence_p</code> is calibrated only when <code>confidence_method=platt_conformal</code>.</li>
+          <li><code>confidence_p</code> is calibrated P(extract_correct) when <code>confidence_method=platt_conformal</code>.</li>
+          <li>Heuristic triage is internal-only (feature for calibration) — not emitted on candidates.</li>
           <li>Conformal bands assume exchangeability with gold; refit after domain shift (50-subs pack).</li>
           <li>Wilson CIs are sampling intervals on rates — not model calibration error bars.</li>
         </ul>
@@ -274,7 +273,7 @@ export async function renderConfidence(app: HTMLElement) {
         <table class="dense" id="conf-cand-table">
           <thead>
             <tr>
-              <th>ID</th><th>Band</th><th>P</th><th>Score</th><th>Method</th><th>Coverage</th><th>Kind</th><th>Pattern</th><th>Statement</th>
+              <th>ID</th><th>Band</th><th>P</th><th>Method</th><th>Coverage</th><th>Kind</th><th>Pattern</th><th>Statement</th>
             </tr>
           </thead>
           <tbody>
@@ -287,7 +286,6 @@ export async function renderConfidence(app: HTMLElement) {
                 <td><a class="id" href="#/candidates?q=${encodeURIComponent(c.id)}">${escapeHTML(c.id)}</a></td>
                 <td>${tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : '')}</td>
                 <td class="num">${fmt(c.confidence_p)}</td>
-                <td class="num">${fmt(c.confidence_score)}</td>
                 <td><code>${escapeHTML(c.confidence_method || '—')}</code></td>
                 <td class="num">${c.confidence_coverage != null ? fmt(c.confidence_coverage) : '—'}</td>
                 <td>${escapeHTML(c.submission_kind || '—')}</td>
@@ -296,7 +294,7 @@ export async function renderConfidence(app: HTMLElement) {
               </tr>`,
                     )
                     .join('')
-                : `<tr><td colspan="9" class="muted">No candidates in this snapshot.</td></tr>`
+                : `<tr><td colspan="8" class="muted">No candidates in this snapshot.</td></tr>`
             }
           </tbody>
         </table>
@@ -395,13 +393,12 @@ export async function renderConfidence(app: HTMLElement) {
   });
   document.getElementById('conf-copy-tsv')?.addEventListener('click', async () => {
     const tsv = toTSV(
-      ['id', 'adr_id', 'confidence', 'confidence_p', 'confidence_score', 'confidence_method', 'confidence_coverage', 'submission_kind', 'pattern_hint', 'statement'],
+      ['id', 'adr_id', 'confidence', 'confidence_p', 'confidence_method', 'confidence_coverage', 'submission_kind', 'pattern_hint', 'statement'],
       rows.map((c) => [
         c.id,
         c.adr_id,
         c.confidence,
         c.confidence_p == null ? '' : String(c.confidence_p),
-        c.confidence_score == null ? '' : String(c.confidence_score),
         c.confidence_method ?? '',
         c.confidence_coverage == null ? '' : String(c.confidence_coverage),
         c.submission_kind ?? '',

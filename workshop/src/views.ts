@@ -861,7 +861,6 @@ export async function renderCandidates(app: HTMLElement) {
         id: string;
         adr_id: string;
         confidence: string;
-        confidence_score?: number;
         confidence_p?: number;
         confidence_method?: string;
         confidence_coverage?: number;
@@ -989,7 +988,6 @@ export async function renderCandidates(app: HTMLElement) {
           ${drawerField('Kind', kindTag(c.submission_kind))}
           ${drawerField('Band', tag(c.confidence, c.confidence === 'low' ? 'warn' : c.confidence === 'high' ? 'ok' : ''))}
           ${drawerField('Calibrated P', fmt(c.confidence_p))}
-          ${drawerField('Heuristic score', fmt(c.confidence_score))}
           ${drawerField('Method', `<code>${escapeHTML(c.confidence_method || '—')}</code>`)}
           ${drawerField('Coverage', c.confidence_coverage != null ? fmt(c.confidence_coverage) : '—')}
           ${c.prediction_set?.length ? drawerField('Prediction set', `<code>${escapeHTML(c.prediction_set.join(', '))}</code>`) : ''}
@@ -1289,7 +1287,6 @@ export async function renderProposals(app: HTMLElement) {
       executable: boolean;
       approval_status: string;
       parent_confidence?: string;
-      parent_confidence_score?: number;
       parent_confidence_p?: number;
       parent_confidence_method?: string;
       parent_confidence_coverage?: number;
@@ -1408,7 +1405,6 @@ export async function renderProposals(app: HTMLElement) {
           ${drawerField('Pattern', `<code class="id">${escapeHTML(p.suggested_pattern_id)}</code>`, true)}
           ${p.parent_confidence ? drawerField('Parent band', tag(p.parent_confidence, p.parent_confidence === 'low' ? 'warn' : p.parent_confidence === 'high' ? 'ok' : '')) : ''}
           ${drawerField('Parent P', fmt(p.parent_confidence_p))}
-          ${drawerField('Parent score', fmt(p.parent_confidence_score))}
           ${drawerField('Parent method', `<code>${escapeHTML(p.parent_confidence_method || '—')}</code>`)}
           ${p.parent_confidence_coverage != null ? drawerField('Parent coverage', fmt(p.parent_confidence_coverage)) : ''}
           ${drawerField('Provider', escapeHTML(provider), true)}

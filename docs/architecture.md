@@ -165,10 +165,10 @@ The deterministic extract-obligations stage converts indexed ADR statements with
 
 ### Statistical confidence (extract → assist → metrics)
 
-Confidence is **not** an LLM score and **not** “citation clarity.” Source citations bind bytes/lines; triage uses extract signals:
+Confidence is **not** an LLM score and **not** “citation clarity.” Source citations bind bytes/lines. Submitters never supply confidence fields — extract computes them from the statement.
 
-1. **Heuristic `confidence_score`** — deterministic deductions from modality, pattern hint, ambiguity, exceptions, compound/conditional cues. Kept for compatibility and as a **feature input**.
-2. **Calibrated `confidence_p`** — Platt/logistic P(extract_correct) fitted offline on `testdata/confidence/gold-extract-v1.json`; params embedded in `internal/obligations/calibration/params-v1.json`. When gold is insufficient, method falls back to `heuristic` and is labeled as such.
+1. **Internal heuristic features** — modality, pattern hint, ambiguity, exceptions, compound/conditional cues feed the calibrator. They are **not** emitted as a public `confidence_score`.
+2. **Calibrated `confidence_p`** — Platt/logistic P(extract_correct) fitted offline on `testdata/confidence/gold-extract-v1.json`; params embedded in `internal/obligations/calibration/params-v1.json`. Prefer this number everywhere.
 3. **Conformal `confidence` band** — inductive prediction sets at target coverage (default 90%) under an **exchangeability** assumption with the gold calibration set. Singleton `{high}` → high; otherwise widen to medium/low. Assist gates on this band (`max_confidence`, default low).
 4. **KPI Wilson CIs** — `workshop-emit` adds 95% Wilson intervals on escalation, band shares, and harness precision (when counts exist).
 

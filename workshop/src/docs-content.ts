@@ -320,12 +320,12 @@ export const DOC_SECTIONS: DocSection[] = [
 <table class="docs-table">
   <thead><tr><th>Field</th><th>Meaning</th><th>Not a claim of…</th></tr></thead>
   <tbody>
-    <tr><td><code>confidence_score</code></td><td>Heuristic triage from modality, pattern hint, ambiguity, exceptions, compound cues.</td><td>A probability. Old “citation clarity” wording was overclaim — citations bind location; they do not score semantic clarity.</td></tr>
-    <tr><td><code>confidence_p</code></td><td>Calibrated <em>P(extract_correct)</em> via Platt/logistic on a feature vector (heuristic score is one <em>input</em> feature).</td><td>Compliance, assess PASS, or Promptfoo quality.</td></tr>
+    <tr><td><code>confidence_p</code></td><td>Calibrated <em>P(extract_correct)</em> via Platt/logistic fitted on gold. Emit this — not a raw heuristic score.</td><td>Compliance, assess PASS, or Promptfoo quality.</td></tr>
     <tr><td><code>confidence</code> / band</td><td>Inductive conformal prediction set mapped to high / medium / low at target coverage (default 90%). Singleton <code>{high}</code> → high; otherwise widen.</td><td>Guaranteed correctness on shifted domains without refit.</td></tr>
+    <tr><td><code>confidence_method</code> / <code>coverage</code></td><td><code>platt_conformal</code> with gold-fitted params (or labeled <code>heuristic</code> only if params missing).</td><td>That fallback heuristic equals a calibrated probability.</td></tr>
   </tbody>
 </table>
-<p><code>confidence_method</code> is <code>platt_conformal</code> when fitted gold params apply, or <code>heuristic</code> when gold is insufficient / params missing — labeled honestly. <code>confidence_coverage</code> records the conformal target when active.</p>
+<p>Heuristic triage from modality / pattern / ambiguity still runs <strong>internally</strong> as one feature for calibration. It is <strong>not</strong> emitted on candidates (the old <code>confidence_score</code> field is removed). Submitters never supply confidence — extract computes it.</p>
 <h3>Where scores appear</h3>
 <ol class="docs-steps">
   <li><strong>Extract / candidates</strong> — full fields on each candidate + <code>calibration</code> meta on the index.</li>

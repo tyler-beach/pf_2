@@ -355,8 +355,8 @@ func validateCandidateIndex(index Index) error {
 		default:
 			return fmt.Errorf("candidate %s has invalid confidence %q", candidate.ID, candidate.Confidence)
 		}
-		if candidate.ConfidenceScore < 0 || candidate.ConfidenceScore > 1 {
-			return fmt.Errorf("candidate %s has out-of-range confidence_score %v", candidate.ID, candidate.ConfidenceScore)
+		if candidate.ConfidenceP < 0 || candidate.ConfidenceP > 1 {
+			return fmt.Errorf("candidate %s has out-of-range confidence_p %v", candidate.ID, candidate.ConfidenceP)
 		}
 	}
 	return nil

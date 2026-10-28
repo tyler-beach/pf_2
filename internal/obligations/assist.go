@@ -35,13 +35,12 @@ type Proposal struct {
 	SourceLineStart     int      `json:"source_line_start"`
 	SourceLineEnd       int      `json:"source_line_end"`
 	SourceQuote         string   `json:"source_quote"`
-	Confidence           string   `json:"parent_confidence"`
-	ConfidenceScore      float64  `json:"parent_confidence_score,omitempty"`
-	ConfidenceP          float64  `json:"parent_confidence_p,omitempty"`
-	ConfidenceMethod     string   `json:"parent_confidence_method,omitempty"`
-	ConfidenceCoverage   float64  `json:"parent_confidence_coverage,omitempty"`
-	EscalationReasons    []string `json:"escalation_reasons,omitempty"`
-	Provider             string   `json:"provider"`
+	Confidence         string   `json:"parent_confidence"`
+	ConfidenceP        float64  `json:"parent_confidence_p,omitempty"`
+	ConfidenceMethod   string   `json:"parent_confidence_method,omitempty"`
+	ConfidenceCoverage float64  `json:"parent_confidence_coverage,omitempty"`
+	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
+	Provider           string   `json:"provider"`
 	Model               string   `json:"model"`
 	PromptVersion       string   `json:"prompt_version"`
 	PromptSHA256        string   `json:"prompt_sha256"`
@@ -283,7 +282,6 @@ func AssistObligations(ctx context.Context, index Index, opts AssistOptions) (Pr
 			SourceLineEnd:       candidate.SourceLineEnd,
 			SourceQuote:         quote,
 			Confidence:         candidate.Confidence,
-			ConfidenceScore:    candidate.ConfidenceScore,
 			ConfidenceP:        candidate.ConfidenceP,
 			ConfidenceMethod:   candidate.ConfidenceMethod,
 			ConfidenceCoverage: candidate.ConfidenceCoverage,

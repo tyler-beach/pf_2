@@ -27,7 +27,6 @@ type CandidateAssessment struct {
 	SourceLineStart    int      `json:"source_line_start"`
 	SourceLineEnd      int      `json:"source_line_end"`
 	Confidence         string   `json:"confidence,omitempty"`
-	ConfidenceScore    float64  `json:"confidence_score,omitempty"`
 	ConfidenceP        float64  `json:"confidence_p,omitempty"`
 	ConfidenceMethod   string   `json:"confidence_method,omitempty"`
 	ConfidenceCoverage float64  `json:"confidence_coverage,omitempty"`
@@ -126,9 +125,8 @@ func AssessCandidates(index Index, catalog assessment.Catalog, registry Registry
 			ReviewHints: append([]string(nil), candidate.ReviewHints...),
 			SourcePath:  candidate.SourcePath, SourceSHA256: candidate.SourceSHA256,
 			SourceLineStart: candidate.SourceLineStart, SourceLineEnd: candidate.SourceLineEnd,
-			Confidence: candidate.Confidence, ConfidenceScore: candidate.ConfidenceScore,
-			ConfidenceP: candidate.ConfidenceP, ConfidenceMethod: candidate.ConfidenceMethod,
-			ConfidenceCoverage: candidate.ConfidenceCoverage,
+			Confidence: candidate.Confidence, ConfidenceP: candidate.ConfidenceP,
+			ConfidenceMethod: candidate.ConfidenceMethod, ConfidenceCoverage: candidate.ConfidenceCoverage,
 			Decision: DecisionPending, EnforcementMode: EnforcementReviewRequired,
 			Status: "INDETERMINATE", EvidenceStatus: "MISSING", Evidence: []string{},
 			Reason: "candidate has not been reviewed; no compliance conclusion is available",

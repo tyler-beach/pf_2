@@ -1,7 +1,7 @@
 {
   "schema_version": "confidence-gold-extract-v1",
   "task": "extract_quality",
-  "description": "Gold labels for extract-quality calibration (Platt logistic + inductive conformal bands). extract_correct=true when corpus harness match has correct modality and pattern_hint. hooks.assess / hooks.assist reserved for later assess/assist gold. Grow with the 50-submissions pack; do not treat heuristic confidence_score alone as a probability.",
+  "description": "Gold labels for extract-quality calibration (Platt logistic + inductive conformal bands). extract_correct=true when corpus harness match has correct modality and pattern_hint. features.heuristic_score is an internal training feature only \u2014 candidates emit confidence_p/band, not confidence_score. hooks.assess / hooks.assist reserved for later assess/assist gold.",
   "label_schema": {
     "extract_correct": "bool \u2014 modality+pattern+statement match gold",
     "expected_band": "high|medium|low \u2014 human/corpus triage band",

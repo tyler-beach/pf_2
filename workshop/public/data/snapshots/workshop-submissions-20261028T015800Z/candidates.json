@@ -23,7 +23,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.15,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -49,7 +48,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.45,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -76,7 +74,6 @@
         "non_decision_section"
       ],
       "confidence": "medium",
-      "confidence_score": 0.65,
       "escalation_reasons": [
         "non_decision_section"
       ]
@@ -102,7 +99,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -129,7 +125,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -153,7 +148,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -177,7 +171,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -210,7 +203,6 @@
         "conditional_applicability"
       ],
       "confidence": "low",
-      "confidence_score": 0.05,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -242,7 +234,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.15,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -268,7 +259,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.6,
       "escalation_reasons": [
         "manual_review_pattern_hint"
       ]
@@ -295,7 +285,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.3,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section",
@@ -323,7 +312,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -350,7 +338,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -378,7 +365,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.15,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -407,7 +393,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -436,7 +421,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.05,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -466,7 +450,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -495,7 +478,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -520,7 +502,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.45,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -547,7 +528,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -576,7 +556,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -603,7 +582,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -631,7 +609,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -658,7 +635,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -690,7 +666,6 @@
         "subjective_or_preference_language"
       ],
       "confidence": "low",
-      "confidence_score": 0,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -717,7 +692,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.7,
       "escalation_reasons": [
         "should_modality"
       ]
@@ -740,7 +714,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.45,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -764,7 +737,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -788,7 +760,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -812,7 +783,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.6,
       "escalation_reasons": [
         "manual_review_pattern_hint"
       ]
@@ -838,7 +808,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -868,7 +837,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.3,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section",
@@ -893,7 +861,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.45,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint"
@@ -921,7 +888,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.55,
       "escalation_reasons": [
         "non_decision_section",
         "compound_statement"
@@ -948,7 +914,6 @@
         "non_decision_section"
       ],
       "confidence": "low",
-      "confidence_score": 0.4,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section"
@@ -972,7 +937,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.6,
       "escalation_reasons": [
         "manual_review_pattern_hint"
       ]
@@ -999,7 +963,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1027,7 +990,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1054,7 +1016,6 @@
         "non_decision_section"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -1083,7 +1044,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "low",
-      "confidence_score": 0.3,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "non_decision_section",
@@ -1112,7 +1072,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1137,7 +1096,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1161,7 +1119,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1185,7 +1142,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1209,7 +1165,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1233,7 +1188,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1261,7 +1215,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1290,7 +1243,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1319,7 +1271,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1348,7 +1299,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1380,7 +1330,6 @@
         "conditional_applicability"
       ],
       "confidence": "low",
-      "confidence_score": 0.4,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement",
@@ -1410,7 +1359,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "should_modality",
         "manual_review_pattern_hint",
@@ -1436,7 +1384,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint"
@@ -1465,7 +1412,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1494,7 +1440,6 @@
         "compound_or_conjoined"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1523,7 +1468,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1552,7 +1496,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.35,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "subjective_or_underspecified",
@@ -1581,7 +1524,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1610,7 +1552,6 @@
         "split_from_compound"
       ],
       "confidence": "low",
-      "confidence_score": 0.25,
       "escalation_reasons": [
         "permissive_or_negative_requirement_modality",
         "manual_review_pattern_hint",
@@ -1639,7 +1580,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1667,7 +1607,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1691,7 +1630,6 @@
       "enforcement_mode": "review_required",
       "executable": false,
       "confidence": "medium",
-      "confidence_score": 0.6,
       "escalation_reasons": [
         "manual_review_pattern_hint"
       ]
@@ -1718,7 +1656,6 @@
         "split_from_compound"
       ],
       "confidence": "medium",
-      "confidence_score": 0.5,
       "escalation_reasons": [
         "manual_review_pattern_hint",
         "compound_statement"
@@ -1733,7 +1670,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1753,7 +1689,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1773,7 +1708,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1793,7 +1727,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1813,7 +1746,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1833,7 +1765,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1853,7 +1784,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1873,7 +1803,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1893,7 +1822,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1913,7 +1841,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1933,7 +1860,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1954,7 +1880,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1974,7 +1899,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -1994,7 +1918,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2015,7 +1938,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2036,7 +1958,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2056,7 +1977,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2077,7 +1997,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2097,7 +2016,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2117,7 +2035,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2137,7 +2054,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2157,7 +2073,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2177,7 +2092,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2198,7 +2112,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2218,7 +2131,6 @@
       "submission_kind": "tech_spec",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2238,7 +2150,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2259,7 +2170,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2281,7 +2191,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2302,7 +2211,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2322,7 +2230,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2342,7 +2249,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2363,7 +2269,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2384,7 +2289,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2405,7 +2309,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2426,7 +2329,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2447,7 +2349,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2467,7 +2368,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2488,7 +2388,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2509,7 +2408,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2529,7 +2427,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2550,7 +2447,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2570,7 +2466,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2590,7 +2485,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2610,7 +2504,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2631,7 +2524,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2652,7 +2544,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2673,7 +2564,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2693,7 +2583,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2714,7 +2603,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,
@@ -2735,7 +2623,6 @@
       "submission_kind": "code_snippet",
       "pattern_hint": "workshop.submission",
       "confidence": "medium",
-      "confidence_score": 0.5,
       "approval_status": "pending_review",
       "enforcement_mode": "review_required",
       "executable": false,

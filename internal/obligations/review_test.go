@@ -27,10 +27,12 @@ func reviewFixture() (Index, assessment.Catalog, Candidate) {
 		EnforcementMode: EnforcementReviewRequired,
 		Executable:      false,
 	}
-	band, score, reasons := scoreConfidence(candidate)
-	candidate.Confidence = band
-	candidate.ConfidenceScore = score
-	candidate.EscalationReasons = reasons
+	scored := ScoreCandidate(candidate)
+	candidate.Confidence = scored.ConfidenceBand
+	candidate.ConfidenceP = scored.ConfidenceP
+	candidate.ConfidenceMethod = scored.ConfidenceMethod
+	candidate.ConfidenceCoverage = scored.ConfidenceCoverage
+	candidate.EscalationReasons = scored.EscalationReasons
 	candidate.ID = candidateID(candidate)
 	index := Index{
 		SchemaVersion:           "1",

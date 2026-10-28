@@ -42,15 +42,15 @@ type Params struct {
 }
 
 // Result is the scored confidence payload attached to candidates / assessments.
+// Heuristic triage is an internal feature only; callers see calibrated P + band.
 type Result struct {
-	HeuristicScore   float64  `json:"heuristic_score"`
-	ConfidenceP      float64  `json:"confidence_p"`
-	ConfidenceBand   string   `json:"confidence_band"`
-	ConfidenceMethod string   `json:"confidence_method"`
-	ConfidenceCoverage float64 `json:"confidence_coverage,omitempty"`
-	PredictionSet    []string `json:"prediction_set,omitempty"`
-	EscalationReasons []string `json:"escalation_reasons,omitempty"`
-	FallbackReason   string   `json:"fallback_reason,omitempty"`
+	ConfidenceP        float64  `json:"confidence_p"`
+	ConfidenceBand     string   `json:"confidence_band"`
+	ConfidenceMethod   string   `json:"confidence_method"`
+	ConfidenceCoverage float64  `json:"confidence_coverage,omitempty"`
+	PredictionSet      []string `json:"prediction_set,omitempty"`
+	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
+	FallbackReason     string   `json:"fallback_reason,omitempty"`
 }
 
 var (

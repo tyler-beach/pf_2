@@ -12,8 +12,9 @@ const (
 	ConfidenceLow    = "low"
 )
 
-// ScoreCandidate runs heuristic triage then calibrated P + conformal bands.
-// When calibration params are missing or gold-insufficient, method=heuristic.
+// ScoreCandidate runs internal heuristic features through gold-fitted calibration
+// (Platt + conformal). Emitted fields are confidence_p / band / method — never a
+// public confidence_score. When params are missing, method=heuristic is labeled.
 func ScoreCandidate(c Candidate) calibration.Result {
 	band, score, reasons := scoreConfidence(c)
 	return calibration.Apply(calibration.FeatureInput{
@@ -28,8 +29,8 @@ func ScoreCandidate(c Candidate) calibration.Result {
 	}, band, reasons, calibration.DefaultParams())
 }
 
-// scoreConfidence assigns a deterministic heuristic triage score/band. It never
-// consults an LLM. The score is an *input feature* to calibration, not a probability.
+// scoreConfidence assigns an internal heuristic triage score/band used only as a
+// calibration feature. It never consults an LLM and is not emitted on candidates.
 func scoreConfidence(c Candidate) (band string, score float64, reasons []string) {
 	reasons = make([]string, 0, 4)
 	score = 0.85

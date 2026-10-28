@@ -48,15 +48,14 @@ type Candidate struct {
 	Conditions []string `json:"conditions,omitempty"`
 	Exceptions []string `json:"exceptions,omitempty"`
 	Ambiguity  []string `json:"ambiguity,omitempty"`
-	// Deterministic confidence; never produced by an LLM.
-	// Confidence is the conformal (or heuristic) triage band.
-	Confidence        string   `json:"confidence"`
-	ConfidenceScore   float64  `json:"confidence_score"` // heuristic triage score (compat); not a probability
-	ConfidenceP       float64  `json:"confidence_p"`     // calibrated P(extract_correct); equals score when method=heuristic
-	ConfidenceMethod  string   `json:"confidence_method,omitempty"`
-	ConfidenceCoverage float64 `json:"confidence_coverage,omitempty"`
-	PredictionSet     []string `json:"prediction_set,omitempty"`
-	EscalationReasons []string `json:"escalation_reasons,omitempty"`
+	// Deterministic statistical confidence; never produced by an LLM.
+	// Confidence is the conformal triage band; ConfidenceP is calibrated P(extract_correct).
+	Confidence         string   `json:"confidence"`
+	ConfidenceP        float64  `json:"confidence_p"`
+	ConfidenceMethod   string   `json:"confidence_method,omitempty"`
+	ConfidenceCoverage float64  `json:"confidence_coverage,omitempty"`
+	PredictionSet      []string `json:"prediction_set,omitempty"`
+	EscalationReasons  []string `json:"escalation_reasons,omitempty"`
 }
 
 // CalibrationMeta summarizes which statistical confidence method produced bands.
@@ -200,8 +199,8 @@ func MarkdownCandidateReport(index Index) string {
 	}
 	b.WriteString("| Candidate | Confidence | Source | Section | Modality | Pattern hint | Escalation reasons | Statement | State |\n|---|---|---|---|---|---|---|---|---|\n")
 	for _, candidate := range index.Candidates {
-		fmt.Fprintf(&b, "| %s | %s (%.2f) | %s:%d-%d | %s | %s | %s | %s | %s | %s / %s |\n",
-			mdCell(candidate.ID), mdCell(candidate.Confidence), candidate.ConfidenceScore,
+		fmt.Fprintf(&b, "| %s | %s (p=%.2f) | %s:%d-%d | %s | %s | %s | %s | %s | %s / %s |\n",
+			mdCell(candidate.ID), mdCell(candidate.Confidence), candidate.ConfidenceP,
 			mdCell(candidate.SourcePath), candidate.SourceLineStart, candidate.SourceLineEnd,
 			mdCell(candidate.SectionHeading), mdCell(candidate.Modality), mdCell(candidate.PatternHint),
 			mdCell(strings.Join(candidate.EscalationReasons, ", ")), mdCell(candidate.Statement),
@@ -313,7 +312,6 @@ func ExtractDocument(doc adringest.Document, displayPath string, source []byte) 
 				}
 				scored := ScoreCandidate(candidate)
 				candidate.Confidence = scored.ConfidenceBand
-				candidate.ConfidenceScore = scored.HeuristicScore
 				candidate.ConfidenceP = scored.ConfidenceP
 				candidate.ConfidenceMethod = scored.ConfidenceMethod
 				candidate.ConfidenceCoverage = scored.ConfidenceCoverage

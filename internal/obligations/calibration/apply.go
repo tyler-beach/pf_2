@@ -14,8 +14,7 @@ func Apply(in FeatureInput, heuristicBand string, heuristicReasons []string, par
 			band = bandFromScore(score, params.BandHighMin, params.BandMediumMin)
 		}
 		return Result{
-			HeuristicScore:     score,
-			ConfidenceP:        score, // honestly not calibrated; same numeric for back-compat consumers
+			ConfidenceP:        score, // uncalibrated triage proxy only when gold params unavailable
 			ConfidenceBand:     band,
 			ConfidenceMethod:   MethodHeuristic,
 			ConfidenceCoverage: 0,
@@ -31,7 +30,6 @@ func Apply(in FeatureInput, heuristicBand string, heuristicReasons []string, par
 			band = bandFromScore(score, 0.75, 0.45)
 		}
 		return Result{
-			HeuristicScore:    score,
 			ConfidenceP:       score,
 			ConfidenceBand:    band,
 			ConfidenceMethod:  MethodHeuristic,
@@ -80,7 +78,6 @@ func Apply(in FeatureInput, heuristicBand string, heuristicReasons []string, par
 	}
 
 	return Result{
-		HeuristicScore:     score,
 		ConfidenceP:        p,
 		ConfidenceBand:     band,
 		ConfidenceMethod:   MethodPlattConformal,
