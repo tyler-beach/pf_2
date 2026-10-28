@@ -148,4 +148,5 @@ go run ./cmd/adrctl assessment-to-rdjson \
 - **ADR Assessment** (`[ADR Assessment]`) — issue sandbox / corpus assess; unchanged.
 - **CI reviewdog** — same-repo SARIF annotations on Pathfinder PRs; unchanged.
 - **PR scan** — external or same-repo PR URL via issue template or `workflow_dispatch`; additive.
-- **Reusable workflow** — see `.github/workflows/pathfinder-pr-scan-reusable.yml` + `examples/consumer-pr-scan.yml` (Epic 3).
+- **Reusable workflow** — [pathfinder-pr-scan-reusable.yml](../.github/workflows/pathfinder-pr-scan-reusable.yml) + [examples/consumer-pr-scan.yml](../examples/consumer-pr-scan.yml).
+- **GitHub App** — design only: [github-app-design.md](github-app-design.md) (implement when install UX beats PAT).

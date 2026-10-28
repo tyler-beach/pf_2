@@ -1,0 +1,37 @@
+# Example consumer workflow — copy into YOUR_REPO/.github/workflows/pathfinder.yml
+# and pin pathfinder_ref to a release tag or commit SHA when ready.
+#
+# Requires (cross-repo / fork-safe): repository secret PATHFINDER_REVIEW_TOKEN
+# with contents:read, pull_requests:write, checks:write on this repo.
+# Optional: PATHFINDER_SARIF_TOKEN for Security uploads.
+name: Pathfinder
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      pr_url:
+        description: Override PR URL (defaults to the triggering pull_request)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
+
+jobs:
+  pathfinder:
+    uses: tyler-beach/pf_2/.github/workflows/pathfinder-pr-scan-reusable.yml@main
+    with:
+      pr_url: ${{ inputs.pr_url || github.event.pull_request.html_url }}
+      pathfinder_ref: main
+      reporters: github-pr-review,github-pr-check
+      upload_sarif: false
+      filter_mode: added
+      catalog: corpus
+      fail_level: none
+    secrets:
+      review_token: ${{ secrets.PATHFINDER_REVIEW_TOKEN }}
+      sarif_token: ${{ secrets.PATHFINDER_SARIF_TOKEN }}
