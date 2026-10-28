@@ -1,6 +1,6 @@
 {
-  "data_sha": "0addfb15dac8930d730791cc26b124deacd80c04871f8a054695fe648c828a98",
-  "latest_run_id": "fixture-001",
+  "data_sha": "aef9efdeef63286ca3e2ec1b71e01eaf2885210c94f8bb0aec7236208ffbf482",
+  "latest_run_id": "40692162146-1",
   "snapshots": [
     {
       "path": "snapshots/40689951565-1",
@@ -21,6 +21,10 @@
     {
       "path": "snapshots/40691614469-1",
       "run_id": "40691614469-1"
+    },
+    {
+      "path": "snapshots/40692162146-1",
+      "run_id": "40692162146-1"
     },
     {
       "path": "snapshots/WS-CS-001",
@@ -231,5 +235,5 @@
       "run_id": "workshop-submissions-20261028T123446Z"
     }
   ],
-  "updated_at": "2026-10-28T12:57:53.983796+00:00"
+  "updated_at": "2026-10-28T13:00:07.995138+00:00"
 }
