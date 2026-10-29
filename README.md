@@ -102,6 +102,38 @@ The current `adr/requirements.json` remains supported while this ingestion path 
 See [docs/scaling-adr-design.md](docs/scaling-adr-design.md) for the migration plan and analyzer choices, and [docs/architecture.md](docs/architecture.md) for the current runtime architecture.
 
 
+## ADR → versioned OpenGrep rulesets (`adrcompile`)
+
+Self-contained **compile-time** publisher (not part of assess/PR gates). Point it at a MADR/RFC 2119 ADR corpus; it extracts obligations, drafts OpenGrep rules (Claude/Anthropic), gates them on bad/good fixtures, and **publishes a versioned ruleset package** Pathfinder can pin with `ruleset_sha256` on `scan-opengrep` / analyzer plans.
+
+```sh
+# 1) Compile drafts (offline plumbing or live Anthropic)
+go run ./cmd/adrcompile compile \
+  --root testdata/corpus/adrs --out /tmp/ac-work \
+  --provider offline --opengrep-bin /path/to/opengrep --limit 5
+
+export ANTHROPIC_API_KEY=...
+go run ./cmd/adrcompile compile \
+  --root path/to/adrs --out /tmp/ac-work \
+  --provider anthropic --model claude-sonnet-4-5 \
+  --opengrep-bin /path/to/opengrep --limit 50
+
+# 2) Publish versioned package (only gate-passed rules enter rules.yml)
+go run ./cmd/adrcompile publish \
+  --from /tmp/ac-work --out ./rulesets \
+  --name pathfinder-adr-corpus --version 0.1.0 --tar
+
+# 3) Verify digests
+go run ./cmd/adrcompile verify --package ./rulesets/pathfinder-adr-corpus-0.1.0
+
+# 4) Pathfinder consume (pin manifest.ruleset_sha256)
+go run ./cmd/adrctl scan-opengrep \
+  --root . --config ./rulesets/pathfinder-adr-corpus-0.1.0/rules.yml \
+  --binary /path/to/opengrep ...
+```
+
+Package layout: `manifest.json` (name, version, `ruleset_sha256`, rule ids, provenance), `rules.yml` (OpenGrep/AST rules), `bindings.json` (suggested obligation→rule links, **not** approved policy), `SHA256SUMS`, optional `.tar.gz`. Assess/PR stays zero-LLM; human review still required before binding into `adr/requirements.json`.
+
 ## ADR Markdown ingestion (initial implementation)
 
 Pathfinder can build a deterministic source index for ADR Markdown using Goldmark:
