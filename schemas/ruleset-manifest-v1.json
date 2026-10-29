@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tyler-beach/pf_2/schemas/ruleset-manifest-v1.json",
+  "title": "Pathfinder published ADR OpenGrep ruleset manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "name",
+    "version",
+    "created_at",
+    "ruleset_sha256",
+    "rules_file",
+    "rule_count",
+    "rule_ids"
+  ],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string" },
+    "ruleset_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "rules_file": { "type": "string", "const": "rules.yml" },
+    "bindings_file": { "type": "string" },
+    "rule_count": { "type": "integer", "minimum": 0 },
+    "binding_count": { "type": "integer", "minimum": 0 },
+    "rule_ids": { "type": "array", "items": { "type": "string" } },
+    "source_root": { "type": "string" },
+    "source_root_sha256": { "type": "string" },
+    "prompt_version": { "type": "string" },
+    "provider": { "type": "string" },
+    "model": { "type": "string" },
+    "opengrep_version": { "type": "string" },
+    "min_gate_status": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "pathfinder_consume": { "type": "object", "additionalProperties": { "type": "string" } }
+  },
+  "additionalProperties": true
+}
