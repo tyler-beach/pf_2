@@ -102,6 +102,24 @@ The current `adr/requirements.json` remains supported while this ingestion path 
 See [docs/scaling-adr-design.md](docs/scaling-adr-design.md) for the migration plan and analyzer choices, and [docs/architecture.md](docs/architecture.md) for the current runtime architecture.
 
 
+## ADR → draft OpenGrep rules (`adrcompile`)
+
+Batch **compile-time** helper (not part of assess/PR gates): extract RFC 2119 obligations from an ADR corpus, ask Claude for a draft OpenGrep rule + fixtures, then gate with OpenGrep (bad must match, good must not). Drafts are **never** auto-approved into `adr/requirements.json`.
+
+```sh
+# Offline plumbing check (no API key)
+go run ./cmd/adrcompile --root testdata/corpus/adrs --out /tmp/adrcompile-out \
+  --provider offline --opengrep-bin /path/to/opengrep --limit 5
+
+# Live Anthropic compile
+export ANTHROPIC_API_KEY=...
+go run ./cmd/adrcompile --root testdata/corpus/adrs --out /tmp/adrcompile-out \
+  --provider anthropic --model claude-sonnet-4-5 \
+  --opengrep-bin /path/to/opengrep --limit 20
+```
+
+Outputs: `candidates.json`, `report.json` / `report.md`, and `drafts/<adr>__<cand>/` (`rule.yml`, fixtures, `gate.json`). Combined confidence blends extract `confidence_p`, LLM self-score, and gate pass/fail. Human review still required before binding.
+
 ## ADR Markdown ingestion (initial implementation)
 
 Pathfinder can build a deterministic source index for ADR Markdown using Goldmark:
